@@ -130,7 +130,7 @@ export const ActivityModal: React.FC<ActivityModalProps> = ({
           description: 'Manage your finances and apply for loans',
           emoji: '🏦',
           requirements: { minAge: 18 },
-          effects: { happiness: 1 }
+          effects: { happiness: 1, smarts: 1 }
         },
         {
           id: 'casino',
