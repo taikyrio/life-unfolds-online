@@ -28,6 +28,76 @@ const birthplaces = [
   'Portland, OR', 'Las Vegas, NV', 'Memphis, TN', 'Louisville, KY', 'Baltimore, MD'
 ];
 
+export const getLifeStage = (age: number): string => {
+  if (age < 3) return 'Baby';
+  if (age < 6) return 'Toddler';
+  if (age < 13) return 'Child';
+  if (age < 18) return 'Teen';
+  if (age < 30) return 'Young Adult';
+  if (age < 50) return 'Adult';
+  if (age < 65) return 'Middle-aged';
+  return 'Senior';
+};
+
+export const getStatEmoji = (stat: string, value: number): string => {
+  const getLevel = (val: number) => {
+    if (val >= 90) return 'excellent';
+    if (val >= 70) return 'good';
+    if (val >= 50) return 'average';
+    if (val >= 30) return 'poor';
+    return 'very_poor';
+  };
+
+  const level = getLevel(value);
+  
+  const emojiMap: Record<string, Record<string, string>> = {
+    health: {
+      excellent: '💪',
+      good: '😊',
+      average: '😐',
+      poor: '😷',
+      very_poor: '🤒'
+    },
+    happiness: {
+      excellent: '😄',
+      good: '😊',
+      average: '😐',
+      poor: '😔',
+      very_poor: '😭'
+    },
+    smarts: {
+      excellent: '🧠',
+      good: '🤓',
+      average: '😐',
+      poor: '😕',
+      very_poor: '🤪'
+    },
+    looks: {
+      excellent: '😍',
+      good: '😊',
+      average: '😐',
+      poor: '😕',
+      very_poor: '😰'
+    },
+    wealth: {
+      excellent: '💰',
+      good: '💵',
+      average: '💳',
+      poor: '🪙',
+      very_poor: '📉'
+    },
+    relationships: {
+      excellent: '💕',
+      good: '😊',
+      average: '😐',
+      poor: '😔',
+      very_poor: '💔'
+    }
+  };
+
+  return emojiMap[stat]?.[level] || '😐';
+};
+
 export const generateRandomName = (): string => {
   const firstName = firstNames[Math.floor(Math.random() * firstNames.length)];
   const lastName = lastNames[Math.floor(Math.random() * lastNames.length)];
