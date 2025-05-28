@@ -279,7 +279,7 @@ export const findLove = (character: Character): { success: boolean; partner?: Fa
   return { success: false, message: "You didn't find anyone special this time." };
 };
 
-export const intimateActivity = (character: Character, protected: boolean): { success: boolean; message: string; pregnant?: boolean } => {
+export const intimateActivity = (character: Character, isProtected: boolean): { success: boolean; message: string; pregnant?: boolean } => {
   const partner = character.familyMembers.find(m => m.relationship === 'lover' || m.relationship === 'spouse');
   if (!partner) {
     return { success: false, message: "You need to be in a relationship first!" };
@@ -288,7 +288,7 @@ export const intimateActivity = (character: Character, protected: boolean): { su
   let message = `You had an intimate moment with ${partner.name}.`;
   let pregnant = false;
   
-  if (!protected && Math.random() < 0.15) {
+  if (!isProtected && Math.random() < 0.15) {
     pregnant = true;
     message += " You might be pregnant!";
   }
