@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Character, LifeEvent, GameState } from '../types/game';
 import { generateRandomName, generateRandomStats, applyStatEffects, isGameOver, getLifeStage } from '../utils/gameUtils';
@@ -37,18 +36,21 @@ const GameBoard: React.FC = () => {
       ...generateRandomStats()
     };
 
+    // Generate birth event message with enhanced details
+    const birthMessage = `${newCharacter.name} was born in ${newCharacter.birthplace}! ${newCharacter.zodiacSign.emoji} ${newCharacter.zodiacSign.name} • ${newCharacter.birthWeight.toFixed(1)} lbs${newCharacter.premature ? ' (Premature)' : ''}`;
+
     setGameState({
       character: newCharacter,
       currentEvent: null,
       gameStarted: true,
       gameOver: false,
-      eventHistory: [`${newCharacter.name} was born in ${newCharacter.birthplace}!`],
+      eventHistory: [birthMessage],
       achievements: []
     });
 
     toast({
       title: `Welcome to life, ${newCharacter.name}! 👶`,
-      description: `Born in ${newCharacter.birthplace}. Your journey begins...`,
+      description: `Born in ${newCharacter.birthplace} as a ${newCharacter.zodiacSign.name}. Your journey begins...`,
     });
   };
 
@@ -58,13 +60,18 @@ const GameBoard: React.FC = () => {
     const newAge = gameState.character.age + 1;
     const newYear = gameState.character.year + 1;
     
-    // Natural aging effects
+    // Natural aging effects with zodiac influence
     let agingEffects: any = {
       health: newAge > 60 ? -2 : newAge > 40 ? -1 : newAge > 20 ? 0 : 1,
       happiness: 0,
       wealth: 0,
       relationships: 0
     };
+
+    // Zodiac-based aging effects
+    const zodiac = gameState.character.zodiacSign;
+    if (zodiac.element === 'water' && newAge > 50) agingEffects.health += 1; // Water signs age better
+    if (zodiac.element === 'fire' && newAge < 30) agingEffects.happiness += 2; // Fire signs happier when young
 
     // Age-based income from jobs
     if (gameState.character.job && gameState.character.salary > 0) {
@@ -260,22 +267,22 @@ const GameBoard: React.FC = () => {
   if (!gameState.gameStarted) {
     return (
       <div className="min-h-screen bg-game-bg flex items-center justify-center p-4 font-nunito">
-        <Card className="w-full max-w-md animate-scale-in">
-          <CardHeader className="text-center">
-            <CardTitle className="text-3xl font-bold text-primary mb-2">
+        <Card className="w-full max-w-sm sm:max-w-md animate-scale-in">
+          <CardHeader className="text-center pb-4">
+            <CardTitle className="text-2xl sm:text-3xl font-bold text-primary mb-2">
               🌟 LifeSim
             </CardTitle>
-            <p className="text-game-text text-lg">
+            <p className="text-game-text text-base sm:text-lg">
               Navigate through life's choices and create your unique story
             </p>
-            <p className="text-sm text-gray-600 mt-2">
+            <p className="text-xs sm:text-sm text-gray-600 mt-2">
               Inspired by BitLife - Make decisions that shape your character's destiny
             </p>
           </CardHeader>
           <CardContent className="text-center">
             <Button 
               onClick={startNewGame}
-              className="w-full py-3 text-lg font-semibold bg-primary hover:bg-primary/90 text-white transition-all duration-300 hover:scale-105"
+              className="w-full py-2 sm:py-3 text-base sm:text-lg font-semibold bg-primary hover:bg-primary/90 text-white transition-all duration-300 hover:scale-105"
             >
               🍼 Start Your Life
             </Button>
@@ -303,16 +310,16 @@ const GameBoard: React.FC = () => {
         return <CareersTab character={gameState.character} onJobApplication={handleJobApplication} />;
       case 'relationships':
         return (
-          <div className="text-center py-12">
-            <h2 className="text-2xl font-bold text-game-text mb-4">Relationships</h2>
-            <p className="text-gray-600">Coming soon! Manage your relationships with family and friends.</p>
+          <div className="text-center py-8 sm:py-12">
+            <h2 className="text-xl sm:text-2xl font-bold text-game-text mb-4">Relationships</h2>
+            <p className="text-sm sm:text-base text-gray-600">Coming soon! Manage your relationships with family and friends.</p>
           </div>
         );
       case 'assets':
         return (
-          <div className="text-center py-12">
-            <h2 className="text-2xl font-bold text-game-text mb-4">Assets</h2>
-            <p className="text-gray-600">Coming soon! Buy property, vehicles, and luxury items.</p>
+          <div className="text-center py-8 sm:py-12">
+            <h2 className="text-xl sm:text-2xl font-bold text-game-text mb-4">Assets</h2>
+            <p className="text-sm sm:text-base text-gray-600">Coming soon! Buy property, vehicles, and luxury items.</p>
           </div>
         );
       default:
@@ -321,10 +328,10 @@ const GameBoard: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-game-bg pb-20 font-nunito">
-      <div className="max-w-6xl mx-auto p-4">
-        <div className="text-center mb-6">
-          <h1 className="text-3xl font-bold text-primary mb-2">
+    <div className="min-h-screen bg-game-bg pb-16 sm:pb-20 font-nunito">
+      <div className="max-w-6xl mx-auto p-3 sm:p-4">
+        <div className="text-center mb-4 sm:mb-6">
+          <h1 className="text-2xl sm:text-3xl font-bold text-primary mb-2">
             🌟 LifeSim
           </h1>
         </div>

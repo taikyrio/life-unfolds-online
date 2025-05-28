@@ -1,4 +1,22 @@
 
+export interface FamilyMember {
+  id: string;
+  name: string;
+  relationship: 'father' | 'mother' | 'sibling' | 'child' | 'spouse' | 'grandparent';
+  age: number;
+  alive: boolean;
+  health: number;
+  relationshipQuality: number; // 0-100
+}
+
+export interface ZodiacSign {
+  name: string;
+  emoji: string;
+  traits: string[];
+  luckyNumbers: number[];
+  element: 'fire' | 'earth' | 'air' | 'water';
+}
+
 export interface Character {
   name: string;
   age: number;
@@ -9,6 +27,13 @@ export interface Character {
   wealth: number;
   relationships: number;
   year: number;
+  
+  // Enhanced Character Info
+  zodiacSign: ZodiacSign;
+  birthMonth: number;
+  birthDay: number;
+  familyMembers: FamilyMember[];
+  pets: { name: string; type: string; age: number; health: number }[];
   
   // Career & Education
   job?: string;
@@ -26,6 +51,11 @@ export interface Character {
   fame: number;
   nationality: string;
   birthplace: string;
+  
+  // Birth Circumstances
+  birthWeight: number; // in pounds
+  birthComplications: boolean;
+  premature: boolean;
 }
 
 export interface LifeEvent {
@@ -41,6 +71,8 @@ export interface LifeEvent {
     job?: string;
     relationshipStatus?: string;
     wealth?: number;
+    familyMember?: string;
+    zodiacSign?: string;
   };
 }
 
@@ -69,6 +101,8 @@ export interface StatEffects {
   partnerName?: string;
   children?: string[];
   criminalRecord?: boolean;
+  familyMemberHealth?: { id: string; change: number };
+  familyMemberRelationship?: { id: string; change: number };
 }
 
 export interface GameState {
