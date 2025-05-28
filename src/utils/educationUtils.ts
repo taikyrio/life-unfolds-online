@@ -1,6 +1,5 @@
 
 import { Character } from '../types/game';
-import { generateRandomName } from './gameUtils';
 
 export interface EducationLevel {
   id: string;
@@ -112,6 +111,44 @@ export const educationLevels: EducationLevel[] = [
     prerequisites: ['graduate']
   }
 ];
+
+// Expanded name lists
+const firstNames = [
+  // Male names
+  'James', 'Robert', 'John', 'Michael', 'David', 'William', 'Richard', 'Charles', 'Joseph', 'Thomas',
+  'Christopher', 'Daniel', 'Paul', 'Mark', 'Donald', 'Steven', 'Matthew', 'Anthony', 'Joshua', 'Kenneth',
+  'Kevin', 'Brian', 'George', 'Timothy', 'Ronald', 'Jason', 'Edward', 'Jeffrey', 'Ryan', 'Jacob',
+  'Gary', 'Nicholas', 'Eric', 'Jonathan', 'Stephen', 'Larry', 'Justin', 'Scott', 'Brandon', 'Benjamin',
+  'Samuel', 'Gregory', 'Alexander', 'Patrick', 'Frank', 'Raymond', 'Jack', 'Dennis', 'Jerry', 'Tyler',
+  // Female names
+  'Mary', 'Patricia', 'Jennifer', 'Linda', 'Elizabeth', 'Barbara', 'Susan', 'Jessica', 'Sarah', 'Karen',
+  'Nancy', 'Lisa', 'Betty', 'Helen', 'Sandra', 'Donna', 'Carol', 'Ruth', 'Sharon', 'Michelle',
+  'Laura', 'Sarah', 'Kimberly', 'Deborah', 'Dorothy', 'Lisa', 'Nancy', 'Karen', 'Betty', 'Helen',
+  'Sandra', 'Donna', 'Carol', 'Ruth', 'Sharon', 'Michelle', 'Laura', 'Emily', 'Kimberly', 'Deborah',
+  'Amy', 'Angela', 'Ashley', 'Brenda', 'Emma', 'Olivia', 'Cynthia', 'Marie', 'Janet', 'Catherine',
+  // Modern/Unisex names
+  'Alex', 'Jordan', 'Taylor', 'Casey', 'Morgan', 'Riley', 'Avery', 'Quinn', 'Sage', 'River',
+  'Phoenix', 'Skylar', 'Cameron', 'Dakota', 'Jamie', 'Jesse', 'Rowan', 'Blake', 'Drew', 'Emery'
+];
+
+const lastNames = [
+  'Smith', 'Johnson', 'Williams', 'Brown', 'Jones', 'Garcia', 'Miller', 'Davis', 'Rodriguez', 'Martinez',
+  'Hernandez', 'Lopez', 'Gonzalez', 'Wilson', 'Anderson', 'Thomas', 'Taylor', 'Moore', 'Jackson', 'Martin',
+  'Lee', 'Perez', 'Thompson', 'White', 'Harris', 'Sanchez', 'Clark', 'Ramirez', 'Lewis', 'Robinson',
+  'Walker', 'Young', 'Allen', 'King', 'Wright', 'Scott', 'Torres', 'Nguyen', 'Hill', 'Flores',
+  'Green', 'Adams', 'Nelson', 'Baker', 'Hall', 'Rivera', 'Campbell', 'Mitchell', 'Carter', 'Roberts',
+  'Gomez', 'Phillips', 'Evans', 'Turner', 'Diaz', 'Parker', 'Cruz', 'Edwards', 'Collins', 'Reyes',
+  'Stewart', 'Morris', 'Morales', 'Murphy', 'Cook', 'Rogers', 'Gutierrez', 'Ortiz', 'Morgan', 'Cooper',
+  'Peterson', 'Bailey', 'Reed', 'Kelly', 'Howard', 'Ramos', 'Kim', 'Cox', 'Ward', 'Richardson',
+  'Watson', 'Brooks', 'Chavez', 'Wood', 'James', 'Bennett', 'Gray', 'Mendoza', 'Ruiz', 'Hughes',
+  'Price', 'Alvarez', 'Castillo', 'Sanders', 'Patel', 'Myers', 'Long', 'Ross', 'Foster', 'Jimenez'
+];
+
+export const generateRandomName = (): string => {
+  const firstName = firstNames[Math.floor(Math.random() * firstNames.length)];
+  const lastName = lastNames[Math.floor(Math.random() * lastNames.length)];
+  return `${firstName} ${lastName}`;
+};
 
 export const getEducationInfo = (character: Character) => {
   const currentEducation = character.currentEducation;
@@ -239,4 +276,100 @@ export const shouldAutoEnrollInSchool = (character: Character): string | null =>
     return 'high';
   }
   return null;
+};
+
+export const enrollInEducation = (character: Character, levelId: string): { success: boolean; message: string; updatedCharacter?: Character } => {
+  const level = educationLevels.find(l => l.id === levelId);
+  if (!level) {
+    return { success: false, message: 'Invalid education level.' };
+  }
+
+  // Check wealth requirement
+  if (character.wealth < level.cost * 10) {
+    return { success: false, message: `You can't afford ${level.name}. You need $${level.cost * 10}k.` };
+  }
+
+  const institutions = getInstitutionsForLevel(levelId);
+  const institution = institutions[Math.floor(Math.random() * institutions.length)];
+
+  const updatedCharacter = {
+    ...character,
+    currentEducation: {
+      level: levelId,
+      institution,
+      currentYear: 1,
+      gpa: 3.0 + (character.smarts / 100),
+      classmates: []
+    },
+    wealth: character.wealth - (level.cost * 10)
+  };
+
+  return {
+    success: true,
+    message: `Enrolled in ${level.name} at ${institution}!`,
+    updatedCharacter
+  };
+};
+
+export const progressEducation = (character: Character): { success: boolean; message: string; graduated: boolean; updatedCharacter?: Character } => {
+  if (!character.currentEducation) {
+    return { success: false, message: 'Not currently enrolled in education.', graduated: false };
+  }
+
+  const level = educationLevels.find(l => l.id === character.currentEducation.level);
+  if (!level) {
+    return { success: false, message: 'Invalid education level.', graduated: false };
+  }
+
+  // Calculate GPA change based on smarts and random factors
+  const gpaChange = (Math.random() - 0.5) * 0.5 + (character.smarts / 200);
+  const newGpa = Math.max(0, Math.min(4.0, character.currentEducation.gpa + gpaChange));
+
+  // Check if graduating
+  if (character.currentEducation.currentYear >= level.duration) {
+    const graduatedEducation = [...character.education, level.name.split(' ')[0]];
+    
+    return {
+      success: true,
+      message: `Graduated from ${level.name} with a ${newGpa.toFixed(2)} GPA!`,
+      graduated: true,
+      updatedCharacter: {
+        ...character,
+        education: graduatedEducation,
+        currentEducation: undefined,
+        smarts: Math.min(100, character.smarts + 10)
+      }
+    };
+  }
+
+  // Progress to next year
+  return {
+    success: true,
+    message: `Completed year ${character.currentEducation.currentYear} of ${level.name}. GPA: ${newGpa.toFixed(2)}`,
+    graduated: false,
+    updatedCharacter: {
+      ...character,
+      currentEducation: {
+        ...character.currentEducation,
+        currentYear: character.currentEducation.currentYear + 1,
+        gpa: newGpa
+      }
+    }
+  };
+};
+
+const getInstitutionsForLevel = (levelId: string): string[] => {
+  const institutions: { [key: string]: string[] } = {
+    elementary: ['Sunshine Elementary', 'Oak Grove Elementary', 'Riverside Elementary', 'Lincoln Elementary'],
+    middle: ['Washington Middle School', 'Roosevelt Middle School', 'Jefferson Middle School', 'Madison Middle School'],
+    high: ['Central High School', 'North High School', 'South High School', 'East High School', 'West High School'],
+    college: ['City Community College', 'Metro Community College', 'Valley Community College', 'Harbor Community College'],
+    university: ['State University', 'Tech University', 'Liberal Arts University', 'Research University', 'Metropolitan University'],
+    graduate: ['Graduate School of Sciences', 'Graduate School of Arts', 'Graduate School of Business', 'Graduate School of Engineering'],
+    medical: ['Medical School of Excellence', 'University Medical School', 'State Medical College', 'Premier Medical Academy'],
+    law: ['School of Law', 'University Law School', 'State Law College', 'Metropolitan Law Institute'],
+    phd: ['Doctoral Academy', 'Research Institute', 'PhD Center of Excellence', 'Advanced Studies Institute']
+  };
+  
+  return institutions[levelId] || ['Generic Institution'];
 };

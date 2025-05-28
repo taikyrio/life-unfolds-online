@@ -16,12 +16,19 @@ import {
   haveBaby
 } from '../utils/gameUtils';
 import { getRandomEvent, createEventTracker } from '../data/lifeEvents';
+import { 
+  shouldAutoEnrollInSchool, 
+  enrollInEducation, 
+  progressEducation, 
+  generateRandomName as generateEducationName 
+} from '../utils/educationUtils';
 import { CharacterHeader } from './CharacterHeader';
 import { BottomNavigation } from './BottomNavigation';
 import { LifeTab } from './LifeTab';
 import { ActivitiesTab } from './ActivitiesTab';
 import { CareersTab } from './CareersTab';
 import { RelationshipsTab } from './RelationshipsTab';
+import { EducationTab } from './EducationTab';
 import { AssetsTab } from './AssetsTab';
 import { GameOverScreen } from './GameOverScreen';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -31,12 +38,13 @@ import { useIsMobile } from '../hooks/use-mobile';
 import { EventCard } from './EventCard';
 
 const GameBoard: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'life' | 'activities' | 'careers' | 'relationships' | 'assets'>('life');
+  const [activeTab, setActiveTab] = useState<'life' | 'activities' | 'careers' | 'relationships' | 'education' | 'assets'>('life');
   const [gameState, setGameState] = useState<GameState>({
     character: {
       name: '',
       age: 0,
       year: new Date().getFullYear(),
+      education: [],
       ...generateRandomStats()
     },
     currentEvent: null,
@@ -51,9 +59,10 @@ const GameBoard: React.FC = () => {
 
   const startNewGame = () => {
     const newCharacter: Character = {
-      name: generateRandomName(),
+      name: generateEducationName(),
       age: 0,
       year: new Date().getFullYear(),
+      education: [],
       ...generateRandomStats()
     };
 
@@ -91,13 +100,45 @@ const GameBoard: React.FC = () => {
       agingEffects.wealth = gameState.character.salary;
     }
 
-    if (newAge === 6) agingEffects.education = 'Elementary School';
-    if (newAge === 14) agingEffects.education = 'High School';
-
     let updatedCharacter = applyStatEffects(
       { ...gameState.character, age: newAge, year: newYear },
       agingEffects
     );
+
+    // Check for auto-enrollment in school
+    const autoEnrollLevel = shouldAutoEnrollInSchool(updatedCharacter);
+    if (autoEnrollLevel) {
+      const enrollResult = enrollInEducation(updatedCharacter, autoEnrollLevel);
+      if (enrollResult.success && enrollResult.updatedCharacter) {
+        updatedCharacter = enrollResult.updatedCharacter;
+        setGameState(prev => ({
+          ...prev,
+          character: updatedCharacter,
+          eventHistory: [enrollResult.message, ...prev.eventHistory.slice(0, 9)]
+        }));
+        return;
+      }
+    }
+
+    // Progress education if enrolled
+    if (updatedCharacter.currentEducation) {
+      const progressResult = progressEducation(updatedCharacter);
+      if (progressResult.success && progressResult.updatedCharacter) {
+        updatedCharacter = progressResult.updatedCharacter;
+        
+        let message = progressResult.message;
+        if (progressResult.graduated) {
+          message = `🎓 ${message}`;
+        }
+        
+        setGameState(prev => ({
+          ...prev,
+          character: updatedCharacter,
+          eventHistory: [message, ...prev.eventHistory.slice(0, 9)]
+        }));
+        return;
+      }
+    }
 
     if (updatedCharacter.isPregnant) {
       const pregnancyMonths = (updatedCharacter.pregnancyMonths || 0) + 1;
@@ -205,6 +246,83 @@ const GameBoard: React.FC = () => {
       currentEvent: null,
       eventHistory: [eventMessage, ...prev.eventHistory.slice(0, 9)]
     }));
+  };
+
+  const handleEducationAction = (action: string, data?: any) => {
+    const character = gameState.character;
+    
+    switch (action) {
+      case 'enroll':
+        const enrollResult = enrollInEducation(character, data.degreeType);
+        if (enrollResult.success && enrollResult.updatedCharacter) {
+          setGameState(prev => ({
+            ...prev,
+            character: enrollResult.updatedCharacter!,
+            eventHistory: [enrollResult.message, ...prev.eventHistory.slice(0, 9)]
+          }));
+        } else {
+          setGameState(prev => ({
+            ...prev,
+            eventHistory: [enrollResult.message, ...prev.eventHistory.slice(0, 9)]
+          }));
+        }
+        break;
+        
+      case 'dropout':
+        if (character.currentEducation) {
+          const updatedCharacter = {
+            ...character,
+            currentEducation: undefined,
+            happiness: Math.max(0, character.happiness - 20)
+          };
+          setGameState(prev => ({
+            ...prev,
+            character: updatedCharacter,
+            eventHistory: [`Dropped out of ${character.currentEducation!.institution}.`, ...prev.eventHistory.slice(0, 9)]
+          }));
+        }
+        break;
+        
+      case 'study_hard':
+        if (character.currentEducation) {
+          const gpaIncrease = 0.1 + (Math.random() * 0.2);
+          const newGpa = Math.min(4.0, character.currentEducation.gpa + gpaIncrease);
+          const updatedCharacter = {
+            ...character,
+            currentEducation: {
+              ...character.currentEducation,
+              gpa: newGpa
+            },
+            smarts: Math.min(100, character.smarts + 5),
+            happiness: Math.max(0, character.happiness - 5)
+          };
+          setGameState(prev => ({
+            ...prev,
+            character: updatedCharacter,
+            eventHistory: [`Studied hard and improved GPA to ${newGpa.toFixed(2)}!`, ...prev.eventHistory.slice(0, 9)]
+          }));
+        }
+        break;
+        
+      case 'interact_classmate':
+        const classmate = data.classmate;
+        const interactionOutcomes = [
+          { message: `Had a great conversation with ${classmate.name}!`, effects: { happiness: 10, relationships: 5 } },
+          { message: `Studied together with ${classmate.name}.`, effects: { smarts: 5, relationships: 8 } },
+          { message: `${classmate.name} helped you with homework.`, effects: { smarts: 8, happiness: 5 } },
+          { message: `Had lunch with ${classmate.name}.`, effects: { happiness: 8, relationships: 10 } }
+        ];
+        
+        const outcome = interactionOutcomes[Math.floor(Math.random() * interactionOutcomes.length)];
+        const updatedCharacter = applyStatEffects(character, outcome.effects);
+        
+        setGameState(prev => ({
+          ...prev,
+          character: updatedCharacter,
+          eventHistory: [outcome.message, ...prev.eventHistory.slice(0, 9)]
+        }));
+        break;
+    }
   };
 
   const handleActivity = (activityType: string, activityId: string) => {
@@ -859,6 +977,8 @@ const GameBoard: React.FC = () => {
         return <CareersTab character={gameState.character} onJobApplication={handleJobApplication} />;
       case 'relationships':
         return <RelationshipsTab character={gameState.character} />;
+      case 'education':
+        return <EducationTab character={gameState.character} onEducationAction={handleEducationAction} />;
       case 'assets':
         return (
           <div className="text-center py-8 px-4">

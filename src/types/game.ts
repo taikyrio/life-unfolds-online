@@ -18,6 +18,14 @@ export interface ZodiacSign {
   element: 'fire' | 'earth' | 'air' | 'water';
 }
 
+export interface CurrentEducation {
+  level: string;
+  institution: string;
+  currentYear: number;
+  gpa: number;
+  classmates: string[];
+}
+
 export interface Character {
   name: string;
   age: number;
@@ -40,7 +48,8 @@ export interface Character {
   job?: string;
   jobLevel: number;
   salary: number;
-  education: string;
+  education: string[];
+  currentEducation?: CurrentEducation;
   
   // Relationships
   relationshipStatus: 'single' | 'dating' | 'engaged' | 'married' | 'divorced' | 'widowed';
@@ -99,7 +108,8 @@ export interface StatEffects {
   fame?: number;
   job?: string;
   jobLevel?: number;
-  education?: string;
+  education?: string[];
+  currentEducation?: CurrentEducation;
   relationshipStatus?: 'single' | 'dating' | 'engaged' | 'married' | 'divorced' | 'widowed';
   partnerName?: string;
   children?: string[];

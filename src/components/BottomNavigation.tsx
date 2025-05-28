@@ -1,99 +1,64 @@
 
 import React from 'react';
-import { Heart, Briefcase, Users, Home, Car, User } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { 
+  Heart, 
+  Briefcase, 
+  Trophy, 
+  Home, 
+  Zap,
+  GraduationCap
+} from 'lucide-react';
 
 interface BottomNavigationProps {
-  activeTab: 'life' | 'activities' | 'careers' | 'relationships' | 'assets';
-  onTabChange: (tab: 'life' | 'activities' | 'careers' | 'relationships' | 'assets') => void;
+  activeTab: 'life' | 'activities' | 'careers' | 'relationships' | 'education' | 'assets';
+  onTabChange: (tab: 'life' | 'activities' | 'careers' | 'relationships' | 'education' | 'assets') => void;
   onAgeUp: () => void;
 }
 
-export const BottomNavigation: React.FC<BottomNavigationProps> = ({ 
-  activeTab, 
+export const BottomNavigation: React.FC<BottomNavigationProps> = ({
+  activeTab,
   onTabChange,
-  onAgeUp 
+  onAgeUp
 }) => {
   const tabs = [
-    { id: 'life' as const, label: 'Life', icon: User },
-    { id: 'activities' as const, label: 'Activities', icon: Home },
-    { id: 'relationships' as const, label: 'Relations', icon: Heart },
+    { id: 'life' as const, label: 'Life', icon: Home },
+    { id: 'activities' as const, label: 'Activities', icon: Zap },
     { id: 'careers' as const, label: 'Careers', icon: Briefcase },
-    { id: 'assets' as const, label: 'Assets', icon: Car },
+    { id: 'relationships' as const, label: 'Love', icon: Heart },
+    { id: 'education' as const, label: 'School', icon: GraduationCap },
+    { id: 'assets' as const, label: 'Assets', icon: Trophy },
   ];
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 safe-area-pb shadow-lg">
-      <div className="flex items-center justify-around py-1">
-        {tabs.slice(0, 2).map((tab) => {
+    <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-2">
+      <div className="flex justify-around items-center max-w-md mx-auto">
+        {tabs.map((tab) => {
           const Icon = tab.icon;
-          const isActive = activeTab === tab.id;
           return (
             <button
               key={tab.id}
               onClick={() => onTabChange(tab.id)}
-              className={`flex flex-col items-center p-2 min-w-0 flex-1 transition-all duration-200 ${
-                isActive 
-                  ? 'text-red-500 transform scale-105' 
-                  : 'text-gray-600 hover:text-gray-800'
+              className={`flex flex-col items-center space-y-1 p-2 rounded-lg transition-colors ${
+                activeTab === tab.id
+                  ? 'bg-primary text-white'
+                  : 'text-gray-600 hover:bg-gray-100'
               }`}
             >
-              <div className={`p-1 rounded-lg transition-colors ${
-                isActive ? 'bg-red-50' : ''
-              }`}>
-                <Icon size={18} className="mb-1" />
-              </div>
-              <span className={`text-xs truncate font-medium ${
-                isActive ? 'text-red-600' : ''
-              }`}>
-                {tab.label}
-              </span>
-              {isActive && (
-                <div className="w-4 h-0.5 bg-red-500 rounded-full mt-1 transition-all duration-200"></div>
-              )}
+              <Icon size={20} />
+              <span className="text-xs font-medium">{tab.label}</span>
             </button>
           );
         })}
-        
-        {/* Age Button - Enhanced for mobile */}
-        <button
+      </div>
+      
+      <div className="flex justify-center mt-3 pb-2">
+        <Button
           onClick={onAgeUp}
-          className="bg-gradient-to-r from-red-500 to-red-600 text-white rounded-full w-12 h-12 flex items-center justify-center font-bold text-sm shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 active:scale-95 mx-1"
+          className="bg-red-500 hover:bg-red-600 text-white px-8 py-3 rounded-full font-bold text-lg shadow-lg"
         >
-          <div className="text-center">
-            <div className="text-xs leading-tight">Age</div>
-            <div className="text-xs opacity-90">Up</div>
-          </div>
-        </button>
-        
-        {tabs.slice(2).map((tab) => {
-          const Icon = tab.icon;
-          const isActive = activeTab === tab.id;
-          return (
-            <button
-              key={tab.id}
-              onClick={() => onTabChange(tab.id)}
-              className={`flex flex-col items-center p-2 min-w-0 flex-1 transition-all duration-200 ${
-                isActive 
-                  ? 'text-red-500 transform scale-105' 
-                  : 'text-gray-600 hover:text-gray-800'
-              }`}
-            >
-              <div className={`p-1 rounded-lg transition-colors ${
-                isActive ? 'bg-red-50' : ''
-              }`}>
-                <Icon size={18} className="mb-1" />
-              </div>
-              <span className={`text-xs truncate font-medium ${
-                isActive ? 'text-red-600' : ''
-              }`}>
-                {tab.label}
-              </span>
-              {isActive && (
-                <div className="w-4 h-0.5 bg-red-500 rounded-full mt-1 transition-all duration-200"></div>
-              )}
-            </button>
-          );
-        })}
+          Age +
+        </Button>
       </div>
     </div>
   );
