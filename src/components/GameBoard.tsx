@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Character, LifeEvent, GameState } from '../types/game';
-import { generateRandomName, generateRandomStats, applyStatEffects, isGameOver, getLifeStage } from '../utils/gameUtils';
+import { generateRandomName, generateRandomStats, applyStatEffects, isGameOver, getLifeStage, ageFamilyMembers, generateNewRelationships, findLove } from '../utils/gameUtils';
 import { getRandomEvent, createEventTracker } from '../data/lifeEvents';
 import { CharacterHeader } from './CharacterHeader';
 import { BottomNavigation } from './BottomNavigation';
@@ -87,10 +87,17 @@ const GameBoard: React.FC = () => {
     if (newAge === 6) agingEffects.education = 'Elementary School';
     if (newAge === 14) agingEffects.education = 'High School';
 
-    const updatedCharacter = applyStatEffects(
+    let updatedCharacter = applyStatEffects(
       { ...gameState.character, age: newAge, year: newYear },
       agingEffects
     );
+
+    // Age all family members dynamically
+    updatedCharacter.familyMembers = ageFamilyMembers(updatedCharacter.familyMembers);
+    
+    // Generate new relationships based on character's life stage
+    const newRelationships = generateNewRelationships(updatedCharacter);
+    updatedCharacter.familyMembers = [...updatedCharacter.familyMembers, ...newRelationships];
 
     const gameOverCheck = isGameOver(updatedCharacter);
 
@@ -156,10 +163,10 @@ const GameBoard: React.FC = () => {
   const handleActivity = (activityType: string, activityId: string) => {
     let effects: any = {};
     let message = '';
-    
+
     // Consolidated activity system based on life stage
     const lifeStage = getLifeStage(gameState.character.age);
-    
+
     // Early Childhood Activities
     if (gameState.character.age < 6) {
       switch (activityId) {
@@ -177,7 +184,7 @@ const GameBoard: React.FC = () => {
           break;
       }
     }
-    
+
     // School Activities
     else if (activityType === 'school activities') {
       switch (activityId) {
@@ -203,7 +210,7 @@ const GameBoard: React.FC = () => {
           break;
       }
     }
-    
+
     // Career Activities
     else if (activityType === 'career') {
       switch (activityId) {
@@ -235,7 +242,7 @@ const GameBoard: React.FC = () => {
           break;
       }
     }
-    
+
     // Health & Fitness Activities
     else if (activityType === 'health & fitness') {
       switch (activityId) {
@@ -257,7 +264,7 @@ const GameBoard: React.FC = () => {
           break;
       }
     }
-    
+
     // Social & Entertainment Activities
     else if (activityType === 'social & entertainment' || activityType === 'social life') {
       switch (activityId) {
@@ -298,9 +305,30 @@ const GameBoard: React.FC = () => {
           effects = { happiness: 20, smarts: 10 };
           message = 'You learned a new hobby and had fun doing it!';
           break;
+        case 'find_love':
+          const loveResult = findLove(gameState.character);
+          if (loveResult.success && loveResult.partner) {
+            // Add the new partner to family members as a lover
+            const updatedFamilyMembers = [...gameState.character.familyMembers, loveResult.partner];
+            setGameState(prev => ({
+              ...prev,
+              character: {
+                ...prev.character,
+                familyMembers: updatedFamilyMembers,
+                relationshipStatus: 'dating',
+                partnerName: loveResult.partner!.name
+              },
+              eventHistory: [loveResult.message, ...prev.eventHistory.slice(0, 9)]
+            }));
+            return; // Early return to avoid double state update
+          } else {
+            effects = { happiness: -5 };
+            message = loveResult.message;
+          }
+          break;
       }
     }
-    
+
     // Risky Activities
     else if (activityType === 'risky activities') {
       switch (activityId) {
@@ -342,15 +370,15 @@ const GameBoard: React.FC = () => {
 
     if (Object.keys(effects).length > 0) {
       const updatedCharacter = applyStatEffects(gameState.character, effects);
-      
+
       // Consolidate into yearly entry instead of individual activities
       const yearEntry = `Age ${gameState.character.age}: ${message}`;
-      
+
       // Check if there's already an entry for this age
       const existingEntryIndex = gameState.eventHistory.findIndex(entry => 
         entry.startsWith(`Age ${gameState.character.age}:`)
       );
-      
+
       let newEventHistory;
       if (existingEntryIndex !== -1) {
         // Replace existing entry for this age
@@ -360,7 +388,7 @@ const GameBoard: React.FC = () => {
         // Add new entry and limit to last 10 years
         newEventHistory = [yearEntry, ...gameState.eventHistory.slice(0, 9)];
       }
-      
+
       setGameState(prev => ({
         ...prev,
         character: updatedCharacter,
@@ -504,7 +532,7 @@ const GameBoard: React.FC = () => {
         onTabChange={setActiveTab}
         onAgeUp={ageUp}
       />
-      
+
       {/* Event Modal Overlay */}
       {gameState.currentEvent && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">

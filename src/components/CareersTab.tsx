@@ -12,53 +12,171 @@ interface CareersTabProps {
 
 export const CareersTab: React.FC<CareersTabProps> = ({ character, onJobApplication }) => {
   const jobListings = [
-    {
-      id: 'retail_worker',
-      title: 'Retail Worker',
-      company: 'Local Store',
-      salary: 25,
-      requirements: { age: 16, education: 'High School' },
-      description: 'Entry-level position in retail'
-    },
+    // Entry Level Jobs
     {
       id: 'fast_food',
       title: 'Fast Food Worker',
       company: 'Quick Burger',
-      salary: 20,
-      requirements: { age: 14, education: 'Elementary School' },
+      salary: 22,
+      requirements: { age: 14, education: 'None' },
       description: 'Part-time work in food service'
     },
     {
-      id: 'office_assistant',
-      title: 'Office Assistant',
-      company: 'Corporate Inc.',
-      salary: 35,
-      requirements: { age: 18, education: 'High School' },
-      description: 'Administrative support role'
+      id: 'retail_worker',
+      title: 'Retail Associate',
+      company: 'Local Store',
+      salary: 25,
+      requirements: { age: 16, education: 'None' },
+      description: 'Customer service and sales'
     },
+    {
+      id: 'janitor',
+      title: 'Janitor',
+      company: 'CleanCorp',
+      salary: 28,
+      requirements: { age: 18, education: 'None' },
+      description: 'Facility maintenance and cleaning'
+    },
+    {
+      id: 'factory_worker',
+      title: 'Factory Worker',
+      company: 'Manufacturing Inc.',
+      salary: 32,
+      requirements: { age: 18, education: 'High School' },
+      description: 'Assembly line production work'
+    },
+    // Skilled Jobs
+    {
+      id: 'electrician',
+      title: 'Electrician',
+      company: 'Power Solutions',
+      salary: 55,
+      requirements: { age: 20, education: 'Trade School' },
+      description: 'Electrical systems installation and repair'
+    },
+    {
+      id: 'paramedic',
+      title: 'Paramedic',
+      company: 'Emergency Services',
+      salary: 48,
+      requirements: { age: 21, education: 'Associate Degree' },
+      description: 'Emergency medical services'
+    },
+    {
+      id: 'police_officer',
+      title: 'Police Officer',
+      company: 'Police Department',
+      salary: 52,
+      requirements: { age: 21, education: 'Associate Degree' },
+      description: 'Law enforcement and public safety'
+    },
+    // Professional Jobs
     {
       id: 'teacher',
       title: 'Teacher',
       company: 'Local School',
-      salary: 50,
-      requirements: { age: 22, education: 'University Degree' },
+      salary: 48,
+      requirements: { age: 22, education: 'Bachelor Degree' },
       description: 'Educate the next generation'
     },
+    {
+      id: 'nurse',
+      title: 'Nurse',
+      company: 'City Hospital',
+      salary: 65,
+      requirements: { age: 22, education: 'Bachelor Degree' },
+      description: 'Patient care and medical support'
+    },
+    {
+      id: 'accountant',
+      title: 'Accountant',
+      company: 'Finance Firm',
+      salary: 58,
+      requirements: { age: 22, education: 'Bachelor Degree' },
+      description: 'Financial record keeping and analysis'
+    },
+    {
+      id: 'engineer',
+      title: 'Engineer',
+      company: 'Tech Solutions',
+      salary: 75,
+      requirements: { age: 22, education: 'Bachelor Degree' },
+      description: 'Design and build technical solutions'
+    },
+    // Corporate Jobs
+    {
+      id: 'marketing_manager',
+      title: 'Marketing Manager',
+      company: 'Corporate Inc.',
+      salary: 85,
+      requirements: { age: 25, education: 'Bachelor Degree' },
+      description: 'Develop marketing strategies'
+    },
+    {
+      id: 'it_manager',
+      title: 'IT Manager',
+      company: 'Tech Corp',
+      salary: 95,
+      requirements: { age: 26, education: 'Bachelor Degree' },
+      description: 'Manage technology infrastructure'
+    },
+    // High-End Jobs
     {
       id: 'doctor',
       title: 'Doctor',
       company: 'City Hospital',
-      salary: 120,
+      salary: 185,
       requirements: { age: 26, education: 'Medical Degree' },
-      description: 'Heal the sick and injured'
+      description: 'Diagnose and treat patients'
     },
     {
       id: 'lawyer',
       title: 'Lawyer',
       company: 'Law Firm',
-      salary: 100,
+      salary: 125,
       requirements: { age: 25, education: 'Law Degree' },
       description: 'Represent clients in legal matters'
+    },
+    {
+      id: 'investment_banker',
+      title: 'Investment Banker',
+      company: 'Wall Street Bank',
+      salary: 145,
+      requirements: { age: 24, education: 'MBA' },
+      description: 'High-stakes financial planning'
+    },
+    {
+      id: 'surgeon',
+      title: 'Surgeon',
+      company: 'Medical Center',
+      salary: 250,
+      requirements: { age: 30, education: 'Medical Degree' },
+      description: 'Perform complex surgical procedures'
+    },
+    // Creative Jobs
+    {
+      id: 'artist',
+      title: 'Artist',
+      company: 'Art Studio',
+      salary: 35,
+      requirements: { age: 18, education: 'High School' },
+      description: 'Create visual art and designs'
+    },
+    {
+      id: 'musician',
+      title: 'Musician',
+      company: 'Record Label',
+      salary: 28,
+      requirements: { age: 16, education: 'None' },
+      description: 'Perform and create music'
+    },
+    {
+      id: 'writer',
+      title: 'Writer',
+      company: 'Publishing House',
+      salary: 42,
+      requirements: { age: 20, education: 'Bachelor Degree' },
+      description: 'Create written content and stories'
     }
   ];
 

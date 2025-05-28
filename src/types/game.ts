@@ -1,12 +1,13 @@
 export interface FamilyMember {
   id: string;
   name: string;
-  relationship: 'father' | 'mother' | 'sibling' | 'child' | 'spouse' | 'grandparent';
+  relationship: 'father' | 'mother' | 'sibling' | 'child' | 'spouse' | 'grandparent' | 'friend' | 'coworker' | 'ex' | 'stepfather' | 'stepmother' | 'stepsibling' | 'stepchild' | 'grandchild' | 'lover';
   age: number;
   alive: boolean;
   health: number;
   relationshipQuality: number; // 0-100
   job?: string; // Optional job field for family members
+  salary?: number; // Optional salary field for family members
 }
 
 export interface ZodiacSign {

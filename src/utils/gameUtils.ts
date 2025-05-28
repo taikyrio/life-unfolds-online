@@ -18,6 +18,66 @@ const lastNames = [
   'Thomas', 'Taylor', 'Moore', 'Jackson', 'Martin', 'Lee', 'Perez', 'Thompson'
 ];
 
+// Comprehensive job categories with realistic salaries
+const jobCategories = {
+  entrylevel: [
+    { title: 'Fast Food Worker', salary: 22, minAge: 14, education: 'None' },
+    { title: 'Retail Associate', salary: 25, minAge: 16, education: 'None' },
+    { title: 'Janitor', salary: 28, minAge: 18, education: 'None' },
+    { title: 'Factory Worker', salary: 32, minAge: 18, education: 'High School' },
+    { title: 'Receptionist', salary: 30, minAge: 18, education: 'High School' }
+  ],
+  skilled: [
+    { title: 'Electrician', salary: 55, minAge: 20, education: 'Trade School' },
+    { title: 'Plumber', salary: 58, minAge: 20, education: 'Trade School' },
+    { title: 'Mechanic', salary: 45, minAge: 20, education: 'Trade School' },
+    { title: 'Paramedic', salary: 48, minAge: 21, education: 'Associate Degree' },
+    { title: 'Police Officer', salary: 52, minAge: 21, education: 'Associate Degree' }
+  ],
+  professional: [
+    { title: 'Teacher', salary: 48, minAge: 22, education: 'Bachelor Degree' },
+    { title: 'Nurse', salary: 65, minAge: 22, education: 'Bachelor Degree' },
+    { title: 'Accountant', salary: 58, minAge: 22, education: 'Bachelor Degree' },
+    { title: 'Engineer', salary: 75, minAge: 22, education: 'Bachelor Degree' },
+    { title: 'Social Worker', salary: 45, minAge: 22, education: 'Bachelor Degree' }
+  ],
+  corporate: [
+    { title: 'Marketing Manager', salary: 85, minAge: 25, education: 'Bachelor Degree' },
+    { title: 'Business Analyst', salary: 78, minAge: 24, education: 'Bachelor Degree' },
+    { title: 'IT Manager', salary: 95, minAge: 26, education: 'Bachelor Degree' },
+    { title: 'Sales Director', salary: 105, minAge: 28, education: 'Bachelor Degree' },
+    { title: 'Operations Manager', salary: 88, minAge: 27, education: 'Bachelor Degree' }
+  ],
+  highend: [
+    { title: 'Doctor', salary: 185, minAge: 26, education: 'Medical Degree' },
+    { title: 'Lawyer', salary: 125, minAge: 25, education: 'Law Degree' },
+    { title: 'Investment Banker', salary: 145, minAge: 24, education: 'MBA' },
+    { title: 'Software Architect', salary: 135, minAge: 28, education: 'Master Degree' },
+    { title: 'Surgeon', salary: 250, minAge: 30, education: 'Medical Degree' }
+  ],
+  creative: [
+    { title: 'Artist', salary: 35, minAge: 18, education: 'High School' },
+    { title: 'Musician', salary: 28, minAge: 16, education: 'None' },
+    { title: 'Writer', salary: 42, minAge: 20, education: 'Bachelor Degree' },
+    { title: 'Actor', salary: 45, minAge: 18, education: 'None' },
+    { title: 'Photographer', salary: 38, minAge: 20, education: 'Associate Degree' }
+  ]
+};
+
+const getRandomJob = (age: number, education: string = 'None'): { title: string; salary: number } => {
+  const allJobs = Object.values(jobCategories).flat();
+  const eligibleJobs = allJobs.filter(job => 
+    age >= job.minAge && 
+    (job.education === 'None' || education.includes(job.education.split(' ')[0]))
+  );
+  
+  if (eligibleJobs.length === 0) {
+    return { title: 'Unemployed', salary: 0 };
+  }
+  
+  return eligibleJobs[Math.floor(Math.random() * eligibleJobs.length)];
+};
+
 export const generateRandomName = (): string => {
   const firstName = firstNames[Math.floor(Math.random() * firstNames.length)];
   const lastName = lastNames[Math.floor(Math.random() * lastNames.length)];
@@ -42,16 +102,239 @@ export const generateFamilyMember = (relationship: string, baseAge: number): Fam
       age = baseAge;
   }
 
+  const finalAge = Math.max(1, age);
+  let job: string | undefined = undefined;
+  let salary = 0;
+
+  // Assign jobs based on age and relationship
+  if (finalAge >= 16 && finalAge <= 70 && Math.random() > 0.2) {
+    let education = 'None';
+    if (finalAge >= 18 && Math.random() > 0.3) education = 'High School';
+    if (finalAge >= 22 && Math.random() > 0.5) education = 'Bachelor Degree';
+    if (finalAge >= 25 && Math.random() > 0.8) education = 'Master Degree';
+    
+    const jobInfo = getRandomJob(finalAge, education);
+    job = jobInfo.title;
+    salary = jobInfo.salary;
+  }
+
   return {
     id: Math.random().toString(36).substr(2, 9),
     name: generateRandomName(),
     relationship: relationship as any,
-    age: Math.max(1, age),
+    age: finalAge,
     alive: Math.random() > (relationship === 'grandparent' ? 0.3 : 0.1),
     health: Math.floor(Math.random() * 40) + 60,
-    relationshipQuality: Math.floor(Math.random() * 30) + 70
+    relationshipQuality: Math.floor(Math.random() * 30) + 70,
+    job,
+    salary
   };
+}
+
+export const generateNewRelationships = (character: Character): FamilyMember[] => {
+  const newRelationships: FamilyMember[] = [];
+  
+  // Generate new friends based on age and activities
+  if (character.age >= 5 && Math.random() > 0.7) {
+    const friendAge = character.age + Math.floor(Math.random() * 6) - 3; // ±3 years
+    const finalAge = Math.max(1, friendAge);
+    let job: string | undefined = undefined;
+    let salary = 0;
+
+    // Friends can have jobs too
+    if (finalAge >= 16 && Math.random() > 0.3) {
+      const jobInfo = getRandomJob(finalAge, finalAge >= 22 ? 'Bachelor Degree' : 'High School');
+      job = jobInfo.title;
+      salary = jobInfo.salary;
+    }
+
+    newRelationships.push({
+      id: Math.random().toString(36).substr(2, 9),
+      name: generateRandomName(),
+      relationship: 'friend' as any,
+      age: finalAge,
+      alive: true,
+      health: Math.floor(Math.random() * 30) + 70,
+      relationshipQuality: Math.floor(Math.random() * 40) + 60,
+      job,
+      salary
+    });
+  }
+  
+  // Generate coworkers when getting a job
+  if (character.job && character.age >= 16 && Math.random() > 0.8) {
+    const coworkerAge = character.age + Math.floor(Math.random() * 20) - 10; // ±10 years
+    const finalAge = Math.max(18, coworkerAge);
+    
+    newRelationships.push({
+      id: Math.random().toString(36).substr(2, 9),
+      name: generateRandomName(),
+      relationship: 'coworker' as any,
+      age: finalAge,
+      alive: true,
+      health: Math.floor(Math.random() * 30) + 70,
+      relationshipQuality: Math.floor(Math.random() * 30) + 50,
+      job: character.job,
+      salary: character.salary + Math.floor(Math.random() * 20) - 10 // Similar salary range
+    });
+  }
+  
+  return newRelationships;
 };
+
+// Function to find love/dating
+export const findLove = (character: Character): { success: boolean; partner?: FamilyMember; message: string } => {
+  if (character.relationshipStatus !== 'single') {
+    return { success: false, message: 'You are already in a relationship!' };
+  }
+
+  const ageRange = character.age >= 18 ? 10 : 3; // Wider range for adults
+  const partnerAge = character.age + Math.floor(Math.random() * ageRange * 2) - ageRange;
+  const finalAge = Math.max(character.age >= 18 ? 18 : 16, partnerAge);
+  
+  // Success depends on looks, relationships stats, and luck
+  const successChance = (character.looks + character.relationships + character.happiness) / 300 * 0.7 + 0.3;
+  
+  if (Math.random() < successChance) {
+    let job: string | undefined = undefined;
+    let salary = 0;
+
+    // Potential partners can have jobs
+    if (finalAge >= 16 && Math.random() > 0.2) {
+      const jobInfo = getRandomJob(finalAge, finalAge >= 22 ? 'Bachelor Degree' : 'High School');
+      job = jobInfo.title;
+      salary = jobInfo.salary;
+    }
+
+    const partner: FamilyMember = {
+      id: Math.random().toString(36).substr(2, 9),
+      name: generateRandomName(),
+      relationship: 'lover' as any,
+      age: finalAge,
+      alive: true,
+      health: Math.floor(Math.random() * 30) + 70,
+      relationshipQuality: Math.floor(Math.random() * 30) + 70,
+      job,
+      salary
+    };
+    
+    return { 
+      success: true, 
+      partner, 
+      message: `You met ${partner.name} and hit it off! ${partner.job ? `They work as a ${partner.job}.` : 'They\'re currently unemployed.'}` 
+    };
+  } else {
+    const failureMessages = [
+      'You went out but didn\'t meet anyone special.',
+      'You had some nice conversations but no romantic connections.',
+      'You spent the evening alone but enjoyed yourself.',
+      'You met some people but didn\'t feel a spark with anyone.',
+      'You tried online dating but didn\'t find a good match.'
+    ];
+    return { 
+      success: false, 
+      message: failureMessages[Math.floor(Math.random() * failureMessages.length)] 
+    };
+  }
+};
+
+export const ageFamilyMembers = (familyMembers: FamilyMember[]): FamilyMember[] => {
+  const agedMembers = familyMembers.map(member => {
+    if (!member.alive) return member;
+
+    const newAge = member.age + 1;
+    let newHealth = member.health;
+    let newRelationshipQuality = member.relationshipQuality;
+    let isAlive = member.alive;
+    let newJob = member.job;
+    let newSalary = member.salary || 0;
+
+    // Health deterioration with age
+    if (newAge > 80) {
+      newHealth = Math.max(0, newHealth - Math.floor(Math.random() * 8) - 2);
+    } else if (newAge > 60) {
+      newHealth = Math.max(0, newHealth - Math.floor(Math.random() * 5) - 1);
+    } else if (newAge > 40) {
+      newHealth = Math.max(0, newHealth - Math.floor(Math.random() * 3));
+    } else if (newAge < 25) {
+      // Young people can improve health
+      newHealth = Math.min(100, newHealth + Math.floor(Math.random() * 2));
+    }
+
+    // Relationship quality naturally decays over time (family relationships are more stable)
+    const isFamily = ['father', 'mother', 'sibling', 'grandparent', 'child'].includes(member.relationship);
+    const relationshipDecay = isFamily ? 
+      Math.floor(Math.random() * 2) + 1 : 
+      Math.floor(Math.random() * 4) + 1;
+    newRelationshipQuality = Math.max(0, newRelationshipQuality - relationshipDecay);
+
+    // Career progression and job changes
+    if (newAge === 16 && !newJob && Math.random() > 0.6) {
+      // First job for teenagers
+      const jobInfo = getRandomJob(newAge, 'None');
+      newJob = jobInfo.title;
+      newSalary = jobInfo.salary;
+    } else if (newAge === 18 && (!newJob || newJob === 'Fast Food Worker') && Math.random() > 0.4) {
+      // Better job after high school
+      const jobInfo = getRandomJob(newAge, 'High School');
+      newJob = jobInfo.title;
+      newSalary = jobInfo.salary;
+    } else if (newAge === 22 && Math.random() > 0.3) {
+      // College graduate jobs
+      const jobInfo = getRandomJob(newAge, 'Bachelor Degree');
+      newJob = jobInfo.title;
+      newSalary = jobInfo.salary;
+    } else if (newJob && newAge < 65 && Math.random() > 0.85) {
+      // Random job promotion/change
+      newSalary = Math.min(300, newSalary + Math.floor(Math.random() * 15) + 5);
+    } else if (newAge >= 65 && newJob && Math.random() > 0.6) {
+      // Retirement
+      newJob = undefined;
+      newSalary = 0;
+    }
+
+    // Death probability based on age and health
+    let deathProbability = 0;
+    if (newAge > 90) {
+      deathProbability = 0.25 + (newAge - 90) * 0.05;
+    } else if (newAge > 80) {
+      deathProbability = 0.15 + (newAge - 80) * 0.02;
+    } else if (newAge > 70) {
+      deathProbability = 0.05 + (newAge - 70) * 0.01;
+    } else if (newAge > 60) {
+      deathProbability = 0.02;
+    } else if (newAge < 5) {
+      deathProbability = 0.01; // Child mortality
+    }
+
+    // Health affects death probability
+    if (newHealth < 10) {
+      deathProbability += 0.2;
+    } else if (newHealth < 20) {
+      deathProbability += 0.1;
+    } else if (newHealth < 50) {
+      deathProbability += 0.05;
+    }
+
+    if (Math.random() < deathProbability) {
+      isAlive = false;
+      newJob = undefined;
+      newSalary = 0;
+    }
+
+    return {
+      ...member,
+      age: newAge,
+      health: newHealth,
+      relationshipQuality: newRelationshipQuality,
+      alive: isAlive,
+      job: newJob,
+      salary: newSalary
+    };
+  });
+
+  return agedMembers;
+};;
 
 export const generateRandomStats = (): Omit<Character, 'name' | 'age' | 'year'> => {
   const nationalityIndex = Math.floor(Math.random() * nationalities.length);
