@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { 
@@ -31,7 +30,7 @@ export const BottomNavigation: React.FC<BottomNavigationProps> = ({
   ];
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-2">
+    <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-2 safe-area-pb z-50">
       <div className="flex justify-around items-center max-w-md mx-auto">
         {tabs.map((tab) => {
           const Icon = tab.icon;
@@ -39,13 +38,13 @@ export const BottomNavigation: React.FC<BottomNavigationProps> = ({
             <button
               key={tab.id}
               onClick={() => onTabChange(tab.id)}
-              className={`flex flex-col items-center space-y-1 p-2 rounded-lg transition-colors ${
+              className={`flex flex-col items-center space-y-1 p-3 rounded-lg transition-colors touch-feedback ${
                 activeTab === tab.id
                   ? 'bg-primary text-white'
                   : 'text-gray-600 hover:bg-gray-100'
               }`}
             >
-              <Icon size={20} />
+              <Icon size={24} />
               <span className="text-xs font-medium">{tab.label}</span>
             </button>
           );
@@ -55,7 +54,7 @@ export const BottomNavigation: React.FC<BottomNavigationProps> = ({
       <div className="flex justify-center mt-3 pb-2">
         <Button
           onClick={onAgeUp}
-          className="bg-red-500 hover:bg-red-600 text-white px-8 py-3 rounded-full font-bold text-lg shadow-lg"
+          className="bg-red-500 hover:bg-red-600 text-white px-8 py-4 rounded-full font-bold text-lg shadow-lg touch-feedback"
         >
           Age +
         </Button>
