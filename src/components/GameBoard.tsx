@@ -33,6 +33,10 @@ import { EducationTab } from './EducationTab';
 import { AssetsTab } from './AssetsTab';
 import { GameOverScreen } from './GameOverScreen';
 import { GameSettings } from './GameSettings';
+import { ActivitiesMenu } from './menus/ActivitiesMenu';
+import { RelationshipsMenu } from './menus/RelationshipsMenu';
+import { AssetsMenu } from './menus/AssetsMenu';
+import { CharacterStatsBar } from './stats/CharacterStatsBar';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Settings } from 'lucide-react';
@@ -43,6 +47,9 @@ import { EventCard } from './EventCard';
 const GameBoard: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'life' | 'activities' | 'careers' | 'relationships' | 'education' | 'assets'>('life');
   const [showSettings, setShowSettings] = useState(false);
+  const [showActivitiesMenu, setShowActivitiesMenu] = useState(false);
+  const [showRelationshipsMenu, setShowRelationshipsMenu] = useState(false);
+  const [showAssetsMenu, setShowAssetsMenu] = useState(false);
   const [gameState, setGameState] = useState<GameState>({
     character: {
       name: '',
@@ -60,7 +67,7 @@ const GameBoard: React.FC = () => {
       ...generateRandomStats()
     },
     currentEvent: null,
-    gameStarted: true, // Start game immediately
+    gameStarted: true,
     gameOver: false,
     eventHistory: [],
     achievements: [],
@@ -1062,12 +1069,46 @@ const GameBoard: React.FC = () => {
           </Card>
         )}
 
-        {renderTabContent()}
+        {/* Main content - only show Life tab now */}
+        <LifeTab
+          character={gameState.character}
+          currentEvent={gameState.currentEvent}
+          onAgeUp={ageUp}
+          onChoice={handleChoice}
+          eventHistory={gameState.eventHistory}
+        />
+
+        {/* Character Stats Bar - Below content, above navigation */}
+        <CharacterStatsBar character={gameState.character} />
 
         <BottomNavigation 
           activeTab={activeTab} 
           onTabChange={setActiveTab}
           onAgeUp={ageUp}
+          character={gameState.character}
+          onShowActivityMenu={() => setShowActivitiesMenu(true)}
+          onShowRelationshipMenu={() => setShowRelationshipsMenu(true)}
+          onShowAssetsMenu={() => setShowAssetsMenu(true)}
+        />
+
+        {/* Popup Menus */}
+        <ActivitiesMenu
+          isOpen={showActivitiesMenu}
+          onClose={() => setShowActivitiesMenu(false)}
+          character={gameState.character}
+          onActivity={handleActivity}
+        />
+
+        <RelationshipsMenu
+          isOpen={showRelationshipsMenu}
+          onClose={() => setShowRelationshipsMenu(false)}
+          character={gameState.character}
+          onActivity={handleActivity}
+        />
+
+        <AssetsMenu
+          isOpen={showAssetsMenu}
+          onClose={() => setShowAssetsMenu(false)}
           character={gameState.character}
         />
 

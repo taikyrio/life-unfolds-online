@@ -111,13 +111,13 @@ export const generateRandomName = (): string => {
   return `${firstName} ${lastName}`;
 };
 
-const generateFamilyMembers = (characterLastName: string): FamilyMember[] => {
+export const generateInitialFamily = (): FamilyMember[] => {
   const familyMembers: FamilyMember[] = [];
   
   // Generate father
   const father: FamilyMember = {
     id: Math.random().toString(36).substring(2, 15),
-    name: `${firstNames[Math.floor(Math.random() * firstNames.length)]} ${characterLastName}`,
+    name: generateRandomName(),
     relationship: 'father',
     age: Math.floor(Math.random() * 15) + 25, // 25-40 years old
     alive: true,
@@ -146,7 +146,7 @@ const generateFamilyMembers = (characterLastName: string): FamilyMember[] => {
   if (Math.random() < 0.3) {
     const sibling: FamilyMember = {
       id: Math.random().toString(36).substring(2, 15),
-      name: `${firstNames[Math.floor(Math.random() * firstNames.length)]} ${characterLastName}`,
+      name: generateRandomName(),
       relationship: 'sibling',
       age: Math.floor(Math.random() * 10) + 1, // 1-10 years old
       alive: true,
@@ -256,7 +256,7 @@ export const createCharacter = (): Character => {
   const lastName = name.split(' ')[1];
   
   // Generate family members at birth
-  const familyMembers = generateFamilyMembers(lastName);
+  const familyMembers = generateInitialFamily();
   
   return {
     name,
