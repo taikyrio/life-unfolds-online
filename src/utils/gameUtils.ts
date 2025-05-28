@@ -1,6 +1,7 @@
 import { Character, FamilyMember, LifeEvent, ZodiacSign } from '../types/game';
 import { lifeEvents } from '../data/lifeEvents';
 import { educationLevels, shouldAutoEnrollInSchool } from './educationUtils';
+import { processYearlyFinances } from '../systems/moneySystem';
 
 const firstNames = [
   'Alex', 'Jordan', 'Taylor', 'Morgan', 'Casey', 'Riley', 'Cameron', 'Quinn', 'Sage', 'River',
@@ -429,7 +430,7 @@ export const applyForJob = (character: Character, jobId: string): Character => {
 
 // Example function demonstrating auto-enrollment, education progression, relationship aging.
 export const ageCharacter = (character: Character): Character => {
-  const updatedCharacter = { ...character };
+  let updatedCharacter = { ...character };
 
   updatedCharacter.age += 1;
 
@@ -438,6 +439,9 @@ export const ageCharacter = (character: Character): Character => {
     ...rel,
     age: rel.age + 1
   }));
+
+  // Process yearly finances - fix the money system
+  updatedCharacter = processYearlyFinances(updatedCharacter);
 
   // Handle education progression
   if (updatedCharacter.currentEducation) {
