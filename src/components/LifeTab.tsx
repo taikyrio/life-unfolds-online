@@ -1,15 +1,25 @@
+
 import React from 'react';
-import { Character } from '../types/game';
+import { Character, LifeEvent } from '../types/game';
 import { CharacterStats } from './CharacterStats';
+import { EventCard } from './EventCard';
 import { MapPin, Calendar, User, Users } from 'lucide-react';
 
 interface LifeTabProps {
   character: Character;
   eventHistory: string[];
+  currentEvent?: LifeEvent | null;
   onAgeUp: () => void;
+  onChoice?: (choiceId: string) => void;
 }
 
-export const LifeTab: React.FC<LifeTabProps> = ({ character, eventHistory, onAgeUp }) => {
+export const LifeTab: React.FC<LifeTabProps> = ({ 
+  character, 
+  eventHistory, 
+  currentEvent, 
+  onAgeUp, 
+  onChoice 
+}) => {
   const getAgeDescription = () => {
     if (character.age === 0) return "I was born a male in Auckland, New Zealand. I was conceived on the beach in Hawaii.";
     if (character.age < 5) return `I am ${character.age} years old and learning about the world around me.`;
@@ -51,6 +61,13 @@ export const LifeTab: React.FC<LifeTabProps> = ({ character, eventHistory, onAge
             </button>
           </div>
         </div>
+
+        {/* Event Card - Show if there's a current event */}
+        {currentEvent && onChoice && (
+          <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
+            <EventCard event={currentEvent} onChoice={onChoice} />
+          </div>
+        )}
 
         {/* Age and Bio Card */}
         <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">

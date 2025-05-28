@@ -503,7 +503,7 @@ const GameBoard: React.FC = () => {
         {renderTabContent()}
       </div>
 
-      <BottomNavigation activeTab={activeTab} onTabChange={setActiveTab} onAgeUp={ageUp} />
+      <BottomNavigation activeTab={activeTab} onTabChange={setActiveTab} />
       
       {/* Event Modal Overlay */}
       {gameState.currentEvent && (
