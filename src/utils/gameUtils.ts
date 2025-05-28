@@ -188,20 +188,28 @@ export const findLove = (character: Character): { success: boolean; partner?: Fa
     return { success: false, message: 'You are already in a relationship!' };
   }
 
-  const ageRange = character.age >= 18 ? 10 : 3; // Wider range for adults
+  const ageRange = character.age >= 18 ? 8 : 3; // Realistic age range
   const partnerAge = character.age + Math.floor(Math.random() * ageRange * 2) - ageRange;
   const finalAge = Math.max(character.age >= 18 ? 18 : 16, partnerAge);
   
-  // Success depends on looks, relationships stats, and luck
-  const successChance = (character.looks + character.relationships + character.happiness) / 300 * 0.7 + 0.3;
+  // Success depends on looks, relationships stats, happiness, and luck
+  const attractiveness = character.looks / 100;
+  const social = character.relationships / 100;
+  const charm = character.happiness / 100;
+  const successChance = (attractiveness * 0.4 + social * 0.3 + charm * 0.2 + Math.random() * 0.1);
   
-  if (Math.random() < successChance) {
+  if (successChance > 0.6) {
     let job: string | undefined = undefined;
     let salary = 0;
 
-    // Potential partners can have jobs
+    // Potential partners can have jobs based on age and education
     if (finalAge >= 16 && Math.random() > 0.2) {
-      const jobInfo = getRandomJob(finalAge, finalAge >= 22 ? 'Bachelor Degree' : 'High School');
+      let education = 'None';
+      if (finalAge >= 18) education = 'High School';
+      if (finalAge >= 22 && Math.random() > 0.4) education = 'Bachelor Degree';
+      if (finalAge >= 25 && Math.random() > 0.7) education = 'Master Degree';
+      
+      const jobInfo = getRandomJob(finalAge, education);
       job = jobInfo.title;
       salary = jobInfo.salary;
     }
@@ -221,21 +229,191 @@ export const findLove = (character: Character): { success: boolean; partner?: Fa
     return { 
       success: true, 
       partner, 
-      message: `You met ${partner.name} and hit it off! ${partner.job ? `They work as a ${partner.job}.` : 'They\'re currently unemployed.'}` 
+      message: `💕 You met ${partner.name} (${finalAge}) and there's definitely chemistry! ${partner.job ? `They work as a ${partner.job} earning $${partner.salary}k/year.` : 'They\'re currently looking for work.'} You're now dating!` 
     };
   } else {
     const failureMessages = [
-      'You went out but didn\'t meet anyone special.',
-      'You had some nice conversations but no romantic connections.',
-      'You spent the evening alone but enjoyed yourself.',
-      'You met some people but didn\'t feel a spark with anyone.',
-      'You tried online dating but didn\'t find a good match.'
+      'You went on a few dates but didn\'t feel a connection.',
+      'You matched with someone online but they ghosted you.',
+      'You met someone interesting but they\'re not ready for a relationship.',
+      'You had a nice conversation with someone at a coffee shop, but no spark.',
+      'Your friend tried to set you up, but it was awkward.',
+      'You went to a singles event but didn\'t meet anyone compatible.'
     ];
     return { 
       success: false, 
       message: failureMessages[Math.floor(Math.random() * failureMessages.length)] 
     };
   }
+};
+
+// Function for intimate activities
+export const intimateActivity = (character: Character, useProtection: boolean): { success: boolean; pregnant?: boolean; message: string; partner?: FamilyMember } => {
+  const partner = character.familyMembers.find(m => m.relationship === 'lover' && m.alive);
+  if (!partner) {
+    return { success: false, message: 'You need to be in a relationship first!' };
+  }
+
+  // Relationship quality affects experience
+  const relationshipBonus = Math.floor(partner.relationshipQuality / 10);
+  const happinessGain = 15 + relationshipBonus;
+  const relationshipGain = 10 + Math.floor(relationshipBonus / 2);
+
+  // Pregnancy chances
+  const basePregnancyChance = useProtection ? 0.2 : 0.6;
+  const isPregnant = Math.random() < basePregnancyChance;
+
+  const messages = [
+    `You and ${partner.name} shared an intimate moment together.`,
+    `You had a romantic evening with ${partner.name}.`,
+    `You and ${partner.name} expressed your love for each other.`
+  ];
+
+  let message = messages[Math.floor(Math.random() * messages.length)];
+  if (isPregnant) {
+    message += ` 🤰 ${partner.name} became pregnant!`;
+  }
+
+  return {
+    success: true,
+    pregnant: isPregnant,
+    message,
+    partner: {
+      ...partner,
+      relationshipQuality: Math.min(100, partner.relationshipQuality + relationshipGain)
+    }
+  };
+};
+
+// Function to propose marriage
+export const proposeMariage = (character: Character): { success: boolean; message: string; accepted?: boolean } => {
+  const partner = character.familyMembers.find(m => m.relationship === 'lover' && m.alive);
+  if (!partner) {
+    return { success: false, message: 'You need to be dating someone first!' };
+  }
+
+  if (character.relationshipStatus !== 'dating') {
+    return { success: false, message: 'You need to be in a dating relationship!' };
+  }
+
+  // Acceptance depends on relationship quality, age, and time together
+  const relationshipQuality = partner.relationshipQuality;
+  const ageFactors = character.age >= 25 ? 1.2 : character.age >= 21 ? 1.0 : 0.8;
+  const acceptanceChance = (relationshipQuality / 100) * ageFactors;
+
+  const accepted = Math.random() < acceptanceChance;
+
+  if (accepted) {
+    return {
+      success: true,
+      accepted: true,
+      message: `💍 ${partner.name} said YES! You're now engaged! Start planning your wedding!`
+    };
+  } else {
+    return {
+      success: true,
+      accepted: false,
+      message: `💔 ${partner.name} said they need more time. Your relationship quality decreased.`
+    };
+  }
+};
+
+// Function to get married
+export const getMarried = (character: Character): { success: boolean; message: string; weddingCost?: number } => {
+  if (character.relationshipStatus !== 'engaged') {
+    return { success: false, message: 'You need to be engaged first!' };
+  }
+
+  const partner = character.familyMembers.find(m => m.relationship === 'lover' && m.alive);
+  if (!partner) {
+    return { success: false, message: 'Your partner is missing!' };
+  }
+
+  // Wedding costs based on wealth
+  const weddingCost = Math.floor(character.wealth * 0.1) + 100; // 10% of wealth + base cost
+
+  if (character.wealth < weddingCost) {
+    return { success: false, message: `You need at least $${weddingCost}k for a wedding!` };
+  }
+
+  return {
+    success: true,
+    message: `🎉 You and ${partner.name} got married! It was a beautiful ceremony.`,
+    weddingCost
+  };
+};
+
+// Function to have a baby
+export const haveBaby = (character: Character, babyName: string): { success: boolean; baby?: FamilyMember; message: string } => {
+  if (!babyName || babyName.trim().length === 0) {
+    return { success: false, message: 'Please enter a name for your baby!' };
+  }
+
+  const partner = character.familyMembers.find(m => 
+    (m.relationship === 'lover' || m.relationship === 'spouse') && m.alive
+  );
+
+  if (!partner) {
+    return { success: false, message: 'You need a partner to have a baby!' };
+  }
+
+  // Create baby
+  const baby: FamilyMember = {
+    id: Math.random().toString(36).substr(2, 9),
+    name: babyName.trim(),
+    relationship: 'child' as any,
+    age: 0,
+    alive: true,
+    health: Math.floor(Math.random() * 20) + 80, // Babies are generally healthy
+    relationshipQuality: 100 // New babies have max relationship
+  };
+
+  return {
+    success: true,
+    baby,
+    message: `🍼 ${babyName} was born! You and ${partner.name} are now proud parents!`
+  };
+};
+
+// Function to give gifts
+export const giveGift = (character: Character, partnerId: string, giftType: 'flowers' | 'jewelry' | 'expensive'): { success: boolean; message: string; cost: number; relationshipChange: number } => {
+  const partner = character.familyMembers.find(m => m.id === partnerId);
+  if (!partner) {
+    return { success: false, message: 'Partner not found!', cost: 0, relationshipChange: 0 };
+  }
+
+  let cost = 0;
+  let relationshipChange = 0;
+  let giftName = '';
+
+  switch (giftType) {
+    case 'flowers':
+      cost = 25;
+      relationshipChange = 5;
+      giftName = 'beautiful flowers';
+      break;
+    case 'jewelry':
+      cost = 150;
+      relationshipChange = 15;
+      giftName = 'a lovely piece of jewelry';
+      break;
+    case 'expensive':
+      cost = 500;
+      relationshipChange = 25;
+      giftName = 'an expensive luxury gift';
+      break;
+  }
+
+  if (character.wealth < cost) {
+    return { success: false, message: `You can't afford ${giftName} ($${cost}k)!`, cost: 0, relationshipChange: 0 };
+  }
+
+  return {
+    success: true,
+    message: `💝 You gave ${partner.name} ${giftName}! They loved it!`,
+    cost,
+    relationshipChange
+  };
 };
 
 export const ageFamilyMembers = (familyMembers: FamilyMember[]): FamilyMember[] => {
@@ -245,7 +423,7 @@ export const ageFamilyMembers = (familyMembers: FamilyMember[]): FamilyMember[] 
     const newAge = member.age + 1;
     let newHealth = member.health;
     let newRelationshipQuality = member.relationshipQuality;
-    let isAlive: boolean = member.alive;
+    let isAlive = member.alive;
     let newJob = member.job;
     let newSalary = member.salary || 0;
 

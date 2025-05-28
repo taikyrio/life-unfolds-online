@@ -303,20 +303,82 @@ export const RelationshipsTab: React.FC<RelationshipsTabProps> = ({ character })
         ))}
 
         {/* Partners Section */}
-        {character.relationshipStatus !== 'single' && character.partnerName && (
+        {character.relationshipStatus !== 'single' && (
           <div className="space-y-2">
-            <h3 className="text-lg font-semibold text-gray-700 px-2">Partner</h3>
-            <Card className="shadow-sm">
-              <CardContent className="p-4">
-                <div className="flex items-center space-x-3">
-                  <span className="text-2xl">💕</span>
-                  <div>
-                    <h4 className="font-semibold text-gray-800">{character.partnerName}</h4>
-                    <p className="text-sm text-gray-600 capitalize">{character.relationshipStatus}</p>
+            <h3 className="text-lg font-semibold text-gray-700 px-2">
+              {character.relationshipStatus === 'married' ? 'Spouse' : 'Partner'}
+            </h3>
+            {character.familyMembers?.filter(m => 
+              (m.relationship === 'lover' || m.relationship === 'spouse') && m.alive
+            ).map((partner) => (
+              <Card key={partner.id} className="shadow-sm">
+                <CardContent className="p-4">
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center space-x-3">
+                      <span className="text-2xl">
+                        {character.relationshipStatus === 'married' ? '💑' : '💕'}
+                      </span>
+                      <div>
+                        <h4 className="font-semibold text-gray-800">{partner.name}</h4>
+                        <p className="text-sm text-gray-600 capitalize">
+                          {character.relationshipStatus} • Age {partner.age}
+                        </p>
+                        {partner.job && (
+                          <p className="text-xs text-gray-500">
+                            {partner.job}
+                            {partner.salary ? ` • $${partner.salary}k/year` : ''}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-xs text-gray-500 mb-1">
+                        Health: {partner.health}%
+                      </div>
+                      <div className={`text-sm font-medium px-2 py-1 rounded text-white ${getRelationshipColor(partner.relationshipQuality)}`}>
+                        {partner.relationshipQuality}%
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </CardContent>
-            </Card>
+
+                  {/* Relationship Bar */}
+                  <div className="mb-4">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-sm font-medium text-gray-700">
+                        {getRelationshipLevel(partner.relationshipQuality)}
+                      </span>
+                      <span className="text-xs text-gray-500">
+                        Relationship Quality
+                      </span>
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-2">
+                      <div 
+                        className={`h-2 rounded-full ${getRelationshipColor(partner.relationshipQuality)} transition-all duration-500`}
+                        style={{ width: `${partner.relationshipQuality}%` }}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Action Buttons */}
+                  <div className="grid grid-cols-2 gap-2">
+                    {relationshipActions.slice(0, 4).map((action) => (
+                      <Button
+                        key={action.id}
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleActionSelect(action, partner)}
+                        className={`${action.color} border text-xs py-2 h-auto hover:opacity-80 transition-opacity`}
+                      >
+                        <div className="flex items-center space-x-1">
+                          {action.icon}
+                          <span>{action.name}</span>
+                        </div>
+                      </Button>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
           </div>
         )}
 

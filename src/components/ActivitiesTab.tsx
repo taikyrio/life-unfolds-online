@@ -110,7 +110,8 @@ export const ActivitiesTab: React.FC<ActivitiesTabProps> = ({ character, onActiv
             { id: 'vacation', name: 'Take a Vacation', description: 'Relax and recharge (expensive)', available: character.age >= 18 && character.wealth >= 200, popularity: 5 },
             { id: 'volunteer', name: 'Volunteer Work', description: 'Help others and feel good about yourself', available: character.age >= 16, popularity: 3 },
             { id: 'hobby', name: 'Pursue a Hobby', description: 'Learn something new and interesting', available: character.age >= 16, popularity: 4 },
-            { id: 'dating_app', name: 'Use Dating App', description: 'Try to find romance online', available: character.age >= 18, popularity: 3 },
+            { id: 'find_love', name: 'Find Love', description: 'Look for someone special to date', available: character.age >= 16 && character.relationshipStatus === 'single', popularity: 4 },
+            { id: 'dating_app', name: 'Use Dating App', description: 'Try to find romance online', available: character.age >= 18 && character.relationshipStatus === 'single', popularity: 3 },
             { id: 'social_media', name: 'Social Media', description: 'Build your online presence', available: character.age >= 13, popularity: 4 },
           ]
         }
@@ -128,6 +129,43 @@ export const ActivitiesTab: React.FC<ActivitiesTabProps> = ({ character, onActiv
             { id: 'street_race', name: 'Street Racing', description: 'Fast cars and high stakes (very dangerous)', available: true, popularity: 2 },
             { id: 'shoplift', name: 'Shoplift', description: 'Steal small items (illegal!)', available: true, popularity: 1 },
             { id: 'bar_fight', name: 'Start Bar Fight', description: 'Get into trouble at a bar (very risky)', available: character.age >= 21, popularity: 1 },
+          ]
+        });
+      }
+
+      // Add relationship activities for people in relationships
+      if (character.relationshipStatus !== 'single') {
+        const partner = character.familyMembers.find(m => m.relationship === 'lover' && m.alive);
+        categories.push({
+          title: 'Relationship',
+          icon: Users,
+          color: 'bg-pink-500',
+          description: `Activities with your ${character.relationshipStatus === 'dating' ? 'partner' : character.relationshipStatus === 'engaged' ? 'fiancé' : 'spouse'}`,
+          activities: [
+            { id: 'date_night', name: 'Go on Date', description: 'Spend quality time together', available: true, popularity: 5 },
+            { id: 'give_gift_flowers', name: 'Give Flowers', description: 'Give beautiful flowers ($25k)', available: character.wealth >= 25, popularity: 4 },
+            { id: 'give_gift_jewelry', name: 'Give Jewelry', description: 'Give jewelry ($150k)', available: character.wealth >= 150, popularity: 5 },
+            { id: 'give_gift_expensive', name: 'Expensive Gift', description: 'Give luxury gift ($500k)', available: character.wealth >= 500, popularity: 5 },
+            { id: 'intimate_protected', name: 'Be Intimate (Protected)', description: '💕 Physical intimacy (20% pregnancy chance)', available: character.age >= 18, popularity: 5 },
+            { id: 'intimate_unprotected', name: 'Be Intimate (Unprotected)', description: '💕 Physical intimacy (60% pregnancy chance)', available: character.age >= 18, popularity: 4 },
+            { id: 'propose', name: 'Propose Marriage', description: 'Pop the question! 💍', available: character.relationshipStatus === 'dating' && character.age >= 18, popularity: 5 },
+            { id: 'plan_wedding', name: 'Plan Wedding', description: 'Get married! 💒', available: character.relationshipStatus === 'engaged', popularity: 5 },
+            { id: 'compliment_partner', name: 'Compliment Partner', description: 'Say something sweet', available: true, popularity: 4 },
+          ]
+        });
+      }
+
+      // Add pregnancy activities
+      if (character.isPregnant) {
+        categories.push({
+          title: 'Pregnancy',
+          icon: Users,
+          color: 'bg-yellow-500',
+          description: '🤰 Preparing for your baby',
+          activities: [
+            { id: 'prenatal_care', name: 'Prenatal Checkup', description: 'Visit the doctor for baby\'s health', available: character.wealth >= 50, popularity: 5 },
+            { id: 'baby_shopping', name: 'Buy Baby Items', description: 'Shop for baby supplies', available: character.wealth >= 100, popularity: 4 },
+            { id: 'parenting_class', name: 'Parenting Classes', description: 'Learn how to be a good parent', available: character.wealth >= 75, popularity: 3 },
           ]
         });
       }

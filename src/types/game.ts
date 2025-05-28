@@ -46,6 +46,8 @@ export interface Character {
   relationshipStatus: 'single' | 'dating' | 'engaged' | 'married' | 'divorced' | 'widowed';
   partnerName?: string;
   children: string[];
+  isPregnant?: boolean;
+  pregnancyMonths?: number;
   
   // Life Status
   criminalRecord: boolean;

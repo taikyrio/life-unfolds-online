@@ -92,6 +92,56 @@ const GameBoard: React.FC = () => {
       agingEffects
     );
 
+    // Handle pregnancy progression
+    if (updatedCharacter.isPregnant) {
+      const pregnancyMonths = (updatedCharacter.pregnancyMonths || 0) + 1;
+      
+      if (pregnancyMonths >= 9) {
+        // Time to give birth!
+        const babyName = prompt('👶 Your baby is being born! What would you like to name them?');
+        if (babyName && babyName.trim()) {
+          const { haveBaby } = require('../utils/gameUtils');
+          const birthResult = haveBaby(updatedCharacter, babyName);
+          
+          if (birthResult.success && birthResult.baby) {
+            updatedCharacter.familyMembers = [...updatedCharacter.familyMembers, birthResult.baby];
+            updatedCharacter.children = [...updatedCharacter.children, birthResult.baby.name];
+            updatedCharacter.isPregnant = false;
+            updatedCharacter.pregnancyMonths = 0;
+            
+            setGameState(prev => ({
+              ...prev,
+              character: updatedCharacter,
+              eventHistory: [birthResult.message, ...prev.eventHistory.slice(0, 9)]
+            }));
+            return;
+          }
+        } else {
+          // Default name if none provided
+          const defaultNames = ['Baby', 'Jordan', 'Alex', 'Casey', 'Riley'];
+          const defaultName = defaultNames[Math.floor(Math.random() * defaultNames.length)];
+          const { haveBaby } = require('../utils/gameUtils');
+          const birthResult = haveBaby(updatedCharacter, defaultName);
+          
+          if (birthResult.success && birthResult.baby) {
+            updatedCharacter.familyMembers = [...updatedCharacter.familyMembers, birthResult.baby];
+            updatedCharacter.children = [...updatedCharacter.children, birthResult.baby.name];
+            updatedCharacter.isPregnant = false;
+            updatedCharacter.pregnancyMonths = 0;
+            
+            setGameState(prev => ({
+              ...prev,
+              character: updatedCharacter,
+              eventHistory: [birthResult.message, ...prev.eventHistory.slice(0, 9)]
+            }));
+            return;
+          }
+        }
+      } else {
+        updatedCharacter.pregnancyMonths = pregnancyMonths;
+      }
+    }
+
     // Age all family members dynamically
     updatedCharacter.familyMembers = ageFamilyMembers(updatedCharacter.familyMembers);
     
@@ -115,7 +165,10 @@ const GameBoard: React.FC = () => {
     // Generate age-appropriate event using event tracker
     const newEvent = Math.random() > 0.15 ? getRandomEvent(updatedCharacter, gameState.eventTracker) : null;
 
-    const ageMessage = `${updatedCharacter.name} turned ${newAge}!`;
+    let ageMessage = `${updatedCharacter.name} turned ${newAge}!`;
+    if (updatedCharacter.isPregnant) {
+      ageMessage += ` 🤰 (${updatedCharacter.pregnancyMonths}/9 months pregnant)`;
+    }
 
     setGameState(prev => ({
       ...prev,
@@ -316,7 +369,9 @@ const GameBoard: React.FC = () => {
                 ...prev.character,
                 familyMembers: updatedFamilyMembers,
                 relationshipStatus: 'dating',
-                partnerName: loveResult.partner!.name
+                partnerName: loveResult.partner!.name,
+                happiness: Math.min(100, prev.character.happiness + 25),
+                relationships: Math.min(100, prev.character.relationships + 15)
               },
               eventHistory: [loveResult.message, ...prev.eventHistory.slice(0, 9)]
             }));
@@ -364,6 +419,154 @@ const GameBoard: React.FC = () => {
             effects = { criminalRecord: true, happiness: -25, relationships: -15 };
             message = 'You got caught shoplifting and now have a criminal record!';
           }
+          break;
+      }
+    }
+
+    // Relationship Activities
+    else if (activityType === 'relationship') {
+      const { intimateActivity, proposeMariage, getMarried, giveGift } = require('../utils/gameUtils');
+      
+      switch (activityId) {
+        case 'date_night':
+          effects = { happiness: 20, relationships: 15, wealth: -50 };
+          message = 'You had a wonderful date night together!';
+          break;
+        case 'give_gift_flowers':
+          const flowerResult = giveGift(gameState.character, 
+            gameState.character.familyMembers.find(m => m.relationship === 'lover')?.id || '', 
+            'flowers'
+          );
+          if (flowerResult.success) {
+            effects = { wealth: -flowerResult.cost, relationships: flowerResult.relationshipChange };
+            message = flowerResult.message;
+          } else {
+            effects = {};
+            message = flowerResult.message;
+          }
+          break;
+        case 'give_gift_jewelry':
+          const jewelryResult = giveGift(gameState.character, 
+            gameState.character.familyMembers.find(m => m.relationship === 'lover')?.id || '', 
+            'jewelry'
+          );
+          if (jewelryResult.success) {
+            effects = { wealth: -jewelryResult.cost, relationships: jewelryResult.relationshipChange };
+            message = jewelryResult.message;
+          } else {
+            effects = {};
+            message = jewelryResult.message;
+          }
+          break;
+        case 'give_gift_expensive':
+          const expensiveResult = giveGift(gameState.character, 
+            gameState.character.familyMembers.find(m => m.relationship === 'lover')?.id || '', 
+            'expensive'
+          );
+          if (expensiveResult.success) {
+            effects = { wealth: -expensiveResult.cost, relationships: expensiveResult.relationshipChange };
+            message = expensiveResult.message;
+          } else {
+            effects = {};
+            message = expensiveResult.message;
+          }
+          break;
+        case 'intimate_protected':
+          const protectedResult = intimateActivity(gameState.character, true);
+          if (protectedResult.success) {
+            effects = { happiness: 15, relationships: 10 };
+            message = protectedResult.message;
+            if (protectedResult.pregnant) {
+              effects.isPregnant = true;
+              effects.pregnancyMonths = 0;
+            }
+          } else {
+            effects = {};
+            message = protectedResult.message;
+          }
+          break;
+        case 'intimate_unprotected':
+          const unprotectedResult = intimateActivity(gameState.character, false);
+          if (unprotectedResult.success) {
+            effects = { happiness: 20, relationships: 15 };
+            message = unprotectedResult.message;
+            if (unprotectedResult.pregnant) {
+              effects.isPregnant = true;
+              effects.pregnancyMonths = 0;
+            }
+          } else {
+            effects = {};
+            message = unprotectedResult.message;
+          }
+          break;
+        case 'propose':
+          const proposalResult = proposeMariage(gameState.character);
+          if (proposalResult.success && proposalResult.accepted) {
+            effects = { relationshipStatus: 'engaged', happiness: 30, relationships: 25 };
+            message = proposalResult.message;
+          } else {
+            effects = { happiness: -15, relationships: -10 };
+            message = proposalResult.message;
+          }
+          break;
+        case 'plan_wedding':
+          const weddingResult = getMarried(gameState.character);
+          if (weddingResult.success) {
+            effects = { 
+              relationshipStatus: 'married', 
+              happiness: 40, 
+              relationships: 30,
+              wealth: -(weddingResult.weddingCost || 0)
+            };
+            message = weddingResult.message;
+            
+            // Update partner relationship type to spouse
+            setGameState(prev => {
+              const updatedFamilyMembers = prev.character.familyMembers.map(member => 
+                member.relationship === 'lover' ? { ...member, relationship: 'spouse' as any } : member
+              );
+              return {
+                ...prev,
+                character: {
+                  ...prev.character,
+                  familyMembers: updatedFamilyMembers
+                }
+              };
+            });
+          } else {
+            effects = {};
+            message = weddingResult.message;
+          }
+          break;
+        case 'compliment_partner':
+          const partner = gameState.character.familyMembers.find(m => 
+            (m.relationship === 'lover' || m.relationship === 'spouse') && m.alive
+          );
+          if (partner) {
+            effects = { happiness: 10, relationships: 8 };
+            message = `You complimented ${partner.name} and made them smile!`;
+          } else {
+            effects = {};
+            message = 'You need a partner to compliment!';
+          }
+          break;
+      }
+    }
+
+    // Pregnancy Activities
+    else if (activityType === 'pregnancy') {
+      switch (activityId) {
+        case 'prenatal_care':
+          effects = { health: 15, wealth: -50, happiness: 10 };
+          message = 'You had a prenatal checkup. Everything looks good!';
+          break;
+        case 'baby_shopping':
+          effects = { happiness: 15, wealth: -100 };
+          message = 'You bought everything needed for the baby!';
+          break;
+        case 'parenting_class':
+          effects = { smarts: 10, happiness: 5, wealth: -75 };
+          message = 'You learned valuable parenting skills!';
           break;
       }
     }
