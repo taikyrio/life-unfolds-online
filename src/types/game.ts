@@ -1,4 +1,3 @@
-
 export interface FamilyMember {
   id: string;
   name: string;
@@ -7,6 +6,7 @@ export interface FamilyMember {
   alive: boolean;
   health: number;
   relationshipQuality: number; // 0-100
+  job?: string; // Optional job field for family members
 }
 
 export interface ZodiacSign {
