@@ -17,10 +17,7 @@ interface ActivityOption {
   description: string;
   emoji: string;
   requirements?: {
-    minAge?: number;
-    maxAge?: number;
-    minWealth?: number;
-    education?: string;
+    [key: string]: string | number;
   };
   effects: {
     [key: string]: number;
