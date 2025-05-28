@@ -1,14 +1,10 @@
 
 import React from 'react';
 import { AlertTriangle } from 'lucide-react';
+import { Character } from '../../types/game';
 
 interface CharacterStatsBarProps {
-  character: {
-    happiness: number;
-    health: number;
-    smarts: number;
-    looks: number;
-  };
+  character: Character;
 }
 
 export const CharacterStatsBar: React.FC<CharacterStatsBarProps> = ({ character }) => {
@@ -17,57 +13,52 @@ export const CharacterStatsBar: React.FC<CharacterStatsBarProps> = ({ character 
       name: 'Happiness', 
       value: character.happiness, 
       emoji: '😊',
-      color: '#10B981', // emerald-500
-      bgColor: '#D1FAE5' // emerald-100
+      color: '#4CAF50'
     },
     { 
       name: 'Health', 
       value: character.health, 
       emoji: '❤️',
-      color: '#EF4444', // red-500
-      bgColor: '#FEE2E2' // red-100
+      color: '#F44336'
     },
     { 
       name: 'Smarts', 
       value: character.smarts, 
       emoji: '🧠',
-      color: '#8B5CF6', // violet-500
-      bgColor: '#EDE9FE' // violet-100
+      color: '#9C27B0'
     },
     { 
       name: 'Looks', 
       value: character.looks, 
       emoji: '💎',
-      color: '#EC4899', // pink-500
-      bgColor: '#FCE7F3' // pink-100
+      color: character.looks < 20 ? '#8B4513' : '#E91E63'
     },
   ];
 
   return (
-    <div className="bg-white border-b border-gray-200 px-4 py-3">
-      <div className="grid grid-cols-2 gap-3">
+    <div className="bg-white p-4 border-t border-gray-200">
+      <div className="space-y-3">
         {stats.map((stat) => (
-          <div key={stat.name} className="flex items-center space-x-2">
-            <div className="flex items-center space-x-1">
+          <div key={stat.name} className="flex items-center space-x-3">
+            <div className="flex items-center space-x-2 w-24">
               {stat.value < 20 && stat.name !== 'Happiness' && (
-                <AlertTriangle size={12} className="text-red-500" />
+                <AlertTriangle size={14} className="text-red-500" />
               )}
-              <span className="text-sm">{stat.emoji}</span>
+              <span className="text-lg">{stat.emoji}</span>
+              <span className="text-sm font-medium text-gray-700 flex-1">{stat.name}</span>
             </div>
             
             <div className="flex-1 flex items-center space-x-2">
-              <div className="flex-1 bg-gray-200 rounded-full h-2 overflow-hidden">
+              <div className="flex-1 bg-gray-200 rounded-full h-3 overflow-hidden">
                 <div 
-                  className="h-full rounded-full transition-all duration-700 ease-out"
+                  className="h-full rounded-full transition-all duration-500 ease-out"
                   style={{ 
                     width: `${stat.value}%`,
                     backgroundColor: stat.color
                   }}
                 />
               </div>
-              <span className="text-xs font-semibold text-gray-700 w-10 text-right">
-                {stat.value}%
-              </span>
+              <span className="text-sm font-bold text-gray-800 w-10 text-right">{stat.value}%</span>
             </div>
           </div>
         ))}

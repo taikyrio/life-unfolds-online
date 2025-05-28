@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Character, LifeEvent, GameState } from '../types/game';
 import { 
@@ -39,6 +40,7 @@ import { AssetsMenu } from './menus/AssetsMenu';
 import { CharacterStatsBar } from './stats/CharacterStatsBar';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { Settings } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { useIsMobile } from '../hooks/use-mobile';
@@ -996,6 +998,58 @@ const GameBoard: React.FC = () => {
     }
   };
 
+  const getLifeEventsText = () => {
+    const events: string[] = [];
+    
+    // Character info
+    events.push(`Age: ${gameState.character.age} years`);
+    events.push(`I was born a ${Math.random() > 0.5 ? 'male' : 'female'} in ${gameState.character.birthplace}. I was conceived on the beach in Hawaii.`);
+    events.push('');
+    events.push(`My birthday is ${getMonthName(gameState.character.birthMonth)} ${gameState.character.birthDay}. I am a ${gameState.character.zodiacSign.name}.`);
+    events.push('');
+    events.push(`My name is ${gameState.character.name}.`);
+    
+    // Family information
+    if (gameState.character.familyMembers && gameState.character.familyMembers.length > 0) {
+      gameState.character.familyMembers.forEach(member => {
+        if (member.relationship === 'father') {
+          events.push(`My father is ${member.name}, a ${member.job || 'unemployed person'} (age ${member.age}).`);
+        } else if (member.relationship === 'mother') {
+          events.push(`My mother is ${member.name}, a ${member.job || 'unemployed person'} (age ${member.age}).`);
+        } else if (member.relationship === 'sibling') {
+          events.push(`I have a sibling named ${member.name}.`);
+        }
+      });
+    }
+    
+    // Add pet information
+    if (gameState.character.pets && gameState.character.pets.length > 0) {
+      gameState.character.pets.forEach(pet => {
+        events.push(`We have a family ${pet.type} named ${pet.name}.`);
+      });
+    }
+
+    // Add age history events
+    ageHistory.forEach(ageEntry => {
+      if (ageEntry.age > 0) {
+        events.push('');
+        ageEntry.events.forEach(event => {
+          events.push(event);
+        });
+      }
+    });
+
+    return events.join('\n');
+  };
+
+  const getMonthName = (month: number): string => {
+    const months = [
+      'January', 'February', 'March', 'April', 'May', 'June',
+      'July', 'August', 'September', 'October', 'November', 'December'
+    ];
+    return months[month - 1] || 'January';
+  };
+
   if (gameState.gameOver) {
     return (
       <GameOverScreen 
@@ -1007,8 +1061,8 @@ const GameBoard: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-game-bg font-nunito">
-      <div className="max-w-md mx-auto min-h-screen bg-white shadow-lg relative">
+    <div className="min-h-screen bg-gray-100 font-nunito">
+      <div className="max-w-md mx-auto min-h-screen bg-white shadow-lg relative flex flex-col">
         {/* BitLife Header */}
         <div className="bg-red-500 text-white p-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -1032,7 +1086,18 @@ const GameBoard: React.FC = () => {
 
         <CharacterHeader character={gameState.character} />
 
-        {/* Navigation positioned in middle */}
+        {/* Main content - Life events in scrollable box */}
+        <div className="flex-1 px-4 py-4 bg-gray-50">
+          <div className="bg-white rounded-lg border border-gray-200 h-[400px] flex flex-col">
+            <ScrollArea className="flex-1 p-4">
+              <div className="text-sm text-gray-700 leading-relaxed whitespace-pre-line">
+                {getLifeEventsText()}
+              </div>
+            </ScrollArea>
+          </div>
+        </div>
+
+        {/* Navigation */}
         <BottomNavigation 
           activeTab={activeTab} 
           onTabChange={setActiveTab}
@@ -1043,26 +1108,8 @@ const GameBoard: React.FC = () => {
           onShowAssetsMenu={() => setShowAssetsMenu(true)}
         />
 
-        {/* Character Stats Bar - positioned below navigation */}
+        {/* Character Stats Bar */}
         <CharacterStatsBar character={gameState.character} />
-
-        {/* Main content - Life history */}
-        <div className="px-4 py-6 pb-20 bg-gray-50 min-h-[60vh] overflow-y-auto">
-          <div className="space-y-4">
-            {ageHistory.map((ageEntry) => (
-              <div key={ageEntry.age} className="bg-white rounded-lg p-4 shadow-sm border border-gray-100">
-                <h3 className="font-bold text-lg text-gray-800 mb-2">Age {ageEntry.age}</h3>
-                <div className="space-y-2">
-                  {ageEntry.events.map((event, index) => (
-                    <p key={index} className="text-sm text-gray-700 leading-relaxed">
-                      {event}
-                    </p>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
 
         {/* Popup Menus */}
         <ActivitiesMenu

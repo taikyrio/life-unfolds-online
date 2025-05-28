@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Heart, Briefcase, Users, Home, Car, User, GraduationCap } from 'lucide-react';
+import { Heart, Briefcase, Users, Home, Car, User, GraduationCap, DollarSign } from 'lucide-react';
 import { Character } from '../types/game';
 
 interface BottomNavigationProps {
@@ -21,42 +21,64 @@ export const BottomNavigation: React.FC<BottomNavigationProps> = ({
   onShowAssetsMenu
 }) => {
   const tabs = [
-    { id: 'life', label: 'Life', icon: User, onClick: () => {} },
-    { id: 'activities', label: 'Activities', icon: Home, onClick: onShowActivityMenu },
-    { id: 'relationships', label: 'Relations', icon: Heart, onClick: onShowRelationshipMenu },
-    { id: 'assets', label: 'Assets', icon: Car, onClick: onShowAssetsMenu }
+    { 
+      id: 'infant', 
+      label: 'Infant', 
+      icon: User, 
+      onClick: () => {},
+      color: 'bg-orange-500'
+    },
+    { 
+      id: 'assets', 
+      label: 'Assets', 
+      icon: Home, 
+      onClick: onShowAssetsMenu,
+      color: 'bg-teal-500'
+    },
+    { 
+      id: 'relationships', 
+      label: 'Relationships', 
+      icon: Heart, 
+      onClick: onShowRelationshipMenu,
+      color: 'bg-blue-500'
+    },
+    { 
+      id: 'activities', 
+      label: 'Activities', 
+      icon: Car, 
+      onClick: onShowActivityMenu,
+      color: 'bg-purple-500'
+    }
   ];
 
   return (
-    <div className="bg-white/95 backdrop-blur-xl border-b border-gray-200/50 shadow-lg">
-      <div className="flex items-center justify-around py-1">
+    <div className="bg-slate-700 px-4 py-2">
+      <div className="flex items-center justify-around">
         {tabs.slice(0, 2).map((tab) => {
           const Icon = tab.icon;
           return (
             <button
               key={tab.id}
               onClick={tab.onClick}
-              className="flex flex-col items-center p-2 min-w-0 flex-1 transition-all duration-200 text-gray-600 hover:text-gray-800"
+              className="flex flex-col items-center text-white hover:text-gray-300 transition-colors"
             >
-              <div className="p-1 rounded-lg transition-colors">
-                <Icon size={18} className="mb-1" />
+              <div className={`${tab.color} p-3 rounded-full mb-1`}>
+                <Icon size={20} className="text-white" />
               </div>
-              <span className="text-xs truncate font-medium">
-                {tab.label}
-              </span>
+              <span className="text-xs font-medium">{tab.label}</span>
             </button>
           );
         })}
         
-        {/* Age Button - Red centered */}
+        {/* Age Button - Green centered */}
         <button
           onClick={onAgeUp}
-          className="bg-gradient-to-r from-red-500 to-red-600 text-white rounded-full w-12 h-12 flex items-center justify-center font-bold text-sm shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 active:scale-95 mx-1"
+          className="flex flex-col items-center text-white"
         >
-          <div className="text-center">
-            <div className="text-xs leading-tight">Age</div>
-            <div className="text-xs opacity-90">Up</div>
+          <div className="bg-green-500 p-4 rounded-full mb-1 border-4 border-white shadow-lg">
+            <span className="text-white font-bold text-xl">+</span>
           </div>
+          <span className="text-xs font-medium">Age</span>
         </button>
         
         {tabs.slice(2).map((tab) => {
@@ -65,14 +87,12 @@ export const BottomNavigation: React.FC<BottomNavigationProps> = ({
             <button
               key={tab.id}
               onClick={tab.onClick}
-              className="flex flex-col items-center p-2 min-w-0 flex-1 transition-all duration-200 text-gray-600 hover:text-gray-800"
+              className="flex flex-col items-center text-white hover:text-gray-300 transition-colors"
             >
-              <div className="p-1 rounded-lg transition-colors">
-                <Icon size={18} className="mb-1" />
+              <div className={`${tab.color} p-3 rounded-full mb-1`}>
+                <Icon size={20} className="text-white" />
               </div>
-              <span className="text-xs truncate font-medium">
-                {tab.label}
-              </span>
+              <span className="text-xs font-medium">{tab.label}</span>
             </button>
           );
         })}
