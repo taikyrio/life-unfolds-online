@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Character, LifeEvent, GameState } from '../types/game';
-import { generateRandomName, generateRandomStats, applyStatEffects, isGameOver } from '../utils/gameUtils';
+import { generateRandomName, generateRandomStats, applyStatEffects, isGameOver, getLifeStage } from '../utils/gameUtils';
 import { getRandomEvent } from '../data/lifeEvents';
 import { CharacterStats } from './CharacterStats';
 import { EventCard } from './EventCard';
@@ -14,33 +14,37 @@ const GameBoard: React.FC = () => {
   const [gameState, setGameState] = useState<GameState>({
     character: {
       name: '',
-      age: 18,
+      age: 0,
       year: new Date().getFullYear(),
       ...generateRandomStats()
     },
     currentEvent: null,
     gameStarted: false,
-    gameOver: false
+    gameOver: false,
+    eventHistory: [],
+    achievements: []
   });
 
   const startNewGame = () => {
     const newCharacter: Character = {
       name: generateRandomName(),
-      age: 18,
+      age: 0,
       year: new Date().getFullYear(),
       ...generateRandomStats()
     };
 
     setGameState({
       character: newCharacter,
-      currentEvent: getRandomEvent(),
+      currentEvent: null,
       gameStarted: true,
-      gameOver: false
+      gameOver: false,
+      eventHistory: [`${newCharacter.name} was born in ${newCharacter.birthplace}!`],
+      achievements: []
     });
 
     toast({
-      title: `Welcome to life, ${newCharacter.name}! 👋`,
-      description: 'Your journey begins now. Make wise choices!',
+      title: `Welcome to life, ${newCharacter.name}! 👶`,
+      description: `Born in ${newCharacter.birthplace}. Your journey begins...`,
     });
   };
 
@@ -51,12 +55,21 @@ const GameBoard: React.FC = () => {
     const newYear = gameState.character.year + 1;
     
     // Natural aging effects
-    const agingEffects = {
-      health: newAge > 60 ? -2 : newAge > 40 ? -1 : 0,
+    let agingEffects: any = {
+      health: newAge > 60 ? -2 : newAge > 40 ? -1 : newAge > 20 ? 0 : 1,
       happiness: 0,
-      wealth: Math.floor(Math.random() * 20) + 10, // Small income each year
+      wealth: 0,
       relationships: 0
     };
+
+    // Age-based income from jobs
+    if (gameState.character.job && gameState.character.salary > 0) {
+      agingEffects.wealth = gameState.character.salary;
+    }
+
+    // Education progression
+    if (newAge === 6) agingEffects.education = 'Elementary School';
+    if (newAge === 14) agingEffects.education = 'High School';
 
     const updatedCharacter = applyStatEffects(
       { ...gameState.character, age: newAge, year: newYear },
@@ -76,15 +89,21 @@ const GameBoard: React.FC = () => {
       return;
     }
 
+    // Generate age-appropriate event
+    const newEvent = Math.random() > 0.3 ? getRandomEvent(updatedCharacter) : null;
+    
+    const ageMessage = `${updatedCharacter.name} turned ${newAge}!`;
+    
     setGameState(prev => ({
       ...prev,
       character: updatedCharacter,
-      currentEvent: getRandomEvent()
+      currentEvent: newEvent,
+      eventHistory: [ageMessage, ...prev.eventHistory.slice(0, 9)] // Keep last 10 events
     }));
 
     toast({
       title: `Happy ${newAge}th Birthday! 🎂`,
-      description: `Welcome to ${newYear}!`,
+      description: `Welcome to ${newYear}! You are now ${getLifeStage(newAge).toLowerCase()}.`,
     });
   };
 
@@ -109,10 +128,13 @@ const GameBoard: React.FC = () => {
       return;
     }
 
+    const eventMessage = `${gameState.currentEvent.title}: ${choice.text}`;
+    
     setGameState(prev => ({
       ...prev,
       character: updatedCharacter,
-      currentEvent: null
+      currentEvent: null,
+      eventHistory: [eventMessage, ...prev.eventHistory.slice(0, 9)]
     }));
 
     toast({
@@ -142,13 +164,16 @@ const GameBoard: React.FC = () => {
             <p className="text-game-text text-lg">
               Navigate through life's choices and create your unique story
             </p>
+            <p className="text-sm text-gray-600 mt-2">
+              Inspired by BitLife - Make decisions that shape your character's destiny
+            </p>
           </CardHeader>
           <CardContent className="text-center">
             <Button 
               onClick={startNewGame}
               className="w-full py-3 text-lg font-semibold bg-primary hover:bg-primary/90 text-white transition-all duration-300 hover:scale-105"
             >
-              🚀 Start Your Life
+              🍼 Start Your Life
             </Button>
           </CardContent>
         </Card>
@@ -158,17 +183,17 @@ const GameBoard: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-game-bg p-4 font-nunito">
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-6xl mx-auto">
         <div className="text-center mb-6">
           <h1 className="text-3xl font-bold text-primary mb-2">
             🌟 LifeSim
           </h1>
           <p className="text-game-text">
-            Living as {gameState.character.name} - Age {gameState.character.age} ({gameState.character.year})
+            Living as {gameState.character.name} - {getLifeStage(gameState.character.age)} Age {gameState.character.age} ({gameState.character.year})
           </p>
         </div>
 
-        <div className="grid gap-6 md:grid-cols-2">
+        <div className="grid gap-6 lg:grid-cols-3">
           <div className="space-y-6">
             <CharacterStats character={gameState.character} />
             
@@ -199,11 +224,39 @@ const GameBoard: React.FC = () => {
                     Peaceful Times
                   </h3>
                   <p className="text-gray-600">
-                    Nothing exciting is happening right now. Age up to continue your journey!
+                    Nothing exciting is happening right now. Age up to continue your journey through life!
                   </p>
                 </CardContent>
               </Card>
             )}
+          </div>
+
+          <div>
+            <Card className="animate-fade-in">
+              <CardHeader>
+                <CardTitle className="text-lg font-bold text-game-text flex items-center gap-2">
+                  📖 Life Journal
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <div className="max-h-80 overflow-y-auto space-y-2">
+                  {gameState.eventHistory.length > 0 ? (
+                    gameState.eventHistory.map((event, index) => (
+                      <div 
+                        key={index} 
+                        className="p-3 bg-gray-50 rounded-lg text-sm text-gray-700 border-l-4 border-primary/30"
+                      >
+                        {event}
+                      </div>
+                    ))
+                  ) : (
+                    <p className="text-gray-500 text-sm text-center py-4">
+                      Your life story will appear here...
+                    </p>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </div>
