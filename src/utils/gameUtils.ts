@@ -22,7 +22,7 @@ export const clampStat = (value: number, min: number = 0, max: number = 100): nu
   return Math.max(min, Math.min(max, value));
 };
 
-export const applyStat Effects = (character: Character, effects: any): Character => {
+export const applyStatEffects = (character: Character, effects: any): Character => {
   return {
     ...character,
     health: clampStat(character.health + (effects.health || 0)),
