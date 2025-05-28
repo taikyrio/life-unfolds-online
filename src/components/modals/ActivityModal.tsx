@@ -23,11 +23,7 @@ interface ActivityOption {
     education?: string;
   };
   effects: {
-    happiness?: number;
-    health?: number;
-    smarts?: number;
-    looks?: number;
-    wealth?: number;
+    [key: string]: number;
   };
 }
 
