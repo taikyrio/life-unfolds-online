@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Character, LifeEvent, GameState } from '../types/game';
 import { 
@@ -31,25 +32,28 @@ import { RelationshipsTab } from './RelationshipsTab';
 import { EducationTab } from './EducationTab';
 import { AssetsTab } from './AssetsTab';
 import { GameOverScreen } from './GameOverScreen';
+import { GameSettings } from './GameSettings';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Settings } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { useIsMobile } from '../hooks/use-mobile';
 import { EventCard } from './EventCard';
 
 const GameBoard: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'life' | 'activities' | 'careers' | 'relationships' | 'education' | 'assets'>('life');
+  const [showSettings, setShowSettings] = useState(false);
   const [gameState, setGameState] = useState<GameState>({
     character: {
       name: '',
       age: 0,
       year: new Date().getFullYear(),
       education: [],
-      assets: [], // Add default empty assets array
+      assets: [],
       ...generateRandomStats()
     },
     currentEvent: null,
-    gameStarted: false,
+    gameStarted: true, // Start game immediately
     gameOver: false,
     eventHistory: [],
     achievements: [],
@@ -58,13 +62,20 @@ const GameBoard: React.FC = () => {
 
   const isMobile = useIsMobile();
 
+  // Initialize game immediately
+  useEffect(() => {
+    if (!gameState.gameStarted || gameState.character.name === '') {
+      startNewGame();
+    }
+  }, []);
+
   const startNewGame = () => {
     const newCharacter: Character = {
       name: generateEducationName(),
       age: 0,
       year: new Date().getFullYear(),
       education: [],
-      assets: [], // Add default empty assets array
+      assets: [],
       ...generateRandomStats()
     };
 
@@ -982,19 +993,10 @@ const GameBoard: React.FC = () => {
       case 'education':
         return <EducationTab character={gameState.character} onEducationAction={handleEducationAction} />;
       case 'assets':
-        return (
-          <div className="text-center py-8 px-4">
-            <h2 className="text-xl font-bold text-gray-800 mb-4">Assets</h2>
-            <p className="text-gray-600">Coming soon! Buy property, vehicles, and luxury items.</p>
-          </div>
-        );
+        return <AssetsTab character={gameState.character} />;
       default:
         return null;
     }
-  };
-
-  const renderAgeButton = () => {
-    return null;
   };
 
   if (gameState.gameOver) {
@@ -1007,58 +1009,61 @@ const GameBoard: React.FC = () => {
     );
   }
 
-  if (!gameState.gameStarted) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4 font-nunito">
-        <Card className="w-full max-w-sm sm:max-w-md animate-scale-in">
-          <CardHeader className="text-center pb-4">
-            <CardTitle className="text-2xl sm:text-3xl font-bold text-primary mb-2">
-              🌟 LifeSim
-            </CardTitle>
-            <p className="text-game-text text-base sm:text-lg">
-              Navigate through life's choices and create your unique story
-            </p>
-            <p className="text-xs sm:text-sm text-gray-600 mt-2">
-              Inspired by BitLife - Make decisions that shape your character's destiny
-            </p>
-          </CardHeader>
-          <CardContent className="text-center">
-            <Button 
-              onClick={startNewGame}
-              className="w-full py-2 sm:py-3 text-base sm:text-lg font-semibold bg-primary hover:bg-primary/90 text-white transition-all duration-300 hover:scale-105"
-            >
-              🍼 Start Your Life
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
-
   return (
-    <div className="min-h-screen bg-gray-50 font-nunito">
-      <div className="bg-red-500 p-3 text-center">
-        <h1 className="text-2xl font-bold text-white">
-          🌟 LifeSim
-        </h1>
-      </div>
-
-      <CharacterHeader character={gameState.character} />
-
-      {renderTabContent()}
-
-      <BottomNavigation 
-        activeTab={activeTab} 
-        onTabChange={setActiveTab}
-        onAgeUp={ageUp}
-        character={gameState.character}
-      />
-
-      {gameState.currentEvent && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <EventCard event={gameState.currentEvent} onChoice={handleChoice} />
+    <div className="min-h-screen bg-game-bg font-nunito">
+      <div className="max-w-md mx-auto min-h-screen bg-white shadow-lg relative">
+        {/* BitLife Header */}
+        <div className="bg-red-500 text-white p-4 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center">
+              <span className="text-red-500 font-bold text-lg">B</span>
+            </div>
+            <div>
+              <h1 className="text-xl font-bold">BitLIFE</h1>
+              <p className="text-xs opacity-90">Life Simulator</p>
+            </div>
+          </div>
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            onClick={() => setShowSettings(true)}
+            className="text-white hover:bg-white/20"
+          >
+            <Settings className="h-5 w-5" />
+          </Button>
         </div>
-      )}
+
+        <CharacterHeader character={gameState.character} />
+
+        {gameState.currentEvent && (
+          <Card className="mb-4">
+            <CardContent>
+              {gameState.currentEvent.description}
+            </CardContent>
+          </Card>
+        )}
+
+        {renderTabContent()}
+
+        <BottomNavigation 
+          activeTab={activeTab} 
+          onTabChange={setActiveTab}
+          onAgeUp={ageUp}
+          character={gameState.character}
+        />
+
+        <GameSettings
+          isOpen={showSettings}
+          onClose={() => setShowSettings(false)}
+          onNewGame={startNewGame}
+        />
+
+        {gameState.currentEvent && (
+          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+            <EventCard event={gameState.currentEvent} onChoice={handleChoice} />
+          </div>
+        )}
+      </div>
     </div>
   );
 };
