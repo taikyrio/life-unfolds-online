@@ -586,6 +586,9 @@ export const generateRandomStats = (): Omit<Character, 'name' | 'age' | 'year'> 
     birthWeight: Math.random() * 3 + 5.5, // 5.5-8.5 pounds
     birthComplications: Math.random() < 0.1, // 10% chance
     premature: Math.random() < 0.08, // 8% chance
+    
+    // Assets
+    assets: [], // Initialize as empty array
   };
 };
 
