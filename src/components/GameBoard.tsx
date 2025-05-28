@@ -38,6 +38,7 @@ import { ActivitiesMenu } from './menus/ActivitiesMenu';
 import { RelationshipsMenu } from './menus/RelationshipsMenu';
 import { AssetsMenu } from './menus/AssetsMenu';
 import { CharacterStatsBar } from './stats/CharacterStatsBar';
+import { CareerSelectionModal } from './CareerSelectionModal';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -52,6 +53,7 @@ const GameBoard: React.FC = () => {
   const [showActivitiesMenu, setShowActivitiesMenu] = useState(false);
   const [showRelationshipsMenu, setShowRelationshipsMenu] = useState(false);
   const [showAssetsMenu, setShowAssetsMenu] = useState(false);
+  const [showCareerSelection, setShowCareerSelection] = useState(false);
   const [ageHistory, setAgeHistory] = useState<Array<{age: number, events: string[]}>>([]);
   const [gameState, setGameState] = useState<GameState>({
     character: {
@@ -150,19 +152,75 @@ const GameBoard: React.FC = () => {
     const newAge = gameState.character.age + 1;
     const newYear = gameState.character.year + 1;
 
+    // Dynamic aging effects based on life stage
     let agingEffects: any = {
-      health: newAge > 60 ? -2 : newAge > 40 ? -1 : newAge > 20 ? 0 : 1,
+      health: 0,
       happiness: 0,
       wealth: 0,
-      relationships: 0
+      relationships: 0,
+      smarts: 0,
+      looks: 0
     };
 
-    const zodiac = gameState.character.zodiacSign;
-    if (zodiac.element === 'water' && newAge > 50) agingEffects.health += 1;
-    if (zodiac.element === 'fire' && newAge < 30) agingEffects.happiness += 2;
+    // Age-based stat changes (more realistic progression)
+    if (newAge <= 12) {
+      // Child development
+      agingEffects.health = Math.floor(Math.random() * 3) + 1; // +1 to +3
+      agingEffects.smarts = Math.floor(Math.random() * 5) + 2; // +2 to +6
+      agingEffects.happiness = Math.floor(Math.random() * 6) - 2; // -2 to +3
+    } else if (newAge <= 18) {
+      // Teenage years - volatile period
+      agingEffects.health = Math.floor(Math.random() * 4) - 1; // -1 to +2
+      agingEffects.smarts = Math.floor(Math.random() * 4) + 1; // +1 to +4
+      agingEffects.happiness = Math.floor(Math.random() * 8) - 3; // -3 to +4
+      agingEffects.looks = Math.floor(Math.random() * 6) - 2; // -2 to +3
+      agingEffects.relationships = Math.floor(Math.random() * 6) - 2; // -2 to +3
+    } else if (newAge <= 30) {
+      // Young adult - prime years
+      agingEffects.health = Math.floor(Math.random() * 3) - 1; // -1 to +1
+      agingEffects.smarts = Math.floor(Math.random() * 3); // 0 to +2
+      agingEffects.happiness = Math.floor(Math.random() * 4) - 1; // -1 to +2
+      agingEffects.looks = Math.floor(Math.random() * 4) - 2; // -2 to +1
+    } else if (newAge <= 50) {
+      // Adult - stability with gradual decline
+      agingEffects.health = Math.floor(Math.random() * 4) - 2; // -2 to +1
+      agingEffects.smarts = Math.floor(Math.random() * 3); // 0 to +2
+      agingEffects.happiness = Math.floor(Math.random() * 3) - 1; // -1 to +1
+      agingEffects.looks = Math.floor(Math.random() * 3) - 1; // -1 to +1
+    } else if (newAge <= 65) {
+      // Middle-aged - noticeable decline
+      agingEffects.health = Math.floor(Math.random() * 4) - 3; // -3 to 0
+      agingEffects.smarts = Math.floor(Math.random() * 2); // 0 to +1
+      agingEffects.happiness = Math.floor(Math.random() * 4) - 1; // -1 to +2
+      agingEffects.looks = Math.floor(Math.random() * 4) - 2; // -2 to +1
+    } else {
+      // Senior - significant decline
+      agingEffects.health = Math.floor(Math.random() * 6) - 5; // -5 to 0
+      agingEffects.smarts = Math.floor(Math.random() * 3) - 1; // -1 to +1
+      agingEffects.happiness = Math.floor(Math.random() * 4) - 1; // -1 to +2
+      agingEffects.looks = Math.floor(Math.random() * 5) - 3; // -3 to +1
+      agingEffects.relationships = Math.floor(Math.random() * 3) - 1; // -1 to +1
+    }
 
+    // Zodiac influences (more pronounced)
+    const zodiac = gameState.character.zodiacSign;
+    if (zodiac.element === 'water') {
+      agingEffects.health += 1;
+      agingEffects.happiness += 1;
+    } else if (zodiac.element === 'fire') {
+      agingEffects.happiness += 2;
+      agingEffects.relationships += 1;
+    } else if (zodiac.element === 'earth') {
+      agingEffects.health += 1;
+      agingEffects.smarts += 1;
+    } else if (zodiac.element === 'air') {
+      agingEffects.smarts += 2;
+      agingEffects.relationships += 1;
+    }
+
+    // Job income
     if (gameState.character.job && gameState.character.salary > 0) {
-      agingEffects.wealth = gameState.character.salary;
+      agingEffects.wealth = Math.floor(gameState.character.salary * (0.8 + Math.random() * 0.4)); // 80-120% of salary
     }
 
     let updatedCharacter = applyStatEffects(
@@ -198,6 +256,13 @@ const GameBoard: React.FC = () => {
         let message = progressResult.message;
         if (progressResult.graduated) {
           message = `🎓 ${message}`;
+          
+          // Show career selection after graduation
+          if (updatedCharacter.age >= 18 && !updatedCharacter.job) {
+            setTimeout(() => {
+              setShowCareerSelection(true);
+            }, 1000);
+          }
         }
         
         addEventToCurrentAge(message);
@@ -884,6 +949,38 @@ const GameBoard: React.FC = () => {
     }
   };
 
+  const handleCareerSelection = (careerId: string) => {
+    const careerDatabase: { [key: string]: { title: string; salary: number } } = {
+      fast_food: { title: 'Fast Food Worker', salary: 22 },
+      retail: { title: 'Retail Associate', salary: 25 },
+      office_assistant: { title: 'Office Assistant', salary: 30 },
+      teacher: { title: 'Teacher', salary: 48 },
+      nurse: { title: 'Nurse', salary: 65 },
+      engineer: { title: 'Engineer', salary: 75 },
+      doctor: { title: 'Doctor', salary: 185 },
+      lawyer: { title: 'Lawyer', salary: 125 }
+    };
+
+    const career = careerDatabase[careerId];
+    if (career) {
+      const updatedCharacter = {
+        ...gameState.character,
+        job: career.title,
+        salary: career.salary,
+        jobLevel: 1
+      };
+      
+      setGameState(prev => ({
+        ...prev,
+        character: updatedCharacter
+      }));
+      
+      addEventToCurrentAge(`🎉 You started working as a ${career.title}!`);
+    }
+    
+    setShowCareerSelection(false);
+  };
+
   const handleJobApplication = (jobId: string) => {
     if (jobId === 'quit') {
       const updatedCharacter = { ...gameState.character, job: undefined, salary: 0, jobLevel: 0 };
@@ -1062,15 +1159,15 @@ const GameBoard: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-100 font-nunito">
-      <div className="max-w-md mx-auto min-h-screen bg-white shadow-lg relative flex flex-col">
+      <div className="max-w-md mx-auto min-h-screen bg-white shadow-lg relative flex flex-col overflow-hidden pb-32">
         {/* BitLife Header */}
-        <div className="bg-red-500 text-white p-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center">
-              <span className="text-red-500 font-bold text-lg">B</span>
+        <div className="bg-red-500 text-white p-3 sm:p-4 flex items-center justify-between sticky top-0 z-10">
+          <div className="flex items-center gap-2 sm:gap-3">
+            <div className="w-8 h-8 sm:w-10 sm:h-10 bg-white rounded-full flex items-center justify-center">
+              <span className="text-red-500 font-bold text-sm sm:text-lg">B</span>
             </div>
             <div>
-              <h1 className="text-xl font-bold">BitLIFE</h1>
+              <h1 className="text-lg sm:text-xl font-bold">BitLIFE</h1>
               <p className="text-xs opacity-90">Life Simulator</p>
             </div>
           </div>
@@ -1078,19 +1175,19 @@ const GameBoard: React.FC = () => {
             variant="ghost" 
             size="sm" 
             onClick={() => setShowSettings(true)}
-            className="text-white hover:bg-white/20"
+            className="text-white hover:bg-white/20 p-2"
           >
-            <Settings className="h-5 w-5" />
+            <Settings className="h-4 w-4 sm:h-5 sm:w-5" />
           </Button>
         </div>
 
         <CharacterHeader character={gameState.character} />
 
         {/* Main content - Life events in scrollable box */}
-        <div className="flex-1 px-4 py-4 bg-gray-50">
-          <div className="bg-white rounded-lg border border-gray-200 h-[400px] flex flex-col">
-            <ScrollArea className="flex-1 p-4">
-              <div className="text-sm text-gray-700 leading-relaxed whitespace-pre-line">
+        <div className="flex-1 px-2 sm:px-4 py-2 sm:py-4 bg-gray-50">
+          <div className="bg-white rounded-lg border border-gray-200 h-[350px] sm:h-[400px] flex flex-col">
+            <ScrollArea className="flex-1 p-3 sm:p-4">
+              <div className="text-xs sm:text-sm text-gray-700 leading-relaxed whitespace-pre-line">
                 {getLifeEventsText()}
               </div>
             </ScrollArea>
@@ -1136,6 +1233,13 @@ const GameBoard: React.FC = () => {
           isOpen={showSettings}
           onClose={() => setShowSettings(false)}
           onNewGame={startNewGame}
+        />
+
+        <CareerSelectionModal
+          isOpen={showCareerSelection}
+          onClose={() => setShowCareerSelection(false)}
+          character={gameState.character}
+          onSelectCareer={handleCareerSelection}
         />
 
         {gameState.currentEvent && (

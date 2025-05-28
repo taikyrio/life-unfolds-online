@@ -1,7 +1,7 @@
-
 import React from 'react';
-import { Heart, Briefcase, Users, Home, Car, User, GraduationCap, DollarSign } from 'lucide-react';
+import { Heart, Briefcase, Users, Home, Car, User, GraduationCap, DollarSign, Baby, UserCheck, Gamepad2 } from 'lucide-react';
 import { Character } from '../types/game';
+import { getLifeStage } from '../utils/gameUtils';
 
 interface BottomNavigationProps {
   activeTab: 'life' | 'activities' | 'careers' | 'relationships' | 'assets' | 'education';
@@ -9,7 +9,7 @@ interface BottomNavigationProps {
   onAgeUp: () => void;
   character: Character;
   onShowActivityMenu: () => void;
-  onShowRelationshipMenu: () => void;
+  onShowRelationshipsMenu: () => void;
   onShowAssetsMenu: () => void;
 }
 
@@ -17,14 +17,41 @@ export const BottomNavigation: React.FC<BottomNavigationProps> = ({
   onAgeUp,
   character,
   onShowActivityMenu,
-  onShowRelationshipMenu,
+  onShowRelationshipsMenu,
   onShowAssetsMenu
 }) => {
+  const getLifeStageIcon = () => {
+    const lifeStage = getLifeStage(character.age);
+    switch (lifeStage) {
+      case 'Baby':
+      case 'Toddler':
+        return Baby;
+      case 'Child':
+        return Gamepad2;
+      case 'Teen':
+        return UserCheck;
+      case 'Young Adult':
+      case 'Adult':
+      case 'Middle-aged':
+        return User;
+      case 'Senior':
+        return User;
+      default:
+        return User;
+    }
+  };
+
+  const getLifeStageLabel = () => {
+    return getLifeStage(character.age);
+  };
+
+  const LifeStageIcon = getLifeStageIcon();
+
   const tabs = [
     { 
-      id: 'infant', 
-      label: 'Infant', 
-      icon: User, 
+      id: 'lifestage', 
+      label: getLifeStageLabel(), 
+      icon: LifeStageIcon, 
       onClick: () => {},
       color: 'bg-orange-500'
     },
@@ -39,7 +66,7 @@ export const BottomNavigation: React.FC<BottomNavigationProps> = ({
       id: 'relationships', 
       label: 'Relationships', 
       icon: Heart, 
-      onClick: onShowRelationshipMenu,
+      onClick: onShowRelationshipsMenu,
       color: 'bg-blue-500'
     },
     { 
@@ -52,7 +79,7 @@ export const BottomNavigation: React.FC<BottomNavigationProps> = ({
   ];
 
   return (
-    <div className="bg-slate-700 px-4 py-2">
+    <div className="bg-slate-700 px-4 py-2 relative z-20 border-t-2 border-slate-600">
       <div className="flex items-center justify-around">
         {tabs.slice(0, 2).map((tab) => {
           const Icon = tab.icon;
@@ -69,7 +96,7 @@ export const BottomNavigation: React.FC<BottomNavigationProps> = ({
             </button>
           );
         })}
-        
+
         {/* Age Button - Green centered */}
         <button
           onClick={onAgeUp}
@@ -80,7 +107,7 @@ export const BottomNavigation: React.FC<BottomNavigationProps> = ({
           </div>
           <span className="text-xs font-medium">Age</span>
         </button>
-        
+
         {tabs.slice(2).map((tab) => {
           const Icon = tab.icon;
           return (
