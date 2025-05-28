@@ -1,15 +1,7 @@
+
 import React, { useState } from 'react';
 import { X } from 'lucide-react';
-
-// Type definitions
-interface Character {
-  age: number;
-  wealth: number;
-  happiness: number;
-  health: number;
-  smarts: number;
-  looks: number;
-}
+import { Character } from '../../types/game';
 
 interface ActivityOption {
   id: string;
@@ -17,11 +9,24 @@ interface ActivityOption {
   description: string;
   emoji: string;
   requirements?: {
-    [key: string]: string | number;
+    minAge?: number;
+    maxAge?: number;
+    minWealth?: number;
   };
   effects: {
-    [key: string]: number;
+    health?: number;
+    happiness?: number;
+    smarts?: number;
+    looks?: number;
+    wealth?: number;
   };
+}
+
+interface ActivityCategory {
+  id: string;
+  title: string;
+  emoji: string;
+  activities: ActivityOption[];
 }
 
 interface ActivityModalProps {
@@ -39,7 +44,7 @@ const ActivityModal: React.FC<ActivityModalProps> = ({
 }) => {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
-  const activityCategories = [
+  const activityCategories: ActivityCategory[] = [
     {
       id: 'mind',
       title: 'Mind & Body',
@@ -120,8 +125,9 @@ const ActivityModal: React.FC<ActivityModalProps> = ({
   ];
 
   // Add adult activities if character is 18+
+  const allCategories = [...activityCategories];
   if (character.age >= 18) {
-    activityCategories.push({
+    allCategories.push({
       id: 'adult',
       title: 'Adult Activities',
       emoji: '🏦',
@@ -179,7 +185,7 @@ const ActivityModal: React.FC<ActivityModalProps> = ({
           <div>
             <h2 className="text-xl font-bold text-gray-900">
               {selectedCategory ? 
-                activityCategories.find(c => c.id === selectedCategory)?.title : 
+                allCategories.find(c => c.id === selectedCategory)?.title : 
                 'Choose Activity'
               }
             </h2>
@@ -200,7 +206,7 @@ const ActivityModal: React.FC<ActivityModalProps> = ({
           {!selectedCategory ? (
             <div className="space-y-4">
               <p className="text-gray-600 text-sm mb-4">What would you like to do?</p>
-              {activityCategories.map((category) => (
+              {allCategories.map((category) => (
                 <button
                   key={category.id}
                   onClick={() => setSelectedCategory(category.id)}
@@ -223,7 +229,7 @@ const ActivityModal: React.FC<ActivityModalProps> = ({
             </div>
           ) : (
             <div className="space-y-4">
-              {activityCategories
+              {allCategories
                 .find(c => c.id === selectedCategory)
                 ?.activities.map((activity) => {
                   const canUse = canUseActivity(activity);
@@ -262,7 +268,7 @@ const ActivityModal: React.FC<ActivityModalProps> = ({
                               {activity.requirements.minAge && character.age < activity.requirements.minAge && 
                                 `Requires age ${activity.requirements.minAge}+`}
                               {activity.requirements.minWealth && character.wealth < activity.requirements.minWealth && 
-                                `Requires $${activity.requirements.minWealth}`}
+                                ` Requires $${activity.requirements.minWealth}`}
                             </div>
                           )}
                         </div>
@@ -282,12 +288,39 @@ const ActivityModal: React.FC<ActivityModalProps> = ({
 export default function ActivityModalDemo() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [character, setCharacter] = useState<Character>({
+    name: 'Demo Character',
     age: 25,
     wealth: 150,
     happiness: 75,
     health: 80,
     smarts: 65,
-    looks: 70
+    looks: 70,
+    relationships: 60,
+    year: 2024,
+    zodiacSign: {
+      name: 'Leo',
+      emoji: '♌',
+      traits: ['Confident', 'Generous'],
+      luckyNumbers: [1, 3, 10],
+      element: 'fire'
+    },
+    birthMonth: 8,
+    birthDay: 15,
+    familyMembers: [],
+    pets: [],
+    jobLevel: 1,
+    salary: 30000,
+    education: ['High School'],
+    relationshipStatus: 'single',
+    children: [],
+    criminalRecord: false,
+    fame: 0,
+    nationality: 'American',
+    birthplace: 'New York',
+    birthWeight: 7.5,
+    birthComplications: false,
+    premature: false,
+    assets: []
   });
 
   const handleSelectActivity = (activity: ActivityOption) => {
@@ -295,7 +328,10 @@ export default function ActivityModalDemo() {
     const updatedCharacter = { ...character };
     Object.entries(activity.effects).forEach(([key, value]) => {
       if (value !== undefined && key in updatedCharacter) {
-        (updatedCharacter as any)[key] = Math.max(0, Math.min(100, (updatedCharacter as any)[key] + value));
+        const currentValue = (updatedCharacter as any)[key];
+        if (typeof currentValue === 'number') {
+          (updatedCharacter as any)[key] = Math.max(0, Math.min(100, currentValue + value));
+        }
       }
     });
     
@@ -303,7 +339,7 @@ export default function ActivityModalDemo() {
     setIsModalOpen(false);
     
     // Show feedback
-    alert(`You chose: ${activity.title}!\nEffects: ${Object.entries(activity.effects).map(([k, v]) => `${k}: ${v > 0 ? '+' : ''}${v}`).join(', ')}`);
+    alert(`You chose: ${activity.title}!\nEffects: ${Object.entries(activity.effects).map(([k, v]) => `${k}: ${v && v > 0 ? '+' : ''}${v}`).join(', ')}`);
   };
 
   return (
