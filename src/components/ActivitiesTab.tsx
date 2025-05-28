@@ -13,7 +13,13 @@ interface ActivitiesTabProps {
 export const ActivitiesTab: React.FC<ActivitiesTabProps> = ({ character, onActivity }) => {
   const [expandedCategories, setExpandedCategories] = useState<string[]>([]);
   const lifeStage = getLifeStage(character.age);
-  const isInSchool = character.age < 18 || character.education === 'High School Student' || character.education === 'University Student' || character.education === 'Graduate Student';
+  
+  // Ensure education is always an array and check for school status
+  const characterEducation = Array.isArray(character.education) ? character.education : [];
+  const isInSchool = character.age < 18 || 
+    characterEducation.some(ed => ed.includes('High School Student')) || 
+    characterEducation.some(ed => ed.includes('University Student')) || 
+    characterEducation.some(ed => ed.includes('Graduate Student'));
 
   const toggleCategory = (categoryTitle: string) => {
     setExpandedCategories(prev => 

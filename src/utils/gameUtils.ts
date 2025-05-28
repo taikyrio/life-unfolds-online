@@ -570,7 +570,7 @@ export const generateRandomStats = (): Omit<Character, 'name' | 'age' | 'year'> 
     // Career & Education
     jobLevel: 0,
     salary: 0,
-    education: 'None',
+    education: [], // Initialize as empty array instead of 'None'
     
     // Relationships
     relationshipStatus: 'single',
