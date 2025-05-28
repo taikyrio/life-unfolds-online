@@ -17,7 +17,9 @@ import {
   haveBaby,
   generateInitialFamily
 } from '../utils/gameUtils';
+import { evolveStatsNaturally, getStatMessage } from '../utils/statEvolution';
 import { getRandomEvent, createEventTracker } from '../data/lifeEvents';
+import { dynamicEventSystem } from '../data/dynamicEvents';
 import { 
   shouldAutoEnrollInSchool, 
   enrollInEducation, 
@@ -152,81 +154,47 @@ const GameBoard: React.FC = () => {
     const newAge = gameState.character.age + 1;
     const newYear = gameState.character.year + 1;
 
-    // Dynamic aging effects based on life stage
-    let agingEffects: any = {
-      health: 0,
-      happiness: 0,
-      wealth: 0,
-      relationships: 0,
-      smarts: 0,
-      looks: 0
-    };
-
-    // Age-based stat changes (more realistic progression)
-    if (newAge <= 12) {
-      // Child development
-      agingEffects.health = Math.floor(Math.random() * 3) + 1; // +1 to +3
-      agingEffects.smarts = Math.floor(Math.random() * 5) + 2; // +2 to +6
-      agingEffects.happiness = Math.floor(Math.random() * 6) - 2; // -2 to +3
-    } else if (newAge <= 18) {
-      // Teenage years - volatile period
-      agingEffects.health = Math.floor(Math.random() * 4) - 1; // -1 to +2
-      agingEffects.smarts = Math.floor(Math.random() * 4) + 1; // +1 to +4
-      agingEffects.happiness = Math.floor(Math.random() * 8) - 3; // -3 to +4
-      agingEffects.looks = Math.floor(Math.random() * 6) - 2; // -2 to +3
-      agingEffects.relationships = Math.floor(Math.random() * 6) - 2; // -2 to +3
-    } else if (newAge <= 30) {
-      // Young adult - prime years
-      agingEffects.health = Math.floor(Math.random() * 3) - 1; // -1 to +1
-      agingEffects.smarts = Math.floor(Math.random() * 3); // 0 to +2
-      agingEffects.happiness = Math.floor(Math.random() * 4) - 1; // -1 to +2
-      agingEffects.looks = Math.floor(Math.random() * 4) - 2; // -2 to +1
-    } else if (newAge <= 50) {
-      // Adult - stability with gradual decline
-      agingEffects.health = Math.floor(Math.random() * 4) - 2; // -2 to +1
-      agingEffects.smarts = Math.floor(Math.random() * 3); // 0 to +2
-      agingEffects.happiness = Math.floor(Math.random() * 3) - 1; // -1 to +1
-      agingEffects.looks = Math.floor(Math.random() * 3) - 1; // -1 to +1
-    } else if (newAge <= 65) {
-      // Middle-aged - noticeable decline
-      agingEffects.health = Math.floor(Math.random() * 4) - 3; // -3 to 0
-      agingEffects.smarts = Math.floor(Math.random() * 2); // 0 to +1
-      agingEffects.happiness = Math.floor(Math.random() * 4) - 1; // -1 to +2
-      agingEffects.looks = Math.floor(Math.random() * 4) - 2; // -2 to +1
-    } else {
-      // Senior - significant decline
-      agingEffects.health = Math.floor(Math.random() * 6) - 5; // -5 to 0
-      agingEffects.smarts = Math.floor(Math.random() * 3) - 1; // -1 to +1
-      agingEffects.happiness = Math.floor(Math.random() * 4) - 1; // -1 to +2
-      agingEffects.looks = Math.floor(Math.random() * 5) - 3; // -3 to +1
-      agingEffects.relationships = Math.floor(Math.random() * 3) - 1; // -1 to +1
-    }
+    // Advanced stat evolution system
+    let updatedCharacter = { ...gameState.character, age: newAge, year: newYear };
+    
+    // Apply natural stat evolution
+    const statEvolution = evolveStatsNaturally(updatedCharacter);
+    updatedCharacter = { ...updatedCharacter, ...statEvolution };
+    
+    // Generate messages for significant stat changes
+    const statMessages: string[] = [];
+    Object.entries(statEvolution).forEach(([statName, newValue]) => {
+      if (typeof newValue === 'number') {
+        const oldValue = gameState.character[statName as keyof Character] as number;
+        if (typeof oldValue === 'number') {
+          const change = newValue - oldValue;
+          const message = getStatMessage(statName, change);
+          if (message) statMessages.push(message);
+        }
+      }
+    });
+    
+    // Add stat messages to current age events
+    statMessages.forEach(message => addEventToCurrentAge(message));
 
     // Zodiac influences (more pronounced)
     const zodiac = gameState.character.zodiacSign;
+    const zodiacEffects: any = {};
     if (zodiac.element === 'water') {
-      agingEffects.health += 1;
-      agingEffects.happiness += 1;
+      zodiacEffects.health = 1;
+      zodiacEffects.happiness = 1;
     } else if (zodiac.element === 'fire') {
-      agingEffects.happiness += 2;
-      agingEffects.relationships += 1;
+      zodiacEffects.happiness = 2;
+      zodiacEffects.relationships = 1;
     } else if (zodiac.element === 'earth') {
-      agingEffects.health += 1;
-      agingEffects.smarts += 1;
+      zodiacEffects.health = 1;
+      zodiacEffects.smarts = 1;
     } else if (zodiac.element === 'air') {
-      agingEffects.smarts += 2;
-      agingEffects.relationships += 1;
+      zodiacEffects.smarts = 2;
+      zodiacEffects.relationships = 1;
     }
-
-    // Job income
-    if (gameState.character.job && gameState.character.salary > 0) {
-      agingEffects.wealth = Math.floor(gameState.character.salary * (0.8 + Math.random() * 0.4)); // 80-120% of salary
-    }
-
-    let updatedCharacter = applyStatEffects(
-      { ...gameState.character, age: newAge, year: newYear },
-      agingEffects
-    );
+    
+    updatedCharacter = applyStatEffects(updatedCharacter, zodiacEffects);
 
     // Add new age entry to history
     const newAgeMessage = `I am now ${newAge} years old.`;
@@ -336,7 +304,17 @@ const GameBoard: React.FC = () => {
       return;
     }
 
-    const newEvent = Math.random() > 0.15 ? getRandomEvent(updatedCharacter, gameState.eventTracker) : null;
+    // Use dynamic event system for more sophisticated events
+    let newEvent = null;
+    if (Math.random() > 0.25) { // 75% chance of event
+      const availableEvents = dynamicEventSystem.getAvailableEvents(updatedCharacter, gameState.eventTracker);
+      newEvent = dynamicEventSystem.selectEvent(availableEvents);
+      
+      // Fallback to basic events if no dynamic events available
+      if (!newEvent) {
+        newEvent = getRandomEvent(updatedCharacter, gameState.eventTracker);
+      }
+    }
 
     setGameState(prev => ({
       ...prev,
@@ -351,7 +329,30 @@ const GameBoard: React.FC = () => {
     const choice = gameState.currentEvent.choices.find(c => c.id === choiceId);
     if (!choice) return;
 
-    const updatedCharacter = applyStatEffects(gameState.character, choice.effects);
+    let updatedCharacter = applyStatEffects(gameState.character, choice.effects);
+
+    // Add event to tracker to prevent repeated events
+    const updatedTracker = { ...gameState.eventTracker };
+    updatedTracker.triggeredEvents.add(gameState.currentEvent.id);
+
+    // Handle consequences
+    const eventMessage = `${gameState.currentEvent.title}: ${choice.text}`;
+    addEventToCurrentAge(eventMessage);
+
+    // Add choice consequences if they exist
+    if (choice.consequences) {
+      choice.consequences.forEach(consequence => {
+        addEventToCurrentAge(consequence);
+      });
+    }
+
+    // Check for flags or special effects
+    const currentEvent = gameState.currentEvent as any;
+    if (currentEvent.flags) {
+      // Store flags for future event conditions
+      // This could be expanded to a proper flag system
+      updatedCharacter.flags = [...(updatedCharacter.flags || []), ...currentEvent.flags];
+    }
 
     const gameOverCheck = isGameOver(updatedCharacter);
 
@@ -361,18 +362,17 @@ const GameBoard: React.FC = () => {
         character: updatedCharacter,
         gameOver: true,
         gameOverReason: gameOverCheck.reason,
-        currentEvent: null
+        currentEvent: null,
+        eventTracker: updatedTracker
       }));
       return;
     }
 
-    const eventMessage = `${gameState.currentEvent.title}: ${choice.text}`;
-    addEventToCurrentAge(eventMessage);
-
     setGameState(prev => ({
       ...prev,
       character: updatedCharacter,
-      currentEvent: null
+      currentEvent: null,
+      eventTracker: updatedTracker
     }));
   };
 
