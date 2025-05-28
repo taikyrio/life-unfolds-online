@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Character, LifeEvent, GameState } from '../types/game';
 import { generateRandomName, generateRandomStats, applyStatEffects, isGameOver, getLifeStage } from '../utils/gameUtils';
-import { getRandomEvent } from '../data/lifeEvents';
+import { getRandomEvent, createEventTracker } from '../data/lifeEvents';
 import { CharacterHeader } from './CharacterHeader';
 import { BottomNavigation } from './BottomNavigation';
 import { LifeTab } from './LifeTab';
@@ -11,6 +11,8 @@ import { GameOverScreen } from './GameOverScreen';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { toast } from '@/hooks/use-toast';
+import { useIsMobile } from '../hooks/use-mobile';
+import { EventCard } from './EventCard';
 
 const GameBoard: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'life' | 'activities' | 'careers' | 'relationships' | 'assets'>('life');
@@ -25,8 +27,11 @@ const GameBoard: React.FC = () => {
     gameStarted: false,
     gameOver: false,
     eventHistory: [],
-    achievements: []
+    achievements: [],
+    eventTracker: createEventTracker()
   });
+
+  const isMobile = useIsMobile();
 
   const startNewGame = () => {
     const newCharacter: Character = {
@@ -45,13 +50,11 @@ const GameBoard: React.FC = () => {
       gameStarted: true,
       gameOver: false,
       eventHistory: [birthMessage],
-      achievements: []
+      achievements: [],
+      eventTracker: createEventTracker()
     });
 
-    toast({
-      title: `Welcome to life, ${newCharacter.name}! 👶`,
-      description: `Born in ${newCharacter.birthplace} as a ${newCharacter.zodiacSign.name}. Your journey begins...`,
-    });
+    // Welcome message removed - no toast notifications
   };
 
   const ageUp = () => {
@@ -59,7 +62,7 @@ const GameBoard: React.FC = () => {
 
     const newAge = gameState.character.age + 1;
     const newYear = gameState.character.year + 1;
-    
+
     // Natural aging effects with zodiac influence
     let agingEffects: any = {
       health: newAge > 60 ? -2 : newAge > 40 ? -1 : newAge > 20 ? 0 : 1,
@@ -88,7 +91,7 @@ const GameBoard: React.FC = () => {
     );
 
     const gameOverCheck = isGameOver(updatedCharacter);
-    
+
     if (gameOverCheck.gameOver) {
       setGameState(prev => ({
         ...prev,
@@ -100,11 +103,11 @@ const GameBoard: React.FC = () => {
       return;
     }
 
-    // Generate age-appropriate event
-    const newEvent = Math.random() > 0.3 ? getRandomEvent(updatedCharacter) : null;
-    
+    // Generate age-appropriate event using event tracker
+    const newEvent = Math.random() > 0.15 ? getRandomEvent(updatedCharacter, gameState.eventTracker) : null;
+
     const ageMessage = `${updatedCharacter.name} turned ${newAge}!`;
-    
+
     setGameState(prev => ({
       ...prev,
       character: updatedCharacter,
@@ -112,10 +115,7 @@ const GameBoard: React.FC = () => {
       eventHistory: [ageMessage, ...prev.eventHistory.slice(0, 9)]
     }));
 
-    toast({
-      title: `Happy ${newAge}th Birthday! 🎂`,
-      description: `Welcome to ${newYear}! You are now ${getLifeStage(newAge).toLowerCase()}.`,
-    });
+    // Event notifications removed - no toast notifications
   };
 
   const handleChoice = (choiceId: string) => {
@@ -125,9 +125,9 @@ const GameBoard: React.FC = () => {
     if (!choice) return;
 
     const updatedCharacter = applyStatEffects(gameState.character, choice.effects);
-    
+
     const gameOverCheck = isGameOver(updatedCharacter);
-    
+
     if (gameOverCheck.gameOver) {
       setGameState(prev => ({
         ...prev,
@@ -140,7 +140,7 @@ const GameBoard: React.FC = () => {
     }
 
     const eventMessage = `${gameState.currentEvent.title}: ${choice.text}`;
-    
+
     setGameState(prev => ({
       ...prev,
       character: updatedCharacter,
@@ -148,64 +148,227 @@ const GameBoard: React.FC = () => {
       eventHistory: [eventMessage, ...prev.eventHistory.slice(0, 9)]
     }));
 
-    toast({
-      title: 'Choice made! 🎯',
-      description: choice.text,
-    });
+    // Choice notification removed - no toast notifications
   };
 
   const handleActivity = (activityType: string, activityId: string) => {
-    // Activity system implementation
     let effects: any = {};
     let message = '';
-
-    // Education activities
-    if (activityType === 'education') {
+    
+    // Consolidated activity system based on life stage
+    const lifeStage = getLifeStage(gameState.character.age);
+    
+    // Early Childhood Activities
+    if (gameState.character.age < 6) {
       switch (activityId) {
-        case 'study':
-          effects = { smarts: 5, happiness: -2 };
-          message = 'You studied hard and improved your knowledge!';
+        case 'play_toys':
+          effects = { happiness: 15, smarts: 5 };
+          message = 'You had fun playing with toys and learned something new!';
           break;
-        case 'library':
-          effects = { smarts: 3, happiness: 1 };
-          message = 'You spent time reading at the library.';
+        case 'watch_cartoons':
+          effects = { happiness: 10, smarts: 2 };
+          message = 'You watched cartoons and laughed a lot!';
           break;
-        case 'tutor':
-          effects = { smarts: 10, wealth: -100 };
-          message = 'You hired a tutor and learned a lot!';
+        case 'nap':
+          effects = { health: 10, happiness: 5 };
+          message = 'You took a nice nap and feel refreshed!';
           break;
       }
     }
-    // Health activities
+    
+    // School Activities
+    else if (activityType === 'school activities') {
+      switch (activityId) {
+        case 'study_harder':
+          effects = { smarts: 15, happiness: -5 };
+          message = 'You studied harder and improved your grades!';
+          break;
+        case 'join_club':
+          effects = { relationships: 20, happiness: 15, smarts: 5 };
+          message = 'You joined a school club and made new friends!';
+          break;
+        case 'sports_team':
+          effects = { health: 15, relationships: 15, looks: 5, happiness: 10 };
+          message = 'You joined the sports team and got in great shape!';
+          break;
+        case 'school_play':
+          effects = { happiness: 20, looks: 10, relationships: 10 };
+          message = 'You performed in the school play and got applause!';
+          break;
+        case 'tutoring':
+          effects = { smarts: 20, wealth: -50 };
+          message = 'The tutor helped you understand difficult subjects!';
+          break;
+      }
+    }
+    
+    // Career Activities
+    else if (activityType === 'career') {
+      switch (activityId) {
+        case 'work_harder':
+          effects = { wealth: 25, happiness: -5 };
+          message = 'You worked extra hard and impressed your boss!';
+          break;
+        case 'ask_promotion':
+          const promotionChance = Math.random();
+          if (promotionChance > 0.6) {
+            effects = { salary: 20, happiness: 25 };
+            message = 'Congratulations! You got promoted!';
+          } else {
+            effects = { happiness: -10 };
+            message = 'Your promotion request was denied. Maybe next time.';
+          }
+          break;
+        case 'job_search':
+          effects = { happiness: 5 };
+          message = 'You spent time looking for new job opportunities.';
+          break;
+        case 'freelance':
+          effects = { wealth: Math.floor(Math.random() * 100) + 50, happiness: 10 };
+          message = 'You earned some extra money from freelance work!';
+          break;
+        case 'night_school':
+          effects = { smarts: 25, wealth: -100, happiness: -5 };
+          message = 'You attended night school and expanded your knowledge!';
+          break;
+      }
+    }
+    
+    // Health & Fitness Activities
     else if (activityType === 'health & fitness') {
       switch (activityId) {
         case 'gym':
-          effects = { health: 5, looks: 3, wealth: -20 };
-          message = 'You worked out at the gym!';
+          effects = { health: 15, looks: 10, wealth: -30, happiness: 10 };
+          message = 'You had a great workout at the gym!';
           break;
         case 'doctor':
-          effects = { health: 10, wealth: -50 };
-          message = 'You visited the doctor for a checkup.';
+          effects = { health: 20, wealth: -75 };
+          message = 'The doctor gave you a clean bill of health!';
           break;
         case 'meditation':
-          effects = { happiness: 8, health: 2 };
-          message = 'You meditated and found inner peace.';
+          effects = { happiness: 20, health: 5 };
+          message = 'You found inner peace through meditation.';
+          break;
+        case 'diet':
+          effects = { health: 10, looks: 5, happiness: 5 };
+          message = 'You started eating healthier and feel great!';
+          break;
+      }
+    }
+    
+    // Social & Entertainment Activities
+    else if (activityType === 'social & entertainment' || activityType === 'social life') {
+      switch (activityId) {
+        case 'hang_friends':
+          effects = { happiness: 20, relationships: 15 };
+          message = 'You had a great time hanging out with friends!';
+          break;
+        case 'school_dance':
+          effects = { happiness: 25, relationships: 10, looks: 5 };
+          message = 'You danced the night away at the school dance!';
+          break;
+        case 'study_group':
+          effects = { smarts: 10, relationships: 10, happiness: 5 };
+          message = 'Studying with friends made learning more fun!';
+          break;
+        case 'party':
+          const partyOutcome = Math.random();
+          if (partyOutcome > 0.8) {
+            effects = { happiness: 30, relationships: 20, health: -10 };
+            message = 'You had an amazing time at the party!';
+          } else if (partyOutcome > 0.6) {
+            effects = { happiness: 15, relationships: 10 };
+            message = 'You enjoyed the party and met some interesting people.';
+          } else {
+            effects = { happiness: -10, health: -5, relationships: -5 };
+            message = 'The party got out of hand and you regret going.';
+          }
+          break;
+        case 'vacation':
+          effects = { happiness: 40, health: 15, wealth: -200 };
+          message = 'You had a relaxing and rejuvenating vacation!';
+          break;
+        case 'volunteer':
+          effects = { happiness: 25, relationships: 15 };
+          message = 'Volunteering made you feel good about helping others!';
+          break;
+        case 'hobby':
+          effects = { happiness: 20, smarts: 10 };
+          message = 'You learned a new hobby and had fun doing it!';
+          break;
+      }
+    }
+    
+    // Risky Activities
+    else if (activityType === 'risky activities') {
+      switch (activityId) {
+        case 'gamble':
+          const gambleOutcome = Math.random();
+          if (gambleOutcome > 0.7) {
+            effects = { wealth: Math.floor(Math.random() * 200) + 100, happiness: 30 };
+            message = 'Lucky you! You won big at gambling!';
+          } else {
+            effects = { wealth: -Math.floor(Math.random() * 150) - 50, happiness: -20 };
+            message = 'You lost money gambling. Maybe it\'s time to quit.';
+          }
+          break;
+        case 'street_race':
+          const raceOutcome = Math.random();
+          if (raceOutcome > 0.8) {
+            effects = { happiness: 25, wealth: 100 };
+            message = 'You won the street race and earned some prize money!';
+          } else if (raceOutcome > 0.4) {
+            effects = { happiness: 10 };
+            message = 'You lost the race but had an adrenaline rush!';
+          } else {
+            effects = { health: -20, wealth: -300, happiness: -15 };
+            message = 'You crashed during the race and got injured!';
+          }
+          break;
+        case 'shoplift':
+          const stealOutcome = Math.random();
+          if (stealOutcome > 0.6) {
+            effects = { wealth: 25, happiness: 10 };
+            message = 'You got away with shoplifting some small items.';
+          } else {
+            effects = { criminalRecord: true, happiness: -25, relationships: -15 };
+            message = 'You got caught shoplifting and now have a criminal record!';
+          }
           break;
       }
     }
 
     if (Object.keys(effects).length > 0) {
       const updatedCharacter = applyStatEffects(gameState.character, effects);
+      
+      // Consolidate into yearly entry instead of individual activities
+      const yearEntry = `Age ${gameState.character.age}: ${message}`;
+      
+      // Check if there's already an entry for this age
+      const existingEntryIndex = gameState.eventHistory.findIndex(entry => 
+        entry.startsWith(`Age ${gameState.character.age}:`)
+      );
+      
+      let newEventHistory;
+      if (existingEntryIndex !== -1) {
+        // Replace existing entry for this age
+        newEventHistory = [...gameState.eventHistory];
+        newEventHistory[existingEntryIndex] = yearEntry;
+      } else {
+        // Add new entry and limit to last 10 years
+        newEventHistory = [yearEntry, ...gameState.eventHistory.slice(0, 9)];
+      }
+      
       setGameState(prev => ({
         ...prev,
         character: updatedCharacter,
-        eventHistory: [message, ...prev.eventHistory.slice(0, 9)]
+        eventHistory: newEventHistory
       }));
 
-      toast({
-        title: 'Activity completed! 🎯',
-        description: message,
-      });
+      // Auto-navigate to Life tab
+      setActiveTab('life');
+
+      // Activity notification removed - no toast notifications
     }
   };
 
@@ -217,10 +380,7 @@ const GameBoard: React.FC = () => {
         character: updatedCharacter,
         eventHistory: [`${gameState.character.name} quit their job.`, ...prev.eventHistory.slice(0, 9)]
       }));
-      toast({
-        title: 'Job quit! 💼',
-        description: 'You are now unemployed.',
-      });
+      // Job quit notification removed - no toast notifications
       return;
     }
 
@@ -247,11 +407,48 @@ const GameBoard: React.FC = () => {
         character: updatedCharacter,
         eventHistory: [`${gameState.character.name} got hired as a ${job.title}!`, ...prev.eventHistory.slice(0, 9)]
       }));
-      toast({
-        title: 'Congratulations! 🎉',
-        description: `You got the job as ${job.title}!`,
-      });
+      // Job hired notification removed - no toast notifications
     }
+  };
+
+  const renderTabContent = () => {
+    switch (activeTab) {
+      case 'life':
+        return (
+          <LifeTab
+            character={gameState.character}
+            currentEvent={gameState.currentEvent}
+            onAgeUp={ageUp}
+            onChoice={handleChoice}
+            eventHistory={gameState.eventHistory}
+          />
+        );
+      case 'activities':
+        return <ActivitiesTab character={gameState.character} onActivity={handleActivity} />;
+      case 'careers':
+        return <CareersTab character={gameState.character} onJobApplication={handleJobApplication} />;
+      case 'relationships':
+        return (
+          <div className="text-center py-8 sm:py-12">
+            <h2 className="text-xl sm:text-2xl font-bold text-game-text mb-4">Relationships</h2>
+            <p className="text-sm sm:text-base text-gray-600">Coming soon! Manage your relationships with family and friends.</p>
+          </div>
+        );
+      case 'assets':
+        return (
+          <div className="text-center py-8 sm:py-12">
+            <h2 className="text-xl sm:text-2xl font-bold text-game-text mb-4">Assets</h2>
+            <p className="text-sm sm:text-base text-gray-600">Coming soon! Buy property, vehicles, and luxury items.</p>
+          </div>
+        );
+      default:
+        return null;
+    }
+  };
+
+  const renderAgeButton = () => {
+    // Age button is now handled by BottomNavigation
+    return null;
   };
 
   if (gameState.gameOver) {
@@ -292,41 +489,6 @@ const GameBoard: React.FC = () => {
     );
   }
 
-  const renderActiveTab = () => {
-    switch (activeTab) {
-      case 'life':
-        return (
-          <LifeTab
-            character={gameState.character}
-            currentEvent={gameState.currentEvent}
-            onAgeUp={ageUp}
-            onChoice={handleChoice}
-            eventHistory={gameState.eventHistory}
-          />
-        );
-      case 'activities':
-        return <ActivitiesTab character={gameState.character} onActivity={handleActivity} />;
-      case 'careers':
-        return <CareersTab character={gameState.character} onJobApplication={handleJobApplication} />;
-      case 'relationships':
-        return (
-          <div className="text-center py-8 sm:py-12">
-            <h2 className="text-xl sm:text-2xl font-bold text-game-text mb-4">Relationships</h2>
-            <p className="text-sm sm:text-base text-gray-600">Coming soon! Manage your relationships with family and friends.</p>
-          </div>
-        );
-      case 'assets':
-        return (
-          <div className="text-center py-8 sm:py-12">
-            <h2 className="text-xl sm:text-2xl font-bold text-game-text mb-4">Assets</h2>
-            <p className="text-sm sm:text-base text-gray-600">Coming soon! Buy property, vehicles, and luxury items.</p>
-          </div>
-        );
-      default:
-        return null;
-    }
-  };
-
   return (
     <div className="min-h-screen bg-game-bg pb-16 sm:pb-20 font-nunito">
       <div className="max-w-6xl mx-auto p-3 sm:p-4">
@@ -337,11 +499,18 @@ const GameBoard: React.FC = () => {
         </div>
 
         <CharacterHeader character={gameState.character} />
-        
-        {renderActiveTab()}
+
+        {renderTabContent()}
       </div>
 
-      <BottomNavigation activeTab={activeTab} onTabChange={setActiveTab} />
+      <BottomNavigation activeTab={activeTab} onTabChange={setActiveTab} onAgeUp={ageUp} />
+      
+      {/* Event Modal Overlay */}
+      {gameState.currentEvent && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <EventCard event={gameState.currentEvent} onChoice={handleChoice} />
+        </div>
+      )}
     </div>
   );
 };

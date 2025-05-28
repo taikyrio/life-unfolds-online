@@ -105,6 +105,12 @@ export interface StatEffects {
   familyMemberRelationship?: { id: string; change: number };
 }
 
+export interface EventTracker {
+  triggeredEvents: Set<string>;
+  lastEventAge: number;
+  eventCooldowns: Map<string, number>;
+}
+
 export interface GameState {
   character: Character;
   currentEvent: LifeEvent | null;
@@ -113,4 +119,5 @@ export interface GameState {
   gameOverReason?: string;
   eventHistory: string[];
   achievements: string[];
+  eventTracker: EventTracker;
 }
