@@ -7,6 +7,8 @@ import { BottomNavigation } from './BottomNavigation';
 import { LifeTab } from './LifeTab';
 import { ActivitiesTab } from './ActivitiesTab';
 import { CareersTab } from './CareersTab';
+import { RelationshipsTab } from './RelationshipsTab';
+import { AssetsTab } from './AssetsTab';
 import { GameOverScreen } from './GameOverScreen';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -428,12 +430,7 @@ const GameBoard: React.FC = () => {
       case 'careers':
         return <CareersTab character={gameState.character} onJobApplication={handleJobApplication} />;
       case 'relationships':
-        return (
-          <div className="text-center py-8 px-4">
-            <h2 className="text-xl font-bold text-gray-800 mb-4">Relationships</h2>
-            <p className="text-gray-600">Coming soon! Manage your relationships with family and friends.</p>
-          </div>
-        );
+        return <RelationshipsTab character={gameState.character} />;
       case 'assets':
         return (
           <div className="text-center py-8 px-4">
@@ -502,7 +499,11 @@ const GameBoard: React.FC = () => {
 
       {renderTabContent()}
 
-      <BottomNavigation activeTab={activeTab} onTabChange={setActiveTab} />
+      <BottomNavigation 
+        activeTab={activeTab} 
+        onTabChange={setActiveTab}
+        onAgeUp={ageUp}
+      />
       
       {/* Event Modal Overlay */}
       {gameState.currentEvent && (

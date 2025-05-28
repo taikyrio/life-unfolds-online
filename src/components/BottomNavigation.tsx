@@ -1,76 +1,67 @@
 
 import React from 'react';
-import { Activity, Briefcase, Users, Home, Settings, Plus } from 'lucide-react';
+import { Heart, Briefcase, Users, Home, Car } from 'lucide-react';
 
 interface BottomNavigationProps {
   activeTab: 'life' | 'activities' | 'careers' | 'relationships' | 'assets';
   onTabChange: (tab: 'life' | 'activities' | 'careers' | 'relationships' | 'assets') => void;
+  onAgeUp: () => void;
 }
 
 export const BottomNavigation: React.FC<BottomNavigationProps> = ({ 
   activeTab, 
-  onTabChange
+  onTabChange,
+  onAgeUp 
 }) => {
   const tabs = [
-    { id: 'life' as const, label: 'Infant', icon: Home, color: '#FF9800' },
-    { id: 'assets' as const, label: 'Assets', icon: Settings, color: '#4CAF50' },
-    { id: 'relationships' as const, label: 'Relationships', icon: Users, color: '#E91E63' },
-    { id: 'activities' as const, label: 'Activities', icon: Activity, color: '#9C27B0' },
+    { id: 'activities' as const, label: 'Activities', icon: Home },
+    { id: 'relationships' as const, label: 'Relationships', icon: Heart },
+    { id: 'careers' as const, label: 'Careers', icon: Briefcase },
+    { id: 'assets' as const, label: 'Assets', icon: Car },
   ];
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-50">
-      {/* BitLife-style bottom nav */}
-      <div className="bg-slate-700 px-2 py-2">
-        <div className="flex justify-around items-center max-w-6xl mx-auto">
-          {tabs.slice(0, 2).map(({ id, label, icon: Icon, color }) => (
+    <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 safe-area-pb">
+      <div className="flex items-center justify-around py-2">
+        {tabs.slice(0, 2).map((tab) => {
+          const Icon = tab.icon;
+          return (
             <button
-              key={id}
-              onClick={() => onTabChange(id)}
-              className={`flex flex-col items-center py-2 px-3 rounded-lg transition-all duration-200 ${
-                activeTab === id ? 'bg-slate-600' : ''
+              key={tab.id}
+              onClick={() => onTabChange(tab.id)}
+              className={`flex flex-col items-center p-2 min-w-0 flex-1 ${
+                activeTab === tab.id ? 'text-red-500' : 'text-gray-600'
               }`}
             >
-              <Icon 
-                size={22} 
-                style={{ color: activeTab === id ? color : '#94A3B8' }}
-              />
-              <span className={`text-xs mt-1 font-medium ${
-                activeTab === id ? 'text-white' : 'text-slate-400'
-              }`}>
-                {id === 'life' ? (activeTab === 'life' ? 'Infant' : 'Life') : label}
-              </span>
+              <Icon size={20} className="mb-1" />
+              <span className="text-xs truncate">{tab.label}</span>
             </button>
-          ))}
-
-          {/* Center Age Button - BitLife style */}
-          <div className="relative -mt-4">
-            <button className="w-16 h-16 bg-green-500 rounded-full shadow-lg flex flex-col items-center justify-center text-white font-bold transition-all duration-200 hover:bg-green-600 hover:scale-105 active:scale-95 border-4 border-white">
-              <Plus size={18} className="mb-0.5" />
-              <span className="text-xs font-bold">Age</span>
-            </button>
-          </div>
-
-          {tabs.slice(2).map(({ id, label, icon: Icon, color }) => (
+          );
+        })}
+        
+        {/* Age Button */}
+        <button
+          onClick={onAgeUp}
+          className="bg-red-500 text-white rounded-full w-16 h-16 flex items-center justify-center font-bold text-lg shadow-lg hover:bg-red-600 transition-colors"
+        >
+          Age
+        </button>
+        
+        {tabs.slice(2).map((tab) => {
+          const Icon = tab.icon;
+          return (
             <button
-              key={id}
-              onClick={() => onTabChange(id)}
-              className={`flex flex-col items-center py-2 px-3 rounded-lg transition-all duration-200 ${
-                activeTab === id ? 'bg-slate-600' : ''
+              key={tab.id}
+              onClick={() => onTabChange(tab.id)}
+              className={`flex flex-col items-center p-2 min-w-0 flex-1 ${
+                activeTab === tab.id ? 'text-red-500' : 'text-gray-600'
               }`}
             >
-              <Icon 
-                size={22} 
-                style={{ color: activeTab === id ? color : '#94A3B8' }}
-              />
-              <span className={`text-xs mt-1 font-medium ${
-                activeTab === id ? 'text-white' : 'text-slate-400'
-              }`}>
-                {label}
-              </span>
+              <Icon size={20} className="mb-1" />
+              <span className="text-xs truncate">{tab.label}</span>
             </button>
-          ))}
-        </div>
+          );
+        })}
       </div>
     </div>
   );
