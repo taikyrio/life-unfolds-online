@@ -596,6 +596,14 @@ export const clampStat = (value: number, min: number = 0, max: number = 100): nu
 export const applyStatEffects = (character: Character, effects: any): Character => {
   let updatedCharacter = { ...character };
   
+  // Ensure education is always an array for existing characters
+  if (!Array.isArray(updatedCharacter.education)) {
+    console.log('Converting education from string to array:', updatedCharacter.education);
+    updatedCharacter.education = updatedCharacter.education === 'None' || !updatedCharacter.education 
+      ? [] 
+      : [updatedCharacter.education];
+  }
+  
   // Apply basic stat changes
   if (effects.health !== undefined) updatedCharacter.health = clampStat(character.health + effects.health);
   if (effects.happiness !== undefined) updatedCharacter.happiness = clampStat(character.happiness + effects.happiness);
@@ -609,7 +617,15 @@ export const applyStatEffects = (character: Character, effects: any): Character 
   if (effects.salary !== undefined) updatedCharacter.salary = Math.max(0, character.salary + effects.salary);
   if (effects.job !== undefined) updatedCharacter.job = effects.job;
   if (effects.jobLevel !== undefined) updatedCharacter.jobLevel = character.jobLevel + effects.jobLevel;
-  if (effects.education !== undefined) updatedCharacter.education = effects.education;
+  if (effects.education !== undefined) {
+    // Handle both string and array education effects
+    if (Array.isArray(effects.education)) {
+      updatedCharacter.education = [...updatedCharacter.education, ...effects.education];
+    } else {
+      // If it's a string, add it to the education array
+      updatedCharacter.education = [...updatedCharacter.education, effects.education];
+    }
+  }
   
   // Apply relationship changes
   if (effects.relationshipStatus !== undefined) updatedCharacter.relationshipStatus = effects.relationshipStatus;

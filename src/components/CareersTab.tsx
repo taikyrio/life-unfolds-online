@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -10,6 +11,11 @@ interface CareersTabProps {
 }
 
 export const CareersTab: React.FC<CareersTabProps> = ({ character, onJobApplication }) => {
+  // Ensure education is always an array
+  const characterEducation = Array.isArray(character.education) ? character.education : [];
+  
+  console.log('Character education in CareersTab:', characterEducation);
+
   const jobListings = [
     // Entry Level Jobs
     {
@@ -181,8 +187,13 @@ export const CareersTab: React.FC<CareersTabProps> = ({ character, onJobApplicat
 
   const isEligible = (job: typeof jobListings[0]) => {
     const meetsAge = character.age >= job.requirements.age;
-    const meetsEducation = job.requirements.education === 'None' || 
-                          character.education.includes(job.requirements.education.split(' ')[0]);
+    
+    let meetsEducation = true;
+    if (job.requirements.education !== 'None') {
+      const requiredEducationLevel = job.requirements.education.split(' ')[0];
+      meetsEducation = characterEducation.some(ed => ed.includes(requiredEducationLevel));
+    }
+    
     const meetsSmarts = job.requirements.smarts === 0 || character.smarts >= job.requirements.smarts;
     const meetsLooks = job.requirements.looks === 0 || character.looks >= job.requirements.looks;
     
@@ -194,8 +205,12 @@ export const CareersTab: React.FC<CareersTabProps> = ({ character, onJobApplicat
     if (character.age < job.requirements.age) {
       reasons.push(`Need age ${job.requirements.age}+`);
     }
-    if (job.requirements.education !== 'None' && !character.education.includes(job.requirements.education.split(' ')[0])) {
-      reasons.push(`Need ${job.requirements.education}`);
+    if (job.requirements.education !== 'None') {
+      const requiredEducationLevel = job.requirements.education.split(' ')[0];
+      const hasEducation = characterEducation.some(ed => ed.includes(requiredEducationLevel));
+      if (!hasEducation) {
+        reasons.push(`Need ${job.requirements.education}`);
+      }
     }
     if (job.requirements.smarts > 0 && character.smarts < job.requirements.smarts) {
       reasons.push(`Need ${job.requirements.smarts} smarts`);
