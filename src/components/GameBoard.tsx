@@ -429,16 +429,16 @@ const GameBoard: React.FC = () => {
         return <CareersTab character={gameState.character} onJobApplication={handleJobApplication} />;
       case 'relationships':
         return (
-          <div className="text-center py-8 sm:py-12">
-            <h2 className="text-xl sm:text-2xl font-bold text-game-text mb-4">Relationships</h2>
-            <p className="text-sm sm:text-base text-gray-600">Coming soon! Manage your relationships with family and friends.</p>
+          <div className="text-center py-8 px-4">
+            <h2 className="text-xl font-bold text-gray-800 mb-4">Relationships</h2>
+            <p className="text-gray-600">Coming soon! Manage your relationships with family and friends.</p>
           </div>
         );
       case 'assets':
         return (
-          <div className="text-center py-8 sm:py-12">
-            <h2 className="text-xl sm:text-2xl font-bold text-game-text mb-4">Assets</h2>
-            <p className="text-sm sm:text-base text-gray-600">Coming soon! Buy property, vehicles, and luxury items.</p>
+          <div className="text-center py-8 px-4">
+            <h2 className="text-xl font-bold text-gray-800 mb-4">Assets</h2>
+            <p className="text-gray-600">Coming soon! Buy property, vehicles, and luxury items.</p>
           </div>
         );
       default:
@@ -463,7 +463,7 @@ const GameBoard: React.FC = () => {
 
   if (!gameState.gameStarted) {
     return (
-      <div className="min-h-screen bg-game-bg flex items-center justify-center p-4 font-nunito">
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4 font-nunito">
         <Card className="w-full max-w-sm sm:max-w-md animate-scale-in">
           <CardHeader className="text-center pb-4">
             <CardTitle className="text-2xl sm:text-3xl font-bold text-primary mb-2">
@@ -490,18 +490,17 @@ const GameBoard: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-game-bg pb-16 sm:pb-20 font-nunito">
-      <div className="max-w-6xl mx-auto p-3 sm:p-4">
-        <div className="text-center mb-4 sm:mb-6">
-          <h1 className="text-2xl sm:text-3xl font-bold text-primary mb-2">
-            🌟 LifeSim
-          </h1>
-        </div>
-
-        <CharacterHeader character={gameState.character} />
-
-        {renderTabContent()}
+    <div className="min-h-screen bg-gray-50 font-nunito">
+      {/* BitLife-style header */}
+      <div className="bg-red-500 p-3 text-center">
+        <h1 className="text-2xl font-bold text-white">
+          🌟 LifeSim
+        </h1>
       </div>
+
+      <CharacterHeader character={gameState.character} />
+
+      {renderTabContent()}
 
       <BottomNavigation activeTab={activeTab} onTabChange={setActiveTab} />
       
