@@ -3,20 +3,12 @@ import { lifeEvents } from '../data/lifeEvents';
 import { educationLevels, shouldAutoEnrollInSchool } from './educationUtils';
 
 const firstNames = [
-  // Male names
-  'James', 'John', 'Robert', 'Michael', 'David', 'William', 'Richard', 'Joseph', 'Thomas', 'Christopher',
-  'Charles', 'Daniel', 'Matthew', 'Anthony', 'Mark', 'Donald', 'Steven', 'Paul', 'Andrew', 'Joshua',
-  'Kenneth', 'Kevin', 'Brian', 'George', 'Timothy', 'Ronald', 'Jason', 'Edward', 'Jeffrey', 'Ryan',
-  'Jacob', 'Gary', 'Nicholas', 'Eric', 'Jonathan', 'Stephen', 'Larry', 'Justin', 'Scott', 'Brandon',
-  'Benjamin', 'Samuel', 'Frank', 'Gregory', 'Raymond', 'Alexander', 'Patrick', 'Jack', 'Dennis', 'Jerry',
-  'Tyler', 'Aaron', 'Jose', 'Henry', 'Adam', 'Douglas', 'Nathan', 'Peter', 'Zachary', 'Kyle',
-  // Female names
-  'Mary', 'Patricia', 'Jennifer', 'Linda', 'Elizabeth', 'Barbara', 'Susan', 'Jessica', 'Sarah', 'Karen',
-  'Lisa', 'Nancy', 'Betty', 'Helen', 'Sandra', 'Donna', 'Carol', 'Ruth', 'Sharon', 'Michelle',
-  'Laura', 'Sarah', 'Kimberly', 'Deborah', 'Dorothy', 'Lisa', 'Nancy', 'Karen', 'Betty', 'Helen',
-  'Emily', 'Amanda', 'Melissa', 'Debra', 'Stephanie', 'Rebecca', 'Sharon', 'Laura', 'Cynthia', 'Amy',
-  'Kathleen', 'Angela', 'Shirley', 'Brenda', 'Emma', 'Olivia', 'Sophia', 'Abigail', 'Isabella', 'Mia',
-  'Madison', 'Charlotte', 'Avery', 'Sofia', 'Scarlett', 'Grace', 'Lily', 'Hannah', 'Victoria', 'Aria'
+  'Alex', 'Jordan', 'Taylor', 'Morgan', 'Casey', 'Riley', 'Cameron', 'Quinn', 'Sage', 'River',
+  'Emma', 'Olivia', 'Ava', 'Isabella', 'Sophia', 'Charlotte', 'Mia', 'Amelia', 'Harper', 'Evelyn',
+  'Liam', 'Noah', 'Oliver', 'Elijah', 'James', 'William', 'Benjamin', 'Lucas', 'Henry', 'Alexander',
+  'Aria', 'Luna', 'Grace', 'Chloe', 'Penelope', 'Layla', 'Riley', 'Zoey', 'Nora', 'Lily',
+  'Mason', 'Ethan', 'Michael', 'Daniel', 'Jacob', 'Logan', 'Jackson', 'Levi', 'Sebastian', 'Mateo',
+  'Zoe', 'Elena', 'Claire', 'Maya', 'Leah', 'Madeline', 'Kylie', 'Audrey', 'Anna', 'Sarah'
 ];
 
 const lastNames = [
@@ -24,11 +16,102 @@ const lastNames = [
   'Hernandez', 'Lopez', 'Gonzalez', 'Wilson', 'Anderson', 'Thomas', 'Taylor', 'Moore', 'Jackson', 'Martin',
   'Lee', 'Perez', 'Thompson', 'White', 'Harris', 'Sanchez', 'Clark', 'Ramirez', 'Lewis', 'Robinson',
   'Walker', 'Young', 'Allen', 'King', 'Wright', 'Scott', 'Torres', 'Nguyen', 'Hill', 'Flores',
-  'Green', 'Adams', 'Nelson', 'Baker', 'Hall', 'Rivera', 'Campbell', 'Mitchell', 'Carter', 'Roberts',
-  'Gomez', 'Phillips', 'Evans', 'Turner', 'Diaz', 'Parker', 'Cruz', 'Edwards', 'Collins', 'Reyes',
-  'Stewart', 'Morris', 'Morales', 'Murphy', 'Cook', 'Rogers', 'Gutierrez', 'Ortiz', 'Morgan', 'Cooper',
-  'Peterson', 'Bailey', 'Reed', 'Kelly', 'Howard', 'Ramos', 'Kim', 'Cox', 'Ward', 'Richardson'
+  'Green', 'Adams', 'Nelson', 'Baker', 'Hall', 'Rivera', 'Campbell', 'Mitchell', 'Carter', 'Roberts'
 ];
+
+const birthplaces = [
+  'New York, NY', 'Los Angeles, CA', 'Chicago, IL', 'Houston, TX', 'Phoenix, AZ',
+  'Philadelphia, PA', 'San Antonio, TX', 'San Diego, CA', 'Dallas, TX', 'San Jose, CA',
+  'Austin, TX', 'Jacksonville, FL', 'Fort Worth, TX', 'Columbus, OH', 'Charlotte, NC',
+  'San Francisco, CA', 'Indianapolis, IN', 'Seattle, WA', 'Denver, CO', 'Washington, DC',
+  'Boston, MA', 'El Paso, TX', 'Nashville, TN', 'Detroit, MI', 'Oklahoma City, OK',
+  'Portland, OR', 'Las Vegas, NV', 'Memphis, TN', 'Louisville, KY', 'Baltimore, MD'
+];
+
+export const generateRandomName = (): string => {
+  const firstName = firstNames[Math.floor(Math.random() * firstNames.length)];
+  const lastName = lastNames[Math.floor(Math.random() * lastNames.length)];
+  return `${firstName} ${lastName}`;
+};
+
+export const generateRandomStats = () => {
+  const zodiacSigns = [
+    { name: 'Aries', emoji: '♈', element: 'fire', traits: ['energetic', 'bold', 'competitive'] },
+    { name: 'Taurus', emoji: '♉', element: 'earth', traits: ['reliable', 'patient', 'practical'] },
+    { name: 'Gemini', emoji: '♊', element: 'air', traits: ['curious', 'adaptable', 'witty'] },
+    { name: 'Cancer', emoji: '♋', element: 'water', traits: ['nurturing', 'intuitive', 'emotional'] },
+    { name: 'Leo', emoji: '♌', element: 'fire', traits: ['confident', 'generous', 'dramatic'] },
+    { name: 'Virgo', emoji: '♍', element: 'earth', traits: ['analytical', 'practical', 'loyal'] },
+    { name: 'Libra', emoji: '♎', element: 'air', traits: ['diplomatic', 'fair-minded', 'social'] },
+    { name: 'Scorpio', emoji: '♏', element: 'water', traits: ['passionate', 'resourceful', 'brave'] },
+    { name: 'Sagittarius', emoji: '♐', element: 'fire', traits: ['adventurous', 'philosophical', 'honest'] },
+    { name: 'Capricorn', emoji: '♑', element: 'earth', traits: ['ambitious', 'disciplined', 'responsible'] },
+    { name: 'Aquarius', emoji: '♒', element: 'air', traits: ['independent', 'original', 'humanitarian'] },
+    { name: 'Pisces', emoji: '♓', element: 'water', traits: ['compassionate', 'artistic', 'intuitive'] }
+  ];
+
+  const zodiacSign = zodiacSigns[Math.floor(Math.random() * zodiacSigns.length)];
+  const birthplace = birthplaces[Math.floor(Math.random() * birthplaces.length)];
+  const birthWeight = 5.5 + Math.random() * 4; // 5.5 to 9.5 lbs
+  const premature = Math.random() < 0.1; // 10% chance of being premature
+
+  // Base stats influenced by zodiac
+  let baseStats = {
+    health: Math.floor(Math.random() * 40) + 60, // 60-100
+    happiness: Math.floor(Math.random() * 40) + 60, // 60-100
+    smarts: Math.floor(Math.random() * 40) + 60, // 60-100
+    looks: Math.floor(Math.random() * 40) + 60, // 60-100
+    wealth: 0,
+    relationships: Math.floor(Math.random() * 30) + 20, // 20-50
+    salary: 0,
+    jobLevel: 0,
+    familyMembers: [],
+    children: [],
+    education: [],
+    assets: [],
+    age: 0,
+    year: new Date().getFullYear(),
+    zodiacSign,
+    birthplace,
+    birthWeight,
+    premature,
+    criminalRecord: false,
+    relationshipStatus: 'single' as 'single' | 'dating' | 'engaged' | 'married' | 'divorced'
+  };
+
+  // Apply zodiac modifiers
+  if (zodiacSign.element === 'fire') {
+    baseStats.happiness += 10;
+    baseStats.relationships += 5;
+  } else if (zodiacSign.element === 'earth') {
+    baseStats.health += 10;
+    baseStats.smarts += 5;
+  } else if (zodiacSign.element === 'air') {
+    baseStats.smarts += 10;
+    baseStats.relationships += 5;
+  } else if (zodiacSign.element === 'water') {
+    baseStats.health += 5;
+    baseStats.happiness += 10;
+  }
+
+  // Cap stats at 100
+  Object.keys(baseStats).forEach(key => {
+    if (typeof baseStats[key as keyof typeof baseStats] === 'number' && key !== 'age' && key !== 'year' && key !== 'birthWeight') {
+      baseStats[key as keyof typeof baseStats] = Math.min(100, baseStats[key as keyof typeof baseStats] as number);
+    }
+  });
+
+  return baseStats;
+};
+
+export const createCharacter = (): Character => {
+  const stats = generateRandomStats();
+  return {
+    id: Math.random().toString(36).substring(2, 15),
+    name: generateRandomName(),
+    ...stats
+  };
+};
 
 export const handleEducationActions = (character: Character, action: string, data?: any): Character => {
   const updatedCharacter = { ...character };
@@ -161,24 +244,4 @@ export const ageCharacter = (character: Character): Character => {
 
 export const getRandomElement = <T>(array: T[]): T => {
   return array[Math.floor(Math.random() * array.length)];
-};
-
-const firstNames2 = [
-  'Alex', 'Jordan', 'Taylor', 'Morgan', 'Casey', 'Riley', 'Avery', 'Quinn', 'Blake', 'Cameron',
-  'Emma', 'Liam', 'Olivia', 'Noah', 'Ava', 'Ethan', 'Sophia', 'Mason', 'Isabella', 'William',
-  'Charlotte', 'James', 'Amelia', 'Benjamin', 'Mia', 'Lucas', 'Harper', 'Henry', 'Evelyn', 'Alexander',
-  'Abigail', 'Michael', 'Emily', 'Daniel', 'Elizabeth', 'Matthew', 'Sofia', 'Jackson', 'Madison', 'Sebastian'
-];
-
-const lastNames2 = [
-  'Smith', 'Johnson', 'Williams', 'Brown', 'Jones', 'Garcia', 'Miller', 'Davis', 'Rodriguez', 'Martinez',
-  'Hernandez', 'Lopez', 'Gonzalez', 'Wilson', 'Anderson', 'Thomas', 'Taylor', 'Moore', 'Jackson', 'Martin',
-  'Lee', 'Perez', 'Thompson', 'White', 'Harris', 'Sanchez', 'Clark', 'Ramirez', 'Lewis', 'Robinson',
-  'Walker', 'Young', 'Allen', 'King', 'Wright', 'Scott', 'Torres', 'Nguyen', 'Hill', 'Flores'
-];
-
-export const generateRandomName = (): string => {
-  const firstName = getRandomElement(firstNames2);
-  const lastName = getRandomElement(lastNames2);
-  return `${firstName} ${lastName}`;
 };
