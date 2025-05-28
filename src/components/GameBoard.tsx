@@ -1,16 +1,20 @@
 
 import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { Character, LifeEvent, GameState } from '../types/game';
 import { generateRandomName, generateRandomStats, applyStatEffects, isGameOver, getLifeStage } from '../utils/gameUtils';
 import { getRandomEvent } from '../data/lifeEvents';
-import { CharacterStats } from './CharacterStats';
-import { EventCard } from './EventCard';
+import { CharacterHeader } from './CharacterHeader';
+import { BottomNavigation } from './BottomNavigation';
+import { LifeTab } from './LifeTab';
+import { ActivitiesTab } from './ActivitiesTab';
+import { CareersTab } from './CareersTab';
 import { GameOverScreen } from './GameOverScreen';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { toast } from '@/hooks/use-toast';
 
 const GameBoard: React.FC = () => {
+  const [activeTab, setActiveTab] = useState<'life' | 'activities' | 'careers' | 'relationships' | 'assets'>('life');
   const [gameState, setGameState] = useState<GameState>({
     character: {
       name: '',
@@ -98,7 +102,7 @@ const GameBoard: React.FC = () => {
       ...prev,
       character: updatedCharacter,
       currentEvent: newEvent,
-      eventHistory: [ageMessage, ...prev.eventHistory.slice(0, 9)] // Keep last 10 events
+      eventHistory: [ageMessage, ...prev.eventHistory.slice(0, 9)]
     }));
 
     toast({
@@ -143,6 +147,106 @@ const GameBoard: React.FC = () => {
     });
   };
 
+  const handleActivity = (activityType: string, activityId: string) => {
+    // Activity system implementation
+    let effects: any = {};
+    let message = '';
+
+    // Education activities
+    if (activityType === 'education') {
+      switch (activityId) {
+        case 'study':
+          effects = { smarts: 5, happiness: -2 };
+          message = 'You studied hard and improved your knowledge!';
+          break;
+        case 'library':
+          effects = { smarts: 3, happiness: 1 };
+          message = 'You spent time reading at the library.';
+          break;
+        case 'tutor':
+          effects = { smarts: 10, wealth: -100 };
+          message = 'You hired a tutor and learned a lot!';
+          break;
+      }
+    }
+    // Health activities
+    else if (activityType === 'health & fitness') {
+      switch (activityId) {
+        case 'gym':
+          effects = { health: 5, looks: 3, wealth: -20 };
+          message = 'You worked out at the gym!';
+          break;
+        case 'doctor':
+          effects = { health: 10, wealth: -50 };
+          message = 'You visited the doctor for a checkup.';
+          break;
+        case 'meditation':
+          effects = { happiness: 8, health: 2 };
+          message = 'You meditated and found inner peace.';
+          break;
+      }
+    }
+
+    if (Object.keys(effects).length > 0) {
+      const updatedCharacter = applyStatEffects(gameState.character, effects);
+      setGameState(prev => ({
+        ...prev,
+        character: updatedCharacter,
+        eventHistory: [message, ...prev.eventHistory.slice(0, 9)]
+      }));
+
+      toast({
+        title: 'Activity completed! 🎯',
+        description: message,
+      });
+    }
+  };
+
+  const handleJobApplication = (jobId: string) => {
+    if (jobId === 'quit') {
+      const updatedCharacter = { ...gameState.character, job: undefined, salary: 0, jobLevel: 0 };
+      setGameState(prev => ({
+        ...prev,
+        character: updatedCharacter,
+        eventHistory: [`${gameState.character.name} quit their job.`, ...prev.eventHistory.slice(0, 9)]
+      }));
+      toast({
+        title: 'Job quit! 💼',
+        description: 'You are now unemployed.',
+      });
+      return;
+    }
+
+    // Job application logic would go here
+    const jobTitles: { [key: string]: { title: string; salary: number } } = {
+      retail_worker: { title: 'Retail Worker', salary: 25 },
+      fast_food: { title: 'Fast Food Worker', salary: 20 },
+      office_assistant: { title: 'Office Assistant', salary: 35 },
+      teacher: { title: 'Teacher', salary: 50 },
+      doctor: { title: 'Doctor', salary: 120 },
+      lawyer: { title: 'Lawyer', salary: 100 },
+    };
+
+    const job = jobTitles[jobId];
+    if (job) {
+      const updatedCharacter = { 
+        ...gameState.character, 
+        job: job.title, 
+        salary: job.salary, 
+        jobLevel: 1 
+      };
+      setGameState(prev => ({
+        ...prev,
+        character: updatedCharacter,
+        eventHistory: [`${gameState.character.name} got hired as a ${job.title}!`, ...prev.eventHistory.slice(0, 9)]
+      }));
+      toast({
+        title: 'Congratulations! 🎉',
+        description: `You got the job as ${job.title}!`,
+      });
+    }
+  };
+
   if (gameState.gameOver) {
     return (
       <GameOverScreen 
@@ -181,85 +285,56 @@ const GameBoard: React.FC = () => {
     );
   }
 
+  const renderActiveTab = () => {
+    switch (activeTab) {
+      case 'life':
+        return (
+          <LifeTab
+            character={gameState.character}
+            currentEvent={gameState.currentEvent}
+            onAgeUp={ageUp}
+            onChoice={handleChoice}
+            eventHistory={gameState.eventHistory}
+          />
+        );
+      case 'activities':
+        return <ActivitiesTab character={gameState.character} onActivity={handleActivity} />;
+      case 'careers':
+        return <CareersTab character={gameState.character} onJobApplication={handleJobApplication} />;
+      case 'relationships':
+        return (
+          <div className="text-center py-12">
+            <h2 className="text-2xl font-bold text-game-text mb-4">Relationships</h2>
+            <p className="text-gray-600">Coming soon! Manage your relationships with family and friends.</p>
+          </div>
+        );
+      case 'assets':
+        return (
+          <div className="text-center py-12">
+            <h2 className="text-2xl font-bold text-game-text mb-4">Assets</h2>
+            <p className="text-gray-600">Coming soon! Buy property, vehicles, and luxury items.</p>
+          </div>
+        );
+      default:
+        return null;
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-game-bg p-4 font-nunito">
-      <div className="max-w-6xl mx-auto">
+    <div className="min-h-screen bg-game-bg pb-20 font-nunito">
+      <div className="max-w-6xl mx-auto p-4">
         <div className="text-center mb-6">
           <h1 className="text-3xl font-bold text-primary mb-2">
             🌟 LifeSim
           </h1>
-          <p className="text-game-text">
-            Living as {gameState.character.name} - {getLifeStage(gameState.character.age)} Age {gameState.character.age} ({gameState.character.year})
-          </p>
         </div>
 
-        <div className="grid gap-6 lg:grid-cols-3">
-          <div className="space-y-6">
-            <CharacterStats character={gameState.character} />
-            
-            <Card>
-              <CardContent className="p-4">
-                <Button 
-                  onClick={ageUp}
-                  className="w-full py-3 text-lg font-semibold bg-primary hover:bg-primary/90 text-white transition-all duration-300 hover:scale-105"
-                  disabled={!!gameState.currentEvent}
-                >
-                  🎂 Age Up (+1 Year)
-                </Button>
-              </CardContent>
-            </Card>
-          </div>
-
-          <div>
-            {gameState.currentEvent ? (
-              <EventCard 
-                event={gameState.currentEvent}
-                onChoice={handleChoice}
-              />
-            ) : (
-              <Card className="animate-fade-in">
-                <CardContent className="p-6 text-center">
-                  <div className="text-6xl mb-4">😴</div>
-                  <h3 className="text-xl font-semibold text-game-text mb-2">
-                    Peaceful Times
-                  </h3>
-                  <p className="text-gray-600">
-                    Nothing exciting is happening right now. Age up to continue your journey through life!
-                  </p>
-                </CardContent>
-              </Card>
-            )}
-          </div>
-
-          <div>
-            <Card className="animate-fade-in">
-              <CardHeader>
-                <CardTitle className="text-lg font-bold text-game-text flex items-center gap-2">
-                  📖 Life Journal
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <div className="max-h-80 overflow-y-auto space-y-2">
-                  {gameState.eventHistory.length > 0 ? (
-                    gameState.eventHistory.map((event, index) => (
-                      <div 
-                        key={index} 
-                        className="p-3 bg-gray-50 rounded-lg text-sm text-gray-700 border-l-4 border-primary/30"
-                      >
-                        {event}
-                      </div>
-                    ))
-                  ) : (
-                    <p className="text-gray-500 text-sm text-center py-4">
-                      Your life story will appear here...
-                    </p>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
+        <CharacterHeader character={gameState.character} />
+        
+        {renderActiveTab()}
       </div>
+
+      <BottomNavigation activeTab={activeTab} onTabChange={setActiveTab} />
     </div>
   );
 };
