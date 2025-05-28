@@ -423,7 +423,7 @@ export const ageFamilyMembers = (familyMembers: FamilyMember[]): FamilyMember[] 
     const newAge = member.age + 1;
     let newHealth = member.health;
     let newRelationshipQuality = member.relationshipQuality;
-    let isAlive = member.alive;
+    let isAlive: boolean = member.alive;
     let newJob = member.job;
     let newSalary = member.salary || 0;
 
@@ -512,7 +512,7 @@ export const ageFamilyMembers = (familyMembers: FamilyMember[]): FamilyMember[] 
   });
 
   return agedMembers;
-};;
+};
 
 export const generateRandomStats = (): Omit<Character, 'name' | 'age' | 'year'> => {
   const nationalityIndex = Math.floor(Math.random() * nationalities.length);
