@@ -45,6 +45,7 @@ const GameBoard: React.FC = () => {
       age: 0,
       year: new Date().getFullYear(),
       education: [],
+      assets: [], // Add default empty assets array
       ...generateRandomStats()
     },
     currentEvent: null,
@@ -63,6 +64,7 @@ const GameBoard: React.FC = () => {
       age: 0,
       year: new Date().getFullYear(),
       education: [],
+      assets: [], // Add default empty assets array
       ...generateRandomStats()
     };
 
@@ -1049,6 +1051,7 @@ const GameBoard: React.FC = () => {
         activeTab={activeTab} 
         onTabChange={setActiveTab}
         onAgeUp={ageUp}
+        character={gameState.character}
       />
 
       {gameState.currentEvent && (

@@ -68,6 +68,9 @@ export interface Character {
   birthWeight: number; // in pounds
   birthComplications: boolean;
   premature: boolean;
+  
+  // Assets
+  assets: { name: string; type: string; value: number }[];
 }
 
 export interface LifeEvent {
