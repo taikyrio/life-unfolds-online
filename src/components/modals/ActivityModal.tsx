@@ -1,7 +1,15 @@
-
 import React, { useState } from 'react';
 import { X } from 'lucide-react';
-import { Character } from '../../types/game';
+
+// Type definitions
+interface Character {
+  age: number;
+  wealth: number;
+  happiness: number;
+  health: number;
+  smarts: number;
+  looks: number;
+}
 
 interface ActivityOption {
   id: string;
@@ -30,7 +38,7 @@ interface ActivityModalProps {
   onSelectActivity: (activity: ActivityOption) => void;
 }
 
-export const ActivityModal: React.FC<ActivityModalProps> = ({
+const ActivityModal: React.FC<ActivityModalProps> = ({
   isOpen,
   onClose,
   character,
@@ -118,6 +126,7 @@ export const ActivityModal: React.FC<ActivityModalProps> = ({
     }
   ];
 
+  // Add adult activities if character is 18+
   if (character.age >= 18) {
     activityCategories.push({
       id: 'adult',
@@ -155,82 +164,117 @@ export const ActivityModal: React.FC<ActivityModalProps> = ({
     return true;
   };
 
+  const formatEffects = (effects: ActivityOption['effects']): string => {
+    const effectStrings: string[] = [];
+    Object.entries(effects).forEach(([key, value]) => {
+      if (value !== 0 && value !== undefined) {
+        const sign = value > 0 ? '+' : '';
+        const label = key.charAt(0).toUpperCase() + key.slice(1);
+        effectStrings.push(`${label}: ${sign}${value}`);
+      }
+    });
+    return effectStrings.join(', ');
+  };
+
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-end justify-center">
-      <div className="bg-white rounded-t-3xl w-full max-w-md max-h-[80vh] overflow-hidden animate-slide-in-right">
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-end justify-center p-4">
+      <div className="bg-white rounded-t-3xl w-full max-w-md max-h-[80vh] overflow-hidden shadow-2xl transform transition-transform duration-300 ease-out translate-y-0">
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-gray-200">
-          <h2 className="text-xl font-bold text-gray-900">
-            {selectedCategory ? 
-              activityCategories.find(c => c.id === selectedCategory)?.title : 
-              'Activities'
-            }
-          </h2>
+        <div className="flex items-center justify-between p-6 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-purple-50">
+          <div>
+            <h2 className="text-xl font-bold text-gray-900">
+              {selectedCategory ? 
+                activityCategories.find(c => c.id === selectedCategory)?.title : 
+                'Choose Activity'
+              }
+            </h2>
+            <p className="text-sm text-gray-600 mt-1">
+              Age: {character.age} | Wealth: ${character.wealth}
+            </p>
+          </div>
           <button
             onClick={selectedCategory ? () => setSelectedCategory(null) : onClose}
-            className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition-colors"
+            className="w-10 h-10 rounded-full bg-white shadow-md flex items-center justify-center hover:bg-gray-50 transition-all duration-200 hover:scale-105"
           >
-            <X size={18} className="text-gray-600" />
+            <X size={20} className="text-gray-600" />
           </button>
         </div>
 
         {/* Content */}
-        <div className="p-4 overflow-y-auto">
+        <div className="p-6 overflow-y-auto max-h-[calc(80vh-120px)]">
           {!selectedCategory ? (
-            <div className="space-y-3">
+            <div className="space-y-4">
+              <p className="text-gray-600 text-sm mb-4">What would you like to do?</p>
               {activityCategories.map((category) => (
                 <button
                   key={category.id}
                   onClick={() => setSelectedCategory(category.id)}
-                  className="w-full p-4 bg-gray-50 rounded-2xl text-left hover:bg-gray-100 transition-colors flex items-center space-x-3"
+                  className="w-full p-5 bg-gradient-to-r from-gray-50 to-gray-100 rounded-2xl text-left hover:from-blue-50 hover:to-purple-50 transition-all duration-200 flex items-center space-x-4 hover:shadow-md hover:scale-[1.02] group"
                 >
-                  <span className="text-2xl">{category.emoji}</span>
-                  <div>
-                    <h3 className="font-semibold text-gray-900">{category.title}</h3>
+                  <div className="text-3xl bg-white rounded-full w-12 h-12 flex items-center justify-center shadow-sm group-hover:shadow-md transition-shadow">
+                    {category.emoji}
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="font-semibold text-gray-900 text-lg">{category.title}</h3>
                     <p className="text-sm text-gray-600">
-                      {category.activities.length} activities available
+                      {category.activities.length} {category.activities.length === 1 ? 'activity' : 'activities'} available
                     </p>
+                  </div>
+                  <div className="text-gray-400 group-hover:text-gray-600 transition-colors">
+                    →
                   </div>
                 </button>
               ))}
             </div>
           ) : (
-            <div className="space-y-3">
+            <div className="space-y-4">
               {activityCategories
                 .find(c => c.id === selectedCategory)
                 ?.activities.map((activity) => {
                   const canUse = canUseActivity(activity);
                   return (
-                    <button
+                    <div
                       key={activity.id}
-                      onClick={() => canUse && onSelectActivity(activity)}
-                      disabled={!canUse}
-                      className={`w-full p-4 rounded-2xl text-left transition-colors flex items-start space-x-3 ${
+                      className={`p-5 rounded-2xl border-2 transition-all duration-200 ${
                         canUse 
-                          ? 'bg-gray-50 hover:bg-blue-50 border border-transparent hover:border-blue-200' 
-                          : 'bg-gray-100 opacity-50 cursor-not-allowed'
+                          ? 'bg-white border-gray-200 hover:border-blue-300 hover:shadow-lg cursor-pointer hover:scale-[1.02]' 
+                          : 'bg-gray-50 border-gray-100 opacity-60 cursor-not-allowed'
                       }`}
+                      onClick={() => canUse && onSelectActivity(activity)}
                     >
-                      <span className="text-2xl mt-1">{activity.emoji}</span>
-                      <div className="flex-1">
-                        <h3 className={`font-semibold ${canUse ? 'text-gray-900' : 'text-gray-500'}`}>
-                          {activity.title}
-                        </h3>
-                        <p className={`text-sm ${canUse ? 'text-gray-600' : 'text-gray-400'}`}>
-                          {activity.description}
-                        </p>
-                        {!canUse && activity.requirements && (
-                          <p className="text-xs text-red-500 mt-1">
-                            {activity.requirements.minAge && character.age < activity.requirements.minAge && 
-                              `Requires age ${activity.requirements.minAge}+`}
-                            {activity.requirements.minWealth && character.wealth < activity.requirements.minWealth && 
-                              `Requires $${activity.requirements.minWealth}`}
+                      <div className="flex items-start space-x-4">
+                        <div className={`text-3xl ${canUse ? '' : 'grayscale'}`}>
+                          {activity.emoji}
+                        </div>
+                        <div className="flex-1">
+                          <h3 className={`font-semibold text-lg ${canUse ? 'text-gray-900' : 'text-gray-500'}`}>
+                            {activity.title}
+                          </h3>
+                          <p className={`text-sm mt-1 ${canUse ? 'text-gray-600' : 'text-gray-400'}`}>
+                            {activity.description}
                           </p>
-                        )}
+                          
+                          {/* Effects preview */}
+                          {canUse && (
+                            <div className="mt-3 text-xs text-blue-600 bg-blue-50 px-3 py-1 rounded-full inline-block">
+                              {formatEffects(activity.effects)}
+                            </div>
+                          )}
+                          
+                          {/* Requirements not met */}
+                          {!canUse && activity.requirements && (
+                            <div className="mt-2 text-xs text-red-500 bg-red-50 px-3 py-1 rounded-full inline-block">
+                              {activity.requirements.minAge && character.age < activity.requirements.minAge && 
+                                `Requires age ${activity.requirements.minAge}+`}
+                              {activity.requirements.minWealth && character.wealth < activity.requirements.minWealth && 
+                                `Requires $${activity.requirements.minWealth}`}
+                            </div>
+                          )}
+                        </div>
                       </div>
-                    </button>
+                    </div>
                   );
                 })}
             </div>
@@ -240,3 +284,118 @@ export const ActivityModal: React.FC<ActivityModalProps> = ({
     </div>
   );
 };
+
+// Demo component to show the modal in action
+export default function ActivityModalDemo() {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [character, setCharacter] = useState<Character>({
+    age: 25,
+    wealth: 150,
+    happiness: 75,
+    health: 80,
+    smarts: 65,
+    looks: 70
+  });
+
+  const handleSelectActivity = (activity: ActivityOption) => {
+    // Apply activity effects to character
+    const updatedCharacter = { ...character };
+    Object.entries(activity.effects).forEach(([key, value]) => {
+      if (value !== undefined && key in updatedCharacter) {
+        (updatedCharacter as any)[key] = Math.max(0, Math.min(100, (updatedCharacter as any)[key] + value));
+      }
+    });
+    
+    setCharacter(updatedCharacter);
+    setIsModalOpen(false);
+    
+    // Show feedback
+    alert(`You chose: ${activity.title}!\nEffects: ${Object.entries(activity.effects).map(([k, v]) => `${k}: ${v > 0 ? '+' : ''}${v}`).join(', ')}`);
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-blue-100 via-purple-50 to-pink-100 p-8">
+      <div className="max-w-md mx-auto">
+        <h1 className="text-3xl font-bold text-center mb-8 text-gray-800">Life Simulator</h1>
+        
+        {/* Character Stats */}
+        <div className="bg-white rounded-2xl p-6 mb-6 shadow-lg">
+          <h2 className="text-xl font-bold mb-4 text-gray-800">Character Stats</h2>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <p className="text-sm text-gray-600">Age</p>
+              <p className="text-lg font-semibold">{character.age}</p>
+            </div>
+            <div>
+              <p className="text-sm text-gray-600">Wealth</p>
+              <p className="text-lg font-semibold">${character.wealth}</p>
+            </div>
+            <div>
+              <p className="text-sm text-gray-600">Happiness</p>
+              <div className="flex items-center">
+                <div className="w-16 h-2 bg-gray-200 rounded-full mr-2">
+                  <div 
+                    className="h-full bg-yellow-400 rounded-full"
+                    style={{ width: `${character.happiness}%` }}
+                  />
+                </div>
+                <span className="text-sm">{character.happiness}</span>
+              </div>
+            </div>
+            <div>
+              <p className="text-sm text-gray-600">Health</p>
+              <div className="flex items-center">
+                <div className="w-16 h-2 bg-gray-200 rounded-full mr-2">
+                  <div 
+                    className="h-full bg-green-400 rounded-full"
+                    style={{ width: `${character.health}%` }}
+                  />
+                </div>
+                <span className="text-sm">{character.health}</span>
+              </div>
+            </div>
+            <div>
+              <p className="text-sm text-gray-600">Smarts</p>
+              <div className="flex items-center">
+                <div className="w-16 h-2 bg-gray-200 rounded-full mr-2">
+                  <div 
+                    className="h-full bg-blue-400 rounded-full"
+                    style={{ width: `${character.smarts}%` }}
+                  />
+                </div>
+                <span className="text-sm">{character.smarts}</span>
+              </div>
+            </div>
+            <div>
+              <p className="text-sm text-gray-600">Looks</p>
+              <div className="flex items-center">
+                <div className="w-16 h-2 bg-gray-200 rounded-full mr-2">
+                  <div 
+                    className="h-full bg-pink-400 rounded-full"
+                    style={{ width: `${character.looks}%` }}
+                  />
+                </div>
+                <span className="text-sm">{character.looks}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Action Button */}
+        <button
+          onClick={() => setIsModalOpen(true)}
+          className="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white py-4 px-6 rounded-2xl font-semibold text-lg hover:from-blue-600 hover:to-purple-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-[1.02]"
+        >
+          Choose Activity 🎯
+        </button>
+      </div>
+
+      <ActivityModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        character={character}
+        onSelectActivity={handleSelectActivity}
+      />
+    </div>
+  );
+}
