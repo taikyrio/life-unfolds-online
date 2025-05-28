@@ -28,7 +28,7 @@ export const BottomNavigation: React.FC<BottomNavigationProps> = ({
   ];
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-xl border-t border-gray-200/50 safe-area-pb shadow-lg">
+    <div className="bg-white/95 backdrop-blur-xl border-b border-gray-200/50 shadow-lg">
       <div className="flex items-center justify-around py-1">
         {tabs.slice(0, 2).map((tab) => {
           const Icon = tab.icon;

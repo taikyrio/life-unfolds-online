@@ -50,6 +50,7 @@ const GameBoard: React.FC = () => {
   const [showActivitiesMenu, setShowActivitiesMenu] = useState(false);
   const [showRelationshipsMenu, setShowRelationshipsMenu] = useState(false);
   const [showAssetsMenu, setShowAssetsMenu] = useState(false);
+  const [ageHistory, setAgeHistory] = useState<Array<{age: number, events: string[]}>>([]);
   const [gameState, setGameState] = useState<GameState>({
     character: {
       name: '',
@@ -105,7 +106,7 @@ const GameBoard: React.FC = () => {
       familyMembers
     };
 
-    const birthMessage = `${newCharacter.name} was born in ${newCharacter.birthplace}! ${newCharacter.zodiacSign.emoji} ${newCharacter.zodiacSign.name} • ${newCharacter.birthWeight.toFixed(1)} lbs${newCharacter.premature ? ' (Premature)' : ''}`;
+    const birthMessage = `I was born a ${Math.random() > 0.5 ? 'male' : 'female'} in ${newCharacter.birthplace}. My name is ${newCharacter.name}.`;
 
     setGameState({
       character: newCharacter,
@@ -115,6 +116,29 @@ const GameBoard: React.FC = () => {
       eventHistory: [birthMessage],
       achievements: [],
       eventTracker: createEventTracker()
+    });
+
+    setAgeHistory([{
+      age: 0,
+      events: [birthMessage]
+    }]);
+  };
+
+  const addEventToCurrentAge = (event: string) => {
+    setAgeHistory(prev => {
+      const currentAge = gameState.character.age;
+      const existingAgeIndex = prev.findIndex(entry => entry.age === currentAge);
+      
+      if (existingAgeIndex !== -1) {
+        const updated = [...prev];
+        updated[existingAgeIndex] = {
+          ...updated[existingAgeIndex],
+          events: [...updated[existingAgeIndex].events, event]
+        };
+        return updated;
+      } else {
+        return [...prev, { age: currentAge, events: [event] }];
+      }
     });
   };
 
@@ -144,16 +168,20 @@ const GameBoard: React.FC = () => {
       agingEffects
     );
 
+    // Add new age entry to history
+    const newAgeMessage = `I am now ${newAge} years old.`;
+    setAgeHistory(prev => [...prev, { age: newAge, events: [newAgeMessage] }]);
+
     // Check for auto-enrollment in school
     const autoEnrollLevel = shouldAutoEnrollInSchool(updatedCharacter);
     if (autoEnrollLevel) {
       const enrollResult = enrollInEducation(updatedCharacter, autoEnrollLevel);
       if (enrollResult.success && enrollResult.updatedCharacter) {
         updatedCharacter = enrollResult.updatedCharacter;
+        addEventToCurrentAge(enrollResult.message);
         setGameState(prev => ({
           ...prev,
-          character: updatedCharacter,
-          eventHistory: [enrollResult.message, ...prev.eventHistory.slice(0, 9)]
+          character: updatedCharacter
         }));
         return;
       }
@@ -170,10 +198,10 @@ const GameBoard: React.FC = () => {
           message = `🎓 ${message}`;
         }
         
+        addEventToCurrentAge(message);
         setGameState(prev => ({
           ...prev,
-          character: updatedCharacter,
-          eventHistory: [message, ...prev.eventHistory.slice(0, 9)]
+          character: updatedCharacter
         }));
         return;
       }
@@ -193,10 +221,10 @@ const GameBoard: React.FC = () => {
             updatedCharacter.isPregnant = false;
             updatedCharacter.pregnancyMonths = 0;
             
+            addEventToCurrentAge(birthResult.message);
             setGameState(prev => ({
               ...prev,
-              character: updatedCharacter,
-              eventHistory: [birthResult.message, ...prev.eventHistory.slice(0, 9)]
+              character: updatedCharacter
             }));
             return;
           }
@@ -211,10 +239,10 @@ const GameBoard: React.FC = () => {
             updatedCharacter.isPregnant = false;
             updatedCharacter.pregnancyMonths = 0;
             
+            addEventToCurrentAge(birthResult.message);
             setGameState(prev => ({
               ...prev,
-              character: updatedCharacter,
-              eventHistory: [birthResult.message, ...prev.eventHistory.slice(0, 9)]
+              character: updatedCharacter
             }));
             return;
           }
@@ -243,16 +271,10 @@ const GameBoard: React.FC = () => {
 
     const newEvent = Math.random() > 0.15 ? getRandomEvent(updatedCharacter, gameState.eventTracker) : null;
 
-    let ageMessage = `${updatedCharacter.name} turned ${newAge}!`;
-    if (updatedCharacter.isPregnant) {
-      ageMessage += ` 🤰 (${updatedCharacter.pregnancyMonths}/9 months pregnant)`;
-    }
-
     setGameState(prev => ({
       ...prev,
       character: updatedCharacter,
-      currentEvent: newEvent,
-      eventHistory: [ageMessage, ...prev.eventHistory.slice(0, 9)]
+      currentEvent: newEvent
     }));
   };
 
@@ -278,12 +300,12 @@ const GameBoard: React.FC = () => {
     }
 
     const eventMessage = `${gameState.currentEvent.title}: ${choice.text}`;
+    addEventToCurrentAge(eventMessage);
 
     setGameState(prev => ({
       ...prev,
       character: updatedCharacter,
-      currentEvent: null,
-      eventHistory: [eventMessage, ...prev.eventHistory.slice(0, 9)]
+      currentEvent: null
     }));
   };
 
@@ -365,11 +387,36 @@ const GameBoard: React.FC = () => {
   };
 
   const handleActivity = (activityType: string, activityId: string) => {
+    const character = gameState.character;
     let effects: any = {};
     let message = '';
 
-    const character = gameState.character;
-    const lifeStage = getLifeStage(character.age);
+    // Handle activity logic here...
+    if (activityId === 'find_love') {
+      if (character.age < 16) {
+        message = "You're too young to seriously look for love!";
+      } else {
+        const loveResult = findLove(character);
+        if (loveResult.success && loveResult.partner) {
+          const updatedFamilyMembers = [...character.familyMembers, loveResult.partner];
+          setGameState(prev => ({
+            ...prev,
+            character: {
+              ...prev.character,
+              familyMembers: updatedFamilyMembers,
+              relationshipStatus: 'dating',
+              partnerName: loveResult.partner!.name,
+              happiness: Math.min(100, prev.character.happiness + 25),
+              relationships: Math.min(100, prev.character.relationships + 15)
+            }
+          }));
+          addEventToCurrentAge(loveResult.message);
+          return;
+        } else {
+          message = loveResult.message;
+        }
+      }
+    }
 
     // Early Childhood Activities (0-5)
     if (character.age < 6) {
@@ -582,33 +629,6 @@ const GameBoard: React.FC = () => {
         case 'hobby':
           effects = { happiness: 20, smarts: 10 };
           message = 'You learned a new hobby and had fun doing it!';
-          break;
-        case 'find_love':
-          if (character.age < 16) {
-            effects = {};
-            message = 'You\'re too young to seriously look for love!';
-          } else {
-            const loveResult = findLove(character);
-            if (loveResult.success && loveResult.partner) {
-              const updatedFamilyMembers = [...character.familyMembers, loveResult.partner];
-              setGameState(prev => ({
-                ...prev,
-                character: {
-                  ...prev.character,
-                  familyMembers: updatedFamilyMembers,
-                  relationshipStatus: 'dating',
-                  partnerName: loveResult.partner!.name,
-                  happiness: Math.min(100, prev.character.happiness + 25),
-                  relationships: Math.min(100, prev.character.relationships + 15)
-                },
-                eventHistory: [loveResult.message, ...prev.eventHistory.slice(0, 9)]
-              }));
-              return;
-            } else {
-              effects = { happiness: -5 };
-              message = loveResult.message;
-            }
-          }
           break;
       }
     }
@@ -849,38 +869,16 @@ const GameBoard: React.FC = () => {
       }
     }
 
+    if (message) {
+      addEventToCurrentAge(message);
+    }
+
     if (Object.keys(effects).length > 0) {
       const updatedCharacter = applyStatEffects(character, effects);
-
-      const yearEntry = `Age ${character.age}: ${message}`;
-
-      const existingEntryIndex = gameState.eventHistory.findIndex(entry => 
-        entry.startsWith(`Age ${character.age}:`)
-      );
-
-      let newEventHistory;
-      if (existingEntryIndex !== -1) {
-        newEventHistory = [...gameState.eventHistory];
-        newEventHistory[existingEntryIndex] = yearEntry;
-      } else {
-        newEventHistory = [yearEntry, ...gameState.eventHistory.slice(0, 9)];
-      }
-
       setGameState(prev => ({
         ...prev,
-        character: updatedCharacter,
-        eventHistory: newEventHistory
+        character: updatedCharacter
       }));
-
-      setActiveTab('life');
-    } else if (message) {
-      // Show message even if no effects
-      const yearEntry = `Age ${character.age}: ${message}`;
-      setGameState(prev => ({
-        ...prev,
-        eventHistory: [yearEntry, ...prev.eventHistory.slice(0, 9)]
-      }));
-      setActiveTab('life');
     }
   };
 
@@ -998,33 +996,6 @@ const GameBoard: React.FC = () => {
     }
   };
 
-  const renderTabContent = () => {
-    switch (activeTab) {
-      case 'life':
-        return (
-          <LifeTab
-            character={gameState.character}
-            currentEvent={gameState.currentEvent}
-            onAgeUp={ageUp}
-            onChoice={handleChoice}
-            eventHistory={gameState.eventHistory}
-          />
-        );
-      case 'activities':
-        return <ActivitiesTab character={gameState.character} onActivity={handleActivity} />;
-      case 'careers':
-        return <CareersTab character={gameState.character} onJobApplication={handleJobApplication} />;
-      case 'relationships':
-        return <RelationshipsTab character={gameState.character} />;
-      case 'education':
-        return <EducationTab character={gameState.character} onEducationAction={handleEducationAction} />;
-      case 'assets':
-        return <AssetsTab character={gameState.character} />;
-      default:
-        return null;
-    }
-  };
-
   if (gameState.gameOver) {
     return (
       <GameOverScreen 
@@ -1061,26 +1032,7 @@ const GameBoard: React.FC = () => {
 
         <CharacterHeader character={gameState.character} />
 
-        {gameState.currentEvent && (
-          <Card className="mb-4">
-            <CardContent>
-              {gameState.currentEvent.description}
-            </CardContent>
-          </Card>
-        )}
-
-        {/* Main content - only show Life tab now */}
-        <LifeTab
-          character={gameState.character}
-          currentEvent={gameState.currentEvent}
-          onAgeUp={ageUp}
-          onChoice={handleChoice}
-          eventHistory={gameState.eventHistory}
-        />
-
-        {/* Character Stats Bar - Below content, above navigation */}
-        <CharacterStatsBar character={gameState.character} />
-
+        {/* Navigation positioned in middle */}
         <BottomNavigation 
           activeTab={activeTab} 
           onTabChange={setActiveTab}
@@ -1090,6 +1042,27 @@ const GameBoard: React.FC = () => {
           onShowRelationshipMenu={() => setShowRelationshipsMenu(true)}
           onShowAssetsMenu={() => setShowAssetsMenu(true)}
         />
+
+        {/* Character Stats Bar - positioned below navigation */}
+        <CharacterStatsBar character={gameState.character} />
+
+        {/* Main content - Life history */}
+        <div className="px-4 py-6 pb-20 bg-gray-50 min-h-[60vh] overflow-y-auto">
+          <div className="space-y-4">
+            {ageHistory.map((ageEntry) => (
+              <div key={ageEntry.age} className="bg-white rounded-lg p-4 shadow-sm border border-gray-100">
+                <h3 className="font-bold text-lg text-gray-800 mb-2">Age {ageEntry.age}</h3>
+                <div className="space-y-2">
+                  {ageEntry.events.map((event, index) => (
+                    <p key={index} className="text-sm text-gray-700 leading-relaxed">
+                      {event}
+                    </p>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
 
         {/* Popup Menus */}
         <ActivitiesMenu
