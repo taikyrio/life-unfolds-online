@@ -80,7 +80,7 @@ export const BottomNavigation: React.FC<BottomNavigationProps> = ({
         {/* Age Button - iOS style */}
         <button
           onClick={onAgeUp}
-          className="bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-full w-12 h-12 flex items-center justify-center font-bold text-sm shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 active:scale-95 mx-1"
+          className="bg-gradient-to-r from-green-500 to-green-600 text-white rounded-full w-12 h-12 flex items-center justify-center font-bold text-sm shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 active:scale-95 mx-1"
         >
           <div className="text-center">
             <div className="text-xs leading-tight">Age</div>

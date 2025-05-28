@@ -29,6 +29,12 @@ const birthplaces = [
   'Portland, OR', 'Las Vegas, NV', 'Memphis, TN', 'Louisville, KY', 'Baltimore, MD'
 ];
 
+const jobs = [
+  'Teacher', 'Engineer', 'Doctor', 'Nurse', 'Police Officer', 'Firefighter', 'Lawyer', 'Accountant',
+  'Chef', 'Mechanic', 'Electrician', 'Plumber', 'Sales Representative', 'Manager', 'Receptionist',
+  'Cashier', 'Waiter', 'Security Guard', 'Janitor', 'Delivery Driver', 'Construction Worker'
+];
+
 export const getLifeStage = (age: number): string => {
   if (age < 3) return 'Baby';
   if (age < 6) return 'Toddler';
@@ -105,6 +111,68 @@ export const generateRandomName = (): string => {
   return `${firstName} ${lastName}`;
 };
 
+const generateFamilyMembers = (characterLastName: string): FamilyMember[] => {
+  const familyMembers: FamilyMember[] = [];
+  
+  // Generate father
+  const father: FamilyMember = {
+    id: Math.random().toString(36).substring(2, 15),
+    name: `${firstNames[Math.floor(Math.random() * firstNames.length)]} ${characterLastName}`,
+    relationship: 'father',
+    age: Math.floor(Math.random() * 15) + 25, // 25-40 years old
+    alive: true,
+    health: Math.floor(Math.random() * 30) + 70, // 70-100 health
+    relationshipQuality: Math.floor(Math.random() * 40) + 60, // 60-100 relationship
+    job: jobs[Math.floor(Math.random() * jobs.length)],
+    salary: Math.floor(Math.random() * 80000) + 30000 // $30k-$110k
+  };
+  
+  // Generate mother
+  const mother: FamilyMember = {
+    id: Math.random().toString(36).substring(2, 15),
+    name: generateRandomName(),
+    relationship: 'mother',
+    age: Math.floor(Math.random() * 15) + 23, // 23-38 years old
+    alive: true,
+    health: Math.floor(Math.random() * 30) + 70,
+    relationshipQuality: Math.floor(Math.random() * 40) + 60,
+    job: jobs[Math.floor(Math.random() * jobs.length)],
+    salary: Math.floor(Math.random() * 80000) + 25000
+  };
+  
+  familyMembers.push(father, mother);
+  
+  // 30% chance of having siblings
+  if (Math.random() < 0.3) {
+    const sibling: FamilyMember = {
+      id: Math.random().toString(36).substring(2, 15),
+      name: `${firstNames[Math.floor(Math.random() * firstNames.length)]} ${characterLastName}`,
+      relationship: 'sibling',
+      age: Math.floor(Math.random() * 10) + 1, // 1-10 years old
+      alive: true,
+      health: Math.floor(Math.random() * 20) + 80,
+      relationshipQuality: Math.floor(Math.random() * 60) + 40
+    };
+    familyMembers.push(sibling);
+  }
+  
+  // 40% chance of having grandparents
+  if (Math.random() < 0.4) {
+    const grandparent: FamilyMember = {
+      id: Math.random().toString(36).substring(2, 15),
+      name: generateRandomName(),
+      relationship: 'grandparent',
+      age: Math.floor(Math.random() * 20) + 60, // 60-80 years old
+      alive: true,
+      health: Math.floor(Math.random() * 40) + 30, // 30-70 health (older)
+      relationshipQuality: Math.floor(Math.random() * 50) + 50
+    };
+    familyMembers.push(grandparent);
+  }
+  
+  return familyMembers;
+};
+
 export const generateRandomStats = () => {
   const zodiacSigns = [
     { name: 'Aries', emoji: '♈', element: 'fire' as const, traits: ['energetic', 'bold', 'competitive'], luckyNumbers: [1, 8, 17] },
@@ -138,7 +206,6 @@ export const generateRandomStats = () => {
     relationships: Math.floor(Math.random() * 30) + 20, // 20-50
     salary: 0,
     jobLevel: 0,
-    familyMembers: [] as FamilyMember[],
     children: [] as string[],
     education: [] as string[],
     assets: [] as { name: string; type: string; value: number }[],
@@ -185,8 +252,15 @@ export const generateRandomStats = () => {
 
 export const createCharacter = (): Character => {
   const stats = generateRandomStats();
+  const name = generateRandomName();
+  const lastName = name.split(' ')[1];
+  
+  // Generate family members at birth
+  const familyMembers = generateFamilyMembers(lastName);
+  
   return {
-    name: generateRandomName(),
+    name,
+    familyMembers,
     ...stats
   };
 };
@@ -235,12 +309,23 @@ export const isGameOver = (character: Character): { gameOver: boolean; reason?: 
 };
 
 export const ageFamilyMembers = (familyMembers: FamilyMember[]): FamilyMember[] => {
-  return familyMembers.map(member => ({
-    ...member,
-    age: member.age + 1,
-    health: member.alive ? Math.max(0, member.health - (member.age > 60 ? 2 : 1)) : 0,
-    alive: member.health > 0
-  }));
+  return familyMembers.map(member => {
+    const newAge = member.age + 1;
+    let healthDecline = 1;
+    
+    // More health decline for older family members
+    if (member.age > 70) healthDecline = 3;
+    else if (member.age > 60) healthDecline = 2;
+    
+    const newHealth = Math.max(0, member.health - healthDecline);
+    
+    return {
+      ...member,
+      age: newAge,
+      health: newHealth,
+      alive: newHealth > 0
+    };
+  });
 };
 
 export const generateNewRelationships = (character: Character): FamilyMember[] => {
@@ -434,11 +519,8 @@ export const ageCharacter = (character: Character): Character => {
 
   updatedCharacter.age += 1;
 
-  // Age all relationships
-  updatedCharacter.familyMembers = updatedCharacter.familyMembers.map(rel => ({
-    ...rel,
-    age: rel.age + 1
-  }));
+  // Age all family members and handle deaths
+  updatedCharacter.familyMembers = ageFamilyMembers(updatedCharacter.familyMembers);
 
   // Process yearly finances - fix the money system
   updatedCharacter = processYearlyFinances(updatedCharacter);

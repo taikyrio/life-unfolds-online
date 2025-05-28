@@ -44,7 +44,7 @@ export const CharacterStatsBar: React.FC<CharacterStatsBarProps> = ({ character 
   ];
 
   return (
-    <div className="bg-white/95 backdrop-blur-xl border-b border-gray-200/50 px-4 py-3">
+    <div className="bg-white border-b border-gray-200 px-4 py-3">
       <div className="grid grid-cols-2 gap-3">
         {stats.map((stat) => (
           <div key={stat.name} className="flex items-center space-x-2">
@@ -56,7 +56,7 @@ export const CharacterStatsBar: React.FC<CharacterStatsBarProps> = ({ character 
             </div>
             
             <div className="flex-1 flex items-center space-x-2">
-              <div className="flex-1 bg-gray-200 rounded-full h-1.5 overflow-hidden">
+              <div className="flex-1 bg-gray-200 rounded-full h-2 overflow-hidden">
                 <div 
                   className="h-full rounded-full transition-all duration-700 ease-out"
                   style={{ 
@@ -65,8 +65,8 @@ export const CharacterStatsBar: React.FC<CharacterStatsBarProps> = ({ character 
                   }}
                 />
               </div>
-              <span className="text-xs font-semibold text-gray-700 w-8 text-right">
-                {stat.value}
+              <span className="text-xs font-semibold text-gray-700 w-10 text-right">
+                {stat.value}%
               </span>
             </div>
           </div>
