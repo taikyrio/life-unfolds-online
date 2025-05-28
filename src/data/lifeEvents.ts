@@ -1,4 +1,3 @@
-
 import { LifeEvent } from '../types/game';
 
 // Event tracking interface
@@ -319,7 +318,7 @@ const youngAdultEvents: LifeEvent[] = [
     ageRequirement: { min: 21, max: 25 },
     requirements: { education: 'University Student' },
     choices: [
-      { id: 'graduate_school', text: 'Apply to graduate school', emoji: '📚', effects: { education: 'Graduate Student', wealth: -100, smarts: 15 } },
+      { id: 'graduate_school', text: 'Apply to graduate school', emoji: '📚', effects: { education: ['Graduate Student'], wealth: -100, smarts: 15 } },
       { id: 'entry_level_job', text: 'Get an entry-level job', emoji: '💼', effects: { job: 'Office Assistant', salary: 35, wealth: 50 } },
       { id: 'travel_world', text: 'Travel the world first', emoji: '✈️', effects: { happiness: 25, wealth: -200, smarts: 10 } }
     ]
@@ -346,7 +345,7 @@ const youngAdultEvents: LifeEvent[] = [
     ageRequirement: { min: 24, max: 27 },
     choices: [
       { id: 'change_career', text: 'Completely change careers', emoji: '🔄', effects: { job: 'New Path', salary: 20, happiness: 15 } },
-      { id: 'go_back_school', text: 'Go back to school', emoji: '🎓', effects: { education: 'Graduate Student', wealth: -150, smarts: 20 } },
+      { id: 'go_back_school', text: 'Go back to school', emoji: '🎓', effects: { education: ['Graduate Student'], wealth: -150, smarts: 20 } },
       { id: 'travel_solo', text: 'Take a solo trip to find yourself', emoji: '🎒', effects: { happiness: 20, wealth: -300, smarts: 10 } }
     ]
   },
