@@ -1,6 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { Character, LifeEvent, GameState } from '../types/game';
-import { generateRandomName, generateRandomStats, applyStatEffects, isGameOver, getLifeStage, ageFamilyMembers, generateNewRelationships, findLove } from '../utils/gameUtils';
+import { 
+  generateRandomName, 
+  generateRandomStats, 
+  applyStatEffects, 
+  isGameOver, 
+  getLifeStage, 
+  ageFamilyMembers, 
+  generateNewRelationships, 
+  findLove,
+  intimateActivity,
+  proposeMariage,
+  getMarried,
+  giveGift,
+  haveBaby
+} from '../utils/gameUtils';
 import { getRandomEvent, createEventTracker } from '../data/lifeEvents';
 import { CharacterHeader } from './CharacterHeader';
 import { BottomNavigation } from './BottomNavigation';
@@ -43,7 +57,6 @@ const GameBoard: React.FC = () => {
       ...generateRandomStats()
     };
 
-    // Generate birth event message with enhanced details
     const birthMessage = `${newCharacter.name} was born in ${newCharacter.birthplace}! ${newCharacter.zodiacSign.emoji} ${newCharacter.zodiacSign.name} • ${newCharacter.birthWeight.toFixed(1)} lbs${newCharacter.premature ? ' (Premature)' : ''}`;
 
     setGameState({
@@ -55,8 +68,6 @@ const GameBoard: React.FC = () => {
       achievements: [],
       eventTracker: createEventTracker()
     });
-
-    // Welcome message removed - no toast notifications
   };
 
   const ageUp = () => {
@@ -65,7 +76,6 @@ const GameBoard: React.FC = () => {
     const newAge = gameState.character.age + 1;
     const newYear = gameState.character.year + 1;
 
-    // Natural aging effects with zodiac influence
     let agingEffects: any = {
       health: newAge > 60 ? -2 : newAge > 40 ? -1 : newAge > 20 ? 0 : 1,
       happiness: 0,
@@ -73,17 +83,14 @@ const GameBoard: React.FC = () => {
       relationships: 0
     };
 
-    // Zodiac-based aging effects
     const zodiac = gameState.character.zodiacSign;
-    if (zodiac.element === 'water' && newAge > 50) agingEffects.health += 1; // Water signs age better
-    if (zodiac.element === 'fire' && newAge < 30) agingEffects.happiness += 2; // Fire signs happier when young
+    if (zodiac.element === 'water' && newAge > 50) agingEffects.health += 1;
+    if (zodiac.element === 'fire' && newAge < 30) agingEffects.happiness += 2;
 
-    // Age-based income from jobs
     if (gameState.character.job && gameState.character.salary > 0) {
       agingEffects.wealth = gameState.character.salary;
     }
 
-    // Education progression
     if (newAge === 6) agingEffects.education = 'Elementary School';
     if (newAge === 14) agingEffects.education = 'High School';
 
@@ -92,15 +99,12 @@ const GameBoard: React.FC = () => {
       agingEffects
     );
 
-    // Handle pregnancy progression
     if (updatedCharacter.isPregnant) {
       const pregnancyMonths = (updatedCharacter.pregnancyMonths || 0) + 1;
       
       if (pregnancyMonths >= 9) {
-        // Time to give birth!
         const babyName = prompt('👶 Your baby is being born! What would you like to name them?');
         if (babyName && babyName.trim()) {
-          const { haveBaby } = require('../utils/gameUtils');
           const birthResult = haveBaby(updatedCharacter, babyName);
           
           if (birthResult.success && birthResult.baby) {
@@ -117,10 +121,8 @@ const GameBoard: React.FC = () => {
             return;
           }
         } else {
-          // Default name if none provided
           const defaultNames = ['Baby', 'Jordan', 'Alex', 'Casey', 'Riley'];
           const defaultName = defaultNames[Math.floor(Math.random() * defaultNames.length)];
-          const { haveBaby } = require('../utils/gameUtils');
           const birthResult = haveBaby(updatedCharacter, defaultName);
           
           if (birthResult.success && birthResult.baby) {
@@ -142,10 +144,7 @@ const GameBoard: React.FC = () => {
       }
     }
 
-    // Age all family members dynamically
     updatedCharacter.familyMembers = ageFamilyMembers(updatedCharacter.familyMembers);
-    
-    // Generate new relationships based on character's life stage
     const newRelationships = generateNewRelationships(updatedCharacter);
     updatedCharacter.familyMembers = [...updatedCharacter.familyMembers, ...newRelationships];
 
@@ -162,7 +161,6 @@ const GameBoard: React.FC = () => {
       return;
     }
 
-    // Generate age-appropriate event using event tracker
     const newEvent = Math.random() > 0.15 ? getRandomEvent(updatedCharacter, gameState.eventTracker) : null;
 
     let ageMessage = `${updatedCharacter.name} turned ${newAge}!`;
@@ -176,8 +174,6 @@ const GameBoard: React.FC = () => {
       currentEvent: newEvent,
       eventHistory: [ageMessage, ...prev.eventHistory.slice(0, 9)]
     }));
-
-    // Event notifications removed - no toast notifications
   };
 
   const handleChoice = (choiceId: string) => {
@@ -209,19 +205,17 @@ const GameBoard: React.FC = () => {
       currentEvent: null,
       eventHistory: [eventMessage, ...prev.eventHistory.slice(0, 9)]
     }));
-
-    // Choice notification removed - no toast notifications
   };
 
   const handleActivity = (activityType: string, activityId: string) => {
     let effects: any = {};
     let message = '';
 
-    // Consolidated activity system based on life stage
-    const lifeStage = getLifeStage(gameState.character.age);
+    const character = gameState.character;
+    const lifeStage = getLifeStage(character.age);
 
-    // Early Childhood Activities
-    if (gameState.character.age < 6) {
+    // Early Childhood Activities (0-5)
+    if (character.age < 6) {
       switch (activityId) {
         case 'play_toys':
           effects = { happiness: 15, smarts: 5 };
@@ -238,61 +232,97 @@ const GameBoard: React.FC = () => {
       }
     }
 
-    // School Activities
+    // School Activities (6-17)
     else if (activityType === 'school activities') {
       switch (activityId) {
         case 'study_harder':
-          effects = { smarts: 15, happiness: -5 };
-          message = 'You studied harder and improved your grades!';
+          if (character.age < 6) {
+            effects = {};
+            message = 'You\'re too young for formal studying!';
+          } else {
+            effects = { smarts: 15, happiness: -5 };
+            message = 'You studied harder and improved your grades!';
+          }
           break;
         case 'join_club':
-          effects = { relationships: 20, happiness: 15, smarts: 5 };
-          message = 'You joined a school club and made new friends!';
+          if (character.age < 10) {
+            effects = {};
+            message = 'You\'re too young to join school clubs!';
+          } else {
+            effects = { relationships: 20, happiness: 15, smarts: 5 };
+            message = 'You joined a school club and made new friends!';
+          }
           break;
         case 'sports_team':
-          effects = { health: 15, relationships: 15, looks: 5, happiness: 10 };
-          message = 'You joined the sports team and got in great shape!';
+          if (character.age < 8) {
+            effects = {};
+            message = 'You\'re too young for organized sports!';
+          } else {
+            effects = { health: 15, relationships: 15, looks: 5, happiness: 10 };
+            message = 'You joined the sports team and got in great shape!';
+          }
           break;
         case 'school_play':
-          effects = { happiness: 20, looks: 10, relationships: 10 };
-          message = 'You performed in the school play and got applause!';
+          if (character.age < 10) {
+            effects = {};
+            message = 'You\'re too young for school productions!';
+          } else {
+            effects = { happiness: 20, looks: 10, relationships: 10 };
+            message = 'You performed in the school play and got applause!';
+          }
           break;
         case 'tutoring':
-          effects = { smarts: 20, wealth: -50 };
-          message = 'The tutor helped you understand difficult subjects!';
+          if (character.wealth < 50) {
+            effects = {};
+            message = 'You can\'t afford tutoring right now!';
+          } else {
+            effects = { smarts: 20, wealth: -50 };
+            message = 'The tutor helped you understand difficult subjects!';
+          }
           break;
       }
     }
 
     // Career Activities
     else if (activityType === 'career') {
-      switch (activityId) {
-        case 'work_harder':
-          effects = { wealth: 25, happiness: -5 };
-          message = 'You worked extra hard and impressed your boss!';
-          break;
-        case 'ask_promotion':
-          const promotionChance = Math.random();
-          if (promotionChance > 0.6) {
-            effects = { salary: 20, happiness: 25 };
-            message = 'Congratulations! You got promoted!';
-          } else {
-            effects = { happiness: -10 };
-            message = 'Your promotion request was denied. Maybe next time.';
-          }
-          break;
-        case 'job_search':
-          effects = { happiness: 5 };
-          message = 'You spent time looking for new job opportunities.';
-          break;
-        case 'freelance':
-          effects = { wealth: Math.floor(Math.random() * 100) + 50, happiness: 10 };
-          message = 'You earned some extra money from freelance work!';
-          break;
-        case 'night_school':
-          effects = { smarts: 25, wealth: -100, happiness: -5 };
-          message = 'You attended night school and expanded your knowledge!';
-          break;
+      if (!character.job) {
+        effects = {};
+        message = 'You need a job first before you can do career activities!';
+      } else {
+        switch (activityId) {
+          case 'work_harder':
+            effects = { wealth: 25, happiness: -5 };
+            message = 'You worked extra hard and impressed your boss!';
+            break;
+          case 'ask_promotion':
+            const promotionChance = Math.random() + (character.smarts / 200) + (character.relationships / 200);
+            if (promotionChance > 0.6) {
+              effects = { salary: 20, happiness: 25, jobLevel: 1 };
+              message = 'Congratulations! You got promoted!';
+            } else {
+              effects = { happiness: -10 };
+              message = 'Your promotion request was denied. Maybe next time.';
+            }
+            break;
+          case 'job_search':
+            effects = { happiness: 5 };
+            message = 'You spent time looking for new job opportunities.';
+            break;
+          case 'freelance':
+            const freelanceEarnings = Math.floor(Math.random() * 100) + 50;
+            effects = { wealth: freelanceEarnings, happiness: 10 };
+            message = `You earned $${freelanceEarnings}k from freelance work!`;
+            break;
+          case 'night_school':
+            if (character.wealth < 100) {
+              effects = {};
+              message = 'You can\'t afford night school right now!';
+            } else {
+              effects = { smarts: 25, wealth: -100, happiness: -5 };
+              message = 'You attended night school and expanded your knowledge!';
+            }
+            break;
+        }
       }
     }
 
@@ -300,12 +330,25 @@ const GameBoard: React.FC = () => {
     else if (activityType === 'health & fitness') {
       switch (activityId) {
         case 'gym':
-          effects = { health: 15, looks: 10, wealth: -30, happiness: 10 };
-          message = 'You had a great workout at the gym!';
+          if (character.age < 14) {
+            effects = {};
+            message = 'You\'re too young for the gym!';
+          } else if (character.wealth < 30) {
+            effects = {};
+            message = 'You can\'t afford a gym membership!';
+          } else {
+            effects = { health: 15, looks: 10, wealth: -30, happiness: 10 };
+            message = 'You had a great workout at the gym!';
+          }
           break;
         case 'doctor':
-          effects = { health: 20, wealth: -75 };
-          message = 'The doctor gave you a clean bill of health!';
+          if (character.wealth < 75) {
+            effects = {};
+            message = 'You can\'t afford a doctor visit!';
+          } else {
+            effects = { health: 20, wealth: -75 };
+            message = 'The doctor gave you a clean bill of health!';
+          }
           break;
         case 'meditation':
           effects = { happiness: 20, health: 5 };
@@ -322,33 +365,58 @@ const GameBoard: React.FC = () => {
     else if (activityType === 'social & entertainment' || activityType === 'social life') {
       switch (activityId) {
         case 'hang_friends':
-          effects = { happiness: 20, relationships: 15 };
-          message = 'You had a great time hanging out with friends!';
+          if (character.relationships < 20) {
+            effects = {};
+            message = 'You don\'t have enough friends to hang out with!';
+          } else {
+            effects = { happiness: 20, relationships: 15 };
+            message = 'You had a great time hanging out with friends!';
+          }
           break;
         case 'school_dance':
-          effects = { happiness: 25, relationships: 10, looks: 5 };
-          message = 'You danced the night away at the school dance!';
+          if (character.age < 13 || character.age > 18) {
+            effects = {};
+            message = 'School dances are only for teenagers!';
+          } else {
+            effects = { happiness: 25, relationships: 10, looks: 5 };
+            message = 'You danced the night away at the school dance!';
+          }
           break;
         case 'study_group':
-          effects = { smarts: 10, relationships: 10, happiness: 5 };
-          message = 'Studying with friends made learning more fun!';
+          if (character.age < 10) {
+            effects = {};
+            message = 'You\'re too young for study groups!';
+          } else {
+            effects = { smarts: 10, relationships: 10, happiness: 5 };
+            message = 'Studying with friends made learning more fun!';
+          }
           break;
         case 'party':
-          const partyOutcome = Math.random();
-          if (partyOutcome > 0.8) {
-            effects = { happiness: 30, relationships: 20, health: -10 };
-            message = 'You had an amazing time at the party!';
-          } else if (partyOutcome > 0.6) {
-            effects = { happiness: 15, relationships: 10 };
-            message = 'You enjoyed the party and met some interesting people.';
+          if (character.age < 16) {
+            effects = {};
+            message = 'You\'re too young to go to parties!';
           } else {
-            effects = { happiness: -10, health: -5, relationships: -5 };
-            message = 'The party got out of hand and you regret going.';
+            const partyOutcome = Math.random();
+            if (partyOutcome > 0.8) {
+              effects = { happiness: 30, relationships: 20, health: -10 };
+              message = 'You had an amazing time at the party!';
+            } else if (partyOutcome > 0.6) {
+              effects = { happiness: 15, relationships: 10 };
+              message = 'You enjoyed the party and met some interesting people.';
+            } else {
+              effects = { happiness: -10, health: -5, relationships: -5 };
+              message = 'The party got out of hand and you regret going.';
+            }
           }
           break;
         case 'vacation':
-          effects = { happiness: 40, health: 15, wealth: -200 };
-          message = 'You had a relaxing and rejuvenating vacation!';
+          if (character.wealth < 200) {
+            effects = {};
+            message = 'You can\'t afford a vacation right now!';
+          } else {
+            effects = { happiness: 40, health: 15, wealth: -200 };
+            message = 'You had a relaxing and rejuvenating vacation!';
+          }
           break;
         case 'volunteer':
           effects = { happiness: 25, relationships: 15 };
@@ -359,26 +427,30 @@ const GameBoard: React.FC = () => {
           message = 'You learned a new hobby and had fun doing it!';
           break;
         case 'find_love':
-          const loveResult = findLove(gameState.character);
-          if (loveResult.success && loveResult.partner) {
-            // Add the new partner to family members as a lover
-            const updatedFamilyMembers = [...gameState.character.familyMembers, loveResult.partner];
-            setGameState(prev => ({
-              ...prev,
-              character: {
-                ...prev.character,
-                familyMembers: updatedFamilyMembers,
-                relationshipStatus: 'dating',
-                partnerName: loveResult.partner!.name,
-                happiness: Math.min(100, prev.character.happiness + 25),
-                relationships: Math.min(100, prev.character.relationships + 15)
-              },
-              eventHistory: [loveResult.message, ...prev.eventHistory.slice(0, 9)]
-            }));
-            return; // Early return to avoid double state update
+          if (character.age < 16) {
+            effects = {};
+            message = 'You\'re too young to seriously look for love!';
           } else {
-            effects = { happiness: -5 };
-            message = loveResult.message;
+            const loveResult = findLove(character);
+            if (loveResult.success && loveResult.partner) {
+              const updatedFamilyMembers = [...character.familyMembers, loveResult.partner];
+              setGameState(prev => ({
+                ...prev,
+                character: {
+                  ...prev.character,
+                  familyMembers: updatedFamilyMembers,
+                  relationshipStatus: 'dating',
+                  partnerName: loveResult.partner!.name,
+                  happiness: Math.min(100, prev.character.happiness + 25),
+                  relationships: Math.min(100, prev.character.relationships + 15)
+                },
+                eventHistory: [loveResult.message, ...prev.eventHistory.slice(0, 9)]
+              }));
+              return;
+            } else {
+              effects = { happiness: -5 };
+              message = loveResult.message;
+            }
           }
           break;
       }
@@ -386,93 +458,123 @@ const GameBoard: React.FC = () => {
 
     // Risky Activities
     else if (activityType === 'risky activities') {
-      switch (activityId) {
-        case 'gamble':
-          const gambleOutcome = Math.random();
-          if (gambleOutcome > 0.7) {
-            effects = { wealth: Math.floor(Math.random() * 200) + 100, happiness: 30 };
-            message = 'Lucky you! You won big at gambling!';
-          } else {
-            effects = { wealth: -Math.floor(Math.random() * 150) - 50, happiness: -20 };
-            message = 'You lost money gambling. Maybe it\'s time to quit.';
-          }
-          break;
-        case 'street_race':
-          const raceOutcome = Math.random();
-          if (raceOutcome > 0.8) {
-            effects = { happiness: 25, wealth: 100 };
-            message = 'You won the street race and earned some prize money!';
-          } else if (raceOutcome > 0.4) {
-            effects = { happiness: 10 };
-            message = 'You lost the race but had an adrenaline rush!';
-          } else {
-            effects = { health: -20, wealth: -300, happiness: -15 };
-            message = 'You crashed during the race and got injured!';
-          }
-          break;
-        case 'shoplift':
-          const stealOutcome = Math.random();
-          if (stealOutcome > 0.6) {
-            effects = { wealth: 25, happiness: 10 };
-            message = 'You got away with shoplifting some small items.';
-          } else {
-            effects = { criminalRecord: true, happiness: -25, relationships: -15 };
-            message = 'You got caught shoplifting and now have a criminal record!';
-          }
-          break;
+      if (character.age < 18) {
+        effects = {};
+        message = 'You\'re too young for these risky activities!';
+      } else {
+        switch (activityId) {
+          case 'gamble':
+            if (character.wealth < 50) {
+              effects = {};
+              message = 'You don\'t have enough money to gamble!';
+            } else {
+              const gambleOutcome = Math.random();
+              if (gambleOutcome > 0.7) {
+                const winnings = Math.floor(Math.random() * 200) + 100;
+                effects = { wealth: winnings, happiness: 30 };
+                message = `Lucky you! You won $${winnings}k gambling!`;
+              } else {
+                const losses = -Math.floor(Math.random() * 150) - 50;
+                effects = { wealth: losses, happiness: -20 };
+                message = `You lost $${Math.abs(losses)}k gambling. Maybe it's time to quit.`;
+              }
+            }
+            break;
+          case 'street_race':
+            const raceOutcome = Math.random();
+            if (raceOutcome > 0.8) {
+              effects = { happiness: 25, wealth: 100 };
+              message = 'You won the street race and earned some prize money!';
+            } else if (raceOutcome > 0.4) {
+              effects = { happiness: 10 };
+              message = 'You lost the race but had an adrenaline rush!';
+            } else {
+              effects = { health: -20, wealth: -300, happiness: -15 };
+              message = 'You crashed during the race and got injured!';
+            }
+            break;
+          case 'shoplift':
+            const stealOutcome = Math.random();
+            if (stealOutcome > 0.6) {
+              effects = { wealth: 25, happiness: 10 };
+              message = 'You got away with shoplifting some small items.';
+            } else {
+              effects = { criminalRecord: true, happiness: -25, relationships: -15 };
+              message = 'You got caught shoplifting and now have a criminal record!';
+            }
+            break;
+        }
       }
     }
 
     // Relationship Activities
     else if (activityType === 'relationship') {
-      const { intimateActivity, proposeMariage, getMarried, giveGift } = require('../utils/gameUtils');
-      
       switch (activityId) {
         case 'date_night':
-          effects = { happiness: 20, relationships: 15, wealth: -50 };
-          message = 'You had a wonderful date night together!';
+          const partner = character.familyMembers.find(m => 
+            (m.relationship === 'lover' || m.relationship === 'spouse') && m.alive
+          );
+          if (!partner) {
+            effects = {};
+            message = 'You need to be in a relationship first!';
+          } else if (character.wealth < 50) {
+            effects = {};
+            message = 'You can\'t afford a date night!';
+          } else {
+            effects = { happiness: 20, relationships: 15, wealth: -50 };
+            message = `You had a wonderful date night with ${partner.name}!`;
+          }
           break;
         case 'give_gift_flowers':
-          const flowerResult = giveGift(gameState.character, 
-            gameState.character.familyMembers.find(m => m.relationship === 'lover')?.id || '', 
-            'flowers'
-          );
-          if (flowerResult.success) {
-            effects = { wealth: -flowerResult.cost, relationships: flowerResult.relationshipChange };
-            message = flowerResult.message;
-          } else {
+          const flowerPartner = character.familyMembers.find(m => m.relationship === 'lover' && m.alive);
+          if (!flowerPartner) {
             effects = {};
-            message = flowerResult.message;
+            message = 'You need to be in a relationship first!';
+          } else {
+            const flowerResult = giveGift(character, flowerPartner.id, 'flowers');
+            if (flowerResult.success) {
+              effects = { wealth: -flowerResult.cost, relationships: flowerResult.relationshipChange };
+              message = flowerResult.message;
+            } else {
+              effects = {};
+              message = flowerResult.message;
+            }
           }
           break;
         case 'give_gift_jewelry':
-          const jewelryResult = giveGift(gameState.character, 
-            gameState.character.familyMembers.find(m => m.relationship === 'lover')?.id || '', 
-            'jewelry'
-          );
-          if (jewelryResult.success) {
-            effects = { wealth: -jewelryResult.cost, relationships: jewelryResult.relationshipChange };
-            message = jewelryResult.message;
-          } else {
+          const jewelryPartner = character.familyMembers.find(m => m.relationship === 'lover' && m.alive);
+          if (!jewelryPartner) {
             effects = {};
-            message = jewelryResult.message;
+            message = 'You need to be in a relationship first!';
+          } else {
+            const jewelryResult = giveGift(character, jewelryPartner.id, 'jewelry');
+            if (jewelryResult.success) {
+              effects = { wealth: -jewelryResult.cost, relationships: jewelryResult.relationshipChange };
+              message = jewelryResult.message;
+            } else {
+              effects = {};
+              message = jewelryResult.message;
+            }
           }
           break;
         case 'give_gift_expensive':
-          const expensiveResult = giveGift(gameState.character, 
-            gameState.character.familyMembers.find(m => m.relationship === 'lover')?.id || '', 
-            'expensive'
-          );
-          if (expensiveResult.success) {
-            effects = { wealth: -expensiveResult.cost, relationships: expensiveResult.relationshipChange };
-            message = expensiveResult.message;
-          } else {
+          const expensivePartner = character.familyMembers.find(m => m.relationship === 'lover' && m.alive);
+          if (!expensivePartner) {
             effects = {};
-            message = expensiveResult.message;
+            message = 'You need to be in a relationship first!';
+          } else {
+            const expensiveResult = giveGift(character, expensivePartner.id, 'expensive');
+            if (expensiveResult.success) {
+              effects = { wealth: -expensiveResult.cost, relationships: expensiveResult.relationshipChange };
+              message = expensiveResult.message;
+            } else {
+              effects = {};
+              message = expensiveResult.message;
+            }
           }
           break;
         case 'intimate_protected':
-          const protectedResult = intimateActivity(gameState.character, true);
+          const protectedResult = intimateActivity(character, true);
           if (protectedResult.success) {
             effects = { happiness: 15, relationships: 10 };
             message = protectedResult.message;
@@ -486,7 +588,7 @@ const GameBoard: React.FC = () => {
           }
           break;
         case 'intimate_unprotected':
-          const unprotectedResult = intimateActivity(gameState.character, false);
+          const unprotectedResult = intimateActivity(character, false);
           if (unprotectedResult.success) {
             effects = { happiness: 20, relationships: 15 };
             message = unprotectedResult.message;
@@ -500,7 +602,7 @@ const GameBoard: React.FC = () => {
           }
           break;
         case 'propose':
-          const proposalResult = proposeMariage(gameState.character);
+          const proposalResult = proposeMariage(character);
           if (proposalResult.success && proposalResult.accepted) {
             effects = { relationshipStatus: 'engaged', happiness: 30, relationships: 25 };
             message = proposalResult.message;
@@ -510,7 +612,7 @@ const GameBoard: React.FC = () => {
           }
           break;
         case 'plan_wedding':
-          const weddingResult = getMarried(gameState.character);
+          const weddingResult = getMarried(character);
           if (weddingResult.success) {
             effects = { 
               relationshipStatus: 'married', 
@@ -520,7 +622,6 @@ const GameBoard: React.FC = () => {
             };
             message = weddingResult.message;
             
-            // Update partner relationship type to spouse
             setGameState(prev => {
               const updatedFamilyMembers = prev.character.familyMembers.map(member => 
                 member.relationship === 'lover' ? { ...member, relationship: 'spouse' as any } : member
@@ -539,12 +640,12 @@ const GameBoard: React.FC = () => {
           }
           break;
         case 'compliment_partner':
-          const partner = gameState.character.familyMembers.find(m => 
+          const complimentPartner = character.familyMembers.find(m => 
             (m.relationship === 'lover' || m.relationship === 'spouse') && m.alive
           );
-          if (partner) {
+          if (complimentPartner) {
             effects = { happiness: 10, relationships: 8 };
-            message = `You complimented ${partner.name} and made them smile!`;
+            message = `You complimented ${complimentPartner.name} and made them smile!`;
           } else {
             effects = {};
             message = 'You need a partner to compliment!';
@@ -555,40 +656,56 @@ const GameBoard: React.FC = () => {
 
     // Pregnancy Activities
     else if (activityType === 'pregnancy') {
-      switch (activityId) {
-        case 'prenatal_care':
-          effects = { health: 15, wealth: -50, happiness: 10 };
-          message = 'You had a prenatal checkup. Everything looks good!';
-          break;
-        case 'baby_shopping':
-          effects = { happiness: 15, wealth: -100 };
-          message = 'You bought everything needed for the baby!';
-          break;
-        case 'parenting_class':
-          effects = { smarts: 10, happiness: 5, wealth: -75 };
-          message = 'You learned valuable parenting skills!';
-          break;
+      if (!character.isPregnant) {
+        effects = {};
+        message = 'You need to be pregnant to do pregnancy activities!';
+      } else {
+        switch (activityId) {
+          case 'prenatal_care':
+            if (character.wealth < 50) {
+              effects = {};
+              message = 'You can\'t afford prenatal care!';
+            } else {
+              effects = { health: 15, wealth: -50, happiness: 10 };
+              message = 'You had a prenatal checkup. Everything looks good!';
+            }
+            break;
+          case 'baby_shopping':
+            if (character.wealth < 100) {
+              effects = {};
+              message = 'You can\'t afford baby supplies!';
+            } else {
+              effects = { happiness: 15, wealth: -100 };
+              message = 'You bought everything needed for the baby!';
+            }
+            break;
+          case 'parenting_class':
+            if (character.wealth < 75) {
+              effects = {};
+              message = 'You can\'t afford parenting classes!';
+            } else {
+              effects = { smarts: 10, happiness: 5, wealth: -75 };
+              message = 'You learned valuable parenting skills!';
+            }
+            break;
+        }
       }
     }
 
     if (Object.keys(effects).length > 0) {
-      const updatedCharacter = applyStatEffects(gameState.character, effects);
+      const updatedCharacter = applyStatEffects(character, effects);
 
-      // Consolidate into yearly entry instead of individual activities
-      const yearEntry = `Age ${gameState.character.age}: ${message}`;
+      const yearEntry = `Age ${character.age}: ${message}`;
 
-      // Check if there's already an entry for this age
       const existingEntryIndex = gameState.eventHistory.findIndex(entry => 
-        entry.startsWith(`Age ${gameState.character.age}:`)
+        entry.startsWith(`Age ${character.age}:`)
       );
 
       let newEventHistory;
       if (existingEntryIndex !== -1) {
-        // Replace existing entry for this age
         newEventHistory = [...gameState.eventHistory];
         newEventHistory[existingEntryIndex] = yearEntry;
       } else {
-        // Add new entry and limit to last 10 years
         newEventHistory = [yearEntry, ...gameState.eventHistory.slice(0, 9)];
       }
 
@@ -598,10 +715,15 @@ const GameBoard: React.FC = () => {
         eventHistory: newEventHistory
       }));
 
-      // Auto-navigate to Life tab
       setActiveTab('life');
-
-      // Activity notification removed - no toast notifications
+    } else if (message) {
+      // Show message even if no effects
+      const yearEntry = `Age ${character.age}: ${message}`;
+      setGameState(prev => ({
+        ...prev,
+        eventHistory: [yearEntry, ...prev.eventHistory.slice(0, 9)]
+      }));
+      setActiveTab('life');
     }
   };
 
@@ -613,24 +735,95 @@ const GameBoard: React.FC = () => {
         character: updatedCharacter,
         eventHistory: [`${gameState.character.name} quit their job.`, ...prev.eventHistory.slice(0, 9)]
       }));
-      // Job quit notification removed - no toast notifications
       return;
     }
 
-    // Job application logic would go here
-    const jobTitles: { [key: string]: { title: string; salary: number } } = {
-      retail_worker: { title: 'Retail Worker', salary: 25 },
-      fast_food: { title: 'Fast Food Worker', salary: 20 },
-      office_assistant: { title: 'Office Assistant', salary: 35 },
-      teacher: { title: 'Teacher', salary: 50 },
-      doctor: { title: 'Doctor', salary: 120 },
-      lawyer: { title: 'Lawyer', salary: 100 },
+    // Enhanced job application with realistic success rates
+    const jobDatabase: { [key: string]: { title: string; salary: number; requirements: { age: number; education: string; smarts?: number; looks?: number } } } = {
+      fast_food: { title: 'Fast Food Worker', salary: 22, requirements: { age: 14, education: 'None' } },
+      retail_worker: { title: 'Retail Associate', salary: 25, requirements: { age: 16, education: 'None' } },
+      janitor: { title: 'Janitor', salary: 28, requirements: { age: 18, education: 'None' } },
+      factory_worker: { title: 'Factory Worker', salary: 32, requirements: { age: 18, education: 'High School' } },
+      electrician: { title: 'Electrician', salary: 55, requirements: { age: 20, education: 'Trade School' } },
+      paramedic: { title: 'Paramedic', salary: 48, requirements: { age: 21, education: 'Associate Degree' } },
+      police_officer: { title: 'Police Officer', salary: 52, requirements: { age: 21, education: 'Associate Degree' } },
+      teacher: { title: 'Teacher', salary: 48, requirements: { age: 22, education: 'Bachelor Degree', smarts: 60 } },
+      nurse: { title: 'Nurse', salary: 65, requirements: { age: 22, education: 'Bachelor Degree', smarts: 70 } },
+      accountant: { title: 'Accountant', salary: 58, requirements: { age: 22, education: 'Bachelor Degree', smarts: 65 } },
+      engineer: { title: 'Engineer', salary: 75, requirements: { age: 22, education: 'Bachelor Degree', smarts: 80 } },
+      marketing_manager: { title: 'Marketing Manager', salary: 85, requirements: { age: 25, education: 'Bachelor Degree', smarts: 70, looks: 60 } },
+      it_manager: { title: 'IT Manager', salary: 95, requirements: { age: 26, education: 'Bachelor Degree', smarts: 85 } },
+      doctor: { title: 'Doctor', salary: 185, requirements: { age: 26, education: 'Medical Degree', smarts: 90 } },
+      lawyer: { title: 'Lawyer', salary: 125, requirements: { age: 25, education: 'Law Degree', smarts: 85 } },
+      investment_banker: { title: 'Investment Banker', salary: 145, requirements: { age: 24, education: 'MBA', smarts: 88 } },
+      surgeon: { title: 'Surgeon', salary: 250, requirements: { age: 30, education: 'Medical Degree', smarts: 95 } },
+      artist: { title: 'Artist', salary: 35, requirements: { age: 18, education: 'High School', looks: 50 } },
+      musician: { title: 'Musician', salary: 28, requirements: { age: 16, education: 'None', looks: 60 } },
+      writer: { title: 'Writer', salary: 42, requirements: { age: 20, education: 'Bachelor Degree', smarts: 75 } }
     };
 
-    const job = jobTitles[jobId];
-    if (job) {
+    const job = jobDatabase[jobId];
+    if (!job) return;
+
+    const character = gameState.character;
+
+    // Check eligibility
+    const meetsAge = character.age >= job.requirements.age;
+    const meetsEducation = job.requirements.education === 'None' || 
+                          character.education.includes(job.requirements.education.split(' ')[0]);
+    const meetsSmarts = !job.requirements.smarts || character.smarts >= job.requirements.smarts;
+    const meetsLooks = !job.requirements.looks || character.looks >= job.requirements.looks;
+
+    if (!meetsAge) {
+      setGameState(prev => ({
+        ...prev,
+        eventHistory: [`You're too young for this job (need to be ${job.requirements.age}).`, ...prev.eventHistory.slice(0, 9)]
+      }));
+      return;
+    }
+
+    if (!meetsEducation) {
+      setGameState(prev => ({
+        ...prev,
+        eventHistory: [`You don't meet the education requirements (need ${job.requirements.education}).`, ...prev.eventHistory.slice(0, 9)]
+      }));
+      return;
+    }
+
+    if (!meetsSmarts) {
+      setGameState(prev => ({
+        ...prev,
+        eventHistory: [`You're not smart enough for this job (need ${job.requirements.smarts} smarts).`, ...prev.eventHistory.slice(0, 9)]
+      }));
+      return;
+    }
+
+    if (!meetsLooks) {
+      setGameState(prev => ({
+        ...prev,
+        eventHistory: [`You don't meet the appearance requirements for this job.`, ...prev.eventHistory.slice(0, 9)]
+      }));
+      return;
+    }
+
+    // Calculate success rate based on character stats
+    let successRate = 0.7; // Base success rate
+    if (job.requirements.smarts && character.smarts > job.requirements.smarts) {
+      successRate += 0.2;
+    }
+    if (job.requirements.looks && character.looks > job.requirements.looks) {
+      successRate += 0.1;
+    }
+    if (character.relationships > 70) {
+      successRate += 0.1; // Good social skills help with interviews
+    }
+    if (character.criminalRecord) {
+      successRate -= 0.3; // Criminal record makes it harder
+    }
+
+    if (Math.random() < successRate) {
       const updatedCharacter = { 
-        ...gameState.character, 
+        ...character, 
         job: job.title, 
         salary: job.salary, 
         jobLevel: 1 
@@ -638,9 +831,13 @@ const GameBoard: React.FC = () => {
       setGameState(prev => ({
         ...prev,
         character: updatedCharacter,
-        eventHistory: [`${gameState.character.name} got hired as a ${job.title}!`, ...prev.eventHistory.slice(0, 9)]
+        eventHistory: [`${character.name} got hired as a ${job.title}!`, ...prev.eventHistory.slice(0, 9)]
       }));
-      // Job hired notification removed - no toast notifications
+    } else {
+      setGameState(prev => ({
+        ...prev,
+        eventHistory: [`Your application for ${job.title} was rejected. Try improving your skills!`, ...prev.eventHistory.slice(0, 9)]
+      }));
     }
   };
 
@@ -675,7 +872,6 @@ const GameBoard: React.FC = () => {
   };
 
   const renderAgeButton = () => {
-    // Age button is now handled by BottomNavigation
     return null;
   };
 
@@ -719,7 +915,6 @@ const GameBoard: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 font-nunito">
-      {/* BitLife-style header */}
       <div className="bg-red-500 p-3 text-center">
         <h1 className="text-2xl font-bold text-white">
           🌟 LifeSim
@@ -736,7 +931,6 @@ const GameBoard: React.FC = () => {
         onAgeUp={ageUp}
       />
 
-      {/* Event Modal Overlay */}
       {gameState.currentEvent && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <EventCard event={gameState.currentEvent} onChoice={handleChoice} />
