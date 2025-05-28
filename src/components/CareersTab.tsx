@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -208,79 +207,91 @@ export const CareersTab: React.FC<CareersTabProps> = ({ character, onJobApplicat
   };
 
   return (
-    <div className="space-y-6">
-      <div className="text-center">
-        <h2 className="text-2xl font-bold text-game-text mb-2">Career Center</h2>
-        <p className="text-gray-600">Find your perfect job</p>
-      </div>
+    <div className="pb-32 bg-gray-50 min-h-screen">
+      <div className="p-4">
+        <div className="text-center mb-6">
+          <h2 className="text-2xl font-bold text-game-text mb-2">Career Center</h2>
+          <p className="text-gray-600 text-sm">Find your perfect job</p>
+        </div>
 
-      {character.job && (
-        <Card className="border-primary/20 bg-primary/5">
-          <CardHeader>
-            <CardTitle className="text-lg">Current Employment</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex justify-between items-center">
-              <div>
-                <h3 className="font-semibold">{character.job}</h3>
-                <p className="text-gray-600">Salary: ${character.salary}k/year</p>
-                <p className="text-sm text-gray-500">Job Level: {character.jobLevel}</p>
+        {character.job && (
+          <Card className="mb-6 border-primary/20 bg-primary/5">
+            <CardHeader>
+              <CardTitle className="text-lg">Current Employment</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex flex-col gap-2">
+                <div>
+                  <h3 className="font-semibold text-lg">{character.job}</h3>
+                  <p className="text-gray-600">Salary: ${character.salary}k/year</p>
+                  <p className="text-sm text-gray-500">Job Level: {character.jobLevel}</p>
+                </div>
+                <Button 
+                  variant="outline" 
+                  onClick={() => onJobApplication('quit')}
+                  className="w-full mt-2 touch-feedback"
+                >
+                  Quit Job
+                </Button>
               </div>
-              <Button variant="outline" onClick={() => onJobApplication('quit')}>
-                Quit Job
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      )}
+            </CardContent>
+          </Card>
+        )}
 
-      <div className="grid gap-4">
-        {jobListings.map((job) => {
-          const eligible = isEligible(job);
-          const failureReasons = getFailureReasons(job);
-          return (
-            <Card key={job.id} className={!eligible ? 'opacity-60' : ''}>
-              <CardContent className="p-4">
-                <div className="flex justify-between items-start">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-2">
-                      <h3 className="font-semibold">{job.title}</h3>
-                      {eligible && <Badge variant="secondary" className="bg-green-100 text-green-800">Eligible</Badge>}
-                      {!eligible && <Badge variant="secondary" className="bg-red-100 text-red-800">Not Eligible</Badge>}
-                      {character.criminalRecord && <Badge variant="secondary" className="bg-yellow-100 text-yellow-800">Criminal Record</Badge>}
+        <div className="space-y-4">
+          {jobListings.map((job) => {
+            const eligible = isEligible(job);
+            const failureReasons = getFailureReasons(job);
+            return (
+              <Card 
+                key={job.id} 
+                className={`transition-all duration-200 ${!eligible ? 'opacity-60' : ''}`}
+              >
+                <CardContent className="p-4">
+                  <div className="flex flex-col gap-3">
+                    <div>
+                      <div className="flex flex-wrap items-center gap-2 mb-2">
+                        <h3 className="font-semibold text-base">{job.title}</h3>
+                        {eligible && <Badge variant="secondary" className="bg-green-100 text-green-800">Eligible</Badge>}
+                        {!eligible && <Badge variant="secondary" className="bg-red-100 text-red-800">Not Eligible</Badge>}
+                        {character.criminalRecord && <Badge variant="secondary" className="bg-yellow-100 text-yellow-800">Criminal Record</Badge>}
+                      </div>
+                      <p className="text-gray-600 text-sm mb-1">{job.company}</p>
+                      <p className="text-sm text-gray-500 mb-2">{job.description}</p>
                     </div>
-                    <p className="text-gray-600 mb-1">{job.company}</p>
-                    <p className="text-sm text-gray-500 mb-2">{job.description}</p>
-                    <div className="flex items-center gap-4 text-sm mb-2">
-                      <span className="font-medium text-green-600">${job.salary}k/year</span>
-                      <span className="text-gray-500">Min Age: {job.requirements.age}</span>
-                      <span className="text-gray-500">Education: {job.requirements.education}</span>
+
+                    <div className="flex flex-wrap gap-2 text-xs">
+                      <span className="font-medium text-green-600 bg-green-50 px-2 py-1 rounded-full">${job.salary}k/year</span>
+                      <span className="text-gray-500 bg-gray-100 px-2 py-1 rounded-full">Min Age: {job.requirements.age}</span>
+                      <span className="text-gray-500 bg-gray-100 px-2 py-1 rounded-full">Education: {job.requirements.education}</span>
                       {job.requirements.smarts > 0 && (
-                        <span className="text-gray-500">Smarts: {job.requirements.smarts}+</span>
+                        <span className="text-gray-500 bg-gray-100 px-2 py-1 rounded-full">Smarts: {job.requirements.smarts}+</span>
                       )}
                       {job.requirements.looks > 0 && (
-                        <span className="text-gray-500">Looks: {job.requirements.looks}+</span>
+                        <span className="text-gray-500 bg-gray-100 px-2 py-1 rounded-full">Looks: {job.requirements.looks}+</span>
                       )}
                     </div>
+
                     {!eligible && failureReasons.length > 0 && (
-                      <div className="text-sm text-red-600">
+                      <div className="text-sm text-red-600 bg-red-50 p-2 rounded-md">
                         Missing: {failureReasons.join(', ')}
                       </div>
                     )}
+
+                    <Button
+                      onClick={() => onJobApplication(job.id)}
+                      disabled={!eligible || character.job === job.title}
+                      className="w-full mt-2 touch-feedback"
+                      variant={eligible ? "default" : "secondary"}
+                    >
+                      {character.job === job.title ? 'Current Job' : eligible ? 'Apply' : 'Not Eligible'}
+                    </Button>
                   </div>
-                  <Button
-                    onClick={() => onJobApplication(job.id)}
-                    disabled={!eligible || character.job === job.title}
-                    className="ml-4"
-                    variant={eligible ? "default" : "secondary"}
-                  >
-                    {character.job === job.title ? 'Current Job' : eligible ? 'Apply' : 'Not Eligible'}
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          );
-        })}
+                </CardContent>
+              </Card>
+            );
+          })}
+        </div>
       </div>
     </div>
   );
