@@ -50,6 +50,12 @@ const GameBoard: React.FC = () => {
       year: new Date().getFullYear(),
       education: [],
       assets: [],
+      birthMonth: 1,
+      birthDay: 1,
+      pets: [],
+      fame: 0,
+      nationality: 'American',
+      birthComplications: false,
       ...generateRandomStats()
     },
     currentEvent: null,
@@ -76,6 +82,12 @@ const GameBoard: React.FC = () => {
       year: new Date().getFullYear(),
       education: [],
       assets: [],
+      birthMonth: Math.floor(Math.random() * 12) + 1,
+      birthDay: Math.floor(Math.random() * 28) + 1,
+      pets: [],
+      fame: 0,
+      nationality: 'American',
+      birthComplications: false,
       ...generateRandomStats()
     };
 

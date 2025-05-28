@@ -1,4 +1,4 @@
-import { Character, FamilyMember, LifeEvent, Relationship } from '../types/game';
+import { Character, FamilyMember, LifeEvent, ZodiacSign } from '../types/game';
 import { lifeEvents } from '../data/lifeEvents';
 import { educationLevels, shouldAutoEnrollInSchool } from './educationUtils';
 
@@ -106,24 +106,26 @@ export const generateRandomName = (): string => {
 
 export const generateRandomStats = () => {
   const zodiacSigns = [
-    { name: 'Aries', emoji: '♈', element: 'fire', traits: ['energetic', 'bold', 'competitive'] },
-    { name: 'Taurus', emoji: '♉', element: 'earth', traits: ['reliable', 'patient', 'practical'] },
-    { name: 'Gemini', emoji: '♊', element: 'air', traits: ['curious', 'adaptable', 'witty'] },
-    { name: 'Cancer', emoji: '♋', element: 'water', traits: ['nurturing', 'intuitive', 'emotional'] },
-    { name: 'Leo', emoji: '♌', element: 'fire', traits: ['confident', 'generous', 'dramatic'] },
-    { name: 'Virgo', emoji: '♍', element: 'earth', traits: ['analytical', 'practical', 'loyal'] },
-    { name: 'Libra', emoji: '♎', element: 'air', traits: ['diplomatic', 'fair-minded', 'social'] },
-    { name: 'Scorpio', emoji: '♏', element: 'water', traits: ['passionate', 'resourceful', 'brave'] },
-    { name: 'Sagittarius', emoji: '♐', element: 'fire', traits: ['adventurous', 'philosophical', 'honest'] },
-    { name: 'Capricorn', emoji: '♑', element: 'earth', traits: ['ambitious', 'disciplined', 'responsible'] },
-    { name: 'Aquarius', emoji: '♒', element: 'air', traits: ['independent', 'original', 'humanitarian'] },
-    { name: 'Pisces', emoji: '♓', element: 'water', traits: ['compassionate', 'artistic', 'intuitive'] }
+    { name: 'Aries', emoji: '♈', element: 'fire' as const, traits: ['energetic', 'bold', 'competitive'], luckyNumbers: [1, 8, 17] },
+    { name: 'Taurus', emoji: '♉', element: 'earth' as const, traits: ['reliable', 'patient', 'practical'], luckyNumbers: [2, 6, 9] },
+    { name: 'Gemini', emoji: '♊', element: 'air' as const, traits: ['curious', 'adaptable', 'witty'], luckyNumbers: [5, 7, 14] },
+    { name: 'Cancer', emoji: '♋', element: 'water' as const, traits: ['nurturing', 'intuitive', 'emotional'], luckyNumbers: [2, 7, 11] },
+    { name: 'Leo', emoji: '♌', element: 'fire' as const, traits: ['confident', 'generous', 'dramatic'], luckyNumbers: [1, 3, 10] },
+    { name: 'Virgo', emoji: '♍', element: 'earth' as const, traits: ['analytical', 'practical', 'loyal'], luckyNumbers: [6, 14, 18] },
+    { name: 'Libra', emoji: '♎', element: 'air' as const, traits: ['diplomatic', 'fair-minded', 'social'], luckyNumbers: [4, 6, 13] },
+    { name: 'Scorpio', emoji: '♏', element: 'water' as const, traits: ['passionate', 'resourceful', 'brave'], luckyNumbers: [8, 11, 18] },
+    { name: 'Sagittarius', emoji: '♐', element: 'fire' as const, traits: ['adventurous', 'philosophical', 'honest'], luckyNumbers: [3, 9, 22] },
+    { name: 'Capricorn', emoji: '♑', element: 'earth' as const, traits: ['ambitious', 'disciplined', 'responsible'], luckyNumbers: [6, 8, 26] },
+    { name: 'Aquarius', emoji: '♒', element: 'air' as const, traits: ['independent', 'original', 'humanitarian'], luckyNumbers: [4, 7, 11] },
+    { name: 'Pisces', emoji: '♓', element: 'water' as const, traits: ['compassionate', 'artistic', 'intuitive'], luckyNumbers: [5, 8, 18] }
   ];
 
   const zodiacSign = zodiacSigns[Math.floor(Math.random() * zodiacSigns.length)];
   const birthplace = birthplaces[Math.floor(Math.random() * birthplaces.length)];
   const birthWeight = 5.5 + Math.random() * 4; // 5.5 to 9.5 lbs
   const premature = Math.random() < 0.1; // 10% chance of being premature
+  const birthMonth = Math.floor(Math.random() * 12) + 1;
+  const birthDay = Math.floor(Math.random() * 28) + 1;
 
   // Base stats influenced by zodiac
   let baseStats = {
@@ -135,18 +137,24 @@ export const generateRandomStats = () => {
     relationships: Math.floor(Math.random() * 30) + 20, // 20-50
     salary: 0,
     jobLevel: 0,
-    familyMembers: [],
-    children: [],
-    education: [],
-    assets: [],
+    familyMembers: [] as FamilyMember[],
+    children: [] as string[],
+    education: [] as string[],
+    assets: [] as { name: string; type: string; value: number }[],
     age: 0,
     year: new Date().getFullYear(),
     zodiacSign,
+    birthMonth,
+    birthDay,
+    pets: [] as { name: string; type: string; age: number; health: number }[],
     birthplace,
     birthWeight,
     premature,
+    birthComplications: false,
     criminalRecord: false,
-    relationshipStatus: 'single' as 'single' | 'dating' | 'engaged' | 'married' | 'divorced'
+    relationshipStatus: 'single' as const,
+    nationality: 'American',
+    fame: 0
   };
 
   // Apply zodiac modifiers
@@ -165,11 +173,11 @@ export const generateRandomStats = () => {
   }
 
   // Cap stats at 100
-  Object.keys(baseStats).forEach(key => {
-    if (typeof baseStats[key as keyof typeof baseStats] === 'number' && key !== 'age' && key !== 'year' && key !== 'birthWeight') {
-      baseStats[key as keyof typeof baseStats] = Math.min(100, baseStats[key as keyof typeof baseStats] as number);
-    }
-  });
+  baseStats.health = Math.min(100, baseStats.health);
+  baseStats.happiness = Math.min(100, baseStats.happiness);
+  baseStats.smarts = Math.min(100, baseStats.smarts);
+  baseStats.looks = Math.min(100, baseStats.looks);
+  baseStats.relationships = Math.min(100, baseStats.relationships);
 
   return baseStats;
 };
@@ -177,10 +185,170 @@ export const generateRandomStats = () => {
 export const createCharacter = (): Character => {
   const stats = generateRandomStats();
   return {
-    id: Math.random().toString(36).substring(2, 15),
     name: generateRandomName(),
     ...stats
   };
+};
+
+export const formatSalary = (salary: number): string => {
+  if (salary >= 1000) {
+    return `$${(salary / 1000).toFixed(0)}K`;
+  }
+  return `$${salary}`;
+};
+
+export const getStatColor = (value: number): string => {
+  if (value >= 80) return 'text-green-600';
+  if (value >= 60) return 'text-yellow-600';
+  if (value >= 40) return 'text-orange-600';
+  return 'text-red-600';
+};
+
+export const applyStatEffects = (character: Character, effects: any): Character => {
+  const updatedCharacter = { ...character };
+  
+  Object.keys(effects).forEach(key => {
+    if (key in updatedCharacter) {
+      const currentValue = (updatedCharacter as any)[key];
+      const effect = effects[key];
+      
+      if (typeof currentValue === 'number' && typeof effect === 'number') {
+        (updatedCharacter as any)[key] = Math.max(0, Math.min(100, currentValue + effect));
+      } else if (effect !== undefined) {
+        (updatedCharacter as any)[key] = effect;
+      }
+    }
+  });
+  
+  return updatedCharacter;
+};
+
+export const isGameOver = (character: Character): { gameOver: boolean; reason?: string } => {
+  if (character.health <= 0) {
+    return { gameOver: true, reason: 'Your health reached zero.' };
+  }
+  if (character.age >= 120) {
+    return { gameOver: true, reason: 'You lived to be 120 years old!' };
+  }
+  return { gameOver: false };
+};
+
+export const ageFamilyMembers = (familyMembers: FamilyMember[]): FamilyMember[] => {
+  return familyMembers.map(member => ({
+    ...member,
+    age: member.age + 1,
+    health: member.alive ? Math.max(0, member.health - (member.age > 60 ? 2 : 1)) : 0,
+    alive: member.health > 0
+  }));
+};
+
+export const generateNewRelationships = (character: Character): FamilyMember[] => {
+  // Simple implementation - occasionally add new friends
+  if (Math.random() < 0.1 && character.age >= 5) {
+    return [{
+      id: Math.random().toString(36).substring(2, 15),
+      name: generateRandomName(),
+      relationship: 'friend',
+      age: character.age + Math.floor(Math.random() * 10) - 5,
+      alive: true,
+      health: Math.floor(Math.random() * 40) + 60,
+      relationshipQuality: Math.floor(Math.random() * 30) + 20
+    }];
+  }
+  return [];
+};
+
+export const findLove = (character: Character): { success: boolean; partner?: FamilyMember; message: string } => {
+  if (character.age < 16) {
+    return { success: false, message: "You're too young for serious relationships!" };
+  }
+  
+  if (Math.random() < 0.3) {
+    const partner: FamilyMember = {
+      id: Math.random().toString(36).substring(2, 15),
+      name: generateRandomName(),
+      relationship: 'lover',
+      age: character.age + Math.floor(Math.random() * 10) - 5,
+      alive: true,
+      health: Math.floor(Math.random() * 40) + 60,
+      relationshipQuality: Math.floor(Math.random() * 30) + 50
+    };
+    return { success: true, partner, message: `You met ${partner.name} and started dating!` };
+  }
+  
+  return { success: false, message: "You didn't find anyone special this time." };
+};
+
+export const intimateActivity = (character: Character, protected: boolean): { success: boolean; message: string; pregnant?: boolean } => {
+  const partner = character.familyMembers.find(m => m.relationship === 'lover' || m.relationship === 'spouse');
+  if (!partner) {
+    return { success: false, message: "You need to be in a relationship first!" };
+  }
+  
+  let message = `You had an intimate moment with ${partner.name}.`;
+  let pregnant = false;
+  
+  if (!protected && Math.random() < 0.15) {
+    pregnant = true;
+    message += " You might be pregnant!";
+  }
+  
+  return { success: true, message, pregnant };
+};
+
+export const proposeMariage = (character: Character): { success: boolean; accepted?: boolean; message: string } => {
+  const partner = character.familyMembers.find(m => m.relationship === 'lover');
+  if (!partner) {
+    return { success: false, message: "You need to be dating someone first!" };
+  }
+  
+  const acceptanceChance = partner.relationshipQuality / 100;
+  const accepted = Math.random() < acceptanceChance;
+  
+  if (accepted) {
+    return { success: true, accepted: true, message: `${partner.name} said yes! You're now engaged!` };
+  } else {
+    return { success: true, accepted: false, message: `${partner.name} turned down your proposal.` };
+  }
+};
+
+export const getMarried = (character: Character): { success: boolean; message: string; weddingCost?: number } => {
+  if (character.relationshipStatus !== 'engaged') {
+    return { success: false, message: "You need to be engaged first!" };
+  }
+  
+  const weddingCost = Math.floor(Math.random() * 100) + 50;
+  if (character.wealth < weddingCost) {
+    return { success: false, message: "You can't afford a wedding right now!" };
+  }
+  
+  return { success: true, message: "You had a beautiful wedding!", weddingCost };
+};
+
+export const giveGift = (character: Character, partnerId: string, giftType: string): { success: boolean; message: string; cost: number; relationshipChange: number } => {
+  const costs = { flowers: 25, jewelry: 150, expensive: 500 };
+  const cost = costs[giftType as keyof typeof costs] || 25;
+  
+  if (character.wealth < cost) {
+    return { success: false, message: "You can't afford this gift!", cost: 0, relationshipChange: 0 };
+  }
+  
+  const relationshipChange = giftType === 'expensive' ? 20 : giftType === 'jewelry' ? 15 : 10;
+  return { success: true, message: `Your partner loved the ${giftType}!`, cost, relationshipChange };
+};
+
+export const haveBaby = (character: Character, babyName: string): { success: boolean; message: string; baby?: FamilyMember } => {
+  const baby: FamilyMember = {
+    id: Math.random().toString(36).substring(2, 15),
+    name: babyName,
+    relationship: 'child',
+    age: 0,
+    alive: true,
+    health: Math.floor(Math.random() * 20) + 80,
+    relationshipQuality: 100
+  };
+  
+  return { success: true, message: `${babyName} was born! Congratulations!`, baby };
 };
 
 export const handleEducationActions = (character: Character, action: string, data?: any): Character => {
@@ -196,9 +364,9 @@ export const handleEducationActions = (character: Character, action: string, dat
           institution: generateInstitutionName(degreeType),
           currentYear: 1,
           gpa: 3.0 + Math.random() * 1.0, // Random GPA between 3.0-4.0
-          major: degreeType === 'university' || degreeType === 'graduate' ? generateMajor() : undefined
+          classmates: []
         };
-        updatedCharacter.money -= educationLevel.cost;
+        updatedCharacter.wealth -= educationLevel.cost;
       }
       break;
 
@@ -217,15 +385,16 @@ export const handleEducationActions = (character: Character, action: string, dat
     case 'interact_classmate':
       const { classmate } = data;
       // Add classmate as a relationship
-      const newRelationship = {
+      const newRelationship: FamilyMember = {
         id: classmate.id,
         name: classmate.name,
         age: classmate.age,
-        relationship: 'classmate',
-        relationshipLevel: 25,
-        isAlive: true
+        relationship: 'friend',
+        alive: true,
+        health: 80,
+        relationshipQuality: 25
       };
-      updatedCharacter.relationships.push(newRelationship);
+      updatedCharacter.familyMembers.push(newRelationship);
       updatedCharacter.happiness += 5;
       break;
   }
@@ -234,7 +403,7 @@ export const handleEducationActions = (character: Character, action: string, dat
 };
 
 const generateInstitutionName = (level: string): string => {
-  const schoolTypes = {
+  const schoolTypes: { [key: string]: string[] } = {
     elementary: ['Elementary School', 'Primary School'],
     middle: ['Middle School', 'Junior High'],
     high: ['High School', 'Secondary School'],
@@ -253,15 +422,6 @@ const generateInstitutionName = (level: string): string => {
   return `${cityName} ${schoolType}`;
 };
 
-const generateMajor = (): string => {
-  const majors = [
-    'Computer Science', 'Business Administration', 'Psychology', 'Biology', 'English Literature',
-    'Engineering', 'Mathematics', 'History', 'Chemistry', 'Economics', 'Political Science',
-    'Art', 'Music', 'Philosophy', 'Sociology', 'Physics', 'Communications', 'Education'
-  ];
-  return majors[Math.floor(Math.random() * majors.length)];
-};
-
 export const applyForJob = (character: Character, jobId: string): Character => {
   // ... rest of the function remains unchanged
   return character; // Placeholder return
@@ -274,7 +434,7 @@ export const ageCharacter = (character: Character): Character => {
   updatedCharacter.age += 1;
 
   // Age all relationships
-  updatedCharacter.relationships = updatedCharacter.relationships.map(rel => ({
+  updatedCharacter.familyMembers = updatedCharacter.familyMembers.map(rel => ({
     ...rel,
     age: rel.age + 1
   }));
@@ -303,7 +463,8 @@ export const ageCharacter = (character: Character): Character => {
           level: autoEnrollLevel,
           institution: generateInstitutionName(autoEnrollLevel),
           currentYear: 1,
-          gpa: 2.5 + Math.random() * 1.5
+          gpa: 2.5 + Math.random() * 1.5,
+          classmates: []
         };
       }
     }
