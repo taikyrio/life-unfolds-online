@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Character, LifeEvent, GameState } from '../types/game';
 import { 
@@ -14,7 +13,8 @@ import {
   proposeMariage,
   getMarried,
   giveGift,
-  haveBaby
+  haveBaby,
+  generateInitialFamily
 } from '../utils/gameUtils';
 import { getRandomEvent, createEventTracker } from '../data/lifeEvents';
 import { 
@@ -56,6 +56,7 @@ const GameBoard: React.FC = () => {
       fame: 0,
       nationality: 'American',
       birthComplications: false,
+      familyMembers: [],
       ...generateRandomStats()
     },
     currentEvent: null,
@@ -76,7 +77,7 @@ const GameBoard: React.FC = () => {
   }, []);
 
   const startNewGame = () => {
-    const newCharacter: Character = {
+    const baseCharacter = {
       name: generateEducationName(),
       age: 0,
       year: new Date().getFullYear(),
@@ -89,6 +90,12 @@ const GameBoard: React.FC = () => {
       nationality: 'American',
       birthComplications: false,
       ...generateRandomStats()
+    };
+
+    const familyMembers = generateInitialFamily();
+    const newCharacter: Character = {
+      ...baseCharacter,
+      familyMembers
     };
 
     const birthMessage = `${newCharacter.name} was born in ${newCharacter.birthplace}! ${newCharacter.zodiacSign.emoji} ${newCharacter.zodiacSign.name} • ${newCharacter.birthWeight.toFixed(1)} lbs${newCharacter.premature ? ' (Premature)' : ''}`;
