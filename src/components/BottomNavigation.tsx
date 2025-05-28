@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Heart, Briefcase, Users, Home, Car, User, GraduationCap } from 'lucide-react';
 import { Character } from '../types/game';
