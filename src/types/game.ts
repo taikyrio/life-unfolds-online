@@ -86,6 +86,7 @@ export interface Character {
   // Life Status
   criminalRecord: boolean;
   fame: number;
+  notoriety?: number; // For criminal activities
   nationality: string;
   birthplace: string;
   
@@ -146,6 +147,7 @@ export interface StatEffects {
   relationships?: number;
   salary?: number;
   fame?: number;
+  notoriety?: number;
   job?: string;
   jobLevel?: number;
   education?: string[];

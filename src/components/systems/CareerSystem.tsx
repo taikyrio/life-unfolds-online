@@ -1,11 +1,12 @@
-
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Character } from '../../types/game';
-import { Briefcase, TrendingUp, DollarSign, Star } from 'lucide-react';
+import { Briefcase, TrendingUp, DollarSign, Star, Skull, Trophy, Shield } from 'lucide-react';
+import { CriminalDLC } from './dlc/CriminalDLC';
+import { FameDLC } from './dlc/FameDLC';
 
 interface CareerSystemProps {
   character: Character;
@@ -16,6 +17,8 @@ export const CareerSystem: React.FC<CareerSystemProps> = ({
   character, 
   onCareerAction 
 }) => {
+  const [activeDLC, setActiveDLC] = useState<string | null>(null);
+
   const careerTracks = [
     // Entry Level
     { id: 'retail', name: 'Retail Worker', baseSalary: 25, maxLevel: 3, education: 'None', smarts: 0 },
@@ -66,8 +69,79 @@ export const CareerSystem: React.FC<CareerSystemProps> = ({
     return { smartsRequired, yearsRequired };
   };
 
+  if (activeDLC === 'criminal') {
+    return (
+      <div>
+        <Button 
+          variant="ghost" 
+          onClick={() => setActiveDLC(null)}
+          className="mb-4"
+        >
+          ← Back to Careers
+        </Button>
+        <CriminalDLC character={character} onCareerAction={onCareerAction} />
+      </div>
+    );
+  }
+
+  if (activeDLC === 'fame') {
+    return (
+      <div>
+        <Button 
+          variant="ghost" 
+          onClick={() => setActiveDLC(null)}
+          className="mb-4"
+        >
+          ← Back to Careers
+        </Button>
+        <FameDLC character={character} onCareerAction={onCareerAction} />
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-4">
+      {/* Special Careers Section */}
+      <Card className="border-purple-200 bg-gradient-to-r from-purple-50 to-pink-50">
+        <CardHeader className="pb-3">
+          <CardTitle className="text-lg flex items-center gap-2">
+            <Star className="h-5 w-5 text-purple-600" />
+            Special Careers - DLC Packs
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <div className="grid grid-cols-1 gap-3">
+            <Button
+              variant="outline"
+              className="justify-start h-auto p-4 bg-red-50 border-red-200 hover:bg-red-100"
+              onClick={() => setActiveDLC('criminal')}
+            >
+              <div className="flex items-center gap-3">
+                <Skull className="h-6 w-6 text-red-600" />
+                <div className="text-left">
+                  <div className="font-semibold text-red-800">Criminal Empire</div>
+                  <div className="text-sm text-red-600">Build your criminal organization</div>
+                </div>
+              </div>
+            </Button>
+            
+            <Button
+              variant="outline"
+              className="justify-start h-auto p-4 bg-yellow-50 border-yellow-200 hover:bg-yellow-100"
+              onClick={() => setActiveDLC('fame')}
+            >
+              <div className="flex items-center gap-3">
+                <Trophy className="h-6 w-6 text-yellow-600" />
+                <div className="text-left">
+                  <div className="font-semibold text-yellow-800">Fame & Fortune</div>
+                  <div className="text-sm text-yellow-600">Become a celebrity or influencer</div>
+                </div>
+              </div>
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+
       {/* Current Job Status */}
       {character.job ? (
         <Card className="border-green-200 bg-green-50">
@@ -131,7 +205,7 @@ export const CareerSystem: React.FC<CareerSystemProps> = ({
       {/* Available Jobs */}
       <Card>
         <CardHeader className="pb-3">
-          <CardTitle className="text-lg">Job Opportunities</CardTitle>
+          <CardTitle className="text-lg">Regular Job Opportunities</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
           {careerTracks.filter(career => isEligible(career)).map(career => (
