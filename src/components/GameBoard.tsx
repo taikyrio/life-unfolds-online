@@ -126,7 +126,7 @@ export const GameBoard: React.FC<GameBoardProps> = ({ gameState, onGameStateChan
           </div>
           <div className="flex items-center gap-0.5 text-blue-600 min-w-0 flex-shrink">
             <span className="text-xs sm:text-sm">🧠</span>
-            <span className="text-xs sm:text-sm font-medium truncate">{Math.round(gameState.character.intelligence)}</span>
+            <span className="text-xs sm:text-sm font-medium truncate">{Math.round(gameState.character.smarts)}</span>
           </div>
           <div className="flex items-center gap-0.5 text-green-600 min-w-0 flex-shrink">
             <span className="text-xs sm:text-sm">💰</span>
@@ -254,7 +254,7 @@ export const GameBoard: React.FC<GameBoardProps> = ({ gameState, onGameStateChan
           isOpen={showRelationshipsMenu}
           character={gameState.character}
           onClose={() => setShowRelationshipsMenu(false)}
-          onActivity={(action, data) => handleRelationshipAction(gameState.character, action, data, ageHistory, setAgeHistory, onGameStateChange, gameState, toast)}
+          onActivity={(action, data) => handleRelationshipAction(gameState.character, action, ageHistory, setAgeHistory, onGameStateChange, gameState, toast, data)}
         />
       )}
 

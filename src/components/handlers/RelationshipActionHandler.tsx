@@ -16,7 +16,8 @@ const findLove = (character: Character) => {
       age: character.age + Math.floor(Math.random() * 10) - 5,
       relationship: 'lover' as const,
       relationshipQuality: 50 + Math.floor(Math.random() * 30),
-      alive: true
+      alive: true,
+      health: 80 + Math.floor(Math.random() * 20)
     };
     
     return {
