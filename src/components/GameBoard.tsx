@@ -1201,7 +1201,7 @@ const GameBoard: React.FC = () => {
           onAgeUp={ageUp}
           character={gameState.character}
           onShowActivityMenu={() => setShowActivitiesMenu(true)}
-          onShowRelationshipMenu={() => setShowRelationshipsMenu(true)}
+          onShowRelationshipsMenu={() => setShowRelationshipsMenu(true)}
           onShowAssetsMenu={() => setShowAssetsMenu(true)}
         />
 

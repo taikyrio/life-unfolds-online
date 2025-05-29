@@ -1,4 +1,5 @@
 
+
 import { Character, LifeEvent, EventTracker } from '../types/game';
 import { getLifeStage } from '../utils/gameUtils';
 
@@ -28,6 +29,7 @@ export const createDynamicEventSystem = () => {
       id: 'first_word',
       title: 'First Word',
       description: 'You spoke your first word! Your parents are overjoyed.',
+      emoji: '👶',
       choices: [
         {
           id: 'mama',
@@ -49,6 +51,7 @@ export const createDynamicEventSystem = () => {
       id: 'potty_training',
       title: 'Potty Training',
       description: 'Your parents are trying to potty train you.',
+      emoji: '🚽',
       choices: [
         {
           id: 'cooperate',
@@ -72,6 +75,7 @@ export const createDynamicEventSystem = () => {
       id: 'school_bully',
       title: 'School Bully',
       description: 'A bigger kid at school is picking on you and demanding your lunch money.',
+      emoji: '👊',
       choices: [
         {
           id: 'stand_up',
@@ -103,6 +107,7 @@ export const createDynamicEventSystem = () => {
       id: 'talent_show',
       title: 'School Talent Show',
       description: 'Your school is hosting a talent show. Do you want to participate?',
+      emoji: '🎤',
       choices: [
         {
           id: 'sing',
@@ -132,6 +137,7 @@ export const createDynamicEventSystem = () => {
       id: 'first_crush',
       title: 'First Crush',
       description: 'You have developed feelings for someone at school. What do you do?',
+      emoji: '💕',
       choices: [
         {
           id: 'confess',
@@ -161,6 +167,7 @@ export const createDynamicEventSystem = () => {
       id: 'peer_pressure_party',
       title: 'Party Invitation',
       description: 'Your friends invite you to a party where there will be drinking and smoking.',
+      emoji: '🎉',
       choices: [
         {
           id: 'go_party',
@@ -192,6 +199,7 @@ export const createDynamicEventSystem = () => {
       id: 'college_decision',
       title: 'College Application Results',
       description: 'You received responses from the colleges you applied to.',
+      emoji: '🎓',
       choices: [
         {
           id: 'prestigious_college',
@@ -219,6 +227,7 @@ export const createDynamicEventSystem = () => {
       id: 'first_apartment',
       title: 'Moving Out',
       description: 'It\'s time to get your own place. What type of housing do you choose?',
+      emoji: '🏠',
       choices: [
         {
           id: 'luxury_apartment',
@@ -254,6 +263,7 @@ export const createDynamicEventSystem = () => {
       id: 'career_crossroads',
       title: 'Career Opportunity',
       description: 'You\'ve been offered a new job with better pay but in a different city.',
+      emoji: '✈️',
       choices: [
         {
           id: 'take_job',
@@ -281,6 +291,7 @@ export const createDynamicEventSystem = () => {
       id: 'midlife_crisis',
       title: 'Midlife Reflection',
       description: 'You\'re feeling unsatisfied with your life direction. What do you do?',
+      emoji: '🔄',
       choices: [
         {
           id: 'career_change',
@@ -316,6 +327,7 @@ export const createDynamicEventSystem = () => {
       id: 'retirement_planning',
       title: 'Retirement Decision',
       description: 'You\'re eligible for retirement. What\'s your plan?',
+      emoji: '🏖️',
       choices: [
         {
           id: 'full_retirement',

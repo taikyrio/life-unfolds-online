@@ -1,3 +1,4 @@
+
 export interface FamilyMember {
   id: string;
   name: string;
@@ -71,6 +72,9 @@ export interface Character {
   
   // Assets
   assets: { name: string; type: string; value: number }[];
+  
+  // Event flags for tracking special conditions
+  flags?: string[];
 }
 
 export interface LifeEvent {
@@ -98,6 +102,7 @@ export interface Choice {
   emoji?: string;
   consequences?: string[];
   unlocks?: string[];
+  flags?: string[];
 }
 
 export interface StatEffects {
