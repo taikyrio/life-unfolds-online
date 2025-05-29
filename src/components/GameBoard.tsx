@@ -479,6 +479,7 @@ export const GameBoard: React.FC<GameBoardProps> = ({ gameState, onGameStateChan
           isOpen={showActivitiesMenu}
           character={gameState.character}
           onClose={() => setShowActivitiesMenu(false)}
+          onActivity={handleActivityAction}
         />
       )}
 
@@ -501,7 +502,6 @@ export const GameBoard: React.FC<GameBoardProps> = ({ gameState, onGameStateChan
 
       {showActivityModal && selectedActivity && (
         <ActivityModal
-          isOpen={showActivityModal}
           character={gameState.character}
           onClose={() => {
             setShowActivityModal(false);
