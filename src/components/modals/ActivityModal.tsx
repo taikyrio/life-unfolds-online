@@ -30,16 +30,14 @@ interface ActivityCategory {
 }
 
 interface ActivityModalProps {
-  isOpen: boolean;
-  onClose: () => void;
   character: Character;
+  onClose: () => void;
   onSelectActivity: (activity: ActivityOption) => void;
 }
 
 const ActivityModal: React.FC<ActivityModalProps> = ({
-  isOpen,
-  onClose,
   character,
+  onClose,
   onSelectActivity
 }) => {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
@@ -175,8 +173,6 @@ const ActivityModal: React.FC<ActivityModalProps> = ({
     return effectStrings.join(', ');
   };
 
-  if (!isOpen) return null;
-
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-end justify-center p-4">
       <div className="bg-white rounded-t-3xl w-full max-w-md max-h-[80vh] overflow-hidden shadow-2xl transform transition-transform duration-300 ease-out translate-y-0">
@@ -284,147 +280,4 @@ const ActivityModal: React.FC<ActivityModalProps> = ({
   );
 };
 
-// Demo component to show the modal in action
-export default function ActivityModalDemo() {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [character, setCharacter] = useState<Character>({
-    name: 'Demo Character',
-    age: 25,
-    wealth: 150,
-    happiness: 75,
-    health: 80,
-    smarts: 65,
-    looks: 70,
-    relationships: 60,
-    year: 2024,
-    zodiacSign: {
-      name: 'Leo',
-      emoji: '♌',
-      traits: ['Confident', 'Generous'],
-      luckyNumbers: [1, 3, 10],
-      element: 'fire'
-    },
-    birthMonth: 8,
-    birthDay: 15,
-    familyMembers: [],
-    pets: [],
-    jobLevel: 1,
-    salary: 30000,
-    education: ['High School'],
-    relationshipStatus: 'single',
-    children: [],
-    criminalRecord: false,
-    fame: 0,
-    nationality: 'American',
-    birthplace: 'New York',
-    birthWeight: 7.5,
-    birthComplications: false,
-    premature: false,
-    assets: []
-  });
-
-  const handleSelectActivity = (activity: ActivityOption) => {
-    // Apply activity effects to character
-    const updatedCharacter = { ...character };
-    Object.entries(activity.effects).forEach(([key, value]) => {
-      if (value !== undefined && key in updatedCharacter) {
-        const currentValue = (updatedCharacter as any)[key];
-        if (typeof currentValue === 'number') {
-          (updatedCharacter as any)[key] = Math.max(0, Math.min(100, currentValue + value));
-        }
-      }
-    });
-    
-    setCharacter(updatedCharacter);
-    setIsModalOpen(false);
-    
-    // Show feedback
-    alert(`You chose: ${activity.title}!\nEffects: ${Object.entries(activity.effects).map(([k, v]) => `${k}: ${v && v > 0 ? '+' : ''}${v}`).join(', ')}`);
-  };
-
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-100 via-purple-50 to-pink-100 p-8">
-      <div className="max-w-md mx-auto">
-        <h1 className="text-3xl font-bold text-center mb-8 text-gray-800">Life Simulator</h1>
-        
-        {/* Character Stats */}
-        <div className="bg-white rounded-2xl p-6 mb-6 shadow-lg">
-          <h2 className="text-xl font-bold mb-4 text-gray-800">Character Stats</h2>
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <p className="text-sm text-gray-600">Age</p>
-              <p className="text-lg font-semibold">{character.age}</p>
-            </div>
-            <div>
-              <p className="text-sm text-gray-600">Wealth</p>
-              <p className="text-lg font-semibold">${character.wealth}</p>
-            </div>
-            <div>
-              <p className="text-sm text-gray-600">Happiness</p>
-              <div className="flex items-center">
-                <div className="w-16 h-2 bg-gray-200 rounded-full mr-2">
-                  <div 
-                    className="h-full bg-yellow-400 rounded-full"
-                    style={{ width: `${character.happiness}%` }}
-                  />
-                </div>
-                <span className="text-sm">{character.happiness}</span>
-              </div>
-            </div>
-            <div>
-              <p className="text-sm text-gray-600">Health</p>
-              <div className="flex items-center">
-                <div className="w-16 h-2 bg-gray-200 rounded-full mr-2">
-                  <div 
-                    className="h-full bg-green-400 rounded-full"
-                    style={{ width: `${character.health}%` }}
-                  />
-                </div>
-                <span className="text-sm">{character.health}</span>
-              </div>
-            </div>
-            <div>
-              <p className="text-sm text-gray-600">Smarts</p>
-              <div className="flex items-center">
-                <div className="w-16 h-2 bg-gray-200 rounded-full mr-2">
-                  <div 
-                    className="h-full bg-blue-400 rounded-full"
-                    style={{ width: `${character.smarts}%` }}
-                  />
-                </div>
-                <span className="text-sm">{character.smarts}</span>
-              </div>
-            </div>
-            <div>
-              <p className="text-sm text-gray-600">Looks</p>
-              <div className="flex items-center">
-                <div className="w-16 h-2 bg-gray-200 rounded-full mr-2">
-                  <div 
-                    className="h-full bg-pink-400 rounded-full"
-                    style={{ width: `${character.looks}%` }}
-                  />
-                </div>
-                <span className="text-sm">{character.looks}</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Action Button */}
-        <button
-          onClick={() => setIsModalOpen(true)}
-          className="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white py-4 px-6 rounded-2xl font-semibold text-lg hover:from-blue-600 hover:to-purple-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-[1.02]"
-        >
-          Choose Activity 🎯
-        </button>
-      </div>
-
-      <ActivityModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        character={character}
-        onSelectActivity={handleSelectActivity}
-      />
-    </div>
-  );
-}
+export default ActivityModal;
