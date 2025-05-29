@@ -1,14 +1,21 @@
-
 export interface FamilyMember {
   id: string;
   name: string;
-  relationship: 'father' | 'mother' | 'sibling' | 'child' | 'spouse' | 'grandparent' | 'friend' | 'coworker' | 'ex' | 'stepfather' | 'stepmother' | 'stepsibling' | 'stepchild' | 'grandchild' | 'lover';
+  relationship: 'father' | 'mother' | 'sibling' | 'child' | 'spouse' | 'grandparent' | 'friend' | 'coworker' | 'ex' | 'stepfather' | 'stepmother' | 'stepsibling' | 'stepchild' | 'grandchild' | 'lover' | 'aunt' | 'uncle' | 'cousin' | 'best_friend' | 'acquaintance';
   age: number;
   alive: boolean;
   health: number;
   relationshipQuality: number; // 0-100
-  job?: string; // Optional job field for family members
-  salary?: number; // Optional salary field for family members
+  job?: string;
+  salary?: number;
+  personality?: {
+    traits: string[];
+    compatibility: number; // 0-100 compatibility with player
+  };
+  lastInteraction?: number; // Age when last interacted
+  relationshipHistory?: string[]; // Major relationship events
+  loyaltyLevel?: number; // How loyal they are (affects decisions)
+  socialStatus?: 'low' | 'middle' | 'high'; // Economic/social status
 }
 
 export interface ZodiacSign {
@@ -25,6 +32,15 @@ export interface CurrentEducation {
   currentYear: number;
   gpa: number;
   classmates: string[];
+}
+
+export interface SocialCircle {
+  id: string;
+  name: string;
+  type: 'school' | 'work' | 'hobby' | 'neighborhood' | 'family';
+  members: string[]; // Family member IDs
+  activities: string[];
+  influence: number; // How much this circle affects decisions
 }
 
 export interface Character {
@@ -44,6 +60,7 @@ export interface Character {
   birthDay: number;
   familyMembers: FamilyMember[];
   pets: { name: string; type: string; age: number; health: number }[];
+  socialCircles?: SocialCircle[];
   
   // Career & Education
   job?: string;
@@ -52,12 +69,19 @@ export interface Character {
   education: string[];
   currentEducation?: CurrentEducation;
   
-  // Relationships
+  // Enhanced Relationships
   relationshipStatus: 'single' | 'dating' | 'engaged' | 'married' | 'divorced' | 'widowed';
   partnerName?: string;
   children: string[];
   isPregnant?: boolean;
   pregnancyMonths?: number;
+  datingHistory?: string[];
+  relationshipSkills?: {
+    communication: number;
+    empathy: number;
+    romance: number;
+    trustworthiness: number;
+  };
   
   // Life Status
   criminalRecord: boolean;
@@ -73,6 +97,13 @@ export interface Character {
   // Assets
   assets: { name: string; type: string; value: number }[];
   
+  // Social & Personality
+  personality?: {
+    traits: string[];
+    socialPreference: 'introvert' | 'extrovert' | 'ambivert';
+    conflictStyle: 'aggressive' | 'passive' | 'assertive' | 'passive-aggressive';
+  };
+  
   // Event flags for tracking special conditions
   flags?: string[];
 }
@@ -83,7 +114,7 @@ export interface LifeEvent {
   description: string;
   emoji: string;
   choices: Choice[];
-  category?: 'career' | 'education' | 'relationship' | 'random' | 'crime' | 'health' | 'family';
+  category?: 'career' | 'education' | 'relationship' | 'random' | 'crime' | 'health' | 'family' | 'social';
   ageRequirement?: { min?: number; max?: number };
   requirements?: {
     education?: string;
@@ -92,6 +123,7 @@ export interface LifeEvent {
     wealth?: number;
     familyMember?: string;
     zodiacSign?: string;
+    socialCircle?: string;
   };
 }
 
@@ -124,6 +156,8 @@ export interface StatEffects {
   criminalRecord?: boolean;
   familyMemberHealth?: { id: string; change: number };
   familyMemberRelationship?: { id: string; change: number };
+  newFamilyMember?: FamilyMember;
+  socialCircleChange?: { id: string; influence: number };
 }
 
 export interface EventTracker {
