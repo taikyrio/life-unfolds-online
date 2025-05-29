@@ -13,8 +13,6 @@ export const calculateYearlySalaryIncrease = (character: Character): number => {
   if (!character.job || character.salary === 0) return 0;
   
   // Convert yearly salary to actual yearly amount
-  // If salary is stored as yearly amount, return it directly
-  // If it's stored as some other format, convert it
   return character.salary;
 };
 
@@ -30,8 +28,8 @@ export const applyForLoan = (character: Character, requestedAmount: number): Loa
   // Job and salary factor (40% of score)
   if (character.job) {
     score += 40;
-    if (character.salary > 50000) score += 20;
-    else if (character.salary > 30000) score += 10;
+    if (character.salary > 50) score += 20;
+    else if (character.salary > 30) score += 10;
   } else {
     reason = 'No steady employment';
   }
@@ -48,8 +46,8 @@ export const applyForLoan = (character: Character, requestedAmount: number): Loa
   else if (character.wealth > 0) score += 10;
 
   // Education factor (10% of score)
-  if (character.education.includes('College') || character.education.includes('University')) score += 10;
-  else if (character.education.includes('High School')) score += 5;
+  if (character.education.some(ed => ed.includes('College') || ed.includes('University'))) score += 10;
+  else if (character.education.some(ed => ed.includes('High School'))) score += 5;
 
   // Criminal record factor (10% of score)
   if (character.criminalRecord) {
@@ -96,9 +94,22 @@ export const processYearlyFinances = (character: Character): Character => {
   // Deduct living expenses based on age and lifestyle
   let livingExpenses = 0;
   if (character.age >= 18) {
-    livingExpenses = Math.max(12000, character.salary * 0.3); // At least $12k/year for living
+    // Base living expenses
+    livingExpenses = 12;
+    
+    // Add expenses for assets
+    const hasHouse = character.assets.some(asset => asset.type === 'real_estate');
+    const hasCar = character.assets.some(asset => asset.type === 'vehicle');
+    
+    if (hasHouse) livingExpenses += 8; // Property taxes, maintenance
+    if (hasCar) livingExpenses += 3; // Insurance, gas, maintenance
+    
+    // Reduce expenses if living with family
+    if (character.age < 25 && character.familyMembers.some(m => m.relationship === 'mother' || m.relationship === 'father')) {
+      livingExpenses = Math.floor(livingExpenses * 0.5);
+    }
   } else if (character.age >= 16) {
-    livingExpenses = 3000; // Minimal expenses for teens
+    livingExpenses = 2; // Minimal expenses for teens
   }
   
   updatedCharacter.wealth = Math.max(0, updatedCharacter.wealth - livingExpenses);
@@ -107,10 +118,45 @@ export const processYearlyFinances = (character: Character): Character => {
 };
 
 export const formatCurrency = (amount: number): string => {
-  if (amount >= 1000000) {
-    return `$${(amount / 1000000).toFixed(1)}M`;
-  } else if (amount >= 1000) {
-    return `$${(amount / 1000).toFixed(0)}K`;
+  if (amount >= 1000) {
+    return `$${(amount / 1000).toFixed(1)}M`;
+  } else if (amount >= 100) {
+    return `$${amount}k`;
   }
-  return `$${amount.toLocaleString()}`;
+  return `$${amount}k`;
+};
+
+export const calculateLoanEligibility = (character: Character): { maxAmount: number; minInterest: number } => {
+  let maxAmount = 0;
+  let minInterest = 0.15; // 15% worst case
+  
+  // Base eligibility on job and salary
+  if (character.job && character.salary > 0) {
+    maxAmount = character.salary * 3; // 3x annual salary
+    minInterest = 0.08; // 8% with job
+    
+    // Better rates for higher salaries
+    if (character.salary > 100) minInterest = 0.04;
+    else if (character.salary > 50) minInterest = 0.06;
+  }
+  
+  // Education bonus
+  if (character.education.some(ed => ed.includes('University') || ed.includes('College'))) {
+    maxAmount *= 1.5;
+    minInterest = Math.max(0.03, minInterest - 0.01);
+  }
+  
+  // Age factor
+  if (character.age < 18) {
+    maxAmount = 0; // No loans for minors
+  } else if (character.age < 25) {
+    maxAmount *= 0.7; // Reduced for young adults
+  }
+  
+  // Wealth factor
+  if (character.wealth > 100) {
+    minInterest = Math.max(0.03, minInterest - 0.02);
+  }
+  
+  return { maxAmount: Math.floor(maxAmount), minInterest };
 };

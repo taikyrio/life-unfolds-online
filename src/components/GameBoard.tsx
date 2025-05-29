@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Character, GameState, LifeEvent, Choice } from '../types/game';
 import { BottomNavigation } from './BottomNavigation';
 import { LifeTab } from './LifeTab';
-import { CharacterHeader } from './CharacterHeader';
 import { CharacterStats } from './CharacterStats';
 import { ActivitiesTab } from './ActivitiesTab';
 import { RelationshipsTab } from './RelationshipsTab';
@@ -31,18 +30,30 @@ import { lifeEvents } from '../data/lifeEvents';
 import { checkForHealthConditions, treatHealthCondition, healthConditions } from '../systems/healthSystem';
 import { checkAchievements, achievements } from '../systems/achievementSystem';
 import { calculateCompatibility, goOnDate, proposeMarriage } from '../systems/relationshipSystem';
+import { processYearlyFinances, applyForLoan } from '../systems/moneySystem';
 import { useToast } from '@/hooks/use-toast';
 import { MobileNavigation } from './navigation/MobileNavigation';
 import { EducationTab } from './tabs/EducationTab';
 import { CareersTab } from './tabs/CareersTab';
+import { HealthTab } from './tabs/HealthTab';
+import { LifestyleTab } from './tabs/LifestyleTab';
+import { MoneyTab } from './tabs/MoneyTab';
 
 interface GameBoardProps {
   gameState: GameState;
   onGameStateChange: (newState: GameState) => void;
 }
 
+const getLifeStage = (age: number): string => {
+  if (age === 0) return 'Infant';
+  if (age < 5) return 'Toddler';
+  if (age < 13) return 'Child';
+  if (age < 18) return 'Teenager';
+  return 'Adult';
+};
+
 export const GameBoard: React.FC<GameBoardProps> = ({ gameState, onGameStateChange }) => {
-  const [activeTab, setActiveTab] = useState<'life' | 'activities' | 'careers' | 'relationships' | 'assets' | 'education'>('life');
+  const [activeTab, setActiveTab] = useState<'life' | 'activities' | 'careers' | 'relationships' | 'assets' | 'education' | 'health' | 'lifestyle' | 'money'>('life');
   const [showActivitiesMenu, setShowActivitiesMenu] = useState(false);
   const [showRelationshipsMenu, setShowRelationshipsMenu] = useState(false);
   const [showAssetsMenu, setShowAssetsMenu] = useState(false);
@@ -76,6 +87,9 @@ export const GameBoard: React.FC<GameBoardProps> = ({ gameState, onGameStateChan
 
     // Age the character
     updatedCharacter = ageCharacter(updatedCharacter);
+
+    // Process yearly finances
+    updatedCharacter = processYearlyFinances(updatedCharacter);
 
     // Apply natural stat evolution
     const statChanges = evolveStatsNaturally(updatedCharacter);
@@ -505,6 +519,199 @@ export const GameBoard: React.FC<GameBoardProps> = ({ gameState, onGameStateChan
     });
   };
 
+  const handleHealthAction = (action: string, data?: any) => {
+    let updatedCharacter = { ...gameState.character };
+    let message = '';
+    let ageEvents = ageHistory[updatedCharacter.age] || [];
+
+    switch (action) {
+      case 'checkup':
+        const cost = 100;
+        if (updatedCharacter.wealth >= cost) {
+          updatedCharacter.wealth -= cost;
+          updatedCharacter.health = Math.min(100, updatedCharacter.health + 10);
+          message = 'Annual checkup complete. Your health has improved!';
+        } else {
+          message = 'You cannot afford a medical checkup.';
+        }
+        break;
+
+      case 'treat_condition':
+        if (data?.condition && data?.treatmentIndex !== undefined) {
+          const treatment = data.condition.treatmentOptions[data.treatmentIndex];
+          if (updatedCharacter.wealth >= treatment.cost) {
+            updatedCharacter = treatHealthCondition(updatedCharacter, data.condition, data.treatmentIndex);
+            message = `Treatment completed: ${treatment.description}`;
+          } else {
+            message = `You cannot afford ${treatment.name}.`;
+          }
+        }
+        break;
+
+      case 'exercise':
+        updatedCharacter.health = Math.min(100, updatedCharacter.health + 8);
+        updatedCharacter.looks = Math.min(100, updatedCharacter.looks + 3);
+        message = 'You exercised and feel healthier!';
+        break;
+
+      case 'diet':
+        updatedCharacter.health = Math.min(100, updatedCharacter.health + 5);
+        updatedCharacter.wealth = Math.max(0, updatedCharacter.wealth - 5);
+        message = 'You invested in a healthy diet plan.';
+        break;
+    }
+
+    if (message) {
+      ageEvents.push(message);
+      const newAgeHistory = { ...ageHistory };
+      newAgeHistory[updatedCharacter.age] = ageEvents;
+      setAgeHistory(newAgeHistory);
+
+      toast({
+        title: "Health Update",
+        description: message,
+      });
+    }
+
+    onGameStateChange({
+      ...gameState,
+      character: updatedCharacter
+    });
+  };
+
+  const handleLifestyleAction = (action: string, data?: any) => {
+    let updatedCharacter = { ...gameState.character };
+    let message = '';
+    let ageEvents = ageHistory[updatedCharacter.age] || [];
+
+    switch (action) {
+      case 'buy_house':
+        const houseCost = 200;
+        if (updatedCharacter.wealth >= houseCost) {
+          updatedCharacter.wealth -= houseCost;
+          updatedCharacter.assets.push({
+            name: 'House',
+            type: 'real_estate',
+            value: houseCost
+          });
+          updatedCharacter.happiness = Math.min(100, updatedCharacter.happiness + 20);
+          message = 'You bought your first house!';
+        } else {
+          message = 'You cannot afford a house right now.';
+        }
+        break;
+
+      case 'buy_car':
+        const carCost = 30;
+        if (updatedCharacter.wealth >= carCost) {
+          updatedCharacter.wealth -= carCost;
+          updatedCharacter.assets.push({
+            name: 'Car',
+            type: 'vehicle',
+            value: carCost
+          });
+          updatedCharacter.happiness = Math.min(100, updatedCharacter.happiness + 10);
+          message = 'You bought a car!';
+        } else {
+          message = 'You cannot afford a car right now.';
+        }
+        break;
+
+      case 'vacation':
+        const vacationCost = 15;
+        if (updatedCharacter.wealth >= vacationCost) {
+          updatedCharacter.wealth -= vacationCost;
+          updatedCharacter.happiness = Math.min(100, updatedCharacter.happiness + 25);
+          updatedCharacter.health = Math.min(100, updatedCharacter.health + 5);
+          message = 'You went on a relaxing vacation!';
+        } else {
+          message = 'You cannot afford a vacation right now.';
+        }
+        break;
+    }
+
+    if (message) {
+      ageEvents.push(message);
+      const newAgeHistory = { ...ageHistory };
+      newAgeHistory[updatedCharacter.age] = ageEvents;
+      setAgeHistory(newAgeHistory);
+
+      toast({
+        title: "Lifestyle Update",
+        description: message,
+      });
+    }
+
+    onGameStateChange({
+      ...gameState,
+      character: updatedCharacter
+    });
+  };
+
+  const handleMoneyAction = (action: string, data?: any) => {
+    let updatedCharacter = { ...gameState.character };
+    let message = '';
+    let ageEvents = ageHistory[updatedCharacter.age] || [];
+
+    switch (action) {
+      case 'apply_loan':
+        if (data?.amount) {
+          const loanResult = applyForLoan(updatedCharacter, data.amount);
+          if (loanResult.approved) {
+            updatedCharacter.wealth += data.amount;
+            message = `Loan approved! You received $${data.amount}k at ${(loanResult.interestRate * 100).toFixed(1)}% interest.`;
+          } else {
+            message = `Loan denied: ${loanResult.reason}`;
+          }
+        }
+        break;
+
+      case 'invest':
+        if (data?.amount && updatedCharacter.wealth >= data.amount) {
+          updatedCharacter.wealth -= data.amount;
+          // Simple investment return (random between -20% to +30%)
+          const returnRate = (Math.random() * 0.5) - 0.2; // -20% to +30%
+          const returns = Math.floor(data.amount * returnRate);
+          updatedCharacter.wealth += data.amount + returns;
+          
+          if (returns > 0) {
+            message = `Investment successful! You gained $${returns}k.`;
+          } else {
+            message = `Investment lost $${Math.abs(returns)}k.`;
+          }
+        } else {
+          message = 'Insufficient funds for investment.';
+        }
+        break;
+
+      case 'save':
+        if (data?.amount && updatedCharacter.wealth >= data.amount) {
+          // Savings account with 2% annual return
+          const interest = Math.floor(data.amount * 0.02);
+          updatedCharacter.wealth += interest;
+          message = `You earned $${interest}k in savings interest.`;
+        }
+        break;
+    }
+
+    if (message) {
+      ageEvents.push(message);
+      const newAgeHistory = { ...ageHistory };
+      newAgeHistory[updatedCharacter.age] = ageEvents;
+      setAgeHistory(newAgeHistory);
+
+      toast({
+        title: "Financial Update",
+        description: message,
+      });
+    }
+
+    onGameStateChange({
+      ...gameState,
+      character: updatedCharacter
+    });
+  };
+
   if (gameState.gameOver) {
     return <GameOverScreen 
       character={gameState.character} 
@@ -531,8 +738,33 @@ export const GameBoard: React.FC<GameBoardProps> = ({ gameState, onGameStateChan
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Character Header */}
-      <CharacterHeader character={gameState.character} />
+      {/* Consolidated Character Header with Money and Stats */}
+      <div className="bg-white p-3 border-b border-gray-200">
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center space-x-3 min-w-0 flex-1">
+            <div className="w-12 h-12 bg-orange-200 rounded-full flex items-center justify-center text-2xl flex-shrink-0">
+              👶
+            </div>
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center space-x-2">
+                <h2 className="text-lg font-bold text-blue-600 truncate">{gameState.character.name}</h2>
+                <span className="text-blue-500 text-sm">ℹ️</span>
+              </div>
+              <p className="text-sm text-gray-600 capitalize">
+                {getLifeStage(gameState.character.age)}
+                {gameState.character.isPregnant && ` • 🤰 Pregnant (${gameState.character.pregnancyMonths || 0}/9)`}
+              </p>
+            </div>
+          </div>
+          <div className="text-right flex-shrink-0">
+            <div className="text-xl font-bold text-green-600">${gameState.character.wealth.toLocaleString()}k</div>
+            <div className="text-xs text-blue-500">Net Worth</div>
+            {gameState.character.job && (
+              <div className="text-xs text-gray-600">${gameState.character.salary}k/year</div>
+            )}
+          </div>
+        </div>
+      </div>
       
       {/* Character Stats - Below Header */}
       <div className="bg-white border-b border-gray-200 px-4 py-3">
@@ -570,6 +802,24 @@ export const GameBoard: React.FC<GameBoardProps> = ({ gameState, onGameStateChan
           <EducationTab 
             character={gameState.character}
             onEducationAction={handleEducationAction}
+          />
+        )}
+        {activeTab === 'health' && (
+          <HealthTab 
+            character={gameState.character}
+            onHealthAction={handleHealthAction}
+          />
+        )}
+        {activeTab === 'lifestyle' && (
+          <LifestyleTab 
+            character={gameState.character}
+            onLifestyleAction={handleLifestyleAction}
+          />
+        )}
+        {activeTab === 'money' && (
+          <MoneyTab 
+            character={gameState.character}
+            onMoneyAction={handleMoneyAction}
           />
         )}
         {activeTab === 'assets' && (
