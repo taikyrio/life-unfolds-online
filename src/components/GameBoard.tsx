@@ -6,8 +6,6 @@ import { CharacterHeader } from './CharacterHeader';
 import { CharacterStats } from './CharacterStats';
 import { ActivitiesTab } from './ActivitiesTab';
 import { RelationshipsTab } from './RelationshipsTab';
-//import { CareersTab } from './CareersTab';
-//import { EducationTab } from './EducationTab';
 import { AssetsTab } from './AssetsTab';
 import { GameOverScreen } from './GameOverScreen';
 import { ActivitiesMenu } from './menus/ActivitiesMenu';
@@ -33,7 +31,7 @@ import { lifeEvents } from '../data/lifeEvents';
 import { checkForHealthConditions, treatHealthCondition, healthConditions } from '../systems/healthSystem';
 import { checkAchievements, achievements } from '../systems/achievementSystem';
 import { calculateCompatibility, goOnDate, proposeMarriage } from '../systems/relationshipSystem';
-import { useToast } from '@/components/ui/use-toast';
+import { useToast } from '@/hooks/use-toast';
 import { MobileNavigation } from './navigation/MobileNavigation';
 import { EducationTab } from './tabs/EducationTab';
 import { CareersTab } from './tabs/CareersTab';
@@ -565,7 +563,7 @@ export const GameBoard: React.FC<GameBoardProps> = ({ gameState, onGameStateChan
         {activeTab === 'careers' && (
           <CareersTab 
             character={gameState.character}
-            onCareerAction={handleCareerAction}
+            onAction={handleCareerAction}
           />
         )}
         {activeTab === 'education' && (
