@@ -563,7 +563,7 @@ export const GameBoard: React.FC<GameBoardProps> = ({ gameState, onGameStateChan
         {activeTab === 'careers' && (
           <CareersTab 
             character={gameState.character}
-            onAction={handleCareerAction}
+            onCareerAction={handleCareerAction}
           />
         )}
         {activeTab === 'education' && (
