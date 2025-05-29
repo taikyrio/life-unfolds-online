@@ -19,14 +19,10 @@ import { LifeTab } from './LifeTab';
 import { EventOverlay } from './EventOverlay';
 import { processAgeUp, processChoice } from './game/GameLogic';
 import { handleActivityAction } from './handlers/ActivityActionHandler';
-import { handleRelationshipAction } from './handlers/RelationshipActionHandler';
 import { handleCareerAction } from './handlers/CareerActionHandler';
-import { 
-  handleEducationAction, 
-  handleHealthAction, 
-  handleLifestyleAction, 
-  handleMoneyAction 
-} from './handlers/GameStateActionHandlers';
+import { handleRelationshipAction } from './handlers/RelationshipActionHandler';
+import { handleEducationAction, autoEnrollEducation } from './handlers/EducationActionHandler';
+import { handleHealthAction, handleLifestyleAction, handleMoneyAction } from './handlers/GameStateActionHandlers';
 
 interface GameBoardProps {
   gameState: GameState;
@@ -65,7 +61,7 @@ export const GameBoard: React.FC<GameBoardProps> = ({ gameState, onGameStateChan
   }, [gameState.currentEvent]);
 
   const ageUp = () => {
-    processAgeUp(gameState, ageHistory, setAgeHistory, onGameStateChange, toast);
+    processAgeUp(gameState, ageHistory || {}, setAgeHistory, onGameStateChange, toast);
   };
 
   const handleChoice = (choiceId: string) => {
@@ -78,7 +74,22 @@ export const GameBoard: React.FC<GameBoardProps> = ({ gameState, onGameStateChan
       reason={gameState.gameOverReason}
       onRestart={() => {
         const newGameState: GameState = {
-          character: gameState.character,
+          character: {
+            ...gameState.character,
+            education: {
+              currentStage: null,
+              currentSchool: null,
+              currentYear: 0,
+              gpa: 0,
+              grades: [],
+              completedStages: [],
+              major: null,
+              testScores: [],
+              disciplinaryActions: 0,
+              achievements: [],
+              dropouts: 0
+            }
+          },
           currentEvent: null,
           gameStarted: false,
           gameOver: false,
@@ -149,6 +160,71 @@ export const GameBoard: React.FC<GameBoardProps> = ({ gameState, onGameStateChan
       toast
     );
   };
+
+  // Initialize character education if not present
+  useEffect(() => {
+    if (!gameState.character.education) {
+      const newEducation = {
+        currentStage: null,
+        currentSchool: null,
+        currentYear: 0,
+        gpa: 0,
+        major: null,
+        completedStages: [],
+        testScores: [],
+        achievements: [],
+        disciplinaryActions: 0,
+        dropouts: 0
+      };
+
+      const updatedCharacter = {
+        ...gameState.character,
+        education: newEducation
+      };
+
+      onGameStateChange({
+        ...gameState,
+        character: updatedCharacter
+      });
+
+      // Auto-enroll in appropriate education level based on age
+      if (gameState.character.age >= 6 && gameState.character.age <= 11) {
+        setTimeout(() => {
+          handleEducationAction(gameState.character, 'enroll', { stageId: 'elementary', schoolId: 'public_elementary' }, ageHistory, setAgeHistory, onGameStateChange, gameState, toast);
+        }, 100);
+      } else if (gameState.character.age >= 12 && gameState.character.age <= 14) {
+        setTimeout(() => {
+          handleEducationAction(gameState.character, 'enroll', { stageId: 'middle', schoolId: 'public_middle' }, ageHistory, setAgeHistory, onGameStateChange, gameState, toast);
+        }, 100);
+      } else if (gameState.character.age >= 15 && gameState.character.age <= 17) {
+        setTimeout(() => {
+          handleEducationAction(gameState.character, 'enroll', { stageId: 'high', schoolId: 'public_high' }, ageHistory, setAgeHistory, onGameStateChange, gameState, toast);
+        }, 100);
+      }
+    }
+  }, [gameState.character, onGameStateChange, handleEducationAction, ageHistory, setAgeHistory, gameState, toast]);
+
+  // Auto-enroll in mandatory education
+  useEffect(() => {
+    if (!gameState.character.education) return;
+
+    const autoEnrollAge = (age: number) => {
+      // Auto-enroll in elementary at age 6
+      if (age >= 6 && age <= 11 && !gameState.character.education.currentStage && !gameState.character.education.completedStages?.includes('elementary')) {
+        handleEducationAction(gameState.character, 'enroll', { stageId: 'elementary', schoolId: 'public_elementary' }, ageHistory, setAgeHistory, onGameStateChange, gameState, toast);
+      }
+      // Auto-enroll in middle school at age 12
+      else if (age >= 12 && age <= 14 && gameState.character.education.completedStages?.includes('elementary') && !gameState.character.education.currentStage && !gameState.character.education.completedStages?.includes('middle')) {
+        handleEducationAction(gameState.character, 'enroll', { stageId: 'middle', schoolId: 'public_middle' }, ageHistory, setAgeHistory, onGameStateChange, gameState, toast);
+      }
+      // Auto-enroll in high school at age 15
+      else if (age >= 15 && age <= 17 && gameState.character.education.completedStages?.includes('middle') && !gameState.character.education.currentStage && !gameState.character.education.completedStages?.includes('high')) {
+        handleEducationAction(gameState.character, 'enroll', { stageId: 'high', schoolId: 'public_high' }, ageHistory, setAgeHistory, onGameStateChange, gameState, toast);
+      }
+    };
+
+    autoEnrollAge(gameState.character.age);
+  }, [gameState.character.age, gameState.character.education.currentStage, gameState.character.education.completedStages, handleEducationAction, gameState.character, ageHistory, setAgeHistory, onGameStateChange, gameState, toast]);
 
   return (
     <div className="h-screen bg-gray-50 flex flex-col overflow-hidden">

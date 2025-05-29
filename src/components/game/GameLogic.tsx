@@ -1,4 +1,3 @@
-
 import { Character, GameState, LifeEvent } from '../../types/game';
 import { 
   ageCharacter, 
@@ -38,7 +37,7 @@ export const processAgeUp = (
     if (typeof value === 'number' && key in updatedCharacter) {
       const oldValue = (updatedCharacter as any)[key];
       (updatedCharacter as any)[key] = Math.max(0, Math.min(100, value));
-      
+
       const change = value - oldValue;
       if (Math.abs(change) > 2) {
         const message = getStatMessage(key, change);
@@ -169,7 +168,7 @@ export const processChoice = (
   if (!choice) return;
 
   let updatedCharacter = applyStatEffects(gameState.character, choice.effects);
-  
+
   if (choice.flags) {
     updatedCharacter.flags = [...(updatedCharacter.flags || []), ...choice.flags];
   }
