@@ -13,7 +13,7 @@ import { GameOverScreen } from './GameOverScreen';
 import { ActivitiesMenu } from './menus/ActivitiesMenu';
 import { RelationshipsMenu } from './menus/RelationshipsMenu';
 import { AssetsMenu } from './menus/AssetsMenu';
-import { ActivityModal } from './modals/ActivityModal';
+import ActivityModal from './modals/ActivityModal';
 import { 
   ageCharacter, 
   applyStatEffects, 
@@ -378,12 +378,37 @@ export const GameBoard: React.FC<GameBoardProps> = ({ gameState, onGameStateChan
     });
   };
 
+  const handleJobApplication = (jobType: string) => {
+    // Placeholder job application handler
+    console.log('Job application for:', jobType);
+  };
+
+  const handleEducationAction = (action: string, data?: any) => {
+    // Placeholder education action handler
+    console.log('Education action:', action, data);
+  };
+
   if (gameState.gameOver) {
     return <GameOverScreen 
       character={gameState.character} 
       reason={gameState.gameOverReason}
-      achievements={gameState.achievements}
-      eventHistory={gameState.eventHistory}
+      onRestart={() => {
+        // Reset game state
+        const newGameState: GameState = {
+          character: gameState.character,
+          currentEvent: null,
+          gameStarted: false,
+          gameOver: false,
+          eventHistory: [],
+          achievements: [],
+          eventTracker: {
+            triggeredEvents: new Set(),
+            lastEventAge: 0,
+            eventCooldowns: new Map()
+          }
+        };
+        onGameStateChange(newGameState);
+      }}
     />;
   }
 
@@ -423,16 +448,25 @@ export const GameBoard: React.FC<GameBoardProps> = ({ gameState, onGameStateChan
           />
         )}
         {activeTab === 'activities' && (
-          <ActivitiesTab character={gameState.character} />
+          <ActivitiesTab 
+            character={gameState.character} 
+            onActivity={handleActivityAction}
+          />
         )}
         {activeTab === 'relationships' && (
           <RelationshipsTab character={gameState.character} />
         )}
         {activeTab === 'careers' && (
-          <CareersTab character={gameState.character} />
+          <CareersTab 
+            character={gameState.character}
+            onJobApplication={handleJobApplication}
+          />
         )}
         {activeTab === 'education' && (
-          <EducationTab character={gameState.character} />
+          <EducationTab 
+            character={gameState.character}
+            onEducationAction={handleEducationAction}
+          />
         )}
         {activeTab === 'assets' && (
           <AssetsTab character={gameState.character} />
@@ -442,42 +476,39 @@ export const GameBoard: React.FC<GameBoardProps> = ({ gameState, onGameStateChan
       {/* Modals and Menus */}
       {showActivitiesMenu && (
         <ActivitiesMenu
+          isOpen={showActivitiesMenu}
           character={gameState.character}
           onClose={() => setShowActivitiesMenu(false)}
-          onActivitySelect={(activity) => {
-            setSelectedActivity(activity);
-            setShowActivityModal(true);
-            setShowActivitiesMenu(false);
-          }}
         />
       )}
 
       {showRelationshipsMenu && (
         <RelationshipsMenu
+          isOpen={showRelationshipsMenu}
           character={gameState.character}
           onClose={() => setShowRelationshipsMenu(false)}
-          onActionSelect={handleRelationshipAction}
+          onActivity={handleRelationshipAction}
         />
       )}
 
       {showAssetsMenu && (
         <AssetsMenu
+          isOpen={showAssetsMenu}
           character={gameState.character}
           onClose={() => setShowAssetsMenu(false)}
-          onAssetAction={() => {}}
         />
       )}
 
       {showActivityModal && selectedActivity && (
         <ActivityModal
-          activity={selectedActivity}
+          isOpen={showActivityModal}
           character={gameState.character}
           onClose={() => {
             setShowActivityModal(false);
             setSelectedActivity(null);
           }}
-          onConfirm={(data) => {
-            handleActivityAction(selectedActivity.id, data);
+          onSelectActivity={(activity) => {
+            handleActivityAction(activity.id, activity);
             setShowActivityModal(false);
             setSelectedActivity(null);
           }}

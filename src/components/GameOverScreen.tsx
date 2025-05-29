@@ -8,12 +8,16 @@ import { getStatEmoji } from '../utils/gameUtils';
 interface GameOverScreenProps {
   character: Character;
   reason?: string;
+  achievements?: string[];
+  eventHistory?: string[];
   onRestart: () => void;
 }
 
 export const GameOverScreen: React.FC<GameOverScreenProps> = ({ 
   character, 
   reason, 
+  achievements = [],
+  eventHistory = [],
   onRestart 
 }) => {
   const getLifeSummary = () => {
@@ -84,6 +88,13 @@ export const GameOverScreen: React.FC<GameOverScreenProps> = ({
               <div className="text-sm text-gray-600">Final Age</div>
               <div className="text-2xl font-bold text-primary">{character.age} years</div>
             </div>
+
+            {achievements.length > 0 && (
+              <div className="mt-4 p-3 bg-yellow-50 rounded-lg">
+                <div className="text-sm text-gray-600 mb-2">Achievements Unlocked</div>
+                <div className="text-lg font-bold text-yellow-600">{achievements.length}</div>
+              </div>
+            )}
           </div>
           
           <Button 
