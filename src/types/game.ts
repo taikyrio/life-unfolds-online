@@ -53,7 +53,7 @@ export interface Character {
   wealth: number;
   relationships: number;
   year: number;
-  
+
   // Enhanced Character Info
   zodiacSign: ZodiacSign;
   birthMonth: number;
@@ -61,14 +61,25 @@ export interface Character {
   familyMembers: FamilyMember[];
   pets: { name: string; type: string; age: number; health: number }[];
   socialCircles?: SocialCircle[];
-  
+
   // Career & Education
   job?: string;
   jobLevel: number;
   salary: number;
-  education: string[];
-  currentEducation?: CurrentEducation;
-  
+  education: {
+    currentStage: string | null;
+    currentSchool: string | null;
+    currentYear: number;
+    gpa: number;
+    grades: number[];
+    completedStages: string[];
+    major: string | null;
+    testScores: number[];
+    disciplinaryActions: number;
+    achievements: string[];
+    dropouts: number;
+  };
+
   // Enhanced Relationships
   relationshipStatus: 'single' | 'dating' | 'engaged' | 'married' | 'divorced' | 'widowed';
   partnerName?: string;
@@ -82,32 +93,32 @@ export interface Character {
     romance: number;
     trustworthiness: number;
   };
-  
+
   // Life Status
   criminalRecord: boolean;
   fame: number;
   notoriety?: number; // For criminal activities
   nationality: string;
   birthplace: string;
-  
+
   // Birth Circumstances
   birthWeight: number; // in pounds
   birthComplications: boolean;
   premature: boolean;
-  
+
   // Assets
   assets: { name: string; type: string; value: number }[];
-  
+
   // Social & Personality
   personality?: {
     traits: string[];
     socialPreference: 'introvert' | 'extrovert' | 'ambivert';
     conflictStyle: 'aggressive' | 'passive' | 'assertive' | 'passive-aggressive';
   };
-  
+
   // Event flags for tracking special conditions
   flags?: string[];
-  
+
   // Custom stats for DLC features
   customStats?: {
     notoriety?: number;
