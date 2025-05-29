@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Character, LifeEvent } from '../types/game';
 import { EventCard } from './EventCard';
@@ -26,13 +25,13 @@ export const LifeTab: React.FC<LifeTabProps> = ({
     if (age === 0) {
       return `I was born a ${Math.random() > 0.5 ? 'male' : 'female'} in ${character.birthplace}.`;
     }
-    
+
     const events = ageHistory[age] || [];
-    
+
     if (events.length === 0) {
       return `I am ${age} years old.`;
     }
-    
+
     return events.join('\n');
   };
 
@@ -77,7 +76,7 @@ export const LifeTab: React.FC<LifeTabProps> = ({
                 {getAgeStage(character.age).stage} • Age {character.age}
               </div>
             </div>
-            
+
             <div className="grid grid-cols-2 gap-2 text-xs text-gray-700">
               <div>
                 <div className="font-semibold">🎂 {getMonthName(character.birthMonth)} {character.birthDay}</div>
@@ -86,7 +85,7 @@ export const LifeTab: React.FC<LifeTabProps> = ({
                 <div className="font-semibold">⭐ {character.zodiacSign.emoji} {character.zodiacSign.name}</div>
               </div>
             </div>
-            
+
             {/* Compact Family Info */}
             {character.familyMembers.length > 0 && (
               <div className="mt-2 pt-2 border-t border-gray-200">
@@ -114,22 +113,6 @@ export const LifeTab: React.FC<LifeTabProps> = ({
         </Card>
       </div>
 
-      {/* Current Event - Compact */}
-      {currentEvent && onChoice && (
-        <div className="px-3 flex-shrink-0">
-          <Card className="shadow-sm border border-yellow-200 bg-gradient-to-r from-yellow-50 to-orange-50">
-            <CardContent className="p-2">
-              <div className="text-center mb-1">
-                <span className="text-xs bg-yellow-200 text-yellow-800 px-2 py-0.5 rounded-full font-medium">
-                  ⚡ Event
-                </span>
-              </div>
-              <EventCard event={currentEvent} onChoice={onChoice} />
-            </CardContent>
-          </Card>
-        </div>
-      )}
-
       {/* Life History - Takes remaining space */}
       <div className="flex-1 px-3 pb-3 mt-2 overflow-hidden">
         <Card className="h-full shadow-sm border border-gray-200">
@@ -142,7 +125,7 @@ export const LifeTab: React.FC<LifeTabProps> = ({
                 {ageEntries.length} {ageEntries.length === 1 ? 'year' : 'years'}
               </span>
             </div>
-            
+
             <ScrollArea className="flex-1 rounded-lg border border-gray-200 bg-gray-50">
               <div className="p-2 space-y-2">
                 {ageEntries.reverse().map(entry => (
@@ -162,7 +145,7 @@ export const LifeTab: React.FC<LifeTabProps> = ({
                     </div>
                   </div>
                 ))}
-                
+
                 {ageEntries.length === 0 && (
                   <div className="text-center py-4 text-gray-500">
                     <div className="text-2xl mb-1">📖</div>

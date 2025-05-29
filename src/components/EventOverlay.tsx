@@ -1,108 +1,108 @@
 
 import React from 'react';
 import { LifeEvent } from '../types/game';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import { Calendar } from 'lucide-react';
+import { X } from 'lucide-react';
 
 interface EventOverlayProps {
   event: LifeEvent;
-  character: { age: number; name: string };
   onChoice: (choiceId: string) => void;
-  isVisible: boolean;
+  onClose: () => void;
+  characterName?: string;
+  characterAge?: number;
 }
 
 export const EventOverlay: React.FC<EventOverlayProps> = ({ 
   event, 
-  character, 
   onChoice, 
-  isVisible 
+  onClose,
+  characterName = "Player",
+  characterAge = 0
 }) => {
-  if (!isVisible) return null;
+  const handleChoice = (choiceId: string) => {
+    onChoice(choiceId);
+    onClose();
+  };
 
-  const currentDate = new Date();
-  const monthNames = [
-    "January", "February", "March", "April", "May", "June",
-    "July", "August", "September", "October", "November", "December"
-  ];
-
-  const formatDate = () => {
-    const month = monthNames[currentDate.getMonth()];
-    const day = currentDate.getDate();
-    const suffix = day === 1 || day === 21 || day === 31 ? 'st' : 
-                  day === 2 || day === 22 ? 'nd' : 
-                  day === 3 || day === 23 ? 'rd' : 'th';
-    return `${month} ${day}${suffix}`;
+  const getLifeStage = (age: number) => {
+    if (age <= 4) return "Baby";
+    if (age <= 12) return "Child";
+    if (age <= 17) return "Teen";
+    if (age <= 25) return "Young Adult";
+    if (age <= 50) return "Adult";
+    return "Senior";
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
-      {/* Background overlay with blur effect */}
-      <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" />
-      
-      {/* Event card */}
-      <div className="relative w-full max-w-md mx-4 animate-in zoom-in-95 duration-300">
-        <Card className="border-2 border-orange-500 shadow-2xl bg-gradient-to-b from-gray-800 to-gray-900 text-white">
-          {/* Header with date */}
-          <CardHeader className="text-center pb-3 bg-gradient-to-r from-orange-600 to-red-600 rounded-t-lg">
-            <div className="text-orange-200 text-sm font-medium mb-1">Current</div>
-            <div className="flex items-center justify-center gap-2 text-white">
-              <Calendar className="h-4 w-4" />
-              <span className="text-lg font-bold">{formatDate()}</span>
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 backdrop-blur-sm">
+      <div className="w-full h-full bg-white flex flex-col relative">
+        {/* Header with character info */}
+        <div className="bg-gradient-to-r from-orange-400 to-red-500 p-4 flex items-center justify-between text-white">
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 bg-orange-200 rounded-full flex items-center justify-center text-2xl">
+              👶
             </div>
-          </CardHeader>
-
-          <CardContent className="p-6 space-y-6">
-            {/* Event emoji and title */}
-            <div className="text-center space-y-3">
-              <div className="text-4xl">{event.emoji}</div>
-              <h2 className="text-xl font-bold text-white">{event.title}</h2>
+            <div>
+              <h1 className="text-xl font-bold">{characterName}</h1>
+              <p className="text-orange-100 text-sm">{getLifeStage(characterAge)}</p>
             </div>
+          </div>
+          <button 
+            onClick={onClose}
+            className="text-white hover:text-orange-100 transition-colors"
+          >
+            <X size={24} />
+          </button>
+        </div>
 
-            {/* Event description */}
-            <div className="text-center">
-              <p className="text-gray-300 text-sm leading-relaxed">
+        {/* Event Content */}
+        <div className="flex-1 flex flex-col justify-center p-6 max-w-md mx-auto w-full">
+          <Card className="border-2 border-gray-200 shadow-2xl">
+            <CardHeader className="text-center pb-4 bg-gradient-to-b from-gray-50 to-white rounded-t-lg">
+              <div className="text-4xl mb-3">{event.emoji}</div>
+              <CardTitle className="text-xl font-bold text-gray-800 mb-2">
+                {event.title}
+              </CardTitle>
+              <p className="text-gray-600 text-sm leading-relaxed px-2">
                 {event.description}
               </p>
-            </div>
-
-            {/* Choices */}
-            <div className="space-y-3">
+            </CardHeader>
+            
+            <CardContent className="space-y-3 p-4">
+              <p className="text-center text-gray-700 font-medium text-sm mb-4">
+                What will you do?
+              </p>
+              
               {event.choices.map((choice, index) => (
                 <Button
                   key={choice.id}
-                  onClick={() => onChoice(choice.id)}
-                  variant="outline"
-                  className="w-full justify-start text-left h-auto py-3 px-4 bg-blue-600 hover:bg-blue-700 border-blue-500 hover:border-blue-400 text-white transition-all duration-200 transform hover:scale-[1.02]"
+                  onClick={() => handleChoice(choice.id)}
+                  className="w-full justify-center text-center h-auto py-3 px-4 bg-blue-500 hover:bg-blue-600 text-white transition-all duration-200 rounded-md font-medium"
                 >
-                  <div className="flex items-center gap-3 w-full">
-                    {choice.emoji && (
-                      <span className="text-lg flex-shrink-0">{choice.emoji}</span>
-                    )}
-                    <span className="text-sm font-medium flex-1">{choice.text}</span>
-                  </div>
+                  <span className="mr-2 text-lg">{choice.emoji}</span>
+                  <span className="text-sm">{choice.text}</span>
                 </Button>
               ))}
-            </div>
+              
+              {/* Optional "Surprise me!" button */}
+              <Button
+                onClick={() => {
+                  const randomChoice = event.choices[Math.floor(Math.random() * event.choices.length)];
+                  handleChoice(randomChoice.id);
+                }}
+                variant="ghost"
+                className="w-full text-blue-500 hover:text-blue-600 text-sm py-2"
+              >
+                <span className="mr-1">🎲</span>
+                Surprise me!
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
 
-            {/* Surprise option (if available) */}
-            {Math.random() > 0.7 && (
-              <div className="text-center pt-2">
-                <Button
-                  onClick={() => {
-                    // Pick a random choice for surprise
-                    const randomChoice = event.choices[Math.floor(Math.random() * event.choices.length)];
-                    onChoice(randomChoice.id);
-                  }}
-                  variant="ghost"
-                  className="text-blue-400 hover:text-blue-300 text-sm"
-                >
-                  🎲 Surprise me!
-                </Button>
-              </div>
-            )}
-          </CardContent>
-        </Card>
+        {/* Footer space */}
+        <div className="h-20 bg-gray-50"></div>
       </div>
     </div>
   );
