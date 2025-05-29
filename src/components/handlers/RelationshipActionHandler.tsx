@@ -1,16 +1,47 @@
 
 import { Character } from '../../types/game';
-import { findLove, goOnDate, proposeMarriage } from '../../systems/relationshipSystem';
+import { goOnDate, proposeMarriage } from '../../systems/relationshipSystem';
+
+const findLove = (character: Character) => {
+  // Simple implementation - you may want to enhance this
+  const names = ['Alex', 'Jordan', 'Taylor', 'Morgan', 'Casey', 'Riley'];
+  const randomName = names[Math.floor(Math.random() * names.length)];
+  
+  const success = Math.random() > 0.3; // 70% chance of success
+  
+  if (success) {
+    const partner = {
+      id: Date.now().toString(),
+      name: randomName,
+      age: character.age + Math.floor(Math.random() * 10) - 5,
+      relationship: 'lover' as const,
+      relationshipQuality: 50 + Math.floor(Math.random() * 30),
+      alive: true
+    };
+    
+    return {
+      success: true,
+      message: `You met ${randomName} and hit it off! You're now dating.`,
+      partner
+    };
+  } else {
+    return {
+      success: false,
+      message: "You didn't find anyone special this time. Maybe try again later!",
+      partner: null
+    };
+  }
+};
 
 export const handleRelationshipAction = (
   character: Character,
   action: string,
-  data?: any,
   ageHistory: Record<number, string[]>,
   setAgeHistory: (history: Record<number, string[]>) => void,
   onGameStateChange: (newState: any) => void,
   gameState: any,
-  toast: any
+  toast: any,
+  data?: any
 ) => {
   let updatedCharacter = { ...character };
   let message = '';

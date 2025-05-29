@@ -6,12 +6,12 @@ import { treatHealthCondition } from '../../systems/healthSystem';
 export const handleEducationAction = (
   character: Character,
   action: string,
-  data?: any,
   ageHistory: Record<number, string[]>,
   setAgeHistory: (history: Record<number, string[]>) => void,
   onGameStateChange: (newState: any) => void,
   gameState: any,
-  toast: any
+  toast: any,
+  data?: any
 ) => {
   let updatedCharacter = { ...character };
   let message = '';
@@ -77,12 +77,12 @@ export const handleEducationAction = (
 export const handleHealthAction = (
   character: Character,
   action: string,
-  data?: any,
   ageHistory: Record<number, string[]>,
   setAgeHistory: (history: Record<number, string[]>) => void,
   onGameStateChange: (newState: any) => void,
   gameState: any,
-  toast: any
+  toast: any,
+  data?: any
 ) => {
   let updatedCharacter = { ...character };
   let message = '';
@@ -146,12 +146,12 @@ export const handleHealthAction = (
 export const handleLifestyleAction = (
   character: Character,
   action: string,
-  data?: any,
   ageHistory: Record<number, string[]>,
   setAgeHistory: (history: Record<number, string[]>) => void,
   onGameStateChange: (newState: any) => void,
   gameState: any,
-  toast: any
+  toast: any,
+  data?: any
 ) => {
   let updatedCharacter = { ...character };
   let message = '';
@@ -224,12 +224,12 @@ export const handleLifestyleAction = (
 export const handleMoneyAction = (
   character: Character,
   action: string,
-  data?: any,
   ageHistory: Record<number, string[]>,
   setAgeHistory: (history: Record<number, string[]>) => void,
   onGameStateChange: (newState: any) => void,
   gameState: any,
-  toast: any
+  toast: any,
+  data?: any
 ) => {
   let updatedCharacter = { ...character };
   let message = '';
