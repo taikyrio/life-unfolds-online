@@ -103,3 +103,20 @@
     @apply min-h-[44px] px-4;
   }
 }
+
+/* Hide scrollbars for better mobile experience */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Ensure text doesn't overflow on very small screens */
+@media (max-width: 320px) {
+  .text-xs {
+    font-size: 10px;
+  }
+}

@@ -27,26 +27,26 @@ export const CharacterStatsBar: React.FC<CharacterStatsBarProps> = ({ character 
   };
 
   return (
-    <div className="bg-white border-t border-gray-200 p-2 sm:p-4 space-y-2 sm:space-y-3 relative z-10 mb-16">
+    <div className="bg-white border-t border-gray-200 p-1 sm:p-2 md:p-4 space-y-1 sm:space-y-2 relative z-10 mb-16">
       {stats.map((stat) => (
-        <div key={stat.name} className="flex items-center gap-2 sm:gap-3">
-          <div className="flex items-center gap-1 sm:gap-2 w-16 sm:w-20">
-            <span className="text-sm sm:text-lg">{stat.emoji}</span>
-            <span className="text-xs sm:text-sm font-medium text-gray-700 truncate">{stat.name}</span>
+        <div key={stat.name} className="flex items-center gap-1 sm:gap-2">
+          <div className="flex items-center gap-0.5 sm:gap-1 w-12 sm:w-16 md:w-20 flex-shrink-0">
+            <span className="text-xs sm:text-sm md:text-lg">{stat.emoji}</span>
+            <span className="text-xs sm:text-sm font-medium text-gray-700 truncate hidden sm:inline">{stat.name}</span>
             {getWarningIcon(stat.value) && (
               <span className="text-xs">{getWarningIcon(stat.value)}</span>
             )}
           </div>
 
-          <div className="flex-1 flex items-center gap-2">
-            <div className="flex-1 bg-gray-200 rounded-full h-2 sm:h-3">
+          <div className="flex-1 flex items-center gap-1 sm:gap-2 min-w-0">
+            <div className="flex-1 bg-gray-200 rounded-full h-1.5 sm:h-2 md:h-3 min-w-0">
               <div 
-                className={`h-2 sm:h-3 rounded-full transition-all duration-300 ${getStatBarColor(stat.value)}`}
+                className={`h-1.5 sm:h-2 md:h-3 rounded-full transition-all duration-300 ${getStatBarColor(stat.value)}`}
                 style={{ width: `${Math.max(0, Math.min(100, stat.value))}%` }}
               />
             </div>
-            <span className="text-xs sm:text-sm font-bold text-gray-800 w-6 sm:w-8 text-right">
-              {Math.round(stat.value)}%
+            <span className="text-xs sm:text-sm font-bold text-gray-800 w-6 sm:w-8 text-right flex-shrink-0">
+              {Math.round(stat.value)}
             </span>
           </div>
         </div>

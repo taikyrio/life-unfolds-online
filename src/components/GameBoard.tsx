@@ -11,14 +11,12 @@ import { RelationshipsMenu } from './menus/RelationshipsMenu';
 import { AssetsMenu } from './menus/AssetsMenu';
 import ActivityModal from './modals/ActivityModal';
 import { useToast } from '@/hooks/use-toast';
-import { MobileNavigation } from './navigation/MobileNavigation';
 import { EducationTab } from './tabs/EducationTab';
 import { CareersTab } from './tabs/CareersTab';
 import { HealthTab } from './tabs/HealthTab';
 import { LifestyleTab } from './tabs/LifestyleTab';
 import { MoneyTab } from './tabs/MoneyTab';
 import { LifeTab } from './LifeTab';
-import { GameHeader } from './game/GameHeader';
 import { processAgeUp, processChoice } from './game/GameLogic';
 import { handleActivityAction } from './handlers/ActivityActionHandler';
 import { handleRelationshipAction } from './handlers/RelationshipActionHandler';
@@ -92,78 +90,156 @@ export const GameBoard: React.FC<GameBoardProps> = ({ gameState, onGameStateChan
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <GameHeader character={gameState.character} />
-      
-      <div className="bg-white border-b border-gray-200 px-4 py-3">
-        <CharacterStats character={gameState.character} />
+    <div className="h-screen bg-gray-50 flex flex-col overflow-hidden">
+      {/* Ultra Compact Header */}
+      <div className="bg-white border-b border-gray-200 px-2 sm:px-3 py-1 flex-shrink-0">
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex items-center gap-1 sm:gap-2 min-w-0 flex-1">
+            <div className="w-5 h-5 sm:w-6 sm:h-6 bg-orange-200 rounded-full flex items-center justify-center text-xs sm:text-sm flex-shrink-0">
+              👶
+            </div>
+            <div className="min-w-0 flex-1">
+              <h2 className="text-xs sm:text-sm font-bold text-blue-600 truncate">{gameState.character.name}</h2>
+              <p className="text-xs text-gray-600">Age {gameState.character.age}</p>
+            </div>
+          </div>
+          <div className="text-right flex-shrink-0">
+            <div className="text-xs sm:text-sm font-bold text-green-600">${gameState.character.wealth}k</div>
+          </div>
+        </div>
       </div>
 
-      <div className="pb-24">
-        {activeTab === 'life' && (
-          <LifeTab 
-            character={gameState.character}
-            eventHistory={gameState.eventHistory}
-            currentEvent={gameState.currentEvent}
-            onAgeUp={ageUp}
-            onChoice={handleChoice}
-            ageHistory={ageHistory}
-          />
-        )}
-        {activeTab === 'activities' && (
-          <ActivitiesTab 
-            character={gameState.character} 
-            onActivity={(action, data) => handleActivityAction(gameState.character, action, data, ageHistory, setAgeHistory, onGameStateChange, gameState, toast)}
-          />
-        )}
-        {activeTab === 'relationships' && (
-          <RelationshipsTab character={gameState.character} />
-        )}
-        {activeTab === 'careers' && (
-          <CareersTab 
-            character={gameState.character}
-            onCareerAction={(action, data) => handleCareerAction(gameState.character, action, data, ageHistory, setAgeHistory, onGameStateChange, gameState, toast)}
-          />
-        )}
-        {activeTab === 'education' && (
-          <EducationTab 
-            character={gameState.character}
-            onEducationAction={(action, data) => handleEducationAction(gameState.character, action, data, ageHistory, setAgeHistory, onGameStateChange, gameState, toast)}
-          />
-        )}
-        {activeTab === 'health' && (
-          <HealthTab 
-            character={gameState.character}
-            onHealthAction={(action, data) => handleHealthAction(gameState.character, action, data, ageHistory, setAgeHistory, onGameStateChange, gameState, toast)}
-          />
-        )}
-        {activeTab === 'lifestyle' && (
-          <LifestyleTab 
-            character={gameState.character}
-            onLifestyleAction={(action, data) => handleLifestyleAction(gameState.character, action, data, ageHistory, setAgeHistory, onGameStateChange, gameState, toast)}
-          />
-        )}
-        {activeTab === 'money' && (
-          <MoneyTab 
-            character={gameState.character}
-            onMoneyAction={(action, data) => handleMoneyAction(gameState.character, action, data, ageHistory, setAgeHistory, onGameStateChange, gameState, toast)}
-          />
-        )}
-        {activeTab === 'assets' && (
-          <AssetsTab character={gameState.character} />
-        )}
+      {/* Responsive Stats Bar */}
+      <div className="bg-white border-b border-gray-200 px-1 sm:px-2 py-1 flex-shrink-0">
+        <div className="flex justify-between items-center gap-1 overflow-hidden">
+          <div className="flex items-center gap-0.5 text-red-600 min-w-0 flex-shrink">
+            <span className="text-xs sm:text-sm">❤️</span>
+            <span className="text-xs sm:text-sm font-medium truncate">{Math.round(gameState.character.health)}</span>
+          </div>
+          <div className="flex items-center gap-0.5 text-yellow-600 min-w-0 flex-shrink">
+            <span className="text-xs sm:text-sm">😊</span>
+            <span className="text-xs sm:text-sm font-medium truncate">{Math.round(gameState.character.happiness)}</span>
+          </div>
+          <div className="flex items-center gap-0.5 text-purple-600 min-w-0 flex-shrink">
+            <span className="text-xs sm:text-sm">🤝</span>
+            <span className="text-xs sm:text-sm font-medium truncate">{Math.round(gameState.character.relationships)}</span>
+          </div>
+          <div className="flex items-center gap-0.5 text-blue-600 min-w-0 flex-shrink">
+            <span className="text-xs sm:text-sm">🧠</span>
+            <span className="text-xs sm:text-sm font-medium truncate">{Math.round(gameState.character.intelligence)}</span>
+          </div>
+          <div className="flex items-center gap-0.5 text-green-600 min-w-0 flex-shrink">
+            <span className="text-xs sm:text-sm">💰</span>
+            <span className="text-xs sm:text-sm font-medium truncate">{gameState.character.wealth}k</span>
+          </div>
+        </div>
       </div>
 
-      <MobileNavigation
-        activeTab={activeTab}
-        onTabChange={(tab: string) => setActiveTab(tab as typeof activeTab)}
-        character={gameState.character}
-        onAgeUp={ageUp}
-        onShowActivityMenu={() => setShowActivitiesMenu(true)}
-        onShowRelationshipsMenu={() => setShowRelationshipsMenu(true)}
-        onShowAssetsMenu={() => setShowAssetsMenu(true)}
-      />
+      {/* Compact Tab Navigation */}
+      <div className="bg-white border-b border-gray-200 px-1 py-1 flex-shrink-0">
+        <div className="flex space-x-0.5 sm:space-x-1 overflow-x-auto scrollbar-hide">
+          {[
+            { id: 'life', icon: '🏠' },
+            { id: 'activities', icon: '🎯' },
+            { id: 'careers', icon: '💼' },
+            { id: 'education', icon: '📚' },
+            { id: 'health', icon: '❤️' },
+            { id: 'money', icon: '💰' },
+            { id: 'relationships', icon: '💕' },
+            { id: 'assets', icon: '🏆' }
+          ].map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id as typeof activeTab)}
+              className={`px-1.5 sm:px-2 py-1 rounded text-xs font-medium whitespace-nowrap flex-shrink-0 ${
+                activeTab === tab.id
+                  ? 'bg-blue-100 text-blue-700'
+                  : 'text-gray-600 hover:bg-gray-100'
+              }`}
+            >
+              {tab.icon}
+            </button>
+          ))}
+        </div>
+      </div>
 
+      {/* Main Content Area - Optimized for small screens */}
+      <div className="flex-1 overflow-hidden">
+        <div className="h-full">
+          {activeTab === 'life' && (
+            <div className="h-full">
+              <LifeTab 
+                character={gameState.character}
+                eventHistory={gameState.eventHistory}
+                currentEvent={gameState.currentEvent}
+                onAgeUp={ageUp}
+                onChoice={handleChoice}
+                ageHistory={ageHistory}
+              />
+            </div>
+          )}
+          {activeTab === 'activities' && (
+            <div className="h-full overflow-y-auto">
+              <ActivitiesTab 
+                character={gameState.character} 
+                onActivity={(action, data) => handleActivityAction(gameState.character, action, data, ageHistory, setAgeHistory, onGameStateChange, gameState, toast)}
+              />
+            </div>
+          )}
+          {activeTab === 'relationships' && (
+            <div className="h-full overflow-y-auto">
+              <RelationshipsTab character={gameState.character} />
+            </div>
+          )}
+          {activeTab === 'careers' && (
+            <div className="h-full overflow-y-auto">
+              <CareersTab 
+                character={gameState.character}
+                onCareerAction={(action, data) => handleCareerAction(gameState.character, action, data, ageHistory, setAgeHistory, onGameStateChange, gameState, toast)}
+              />
+            </div>
+          )}
+          {activeTab === 'education' && (
+            <div className="h-full overflow-y-auto">
+              <EducationTab 
+                character={gameState.character}
+                onEducationAction={(action, data) => handleEducationAction(gameState.character, action, data, ageHistory, setAgeHistory, onGameStateChange, gameState, toast)}
+              />
+            </div>
+          )}
+          {activeTab === 'health' && (
+            <div className="h-full overflow-y-auto">
+              <HealthTab 
+                character={gameState.character}
+                onHealthAction={(action, data) => handleHealthAction(gameState.character, action, data, ageHistory, setAgeHistory, onGameStateChange, gameState, toast)}
+              />
+            </div>
+          )}
+          {activeTab === 'lifestyle' && (
+            <div className="h-full overflow-y-auto">
+              <LifestyleTab 
+                character={gameState.character}
+                onLifestyleAction={(action, data) => handleLifestyleAction(gameState.character, action, data, ageHistory, setAgeHistory, onGameStateChange, gameState, toast)}
+              />
+            </div>
+          )}
+          {activeTab === 'money' && (
+            <div className="h-full overflow-y-auto">
+              <MoneyTab 
+                character={gameState.character}
+                onMoneyAction={(action, data) => handleMoneyAction(gameState.character, action, data, ageHistory, setAgeHistory, onGameStateChange, gameState, toast)}
+              />
+            </div>
+          )}
+          {activeTab === 'assets' && (
+            <div className="h-full overflow-y-auto">
+              <AssetsTab character={gameState.character} />
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Modals */}
       {showActivitiesMenu && (
         <ActivitiesMenu
           isOpen={showActivitiesMenu}
