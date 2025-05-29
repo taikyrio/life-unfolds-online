@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { X } from 'lucide-react';
 import { Character } from '../../types/game';
@@ -40,6 +39,14 @@ export const ActivitiesMenu: React.FC<ActivitiesMenuProps> = ({
     (member.relationship === 'lover' || member.relationship === 'spouse') && member.alive
   );
 
+  const getCodingSkill = () => {
+    return parseInt(character.flags?.find(f => f.startsWith('coding:'))?.split(':')[1] || '0');
+  };
+
+  const getNotoriety = () => {
+    return parseInt(character.flags?.find(f => f.startsWith('notoriety:'))?.split(':')[1] || '0');
+  };
+
   const activityCategories: ActivityCategory[] = [
     {
       id: 'mind',
@@ -67,6 +74,13 @@ export const ActivitiesMenu: React.FC<ActivitiesMenuProps> = ({
           description: 'Find inner peace and happiness',
           emoji: '🧘',
           minAge: 10
+        },
+        {
+          id: 'coding_practice',
+          title: 'Practice Coding',
+          description: 'Learn programming skills for future opportunities',
+          emoji: '💻',
+          minAge: 8
         }
       ]
     },
@@ -132,6 +146,97 @@ export const ActivitiesMenu: React.FC<ActivitiesMenuProps> = ({
     }
   ];
 
+  // Add crime category
+  activityCategories.push({
+    id: 'crime',
+    title: 'Criminal Activities',
+    emoji: '🔫',
+    activities: [
+      {
+        id: 'pickpocket',
+        title: 'Pickpocket',
+        description: 'Steal from unsuspecting victims',
+        emoji: '👛',
+        minAge: 12
+      },
+      {
+        id: 'burglary',
+        title: 'Burglary',
+        description: 'Break into homes and steal valuables',
+        emoji: '🏠',
+        minAge: 14
+      },
+      {
+        id: 'bank_robbery',
+        title: 'Bank Robbery',
+        description: 'Rob a bank for big money (high risk)',
+        emoji: '🏦',
+        minAge: 18,
+        minWealth: 10 // Need some money for equipment
+      },
+      {
+        id: 'extortion',
+        title: 'Extortion',
+        description: 'Collect protection money from businesses',
+        emoji: '💰',
+        minAge: 16
+      },
+      {
+        id: 'murder_family',
+        title: 'Murder Family Member',
+        description: 'Kill a family member (extremely dangerous)',
+        emoji: '🔪',
+        minAge: 16
+      },
+      {
+        id: 'murder_stranger',
+        title: 'Murder Stranger',
+        description: 'Kill a random person (very risky)',
+        emoji: '💀',
+        minAge: 16
+      }
+    ]
+  });
+
+  // Add cybercrime if eligible
+  if (character.age >= 14 && getCodingSkill() >= 20) {
+    activityCategories.push({
+      id: 'cybercrime',
+      title: 'Cybercrime',
+      emoji: '💻',
+      activities: [
+        {
+          id: 'hack_bank',
+          title: 'Hack Bank',
+          description: 'Steal money through digital theft',
+          emoji: '🏧',
+          minAge: 14
+        },
+        {
+          id: 'identity_theft',
+          title: 'Identity Theft',
+          description: 'Steal personal information for profit',
+          emoji: '🆔',
+          minAge: 14
+        },
+        {
+          id: 'ransomware',
+          title: 'Deploy Ransomware',
+          description: 'Lock computer systems for ransom',
+          emoji: '🔒',
+          minAge: 16
+        },
+        {
+          id: 'corporate_espionage',
+          title: 'Corporate Espionage',
+          description: 'Steal company secrets and data',
+          emoji: '🕵️',
+          minAge: 18
+        }
+      ]
+    });
+  }
+
   // Add adult activities if character is 18+
   if (character.age >= 18) {
     activityCategories.push({
@@ -182,6 +287,37 @@ export const ActivitiesMenu: React.FC<ActivitiesMenuProps> = ({
     return requirements.join(', ');
   };
 
+  const handleActivityClick = (categoryId: string, activityId: string) => {
+    if (categoryId === 'crime') {
+      const crimeOperations = {
+        pickpocket: { name: 'Pickpocket', minReward: 1, maxReward: 5, arrestChance: 15, notorietyGain: 2 },
+        burglary: { name: 'Burglary', minReward: 10, maxReward: 50, arrestChance: 25, notorietyGain: 5 },
+        bank_robbery: { name: 'Bank Robbery', minReward: 100, maxReward: 500, arrestChance: 60, notorietyGain: 20 },
+        extortion: { name: 'Extortion', minReward: 20, maxReward: 100, arrestChance: 30, notorietyGain: 8 }
+      };
+      
+      if (activityId.startsWith('murder_')) {
+        const target = activityId === 'murder_family' ? 'family_member' : 'stranger';
+        onActivity('murder', { target });
+      } else if (crimeOperations[activityId as keyof typeof crimeOperations]) {
+        onActivity('criminal_operation', crimeOperations[activityId as keyof typeof crimeOperations]);
+      }
+    } else if (categoryId === 'cybercrime') {
+      const cybercrimes = {
+        hack_bank: { name: 'Bank Hacking' },
+        identity_theft: { name: 'Identity Theft' },
+        ransomware: { name: 'Ransomware Attack' },
+        corporate_espionage: { name: 'Corporate Espionage' }
+      };
+      
+      if (cybercrimes[activityId as keyof typeof cybercrimes]) {
+        onActivity('cybercrime', cybercrimes[activityId as keyof typeof cybercrimes]);
+      }
+    } else {
+      onActivity(categoryId, activityId);
+    }
+  };
+
   if (!isOpen) return null;
 
   return (
@@ -198,6 +334,8 @@ export const ActivitiesMenu: React.FC<ActivitiesMenuProps> = ({
             </h2>
             <p className="text-sm text-gray-600 mt-1">
               Age: {character.age} | Wealth: ${character.wealth}
+              {getCodingSkill() > 0 && ` | Coding: ${getCodingSkill()}`}
+              {getNotoriety() > 0 && ` | Notoriety: ${getNotoriety()}`}
             </p>
           </div>
           <button
@@ -217,7 +355,9 @@ export const ActivitiesMenu: React.FC<ActivitiesMenuProps> = ({
                 <button
                   key={category.id}
                   onClick={() => setSelectedCategory(category.id)}
-                  className="w-full p-5 bg-gradient-to-r from-gray-50 to-gray-100 rounded-2xl text-left hover:from-blue-50 hover:to-purple-50 transition-all duration-200 flex items-center space-x-4 hover:shadow-md hover:scale-[1.02] group"
+                  className={`w-full p-5 bg-gradient-to-r from-gray-50 to-gray-100 rounded-2xl text-left hover:from-blue-50 hover:to-purple-50 transition-all duration-200 flex items-center space-x-4 hover:shadow-md hover:scale-[1.02] group ${
+                    category.id === 'crime' || category.id === 'cybercrime' ? 'border-2 border-red-200 hover:border-red-300' : ''
+                  }`}
                 >
                   <div className="text-3xl bg-white rounded-full w-12 h-12 flex items-center justify-center shadow-sm group-hover:shadow-md transition-shadow">
                     {category.emoji}
@@ -247,8 +387,10 @@ export const ActivitiesMenu: React.FC<ActivitiesMenuProps> = ({
                         canUse 
                           ? 'bg-white border-gray-200 hover:border-blue-300 hover:shadow-lg cursor-pointer hover:scale-[1.02]' 
                           : 'bg-gray-50 border-gray-100 opacity-60 cursor-not-allowed'
+                      } ${
+                        selectedCategory === 'crime' || selectedCategory === 'cybercrime' ? 'border-red-200 hover:border-red-300' : ''
                       }`}
-                      onClick={() => canUse && onActivity(selectedCategory, activity.id)}
+                      onClick={() => canUse && handleActivityClick(selectedCategory, activity.id)}
                     >
                       <div className="flex items-start space-x-4">
                         <div className={`text-3xl ${canUse ? '' : 'grayscale'}`}>
