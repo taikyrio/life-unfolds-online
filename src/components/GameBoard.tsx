@@ -1,7 +1,6 @@
+
 import React, { useState, useEffect } from 'react';
-import { Character, GameState, LifeEvent, Choice } from '../types/game';
-import { BottomNavigation } from './BottomNavigation';
-import { LifeTab } from './LifeTab';
+import { Character, GameState } from '../types/game';
 import { CharacterStats } from './CharacterStats';
 import { ActivitiesTab } from './ActivitiesTab';
 import { RelationshipsTab } from './RelationshipsTab';
@@ -11,26 +10,6 @@ import { ActivitiesMenu } from './menus/ActivitiesMenu';
 import { RelationshipsMenu } from './menus/RelationshipsMenu';
 import { AssetsMenu } from './menus/AssetsMenu';
 import ActivityModal from './modals/ActivityModal';
-import { 
-  ageCharacter, 
-  applyStatEffects, 
-  isGameOver, 
-  generateNewRelationships,
-  findLove,
-  intimateActivity,
-  proposeMariage,
-  getMarried,
-  giveGift,
-  haveBaby,
-  handleEducationActions
-} from '../utils/gameUtils';
-import { evolveStatsNaturally, getStatMessage } from '../utils/statEvolution';
-import { dynamicEventSystem } from '../data/dynamicEvents';
-import { lifeEvents } from '../data/lifeEvents';
-import { checkForHealthConditions, treatHealthCondition, healthConditions } from '../systems/healthSystem';
-import { checkAchievements, achievements } from '../systems/achievementSystem';
-import { calculateCompatibility, goOnDate, proposeMarriage } from '../systems/relationshipSystem';
-import { processYearlyFinances, applyForLoan } from '../systems/moneySystem';
 import { useToast } from '@/hooks/use-toast';
 import { MobileNavigation } from './navigation/MobileNavigation';
 import { EducationTab } from './tabs/EducationTab';
@@ -38,19 +17,23 @@ import { CareersTab } from './tabs/CareersTab';
 import { HealthTab } from './tabs/HealthTab';
 import { LifestyleTab } from './tabs/LifestyleTab';
 import { MoneyTab } from './tabs/MoneyTab';
+import { LifeTab } from './LifeTab';
+import { GameHeader } from './game/GameHeader';
+import { processAgeUp, processChoice } from './game/GameLogic';
+import { handleActivityAction } from './handlers/ActivityActionHandler';
+import { handleRelationshipAction } from './handlers/RelationshipActionHandler';
+import { handleCareerAction } from './handlers/CareerActionHandler';
+import { 
+  handleEducationAction, 
+  handleHealthAction, 
+  handleLifestyleAction, 
+  handleMoneyAction 
+} from './handlers/GameStateActionHandlers';
 
 interface GameBoardProps {
   gameState: GameState;
   onGameStateChange: (newState: GameState) => void;
 }
-
-const getLifeStage = (age: number): string => {
-  if (age === 0) return 'Infant';
-  if (age < 5) return 'Toddler';
-  if (age < 13) return 'Child';
-  if (age < 18) return 'Teenager';
-  return 'Adult';
-};
 
 export const GameBoard: React.FC<GameBoardProps> = ({ gameState, onGameStateChange }) => {
   const [activeTab, setActiveTab] = useState<'life' | 'activities' | 'careers' | 'relationships' | 'assets' | 'education' | 'health' | 'lifestyle' | 'money'>('life');
@@ -78,737 +61,11 @@ export const GameBoard: React.FC<GameBoardProps> = ({ gameState, onGameStateChan
   }, [gameState, onGameStateChange]);
 
   const ageUp = () => {
-    if (gameState.gameOver) return;
-
-    let updatedCharacter = { ...gameState.character };
-    let newEventHistory = [...gameState.eventHistory];
-    let newAchievements = [...gameState.achievements];
-    let currentAgeEvents: string[] = [];
-
-    // Age the character
-    updatedCharacter = ageCharacter(updatedCharacter);
-
-    // Process yearly finances
-    updatedCharacter = processYearlyFinances(updatedCharacter);
-
-    // Apply natural stat evolution
-    const statChanges = evolveStatsNaturally(updatedCharacter);
-    Object.entries(statChanges).forEach(([key, value]) => {
-      if (typeof value === 'number' && key in updatedCharacter) {
-        const oldValue = (updatedCharacter as any)[key];
-        (updatedCharacter as any)[key] = Math.max(0, Math.min(100, value));
-        
-        // Log significant stat changes
-        const change = value - oldValue;
-        if (Math.abs(change) > 2) {
-          const message = getStatMessage(key, change);
-          if (message) {
-            currentAgeEvents.push(message);
-          }
-        }
-      }
-    });
-
-    // Check for health conditions
-    const healthCondition = checkForHealthConditions(updatedCharacter);
-    if (healthCondition) {
-      currentAgeEvents.push(`You were diagnosed with ${healthCondition.name}. ${healthCondition.description}`);
-      // Apply condition effects
-      updatedCharacter.health = Math.max(0, updatedCharacter.health + healthCondition.effects.health);
-      updatedCharacter.happiness = Math.max(0, updatedCharacter.happiness + healthCondition.effects.happiness);
-    }
-
-    // Check for dynamic events
-    const availableEvents = dynamicEventSystem.getAvailableEvents(updatedCharacter, gameState.eventTracker);
-    const selectedEvent = dynamicEventSystem.selectEvent(availableEvents);
-
-    let hasEvent = false;
-    if (selectedEvent && Math.random() < 0.3) { // 30% chance of dynamic event
-      onGameStateChange({
-        ...gameState,
-        character: updatedCharacter,
-        currentEvent: selectedEvent,
-        eventHistory: newEventHistory
-      });
-      hasEvent = true;
-    }
-
-    // Check for random life events from static events
-    if (!hasEvent && Math.random() < 0.4) { // 40% chance if no dynamic event
-      const eligibleEvents = lifeEvents.filter(event => {
-        if (event.ageRequirement) {
-          const { min, max } = event.ageRequirement;
-          if (min && updatedCharacter.age < min) return false;
-          if (max && updatedCharacter.age > max) return false;
-        }
-        return true;
-      });
-
-      if (eligibleEvents.length > 0) {
-        const randomEvent = eligibleEvents[Math.floor(Math.random() * eligibleEvents.length)];
-        onGameStateChange({
-          ...gameState,
-          character: updatedCharacter,
-          currentEvent: randomEvent,
-          eventHistory: newEventHistory
-        });
-        hasEvent = true;
-      }
-    }
-
-    // Add age milestone events
-    if (updatedCharacter.age === 1) {
-      currentAgeEvents.push("You celebrated your first birthday!");
-    } else if (updatedCharacter.age === 5) {
-      currentAgeEvents.push("You started kindergarten.");
-    } else if (updatedCharacter.age === 13) {
-      currentAgeEvents.push("You became a teenager!");
-    } else if (updatedCharacter.age === 18) {
-      currentAgeEvents.push("You became an adult!");
-    } else if (updatedCharacter.age === 21) {
-      currentAgeEvents.push("You can now legally drink alcohol!");
-    } else if (updatedCharacter.age === 65) {
-      currentAgeEvents.push("You reached retirement age!");
-    }
-
-    // Check for achievements
-    const newAchievementsList = checkAchievements(updatedCharacter, newEventHistory, newAchievements);
-    if (newAchievementsList.length > 0) {
-      newAchievementsList.forEach(achievement => {
-        toast({
-          title: "Achievement Unlocked! 🏆",
-          description: `${achievement.emoji} ${achievement.name}: ${achievement.description}`,
-          duration: 5000,
-        });
-        currentAgeEvents.push(`🏆 Achievement unlocked: ${achievement.name}!`);
-        newAchievements.push(achievement.id);
-      });
-    }
-
-    // Check if game is over
-    const gameOverResult = isGameOver(updatedCharacter);
-    if (gameOverResult.gameOver) {
-      onGameStateChange({
-        ...gameState,
-        character: updatedCharacter,
-        gameOver: true,
-        gameOverReason: gameOverResult.reason,
-        eventHistory: newEventHistory,
-        achievements: newAchievements
-      });
-      return;
-    }
-
-    // Update age history
-    const newAgeHistory = { ...ageHistory };
-    if (currentAgeEvents.length > 0) {
-      newAgeHistory[updatedCharacter.age] = currentAgeEvents;
-      setAgeHistory(newAgeHistory);
-    }
-
-    // If no event occurred, just update the character
-    if (!hasEvent) {
-      onGameStateChange({
-        ...gameState,
-        character: updatedCharacter,
-        eventHistory: newEventHistory,
-        achievements: newAchievements
-      });
-    }
+    processAgeUp(gameState, ageHistory, setAgeHistory, onGameStateChange, toast);
   };
 
   const handleChoice = (choiceId: string) => {
-    if (!gameState.currentEvent) return;
-
-    const choice = gameState.currentEvent.choices.find(c => c.id === choiceId);
-    if (!choice) return;
-
-    let updatedCharacter = applyStatEffects(gameState.character, choice.effects);
-    
-    // Add flags if specified
-    if (choice.flags) {
-      updatedCharacter.flags = [...(updatedCharacter.flags || []), ...choice.flags];
-    }
-
-    // Create event description for history
-    const eventDescription = `${gameState.currentEvent.title}: ${choice.text}`;
-    let ageEvents = ageHistory[updatedCharacter.age] || [];
-    ageEvents.push(eventDescription);
-
-    // Add consequences to age history
-    if (choice.consequences) {
-      ageEvents.push(...choice.consequences);
-    }
-
-    const newAgeHistory = { ...ageHistory };
-    newAgeHistory[updatedCharacter.age] = ageEvents;
-    setAgeHistory(newAgeHistory);
-
-    const newEventHistory = [...gameState.eventHistory, eventDescription];
-
-    // Mark event as triggered
-    const newEventTracker = {
-      ...gameState.eventTracker,
-      triggeredEvents: new Set([...gameState.eventTracker.triggeredEvents, gameState.currentEvent.id]),
-      lastEventAge: updatedCharacter.age
-    };
-
-    onGameStateChange({
-      ...gameState,
-      character: updatedCharacter,
-      currentEvent: null,
-      eventHistory: newEventHistory,
-      eventTracker: newEventTracker
-    });
-  };
-
-  const handleActivityAction = (action: string, data?: any) => {
-    let updatedCharacter = { ...gameState.character };
-    let message = '';
-    let ageEvents = ageHistory[updatedCharacter.age] || [];
-
-    switch (action) {
-      case 'workout':
-        updatedCharacter.health = Math.min(100, updatedCharacter.health + 10);
-        updatedCharacter.happiness = Math.min(100, updatedCharacter.happiness + 5);
-        message = 'You had a great workout session!';
-        break;
-      
-      case 'read_book':
-        updatedCharacter.smarts = Math.min(100, updatedCharacter.smarts + 8);
-        updatedCharacter.happiness = Math.min(100, updatedCharacter.happiness + 3);
-        message = 'You learned something new from reading!';
-        break;
-      
-      case 'socialize':
-        updatedCharacter.relationships = Math.min(100, updatedCharacter.relationships + 12);
-        updatedCharacter.happiness = Math.min(100, updatedCharacter.happiness + 8);
-        message = 'You had a great time socializing with friends!';
-        break;
-
-      case 'meditation':
-        updatedCharacter.happiness = Math.min(100, updatedCharacter.happiness + 15);
-        updatedCharacter.health = Math.min(100, updatedCharacter.health + 5);
-        message = 'Meditation helped you feel more centered and peaceful.';
-        break;
-    }
-
-    if (message) {
-      ageEvents.push(message);
-      const newAgeHistory = { ...ageHistory };
-      newAgeHistory[updatedCharacter.age] = ageEvents;
-      setAgeHistory(newAgeHistory);
-
-      toast({
-        title: "Activity Complete",
-        description: message,
-      });
-    }
-
-    onGameStateChange({
-      ...gameState,
-      character: updatedCharacter
-    });
-  };
-
-  const handleRelationshipAction = (action: string, data?: any) => {
-    let updatedCharacter = { ...gameState.character };
-    let message = '';
-    let ageEvents = ageHistory[updatedCharacter.age] || [];
-
-    switch (action) {
-      case 'find_love':
-        if (updatedCharacter.age < 16) {
-          message = "You're too young for serious relationships!";
-          break;
-        }
-        const loveResult = findLove(updatedCharacter);
-        message = loveResult.message;
-        if (loveResult.success && loveResult.partner) {
-          updatedCharacter.familyMembers.push(loveResult.partner);
-          updatedCharacter.relationshipStatus = 'dating';
-        }
-        break;
-
-      case 'date_night':
-        const partner = updatedCharacter.familyMembers.find(m => 
-          m.relationship === 'lover' || m.relationship === 'spouse'
-        );
-        if (!partner) {
-          message = "You need to be in a relationship first!";
-          break;
-        }
-        
-        const dateResult = goOnDate(updatedCharacter, partner, data.dateType || 'casual');
-        message = dateResult.message;
-        updatedCharacter.wealth = Math.max(0, updatedCharacter.wealth - dateResult.cost);
-        updatedCharacter.happiness = Math.min(100, updatedCharacter.happiness + dateResult.happinessChange);
-        
-        // Update partner's relationship quality
-        const partnerIndex = updatedCharacter.familyMembers.findIndex(m => m.id === partner.id);
-        if (partnerIndex >= 0) {
-          updatedCharacter.familyMembers[partnerIndex].relationshipQuality = Math.min(100, 
-            updatedCharacter.familyMembers[partnerIndex].relationshipQuality + dateResult.relationshipChange
-          );
-        }
-        break;
-
-      case 'propose':
-        const fiancee = updatedCharacter.familyMembers.find(m => m.relationship === 'lover');
-        if (!fiancee) {
-          message = "You need to be dating someone first!";
-          break;
-        }
-        
-        const proposalResult = proposeMarriage(updatedCharacter, fiancee);
-        message = proposalResult.message;
-        updatedCharacter.wealth = Math.max(0, updatedCharacter.wealth - proposalResult.ringCost);
-        
-        if (proposalResult.accepted) {
-          const fianceeIndex = updatedCharacter.familyMembers.findIndex(m => m.id === fiancee.id);
-          if (fianceeIndex >= 0) {
-            updatedCharacter.familyMembers[fianceeIndex].relationship = 'spouse';
-            updatedCharacter.relationshipStatus = 'engaged';
-            updatedCharacter.partnerName = fiancee.name;
-          }
-        }
-        break;
-    }
-
-    if (message) {
-      ageEvents.push(message);
-      const newAgeHistory = { ...ageHistory };
-      newAgeHistory[updatedCharacter.age] = ageEvents;
-      setAgeHistory(newAgeHistory);
-
-      toast({
-        title: "Relationship Update",
-        description: message,
-      });
-    }
-
-    onGameStateChange({
-      ...gameState,
-      character: updatedCharacter
-    });
-  };
-
-  const handleEducationAction = (action: string, data?: any) => {
-    let updatedCharacter = { ...gameState.character };
-    let message = '';
-    let ageEvents = ageHistory[updatedCharacter.age] || [];
-
-    switch (action) {
-      case 'enroll':
-        if (data?.levelId) {
-          // Auto-enroll in education based on age and qualifications
-          const educationLevels = [
-            { id: 'elementary', name: 'Elementary School', cost: 0 },
-            { id: 'middle', name: 'Middle School', cost: 0 },
-            { id: 'high', name: 'High School', cost: 0 },
-            { id: 'college', name: 'Community College', cost: 20 },
-            { id: 'university', name: 'University', cost: 40 },
-            { id: 'graduate', name: 'Graduate School', cost: 60 },
-            { id: 'medical', name: 'Medical School', cost: 100 },
-            { id: 'law', name: 'Law School', cost: 80 }
-          ];
-          
-          const level = educationLevels.find(l => l.id === data.levelId);
-          if (level && updatedCharacter.wealth >= level.cost) {
-            updatedCharacter.currentEducation = {
-              level: data.levelId,
-              institution: `${level.name} Institute`,
-              currentYear: 1,
-              gpa: 3.0 + (updatedCharacter.smarts / 100),
-              classmates: []
-            };
-            updatedCharacter.wealth = Math.max(0, updatedCharacter.wealth - level.cost);
-            message = `Enrolled in ${level.name}!`;
-          }
-        }
-        break;
-        
-      case 'progress':
-        if (updatedCharacter.currentEducation) {
-          const year = updatedCharacter.currentEducation.currentYear + 1;
-          updatedCharacter.currentEducation.currentYear = year;
-          updatedCharacter.smarts = Math.min(100, updatedCharacter.smarts + 5);
-          message = `Completed year ${year - 1} of ${updatedCharacter.currentEducation.level}`;
-        }
-        break;
-    }
-
-    if (message) {
-      ageEvents.push(message);
-      const newAgeHistory = { ...ageHistory };
-      newAgeHistory[updatedCharacter.age] = ageEvents;
-      setAgeHistory(newAgeHistory);
-
-      toast({
-        title: "Education Update",
-        description: message,
-      });
-    }
-
-    onGameStateChange({
-      ...gameState,
-      character: updatedCharacter
-    });
-  };
-
-  const handleCareerAction = (action: string, data?: any) => {
-    let updatedCharacter = { ...gameState.character };
-    let message = '';
-    let ageEvents = ageHistory[updatedCharacter.age] || [];
-
-    switch (action) {
-      case 'criminal_operation':
-        if (data) {
-          const operation = data;
-          const successChance = 100 - operation.arrestChance;
-          const isSuccessful = Math.random() * 100 < successChance;
-          
-          if (isSuccessful) {
-            const reward = Math.floor(Math.random() * (operation.maxReward - operation.minReward + 1)) + operation.minReward;
-            updatedCharacter.wealth += reward;
-            
-            // Add notoriety
-            const currentNotoriety = updatedCharacter.flags?.find(f => f.startsWith('notoriety:'))?.split(':')[1] || '0';
-            const newNotoriety = Math.min(100, parseInt(currentNotoriety) + operation.notorietyGain);
-            updatedCharacter.flags = updatedCharacter.flags?.filter(f => !f.startsWith('notoriety:')) || [];
-            updatedCharacter.flags.push(`notoriety:${newNotoriety}`);
-            
-            message = `${operation.name} successful! You earned $${reward}k and gained ${operation.notorietyGain} notoriety.`;
-          } else {
-            updatedCharacter.criminalRecord = true;
-            updatedCharacter.health = Math.max(0, updatedCharacter.health - 20);
-            updatedCharacter.happiness = Math.max(0, updatedCharacter.happiness - 30);
-            message = `${operation.name} failed! You were arrested and now have a criminal record.`;
-          }
-        }
-        break;
-
-      case 'murder':
-        if (data?.target) {
-          const murderChance = 70; // 70% success rate
-          const isSuccessful = Math.random() * 100 < murderChance;
-          
-          if (isSuccessful) {
-            if (data.target === 'family_member' && updatedCharacter.familyMembers.length > 0) {
-              const familyIndex = Math.floor(Math.random() * updatedCharacter.familyMembers.length);
-              const victim = updatedCharacter.familyMembers[familyIndex];
-              updatedCharacter.familyMembers[familyIndex].alive = false;
-              updatedCharacter.happiness = Math.max(0, updatedCharacter.happiness - 50);
-              message = `You murdered ${victim.name}. The guilt weighs heavily on you.`;
-            } else if (data.target === 'stranger') {
-              updatedCharacter.happiness = Math.max(0, updatedCharacter.happiness - 30);
-              message = 'You murdered a stranger. The deed is done, but at what cost?';
-            }
-            
-            // Add significant notoriety for murder
-            const currentNotoriety = updatedCharacter.flags?.find(f => f.startsWith('notoriety:'))?.split(':')[1] || '0';
-            const newNotoriety = Math.min(100, parseInt(currentNotoriety) + 30);
-            updatedCharacter.flags = updatedCharacter.flags?.filter(f => !f.startsWith('notoriety:')) || [];
-            updatedCharacter.flags.push(`notoriety:${newNotoriety}`);
-          } else {
-            updatedCharacter.criminalRecord = true;
-            message = 'Murder attempt failed! You were caught and arrested.';
-          }
-        }
-        break;
-
-      case 'coding_practice':
-        // Add coding skill from age 8
-        if (updatedCharacter.age >= 8) {
-          const currentCoding = updatedCharacter.flags?.find(f => f.startsWith('coding:'))?.split(':')[1] || '0';
-          const newCoding = Math.min(100, parseInt(currentCoding) + 5);
-          updatedCharacter.flags = updatedCharacter.flags?.filter(f => !f.startsWith('coding:')) || [];
-          updatedCharacter.flags.push(`coding:${newCoding}`);
-          updatedCharacter.smarts = Math.min(100, updatedCharacter.smarts + 3);
-          message = `You practiced coding and improved your skills! Coding skill: ${newCoding}/100`;
-        }
-        break;
-
-      case 'cybercrime':
-        if (data && updatedCharacter.age >= 14) {
-          const codingSkill = parseInt(updatedCharacter.flags?.find(f => f.startsWith('coding:'))?.split(':')[1] || '0');
-          const successChance = Math.min(90, codingSkill * 0.8); // Max 90% based on coding skill
-          const isSuccessful = Math.random() * 100 < successChance;
-          
-          if (isSuccessful) {
-            const reward = Math.floor(codingSkill * 2 + Math.random() * 50); // Skill-based rewards
-            updatedCharacter.wealth += reward;
-            
-            const currentNotoriety = updatedCharacter.flags?.find(f => f.startsWith('notoriety:'))?.split(':')[1] || '0';
-            const newNotoriety = Math.min(100, parseInt(currentNotoriety) + 10);
-            updatedCharacter.flags = updatedCharacter.flags?.filter(f => !f.startsWith('notoriety:')) || [];
-            updatedCharacter.flags.push(`notoriety:${newNotoriety}`);
-            
-            message = `${data.name} successful! You earned $${reward}k through cybercrime.`;
-          } else {
-            updatedCharacter.criminalRecord = true;
-            message = `${data.name} failed! Your digital footprint was traced back to you.`;
-          }
-        }
-        break;
-
-      case 'join_criminal_career':
-        if (data?.id) {
-          updatedCharacter.job = data.name;
-          updatedCharacter.salary = data.baseSalary;
-          updatedCharacter.jobLevel = 1;
-          message = `You joined the ${data.name} career path!`;
-        }
-        break;
-
-      case 'apply':
-        if (data?.careerId) {
-          const careers = {
-            'retail': { name: 'Retail Worker', salary: 25 },
-            'food_service': { name: 'Food Service Worker', salary: 22 },
-            'mechanic': { name: 'Mechanic', salary: 45 },
-            'teacher': { name: 'Teacher', salary: 48 },
-            'nurse': { name: 'Nurse', salary: 65 },
-            'engineer': { name: 'Engineer', salary: 75 },
-            'doctor': { name: 'Doctor', salary: 185 },
-            'lawyer': { name: 'Lawyer', salary: 125 }
-          };
-          
-          const career = careers[data.careerId as keyof typeof careers];
-          if (career) {
-            updatedCharacter.job = career.name;
-            updatedCharacter.salary = career.salary;
-            updatedCharacter.jobLevel = 1;
-            message = `Got hired as a ${career.name}!`;
-          }
-        }
-        break;
-        
-      case 'promote':
-        if (updatedCharacter.job && updatedCharacter.jobLevel < 10) {
-          updatedCharacter.jobLevel += 1;
-          updatedCharacter.salary = Math.floor(updatedCharacter.salary * 1.15);
-          message = `Promoted to Level ${updatedCharacter.jobLevel}!`;
-        }
-        break;
-        
-      case 'quit':
-        updatedCharacter.job = undefined;
-        updatedCharacter.salary = 0;
-        updatedCharacter.jobLevel = 0;
-        message = 'You quit your job.';
-        break;
-    }
-
-    if (message) {
-      ageEvents.push(message);
-      const newAgeHistory = { ...ageHistory };
-      newAgeHistory[updatedCharacter.age] = ageEvents;
-      setAgeHistory(newAgeHistory);
-
-      toast({
-        title: "Career Update",
-        description: message,
-      });
-    }
-
-    onGameStateChange({
-      ...gameState,
-      character: updatedCharacter
-    });
-  };
-
-  const handleHealthAction = (action: string, data?: any) => {
-    let updatedCharacter = { ...gameState.character };
-    let message = '';
-    let ageEvents = ageHistory[updatedCharacter.age] || [];
-
-    switch (action) {
-      case 'checkup':
-        const cost = 100;
-        if (updatedCharacter.wealth >= cost) {
-          updatedCharacter.wealth -= cost;
-          updatedCharacter.health = Math.min(100, updatedCharacter.health + 10);
-          message = 'Annual checkup complete. Your health has improved!';
-        } else {
-          message = 'You cannot afford a medical checkup.';
-        }
-        break;
-
-      case 'treat_condition':
-        if (data?.condition && data?.treatmentIndex !== undefined) {
-          const treatment = data.condition.treatmentOptions[data.treatmentIndex];
-          if (updatedCharacter.wealth >= treatment.cost) {
-            updatedCharacter = treatHealthCondition(updatedCharacter, data.condition, data.treatmentIndex);
-            message = `Treatment completed: ${treatment.description}`;
-          } else {
-            message = `You cannot afford ${treatment.name}.`;
-          }
-        }
-        break;
-
-      case 'exercise':
-        updatedCharacter.health = Math.min(100, updatedCharacter.health + 8);
-        updatedCharacter.looks = Math.min(100, updatedCharacter.looks + 3);
-        message = 'You exercised and feel healthier!';
-        break;
-
-      case 'diet':
-        updatedCharacter.health = Math.min(100, updatedCharacter.health + 5);
-        updatedCharacter.wealth = Math.max(0, updatedCharacter.wealth - 5);
-        message = 'You invested in a healthy diet plan.';
-        break;
-    }
-
-    if (message) {
-      ageEvents.push(message);
-      const newAgeHistory = { ...ageHistory };
-      newAgeHistory[updatedCharacter.age] = ageEvents;
-      setAgeHistory(newAgeHistory);
-
-      toast({
-        title: "Health Update",
-        description: message,
-      });
-    }
-
-    onGameStateChange({
-      ...gameState,
-      character: updatedCharacter
-    });
-  };
-
-  const handleLifestyleAction = (action: string, data?: any) => {
-    let updatedCharacter = { ...gameState.character };
-    let message = '';
-    let ageEvents = ageHistory[updatedCharacter.age] || [];
-
-    switch (action) {
-      case 'buy_house':
-        const houseCost = 200;
-        if (updatedCharacter.wealth >= houseCost) {
-          updatedCharacter.wealth -= houseCost;
-          updatedCharacter.assets.push({
-            name: 'House',
-            type: 'real_estate',
-            value: houseCost
-          });
-          updatedCharacter.happiness = Math.min(100, updatedCharacter.happiness + 20);
-          message = 'You bought your first house!';
-        } else {
-          message = 'You cannot afford a house right now.';
-        }
-        break;
-
-      case 'buy_car':
-        const carCost = 30;
-        if (updatedCharacter.wealth >= carCost) {
-          updatedCharacter.wealth -= carCost;
-          updatedCharacter.assets.push({
-            name: 'Car',
-            type: 'vehicle',
-            value: carCost
-          });
-          updatedCharacter.happiness = Math.min(100, updatedCharacter.happiness + 10);
-          message = 'You bought a car!';
-        } else {
-          message = 'You cannot afford a car right now.';
-        }
-        break;
-
-      case 'vacation':
-        const vacationCost = 15;
-        if (updatedCharacter.wealth >= vacationCost) {
-          updatedCharacter.wealth -= vacationCost;
-          updatedCharacter.happiness = Math.min(100, updatedCharacter.happiness + 25);
-          updatedCharacter.health = Math.min(100, updatedCharacter.health + 5);
-          message = 'You went on a relaxing vacation!';
-        } else {
-          message = 'You cannot afford a vacation right now.';
-        }
-        break;
-    }
-
-    if (message) {
-      ageEvents.push(message);
-      const newAgeHistory = { ...ageHistory };
-      newAgeHistory[updatedCharacter.age] = ageEvents;
-      setAgeHistory(newAgeHistory);
-
-      toast({
-        title: "Lifestyle Update",
-        description: message,
-      });
-    }
-
-    onGameStateChange({
-      ...gameState,
-      character: updatedCharacter
-    });
-  };
-
-  const handleMoneyAction = (action: string, data?: any) => {
-    let updatedCharacter = { ...gameState.character };
-    let message = '';
-    let ageEvents = ageHistory[updatedCharacter.age] || [];
-
-    switch (action) {
-      case 'apply_loan':
-        if (data?.amount) {
-          const loanResult = applyForLoan(updatedCharacter, data.amount);
-          if (loanResult.approved) {
-            updatedCharacter.wealth += data.amount;
-            message = `Loan approved! You received $${data.amount}k at ${(loanResult.interestRate * 100).toFixed(1)}% interest.`;
-          } else {
-            message = `Loan denied: ${loanResult.reason}`;
-          }
-        }
-        break;
-
-      case 'invest':
-        if (data?.amount && updatedCharacter.wealth >= data.amount) {
-          updatedCharacter.wealth -= data.amount;
-          // Simple investment return (random between -20% to +30%)
-          const returnRate = (Math.random() * 0.5) - 0.2; // -20% to +30%
-          const returns = Math.floor(data.amount * returnRate);
-          updatedCharacter.wealth += data.amount + returns;
-          
-          if (returns > 0) {
-            message = `Investment successful! You gained $${returns}k.`;
-          } else {
-            message = `Investment lost $${Math.abs(returns)}k.`;
-          }
-        } else {
-          message = 'Insufficient funds for investment.';
-        }
-        break;
-
-      case 'save':
-        if (data?.amount && updatedCharacter.wealth >= data.amount) {
-          // Savings account with 2% annual return
-          const interest = Math.floor(data.amount * 0.02);
-          updatedCharacter.wealth += interest;
-          message = `You earned $${interest}k in savings interest.`;
-        }
-        break;
-    }
-
-    if (message) {
-      ageEvents.push(message);
-      const newAgeHistory = { ...ageHistory };
-      newAgeHistory[updatedCharacter.age] = ageEvents;
-      setAgeHistory(newAgeHistory);
-
-      toast({
-        title: "Financial Update",
-        description: message,
-      });
-    }
-
-    onGameStateChange({
-      ...gameState,
-      character: updatedCharacter
-    });
+    processChoice(gameState, choiceId, ageHistory, setAgeHistory, onGameStateChange);
   };
 
   if (gameState.gameOver) {
@@ -816,7 +73,6 @@ export const GameBoard: React.FC<GameBoardProps> = ({ gameState, onGameStateChan
       character={gameState.character} 
       reason={gameState.gameOverReason}
       onRestart={() => {
-        // Reset game state
         const newGameState: GameState = {
           character: gameState.character,
           currentEvent: null,
@@ -837,40 +93,12 @@ export const GameBoard: React.FC<GameBoardProps> = ({ gameState, onGameStateChan
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Consolidated Character Header with Money and Stats */}
-      <div className="bg-white p-3 border-b border-gray-200">
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center space-x-3 min-w-0 flex-1">
-            <div className="w-12 h-12 bg-orange-200 rounded-full flex items-center justify-center text-2xl flex-shrink-0">
-              👶
-            </div>
-            <div className="min-w-0 flex-1">
-              <div className="flex items-center space-x-2">
-                <h2 className="text-lg font-bold text-blue-600 truncate">{gameState.character.name}</h2>
-                <span className="text-blue-500 text-sm">ℹ️</span>
-              </div>
-              <p className="text-sm text-gray-600 capitalize">
-                {getLifeStage(gameState.character.age)}
-                {gameState.character.isPregnant && ` • 🤰 Pregnant (${gameState.character.pregnancyMonths || 0}/9)`}
-              </p>
-            </div>
-          </div>
-          <div className="text-right flex-shrink-0">
-            <div className="text-xl font-bold text-green-600">${gameState.character.wealth.toLocaleString()}k</div>
-            <div className="text-xs text-blue-500">Net Worth</div>
-            {gameState.character.job && (
-              <div className="text-xs text-gray-600">${gameState.character.salary}k/year</div>
-            )}
-          </div>
-        </div>
-      </div>
+      <GameHeader character={gameState.character} />
       
-      {/* Character Stats - Below Header */}
       <div className="bg-white border-b border-gray-200 px-4 py-3">
         <CharacterStats character={gameState.character} />
       </div>
 
-      {/* Main Content */}
       <div className="pb-24">
         {activeTab === 'life' && (
           <LifeTab 
@@ -885,7 +113,7 @@ export const GameBoard: React.FC<GameBoardProps> = ({ gameState, onGameStateChan
         {activeTab === 'activities' && (
           <ActivitiesTab 
             character={gameState.character} 
-            onActivity={handleActivityAction}
+            onActivity={(action, data) => handleActivityAction(gameState.character, action, data, ageHistory, setAgeHistory, onGameStateChange, gameState, toast)}
           />
         )}
         {activeTab === 'relationships' && (
@@ -894,31 +122,31 @@ export const GameBoard: React.FC<GameBoardProps> = ({ gameState, onGameStateChan
         {activeTab === 'careers' && (
           <CareersTab 
             character={gameState.character}
-            onCareerAction={handleCareerAction}
+            onCareerAction={(action, data) => handleCareerAction(gameState.character, action, data, ageHistory, setAgeHistory, onGameStateChange, gameState, toast)}
           />
         )}
         {activeTab === 'education' && (
           <EducationTab 
             character={gameState.character}
-            onEducationAction={handleEducationAction}
+            onEducationAction={(action, data) => handleEducationAction(gameState.character, action, data, ageHistory, setAgeHistory, onGameStateChange, gameState, toast)}
           />
         )}
         {activeTab === 'health' && (
           <HealthTab 
             character={gameState.character}
-            onHealthAction={handleHealthAction}
+            onHealthAction={(action, data) => handleHealthAction(gameState.character, action, data, ageHistory, setAgeHistory, onGameStateChange, gameState, toast)}
           />
         )}
         {activeTab === 'lifestyle' && (
           <LifestyleTab 
             character={gameState.character}
-            onLifestyleAction={handleLifestyleAction}
+            onLifestyleAction={(action, data) => handleLifestyleAction(gameState.character, action, data, ageHistory, setAgeHistory, onGameStateChange, gameState, toast)}
           />
         )}
         {activeTab === 'money' && (
           <MoneyTab 
             character={gameState.character}
-            onMoneyAction={handleMoneyAction}
+            onMoneyAction={(action, data) => handleMoneyAction(gameState.character, action, data, ageHistory, setAgeHistory, onGameStateChange, gameState, toast)}
           />
         )}
         {activeTab === 'assets' && (
@@ -926,7 +154,6 @@ export const GameBoard: React.FC<GameBoardProps> = ({ gameState, onGameStateChan
         )}
       </div>
 
-      {/* Mobile Navigation */}
       <MobileNavigation
         activeTab={activeTab}
         onTabChange={(tab: string) => setActiveTab(tab as typeof activeTab)}
@@ -937,13 +164,12 @@ export const GameBoard: React.FC<GameBoardProps> = ({ gameState, onGameStateChan
         onShowAssetsMenu={() => setShowAssetsMenu(true)}
       />
 
-      {/* Modals and Menus - keep existing code */}
       {showActivitiesMenu && (
         <ActivitiesMenu
           isOpen={showActivitiesMenu}
           character={gameState.character}
           onClose={() => setShowActivitiesMenu(false)}
-          onActivity={handleActivityAction}
+          onActivity={(action, data) => handleActivityAction(gameState.character, action, data, ageHistory, setAgeHistory, onGameStateChange, gameState, toast)}
         />
       )}
 
@@ -952,7 +178,7 @@ export const GameBoard: React.FC<GameBoardProps> = ({ gameState, onGameStateChan
           isOpen={showRelationshipsMenu}
           character={gameState.character}
           onClose={() => setShowRelationshipsMenu(false)}
-          onActivity={handleRelationshipAction}
+          onActivity={(action, data) => handleRelationshipAction(gameState.character, action, data, ageHistory, setAgeHistory, onGameStateChange, gameState, toast)}
         />
       )}
 
@@ -972,7 +198,7 @@ export const GameBoard: React.FC<GameBoardProps> = ({ gameState, onGameStateChan
             setSelectedActivity(null);
           }}
           onSelectActivity={(activity) => {
-            handleActivityAction(activity.id, activity);
+            handleActivityAction(gameState.character, activity.id, activity, ageHistory, setAgeHistory, onGameStateChange, gameState, toast);
             setShowActivityModal(false);
             setSelectedActivity(null);
           }}
