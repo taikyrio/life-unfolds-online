@@ -34,6 +34,9 @@ import { checkForHealthConditions, treatHealthCondition, healthConditions } from
 import { checkAchievements, achievements } from '../systems/achievementSystem';
 import { calculateCompatibility, goOnDate, proposeMarriage } from '../systems/relationshipSystem';
 import { useToast } from '@/components/ui/use-toast';
+import { MobileNavigation } from './navigation/MobileNavigation';
+import { EducationTab } from './tabs/EducationTab';
+import { CareersTab } from './tabs/CareersTab';
 
 interface GameBoardProps {
   gameState: GameState;
@@ -378,14 +381,130 @@ export const GameBoard: React.FC<GameBoardProps> = ({ gameState, onGameStateChan
     });
   };
 
-  const handleJobApplication = (jobType: string) => {
-    // Placeholder job application handler
-    console.log('Job application for:', jobType);
+  const handleEducationAction = (action: string, data?: any) => {
+    let updatedCharacter = { ...gameState.character };
+    let message = '';
+    let ageEvents = ageHistory[updatedCharacter.age] || [];
+
+    switch (action) {
+      case 'enroll':
+        if (data?.levelId) {
+          // Auto-enroll in education based on age and qualifications
+          const educationLevels = [
+            { id: 'elementary', name: 'Elementary School', cost: 0 },
+            { id: 'middle', name: 'Middle School', cost: 0 },
+            { id: 'high', name: 'High School', cost: 0 },
+            { id: 'college', name: 'Community College', cost: 20 },
+            { id: 'university', name: 'University', cost: 40 },
+            { id: 'graduate', name: 'Graduate School', cost: 60 },
+            { id: 'medical', name: 'Medical School', cost: 100 },
+            { id: 'law', name: 'Law School', cost: 80 }
+          ];
+          
+          const level = educationLevels.find(l => l.id === data.levelId);
+          if (level && updatedCharacter.wealth >= level.cost) {
+            updatedCharacter.currentEducation = {
+              level: data.levelId,
+              institution: `${level.name} Institute`,
+              currentYear: 1,
+              gpa: 3.0 + (updatedCharacter.smarts / 100),
+              classmates: []
+            };
+            updatedCharacter.wealth = Math.max(0, updatedCharacter.wealth - level.cost);
+            message = `Enrolled in ${level.name}!`;
+          }
+        }
+        break;
+        
+      case 'progress':
+        if (updatedCharacter.currentEducation) {
+          const year = updatedCharacter.currentEducation.currentYear + 1;
+          updatedCharacter.currentEducation.currentYear = year;
+          updatedCharacter.smarts = Math.min(100, updatedCharacter.smarts + 5);
+          message = `Completed year ${year - 1} of ${updatedCharacter.currentEducation.level}`;
+        }
+        break;
+    }
+
+    if (message) {
+      ageEvents.push(message);
+      const newAgeHistory = { ...ageHistory };
+      newAgeHistory[updatedCharacter.age] = ageEvents;
+      setAgeHistory(newAgeHistory);
+
+      toast({
+        title: "Education Update",
+        description: message,
+      });
+    }
+
+    onGameStateChange({
+      ...gameState,
+      character: updatedCharacter
+    });
   };
 
-  const handleEducationAction = (action: string, data?: any) => {
-    // Placeholder education action handler
-    console.log('Education action:', action, data);
+  const handleCareerAction = (action: string, data?: any) => {
+    let updatedCharacter = { ...gameState.character };
+    let message = '';
+    let ageEvents = ageHistory[updatedCharacter.age] || [];
+
+    switch (action) {
+      case 'apply':
+        if (data?.careerId) {
+          const careers = {
+            'retail': { name: 'Retail Worker', salary: 25 },
+            'food_service': { name: 'Food Service Worker', salary: 22 },
+            'mechanic': { name: 'Mechanic', salary: 45 },
+            'teacher': { name: 'Teacher', salary: 48 },
+            'nurse': { name: 'Nurse', salary: 65 },
+            'engineer': { name: 'Engineer', salary: 75 },
+            'doctor': { name: 'Doctor', salary: 185 },
+            'lawyer': { name: 'Lawyer', salary: 125 }
+          };
+          
+          const career = careers[data.careerId as keyof typeof careers];
+          if (career) {
+            updatedCharacter.job = career.name;
+            updatedCharacter.salary = career.salary;
+            updatedCharacter.jobLevel = 1;
+            message = `Got hired as a ${career.name}!`;
+          }
+        }
+        break;
+        
+      case 'promote':
+        if (updatedCharacter.job && updatedCharacter.jobLevel < 10) {
+          updatedCharacter.jobLevel += 1;
+          updatedCharacter.salary = Math.floor(updatedCharacter.salary * 1.15);
+          message = `Promoted to Level ${updatedCharacter.jobLevel}!`;
+        }
+        break;
+        
+      case 'quit':
+        updatedCharacter.job = undefined;
+        updatedCharacter.salary = 0;
+        updatedCharacter.jobLevel = 0;
+        message = 'You quit your job.';
+        break;
+    }
+
+    if (message) {
+      ageEvents.push(message);
+      const newAgeHistory = { ...ageHistory };
+      newAgeHistory[updatedCharacter.age] = ageEvents;
+      setAgeHistory(newAgeHistory);
+
+      toast({
+        title: "Career Update",
+        description: message,
+      });
+    }
+
+    onGameStateChange({
+      ...gameState,
+      character: updatedCharacter
+    });
   };
 
   if (gameState.gameOver) {
@@ -417,26 +536,13 @@ export const GameBoard: React.FC<GameBoardProps> = ({ gameState, onGameStateChan
       {/* Character Header */}
       <CharacterHeader character={gameState.character} />
       
-      {/* Navigation - Centered */}
-      <div className="flex justify-center py-2 bg-white border-b border-gray-200">
-        <BottomNavigation
-          activeTab={activeTab}
-          onTabChange={setActiveTab}
-          onAgeUp={ageUp}
-          character={gameState.character}
-          onShowActivityMenu={() => setShowActivitiesMenu(true)}
-          onShowRelationshipsMenu={() => setShowRelationshipsMenu(true)}
-          onShowAssetsMenu={() => setShowAssetsMenu(true)}
-        />
-      </div>
-
-      {/* Character Stats - Below Navigation */}
+      {/* Character Stats - Below Header */}
       <div className="bg-white border-b border-gray-200 px-4 py-3">
         <CharacterStats character={gameState.character} />
       </div>
 
       {/* Main Content */}
-      <div className="pb-20">
+      <div className="pb-24">
         {activeTab === 'life' && (
           <LifeTab 
             character={gameState.character}
@@ -459,7 +565,7 @@ export const GameBoard: React.FC<GameBoardProps> = ({ gameState, onGameStateChan
         {activeTab === 'careers' && (
           <CareersTab 
             character={gameState.character}
-            onJobApplication={handleJobApplication}
+            onCareerAction={handleCareerAction}
           />
         )}
         {activeTab === 'education' && (
@@ -473,7 +579,18 @@ export const GameBoard: React.FC<GameBoardProps> = ({ gameState, onGameStateChan
         )}
       </div>
 
-      {/* Modals and Menus */}
+      {/* Mobile Navigation */}
+      <MobileNavigation
+        activeTab={activeTab}
+        onTabChange={setActiveTab}
+        character={gameState.character}
+        onAgeUp={ageUp}
+        onShowActivityMenu={() => setShowActivitiesMenu(true)}
+        onShowRelationshipsMenu={() => setShowRelationshipsMenu(true)}
+        onShowAssetsMenu={() => setShowAssetsMenu(true)}
+      />
+
+      {/* Modals and Menus - keep existing code */}
       {showActivitiesMenu && (
         <ActivitiesMenu
           isOpen={showActivitiesMenu}
