@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Character, GameState } from '../types/game';
 import { CharacterStats } from './CharacterStats';
@@ -17,6 +16,7 @@ import { HealthTab } from './tabs/HealthTab';
 import { LifestyleTab } from './tabs/LifestyleTab';
 import { MoneyTab } from './tabs/MoneyTab';
 import { LifeTab } from './LifeTab';
+import { EventOverlay } from './EventOverlay';
 import { processAgeUp, processChoice } from './game/GameLogic';
 import { handleActivityAction } from './handlers/ActivityActionHandler';
 import { handleRelationshipAction } from './handlers/RelationshipActionHandler';
@@ -41,6 +41,7 @@ export const GameBoard: React.FC<GameBoardProps> = ({ gameState, onGameStateChan
   const [showActivityModal, setShowActivityModal] = useState(false);
   const [selectedActivity, setSelectedActivity] = useState<any>(null);
   const [ageHistory, setAgeHistory] = useState<Record<number, string[]>>({});
+  const [showEventOverlay, setShowEventOverlay] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -57,6 +58,11 @@ export const GameBoard: React.FC<GameBoardProps> = ({ gameState, onGameStateChan
       });
     }
   }, [gameState, onGameStateChange]);
+
+  // Show event overlay when there's a current event
+  useEffect(() => {
+    setShowEventOverlay(!!gameState.currentEvent);
+  }, [gameState.currentEvent]);
 
   const ageUp = () => {
     processAgeUp(gameState, ageHistory, setAgeHistory, onGameStateChange, toast);
@@ -88,6 +94,30 @@ export const GameBoard: React.FC<GameBoardProps> = ({ gameState, onGameStateChan
       }}
     />;
   }
+
+  const handleActivity = (activityType: string, activityId: string | object) => {
+    if (activityType === 'criminal_operation') {
+      handleCriminalOperation(activityId as any);
+    } else if (activityType === 'cybercrime') {
+      handleCybercrime(activityId as any);
+    } else if (activityType === 'murder') {
+      handleMurder((activityId as any).target);
+    } else if (activityType === 'activity') {
+      // Handle regular activities using the activity handler
+      const { handleActivityAction } = require('./handlers/ActivityActionHandler');
+      handleActivityAction(
+        gameState.character,
+        activityId as string,
+        ageHistory,
+        setAgeHistory,
+        onGameStateChange,
+        gameState,
+        toast
+      );
+    } else {
+      console.log('Unknown activity type:', activityType, activityId);
+    }
+  };
 
   return (
     <div className="h-screen bg-gray-50 flex flex-col overflow-hidden">
@@ -285,6 +315,23 @@ export const GameBoard: React.FC<GameBoardProps> = ({ gameState, onGameStateChan
             setShowActivityModal(false);
             setSelectedActivity(null);
           }}
+        />
+      )}
+
+      {/* Event Overlay */}
+      {showEventOverlay && gameState.currentEvent && (
+        <EventOverlay
+          event={gameState.currentEvent}
+          onChoice={handleChoice}
+          onClose={() => {
+            setShowEventOverlay(false);
+            onGameStateChange({
+              ...gameState,
+              currentEvent: null
+            });
+          }}
+          characterName={gameState.character.name}
+          characterAge={gameState.character.age}
         />
       )}
     </div>
