@@ -582,7 +582,7 @@ export const GameBoard: React.FC<GameBoardProps> = ({ gameState, onGameStateChan
       {/* Mobile Navigation */}
       <MobileNavigation
         activeTab={activeTab}
-        onTabChange={setActiveTab}
+        onTabChange={(tab: string) => setActiveTab(tab as typeof activeTab)}
         character={gameState.character}
         onAgeUp={ageUp}
         onShowActivityMenu={() => setShowActivitiesMenu(true)}
