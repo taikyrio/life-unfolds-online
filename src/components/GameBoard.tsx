@@ -135,9 +135,9 @@ export const GameBoard: React.FC<GameBoardProps> = ({ gameState, onGameStateChan
         </div>
       </div>
 
-      {/* Compact Tab Navigation */}
-      <div className="bg-white border-b border-gray-200 px-1 py-1 flex-shrink-0">
-        <div className="flex space-x-0.5 sm:space-x-1 overflow-x-auto scrollbar-hide">
+      {/* Responsive Tab Navigation */}
+      <div className="bg-white border-b border-gray-200 px-2 sm:px-4 py-2 flex-shrink-0">
+        <div className="flex justify-between items-center gap-1 sm:gap-2 max-w-full">
           {[
             { id: 'life', icon: '🏠' },
             { id: 'activities', icon: '🎯' },
@@ -151,13 +151,17 @@ export const GameBoard: React.FC<GameBoardProps> = ({ gameState, onGameStateChan
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id as typeof activeTab)}
-              className={`px-1.5 sm:px-2 py-1 rounded text-xs font-medium whitespace-nowrap flex-shrink-0 ${
+              className={`flex-1 min-w-0 px-2 sm:px-3 py-2 rounded-lg text-base sm:text-lg font-medium transition-all duration-200 ${
                 activeTab === tab.id
-                  ? 'bg-blue-100 text-blue-700'
-                  : 'text-gray-600 hover:bg-gray-100'
+                  ? 'bg-blue-100 text-blue-700 shadow-sm scale-105'
+                  : 'text-gray-600 hover:bg-gray-100 hover:scale-105'
               }`}
+              style={{ 
+                fontSize: 'clamp(0.9rem, 2.5vw, 1.2rem)',
+                padding: 'clamp(0.4rem, 1vw, 0.75rem)'
+              }}
             >
-              {tab.icon}
+              <span className="block">{tab.icon}</span>
             </button>
           ))}
         </div>
