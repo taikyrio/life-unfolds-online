@@ -1,7 +1,6 @@
-
-
 import { Character, LifeEvent, EventTracker } from '../types/game';
 import { getLifeStage } from '../utils/gameUtils';
+import { expandedLifeEvents } from './expandedEvents';
 
 export interface EventCondition {
   minAge?: number;
@@ -350,7 +349,10 @@ export const createDynamicEventSystem = () => {
       ],
       conditions: { minAge: 65, maxAge: 70, hasJob: true, probability: 0.8 },
       weight: 15
-    }
+    },
+
+    // Add all the expanded events
+    ...expandedLifeEvents
   ];
 
   const getAvailableEvents = (character: Character, eventTracker: EventTracker): DynamicEvent[] => {
