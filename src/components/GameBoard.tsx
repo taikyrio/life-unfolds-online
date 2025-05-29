@@ -192,7 +192,10 @@ export const GameBoard: React.FC<GameBoardProps> = ({ gameState, onGameStateChan
           )}
           {activeTab === 'relationships' && (
             <div className="h-full overflow-y-auto">
-              <RelationshipsTab character={gameState.character} />
+              <RelationshipsTab 
+                character={gameState.character} 
+                onRelationshipAction={(action, data) => handleRelationshipAction(gameState.character, action, data, ageHistory, setAgeHistory, onGameStateChange, gameState, toast)}
+              />
             </div>
           )}
           {activeTab === 'careers' && (
@@ -258,7 +261,7 @@ export const GameBoard: React.FC<GameBoardProps> = ({ gameState, onGameStateChan
           isOpen={showRelationshipsMenu}
           character={gameState.character}
           onClose={() => setShowRelationshipsMenu(false)}
-          onActivity={(action, data) => handleRelationshipAction(gameState.character, action, ageHistory, setAgeHistory, onGameStateChange, gameState, toast, data)}
+          onActivity={(action, data) => handleRelationshipAction(gameState.character, action, data, ageHistory, setAgeHistory, onGameStateChange, gameState, toast)}
         />
       )}
 
