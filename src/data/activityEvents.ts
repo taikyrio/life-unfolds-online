@@ -1,6 +1,33 @@
 
 export const getActivityEvent = (activityId: string, character: any) => {
   const events: Record<string, any> = {
+    nightclub: {
+      id: `nightclub_${Date.now()}`,
+      title: 'At the Nightclub',
+      description: 'The music is pumping and the crowd is wild! What do you do?',
+      emoji: '🎵',
+      choices: [
+        {
+          id: 'dance_floor',
+          text: 'Hit the dance floor',
+          effects: { happiness: 25, health: -5, relationships: 15, wealth: -30 },
+          emoji: '💃'
+        },
+        {
+          id: 'vip_section',
+          text: 'Splurge on VIP ($200)',
+          effects: { happiness: 35, relationships: 25, wealth: -200 },
+          emoji: '🥂'
+        },
+        {
+          id: 'leave_early',
+          text: 'Leave early (too crowded)',
+          effects: { happiness: -10, wealth: -20 },
+          emoji: '🚪'
+        }
+      ]
+    },
+
     casino: {
       id: `casino_${Date.now()}`,
       title: 'At the Casino',

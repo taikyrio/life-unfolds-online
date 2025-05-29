@@ -107,6 +107,14 @@ export interface Character {
   
   // Event flags for tracking special conditions
   flags?: string[];
+  
+  // Custom stats for DLC features
+  customStats?: {
+    notoriety?: number;
+    coding?: number;
+    fame?: number;
+    [key: string]: any;
+  };
 }
 
 export interface LifeEvent {

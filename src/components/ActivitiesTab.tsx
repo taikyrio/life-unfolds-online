@@ -13,7 +13,7 @@ interface ActivitiesTabProps {
 export const ActivitiesTab: React.FC<ActivitiesTabProps> = ({ character, onActivity }) => {
   const [expandedCategories, setExpandedCategories] = useState<string[]>([]);
   const lifeStage = getLifeStage(character.age);
-  
+
   // Ensure education is always an array and check for school status
   const characterEducation = Array.isArray(character.education) ? character.education : [];
   const isInSchool = character.age < 18 || 
@@ -39,9 +39,15 @@ export const ActivitiesTab: React.FC<ActivitiesTabProps> = ({ character, onActiv
           color: 'bg-blue-500',
           description: 'Develop your early skills',
           activities: [
-            { id: 'play_toys', name: 'Play with Toys', description: 'Have fun and develop creativity', available: true, popularity: 5 },
-            { id: 'watch_cartoons', name: 'Watch Cartoons', description: 'Entertainment time', available: true, popularity: 4 },
-            { id: 'nap', name: 'Take a Nap', description: 'Rest and grow', available: true, popularity: 3 },
+            { id: 'play_toys', name: 'Play with Toys', description: 'Have fun and develop creativity', available: character.age >= 1, popularity: 5 },
+            { id: 'watch_cartoons', name: 'Watch Cartoons', description: 'Entertainment time', available: character.age >= 1, popularity: 4 },
+            { id: 'nap', name: 'Take a Nap', description: 'Rest and grow', available: character.age >= 1, popularity: 3 },
+            { id: 'crawl_explore', name: 'Crawl Around', description: 'Explore your surroundings', available: character.age >= 1 && character.age <= 2, popularity: 4 },
+            { id: 'babble_talk', name: 'Try to Talk', description: 'Practice making sounds and words', available: character.age >= 1, popularity: 4 },
+            { id: 'peek_a_boo', name: 'Play Peek-a-Boo', description: 'Giggle and have fun with family', available: character.age >= 1, popularity: 5 },
+            { id: 'stack_blocks', name: 'Stack Blocks', description: 'Build towers and knock them down', available: character.age >= 2, popularity: 4 },
+            { id: 'finger_paint', name: 'Finger Paint', description: 'Get messy and create art', available: character.age >= 2, popularity: 4 },
+            { id: 'listen_stories', name: 'Listen to Stories', description: 'Enjoy bedtime stories', available: character.age >= 1, popularity: 4 },
           ]
         }
       ];
@@ -68,10 +74,12 @@ export const ActivitiesTab: React.FC<ActivitiesTabProps> = ({ character, onActiv
           color: 'bg-purple-500',
           description: 'Build friendships and social connections',
           activities: [
-            { id: 'hang_friends', name: 'Hang Out with Friends', description: 'Build relationships and have fun', available: character.age >= 10, popularity: 5 },
+            { id: 'hang_friends', name: 'Hang Out with Friends', description: 'Build relationships and have fun', available: character.age >= 6, popularity: 5 },
             { id: 'school_dance', name: 'Go to School Dance', description: 'Have fun and socialize', available: character.age >= 14, popularity: 4 },
-            { id: 'study_group', name: 'Join Study Group', description: 'Learn with peers', available: character.age >= 13, popularity: 3 },
-            { id: 'make_friends', name: 'Try to Make New Friends', description: 'Expand your social circle', available: character.age >= 8, popularity: 4 },
+            { id: 'study_group', name: 'Join Study Group', description: 'Learn with peers', available: character.age >= 10, popularity: 3 },
+            { id: 'make_friends', name: 'Try to Make New Friends', description: 'Expand your social circle', available: character.age >= 5, popularity: 4 },
+            { id: 'playground', name: 'Play at Playground', description: 'Have fun with other kids', available: character.age >= 3 && character.age <= 12, popularity: 5 },
+            { id: 'birthday_party', name: 'Attend Birthday Party', description: 'Celebrate with friends', available: character.age >= 4, popularity: 4 },
           ]
         }
       ];
@@ -247,7 +255,7 @@ export const ActivitiesTab: React.FC<ActivitiesTabProps> = ({ character, onActiv
                       {category.activities.map((activity) => (
                         <Button
                           key={activity.id}
-                          onClick={() => onActivity(category.title.toLowerCase(), activity.id)}
+                          onClick={() => onActivity(activity.id, activity)}
                           disabled={!activity.available}
                           variant="outline"
                           className={`w-full h-auto p-3 text-left justify-start hover:bg-primary/5 hover:border-primary disabled:opacity-50 ${

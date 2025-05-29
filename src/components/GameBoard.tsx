@@ -95,28 +95,59 @@ export const GameBoard: React.FC<GameBoardProps> = ({ gameState, onGameStateChan
     />;
   }
 
-  const handleActivity = (activityType: string, activityId: string | object) => {
-    if (activityType === 'criminal_operation') {
-      handleCriminalOperation(activityId as any);
-    } else if (activityType === 'cybercrime') {
-      handleCybercrime(activityId as any);
-    } else if (activityType === 'murder') {
-      handleMurder((activityId as any).target);
-    } else if (activityType === 'activity') {
-      // Handle regular activities using the activity handler
-      const { handleActivityAction } = require('./handlers/ActivityActionHandler');
-      handleActivityAction(
-        gameState.character,
-        activityId as string,
-        ageHistory,
-        setAgeHistory,
-        onGameStateChange,
-        gameState,
-        toast
-      );
-    } else {
-      console.log('Unknown activity type:', activityType, activityId);
+  const handleCriminalOperation = (operation: any) => {
+    // Handle criminal operations
+    console.log('Criminal operation:', operation);
+    toast({
+      title: "Criminal Operation",
+      description: "Criminal activities are not yet implemented",
+    });
+  };
+
+  const handleCybercrime = (crime: any) => {
+    // Handle cybercrime activities
+    console.log('Cybercrime:', crime);
+    toast({
+      title: "Cybercrime",
+      description: "Cybercrime activities are not yet implemented",
+    });
+  };
+
+  const handleMurder = (target: any) => {
+    // Handle murder activities
+    console.log('Murder target:', target);
+    toast({
+      title: "Murder",
+      description: "Murder activities are not yet implemented",
+    });
+  };
+
+  const handleActivity = (activityId: string, activityData?: any) => {
+    // Check if it's a special activity type
+    if (activityData && activityData.type) {
+      if (activityData.type === 'criminal_operation') {
+        handleCriminalOperation(activityData);
+        return;
+      } else if (activityData.type === 'cybercrime') {
+        handleCybercrime(activityData);
+        return;
+      } else if (activityData.type === 'murder') {
+        handleMurder(activityData);
+        return;
+      }
     }
+
+    // Handle regular activities
+    handleActivityAction(
+      gameState.character,
+      activityId,
+      activityData,
+      ageHistory,
+      setAgeHistory,
+      onGameStateChange,
+      gameState,
+      toast
+    );
   };
 
   return (
@@ -216,7 +247,7 @@ export const GameBoard: React.FC<GameBoardProps> = ({ gameState, onGameStateChan
             <div className="h-full overflow-y-auto">
               <ActivitiesTab 
                 character={gameState.character} 
-                onActivity={(action, data) => handleActivityAction(gameState.character, action, data, ageHistory, setAgeHistory, onGameStateChange, gameState, toast)}
+                onActivity={handleActivity}
               />
             </div>
           )}
@@ -224,7 +255,6 @@ export const GameBoard: React.FC<GameBoardProps> = ({ gameState, onGameStateChan
             <div className="h-full overflow-y-auto">
               <RelationshipsTab 
                 character={gameState.character} 
-                onRelationshipAction={(action, data) => handleRelationshipAction(gameState.character, action, data, ageHistory, setAgeHistory, onGameStateChange, gameState, toast)}
               />
             </div>
           )}
@@ -282,7 +312,7 @@ export const GameBoard: React.FC<GameBoardProps> = ({ gameState, onGameStateChan
           isOpen={showActivitiesMenu}
           character={gameState.character}
           onClose={() => setShowActivitiesMenu(false)}
-          onActivity={(action, data) => handleActivityAction(gameState.character, action, data, ageHistory, setAgeHistory, onGameStateChange, gameState, toast)}
+          onActivity={handleActivity}
         />
       )}
 
