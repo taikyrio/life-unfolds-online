@@ -1,3 +1,4 @@
+
 export interface Character {
   id: string;
   name: string;
@@ -11,7 +12,7 @@ export interface Character {
   job?: string;
   salary?: number;
   jobLevel?: number;
-  education: string[]; // Changed from EducationRecord to string[]
+  education: EducationRecord; // Changed back to EducationRecord
   currentEducation?: CurrentEducation;
   relationshipStatus: 'single' | 'dating' | 'engaged' | 'married' | 'divorced' | 'widowed';
   partnerName?: string;

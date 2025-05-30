@@ -1,3 +1,4 @@
+
 import { Character } from '../../types/game';
 import { educationStages, educationEvents, getAvailableSchools, calculateGPA, universityMajors } from '../../data/educationData';
 

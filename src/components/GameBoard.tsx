@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Character, GameState } from '../types/game';
 import { CharacterStats } from './CharacterStats';
@@ -164,18 +163,22 @@ export const GameBoard: React.FC<GameBoardProps> = ({ gameState, onGameStateChan
 
   // Initialize character education if not present
   useEffect(() => {
-    if (!gameState.character.currentEducation) {
-      const newEducation = {
-        level: 'None',
-        institution: '',
-        currentYear: 0,
-        gpa: 0,
-        classmates: [],
-      };
-
+    if (!gameState.character.education) {
       const updatedCharacter = {
         ...gameState.character,
-        currentEducation: newEducation
+        education: {
+          currentStage: null,
+          currentSchool: null,
+          currentYear: 0,
+          gpa: 0,
+          grades: [],
+          completedStages: [],
+          major: null,
+          testScores: [],
+          disciplinaryActions: 0,
+          achievements: [],
+          dropouts: 0
+        }
       };
 
       onGameStateChange({
