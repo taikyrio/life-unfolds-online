@@ -1,462 +1,455 @@
-
 import React, { useState } from 'react';
-import { Character, FamilyMember } from '../types/game';
+import { Character, FamilyMember, RelationshipAction } from '../types/game';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Heart, MessageCircle, Gift, Calendar, Users, Clock, X, Check, AlertTriangle, Zap } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Progress } from '@/components/ui/progress';
+import { Badge } from '@/components/ui/badge';
+import { 
+  Heart, MessageCircle, Gift, ArrowLeft, Phone, Coffee, 
+  Home, Smile, Frown, AlertTriangle, X, Check, DollarSign
+} from 'lucide-react';
+import { relationshipManager, executeRelationshipAction } from '../systems/relationshipSystem';
 
 interface RelationshipsTabProps {
   character: Character;
+  onCharacterUpdate: (character: Character) => void;
+  onEvent: (message: string) => void;
 }
 
-interface RelationshipAction {
-  id: string;
-  name: string;
-  icon: React.ReactNode;
-  color: string;
-  description: string;
-  dangerous?: boolean;
-  cost?: number;
-}
-
-export const RelationshipsTab: React.FC<RelationshipsTabProps> = ({ character }) => {
+export const RelationshipsTab: React.FC<RelationshipsTabProps> = ({ 
+  character, 
+  onCharacterUpdate, 
+  onEvent 
+}) => {
   const [selectedMember, setSelectedMember] = useState<FamilyMember | null>(null);
-  const [showActionModal, setShowActionModal] = useState(false);
   const [selectedAction, setSelectedAction] = useState<RelationshipAction | null>(null);
+  const [showActionConfirm, setShowActionConfirm] = useState(false);
 
   const getRelationshipEmoji = (relationship: string) => {
     const emojis = {
-      father: '👨‍👦',
-      mother: '👩‍👧',
-      sibling: '👫',
-      child: '👶',
-      spouse: '💑',
-      grandparent: '👴',
-      stepfather: '👨‍👦',
-      stepmother: '👩‍👧',
-      stepsibling: '👫',
-      stepchild: '👶',
-      lover: '💕',
-      ex: '💔',
-      grandchild: '👶',
-      friend: '👥',
-      coworker: '🤝',
-      classmate: '🎓'
+      father: '👨‍👦', mother: '👩‍👧', stepfather: '👨‍👦', stepmother: '👩‍👧',
+      sibling: '👫', stepsibling: '👫', halfsibling: '👫',
+      child: '👶', stepchild: '👶', adoptedchild: '👶',
+      grandparent: '👴', grandchild: '👶',
+      spouse: '💑', lover: '💕', ex: '💔', affair: '💋',
+      friend: '👥', bestfriend: '🤝', acquaintance: '👋',
+      enemy: '😠', rival: '⚔️',
+      coworker: '🏢', boss: '👔', employee: '👷',
+      classmate: '🎓', teacher: '👩‍🏫',
+      neighbor: '🏠', stranger: '❓'
     };
     return emojis[relationship as keyof typeof emojis] || '👤';
   };
 
-  const getRelationshipColor = (value: number) => {
-    if (value >= 90) return 'bg-green-500';
-    if (value >= 70) return 'bg-lime-500';
-    if (value >= 50) return 'bg-yellow-500';
-    if (value >= 30) return 'bg-orange-500';
+  const getRelationshipColor = (level: number) => {
+    if (level >= 80) return 'bg-green-500';
+    if (level >= 60) return 'bg-lime-500';
+    if (level >= 40) return 'bg-yellow-500';
+    if (level >= 20) return 'bg-orange-500';
     return 'bg-red-500';
   };
 
-  const getRelationshipLevel = (value: number) => {
-    if (value >= 90) return 'Excellent';
-    if (value >= 70) return 'Good';
-    if (value >= 50) return 'Okay';
-    if (value >= 30) return 'Poor';
-    return 'Terrible';
+  const getMoodEmoji = (mood: string) => {
+    const moods = {
+      happy: '😊', sad: '😢', angry: '😠', neutral: '😐', excited: '🤩', stressed: '😰'
+    };
+    return moods[mood as keyof typeof moods] || '😐';
   };
 
-  const getCompatibilityScore = (member: FamilyMember) => {
-    // Calculate compatibility based on age difference, relationship quality, and shared interests
-    const ageDiff = Math.abs(character.age - member.age);
-    const ageCompatibility = Math.max(0, 100 - ageDiff * 2);
-    const relationshipWeight = member.relationshipQuality;
-    return Math.round((ageCompatibility + relationshipWeight) / 2);
+  const getContextualActions = (member: FamilyMember): RelationshipAction[] => {
+    const baseActions = relationshipManager.getAvailableActions(member.relationship);
+    const characterAge = character.age;
+    const memberAge = member.age || 30;
+
+    // Filter actions based on context and life stage
+    return baseActions.filter(action => {
+      // Age restrictions
+      if (action.minAge && characterAge < action.minAge) return false;
+      if (action.maxAge && characterAge > action.maxAge) return false;
+
+      // Life stage contextual filtering
+      if (characterAge < 16) {
+        // Child - limited actions
+        return ['compliment', 'hug', 'spend_time', 'ask_for_money'].includes(action.id);
+      }
+
+      if (characterAge < 25) {
+        // Young adult - no proposing unless in love
+        if (action.id === 'propose' && member.relationshipStats?.relationshipLevel < 80) return false;
+      }
+
+      // Special contextual rules
+      if (member.relationship === 'child' && memberAge < 10) {
+        return ['hug', 'spend_time', 'compliment'].includes(action.id);
+      }
+
+      if (member.relationship === 'child' && memberAge >= 10) {
+        return ['compliment', 'hug', 'spend_time', 'argue', 'ignore'].includes(action.id);
+      }
+
+      return true;
+    }).slice(0, 8); // Limit to 8 actions for mobile
   };
 
-  const relationshipActions: RelationshipAction[] = [
-    {
-      id: 'compliment',
-      name: 'Compliment',
-      icon: <Heart size={16} className="text-pink-500" />,
-      color: 'bg-pink-50 text-pink-700 border-pink-200',
-      description: 'Say something nice to boost relationship'
-    },
-    {
-      id: 'deep_conversation',
-      name: 'Deep Talk',
-      icon: <MessageCircle size={16} className="text-blue-500" />,
-      color: 'bg-blue-50 text-blue-700 border-blue-200',
-      description: 'Have a meaningful conversation'
-    },
-    {
-      id: 'expensive_gift',
-      name: 'Expensive Gift',
-      icon: <Gift size={16} className="text-green-500" />,
-      color: 'bg-green-50 text-green-700 border-green-200',
-      description: 'Give a costly present to show you care',
-      cost: 100
-    },
-    {
-      id: 'quality_time',
-      name: 'Quality Time',
-      icon: <Clock size={16} className="text-purple-500" />,
-      color: 'bg-purple-50 text-purple-700 border-purple-200',
-      description: 'Spend meaningful time together'
-    },
-    {
-      id: 'family_gathering',
-      name: 'Family Event',
-      icon: <Users size={16} className="text-indigo-500" />,
-      color: 'bg-indigo-50 text-indigo-700 border-indigo-200',
-      description: 'Organize a family gathering',
-      cost: 75
-    },
-    {
-      id: 'surprise_visit',
-      name: 'Surprise Visit',
-      icon: <Zap size={16} className="text-yellow-500" />,
-      color: 'bg-yellow-50 text-yellow-700 border-yellow-200',
-      description: 'Drop by unexpectedly (risky!)',
-      dangerous: true
-    }
-  ];
-
-  const handleActionSelect = (action: RelationshipAction, member: FamilyMember) => {
-    if (action.cost && character.wealth < action.cost) {
-      return; // Can't afford it
-    }
-    setSelectedAction(action);
+  const handleCharacterTap = (member: FamilyMember) => {
     setSelectedMember(member);
-    setShowActionModal(true);
+  };
+
+  const handleActionSelect = (action: RelationshipAction) => {
+    if (action.cost && character.wealth < action.cost) {
+      onEvent(`You can't afford this action (costs $${action.cost})`);
+      return;
+    }
+
+    setSelectedAction(action);
+    setShowActionConfirm(true);
   };
 
   const handleActionConfirm = () => {
     if (selectedAction && selectedMember) {
-      console.log(`${selectedAction.id} action performed on ${selectedMember.name}`);
-      
-      let relationshipChange = 0;
-      
-      switch (selectedAction.id) {
-        case 'compliment':
-          relationshipChange = Math.random() > 0.8 ? 15 : 5;
-          break;
-        case 'deep_conversation':
-          relationshipChange = Math.random() > 0.7 ? 12 : 8;
-          break;
-        case 'expensive_gift':
-          relationshipChange = Math.random() > 0.6 ? 20 : 10;
-          break;
-        case 'quality_time':
-          relationshipChange = 15;
-          break;
-        case 'family_gathering':
-          relationshipChange = 18;
-          break;
-        case 'surprise_visit':
-          relationshipChange = Math.random() > 0.5 ? 25 : -10;
-          break;
+      const result = executeRelationshipAction(character, selectedMember.id, selectedAction.id);
+
+      // Apply effects to character
+      if (result.effects.wealth !== undefined) {
+        character.wealth = Math.max(0, character.wealth + result.effects.wealth);
       }
-      
-      selectedMember.relationshipQuality = Math.max(0, Math.min(100, selectedMember.relationshipQuality + relationshipChange));
+      if (result.effects.happiness !== undefined) {
+        character.happiness = Math.max(0, Math.min(100, character.happiness + result.effects.happiness));
+      }
+      if (result.effects.relationshipStatus) {
+        character.relationshipStatus = result.effects.relationshipStatus;
+      }
+
+      onCharacterUpdate(character);
+      onEvent(result.message);
     }
-    
-    setShowActionModal(false);
+
+    setShowActionConfirm(false);
     setSelectedAction(null);
-    setSelectedMember(null);
   };
 
   const canAffordAction = (action: RelationshipAction) => {
     return !action.cost || character.wealth >= action.cost;
   };
 
-  // Enhanced family categorization with extended family
-  const familyCategories = [
-    {
-      title: 'Parents & Guardians',
-      members: character.familyMembers?.filter(m => 
-        ['father', 'mother', 'stepfather', 'stepmother'].includes(m.relationship)
-      ) || []
-    },
-    {
-      title: 'Siblings',
-      members: character.familyMembers?.filter(m => 
-        ['sibling', 'stepsibling'].includes(m.relationship)
-      ) || []
-    },
-    {
-      title: 'Grandparents',
-      members: character.familyMembers?.filter(m => m.relationship === 'grandparent') || []
-    },
-    {
-      title: 'Children',
-      members: character.familyMembers?.filter(m => 
-        ['child', 'stepchild'].includes(m.relationship)
-      ) || []
-    },
-    {
-      title: 'Friends & Social Circle',
-      members: character.familyMembers?.filter(m => 
-        ['friend', 'classmate'].includes(m.relationship)
-      ) || []
-    },
-    {
-      title: 'Professional Network',
-      members: character.familyMembers?.filter(m => m.relationship === 'coworker') || []
-    },
-    {
-      title: 'Past Relationships',
-      members: character.familyMembers?.filter(m => m.relationship === 'ex') || []
-    }
-  ];
+  // Mobile-optimized character card
+  const renderCharacterCard = (member: FamilyMember) => {
+    // Ensure member exists and has required properties
+    if (!member) return null;
+
+    const stats = member.relationshipStats || {
+      relationshipLevel: 50,
+      trust: 50,
+      respect: 50,
+      love: 0,
+      fear: 0,
+      lastInteraction: '',
+      interactionHistory: []
+    };
+
+    // Ensure personality exists with default values
+    const personality = member.personality || {
+      kindness: 50,
+      loyalty: 50,
+      intelligence: 50,
+      humor: 50,
+      ambition: 50,
+      stability: 50,
+      generosity: 50
+    };
+
+    const relationshipLevel = stats.relationshipLevel;
+
+    return (
+      <Card 
+        key={member.id} 
+        className="mb-4 overflow-hidden shadow-md border-l-4 active:scale-95 transition-all duration-200 cursor-pointer"
+        style={{ borderLeftColor: getRelationshipColor(relationshipLevel).replace('bg-', '#') }}
+        onClick={() => handleCharacterTap(member)}
+      >
+        <CardContent className="p-4">
+          <div className="flex items-center space-x-4">
+            {/* Character Icon & Mood */}
+            <div className="flex flex-col items-center">
+              <div className="text-4xl mb-1">{getRelationshipEmoji(member.relationship)}</div>
+              <div className="text-lg">{getMoodEmoji(member.currentMood || 'neutral')}</div>
+            </div>
+
+            {/* Character Info */}
+            <div className="flex-1">
+              <div className="flex items-center gap-2 mb-1">
+                <h3 className="font-bold text-lg text-gray-800">{member.name}</h3>
+                {!member.alive && <Badge variant="secondary" className="text-xs">💀</Badge>}
+                {member.isEstranged && <Badge variant="destructive" className="text-xs">Estranged</Badge>}
+              </div>
+
+              <p className="text-sm text-gray-600 capitalize mb-2">
+                {member.relationship.replace(/([A-Z])/g, ' $1').trim()} • Age {member.age || 'Unknown'}
+              </p>
+
+              {/* Relationship Level Bar */}
+              <div className="mb-2">
+                <div className="flex justify-between items-center mb-1">
+                  <span className="text-xs font-medium text-gray-700">Relationship</span>
+                  <span className="text-xs text-gray-500">{relationshipLevel}%</span>
+                </div>
+                <Progress value={relationshipLevel} className="h-2" />
+              </div>
+
+              {/* Quick Status */}
+              <div className="flex items-center space-x-3 text-xs text-gray-500">
+                <span>💪 {member.health || 100}%</span>
+                <span>💖 {stats.trust}%</span>
+                {member.job && <span>💼 {member.job}</span>}
+              </div>
+            </div>
+
+            {/* Tap Indicator */}
+            <div className="text-gray-400">
+              <div className="text-xl">👆</div>
+              <div className="text-xs text-center">Tap</div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  };
+
+  // Mobile-optimized interaction menu
+  const renderInteractionMenu = () => {
+    if (!selectedMember) return null;
+
+    const availableActions = getContextualActions(selectedMember);
+    const stats = selectedMember.relationshipStats || {
+      relationshipLevel: 50,
+      trust: 50,
+      respect: 50,
+      love: 0,
+      fear: 0,
+      lastInteraction: '',
+      interactionHistory: []
+    };
+
+    return (
+      <div className="fixed inset-0 bg-white z-50 flex flex-col">
+        {/* Header */}
+        <div className="bg-gradient-to-r from-blue-500 to-purple-600 text-white p-4 shadow-lg">
+          <div className="flex items-center space-x-3">
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              onClick={() => setSelectedMember(null)}
+              className="text-white hover:bg-white/20 p-2"
+            >
+              <ArrowLeft size={20} />
+            </Button>
+            <div className="flex items-center space-x-3 flex-1">
+              <div className="text-3xl">{getRelationshipEmoji(selectedMember.relationship)}</div>
+              <div>
+                <h2 className="text-xl font-bold">{selectedMember.name}</h2>
+                <p className="text-sm opacity-90 capitalize">
+                  {selectedMember.relationship.replace(/([A-Z])/g, ' $1').trim()}
+                </p>
+              </div>
+            </div>
+            <div className="text-2xl">{getMoodEmoji(selectedMember.currentMood || 'neutral')}</div>
+          </div>
+        </div>
+
+        <ScrollArea className="flex-1">
+          <div className="p-4">
+            {/* Relationship Status */}
+            <Card className="mb-4">
+              <CardContent className="p-4">
+                <h3 className="font-semibold mb-3 text-gray-800">Relationship Status</h3>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <div className="text-xs text-gray-600 mb-1">Relationship</div>
+                    <div className="flex items-center space-x-2">
+                      <Progress value={stats.relationshipLevel} className="h-2 flex-1" />
+                      <span className="text-sm font-medium">{stats.relationshipLevel}%</span>
+                    </div>
+                  </div>
+                  <div>
+                    <div className="text-xs text-gray-600 mb-1">Trust</div>
+                    <div className="flex items-center space-x-2">
+                      <Progress value={stats.trust} className="h-2 flex-1" />
+                      <span className="text-sm font-medium">{stats.trust}%</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Last Interaction */}
+                {stats.interactionHistory && stats.interactionHistory.length > 0 && (
+                  <div className="mt-3 p-3 bg-gray-50 rounded-lg">
+                    <div className="text-xs text-gray-600 mb-1">Last Interaction</div>
+                    <div className="text-sm text-gray-800">
+                      {stats.interactionHistory[stats.interactionHistory.length - 1]?.description || 'No recent interactions'}
+                    </div>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Actions Grid */}
+            {selectedMember.alive && !selectedMember.isBlocked && (
+              <div className="space-y-3">
+                <h3 className="font-semibold text-gray-800">What would you like to do?</h3>
+                <div className="grid grid-cols-2 gap-3">
+                  {availableActions.map((action) => {
+                    const canUse = canAffordAction(action);
+                    return (
+                      <Button
+                        key={action.id}
+                        variant="outline"
+                        className={`h-20 flex flex-col items-center justify-center space-y-1 text-xs active:scale-95 transition-all ${
+                          !canUse ? 'opacity-50 cursor-not-allowed' : 'hover:shadow-md'
+                        }`}
+                        disabled={!canUse}
+                        onClick={() => handleActionSelect(action)}
+                      >
+                        <div className="text-xl">{action.emoji}</div>
+                        <div className="font-medium text-center">{action.name}</div>
+                        {action.cost && (
+                          <div className="text-xs text-gray-500">${action.cost}</div>
+                        )}
+                        {action.riskLevel === 'high' && (
+                          <AlertTriangle size={12} className="text-red-500" />
+                        )}
+                      </Button>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            {/* Deceased Notice */}
+            {!selectedMember.alive && (
+              <div className="text-center py-8">
+                <div className="text-6xl mb-4">🕊️</div>
+                <h3 className="text-xl font-semibold text-gray-700 mb-2">In Loving Memory</h3>
+                <p className="text-gray-600">{selectedMember.name} is no longer with us</p>
+              </div>
+            )}
+          </div>
+        </ScrollArea>
+      </div>
+    );
+  };
+
+  // Action confirmation modal
+  const renderActionConfirmation = () => {
+    if (!showActionConfirm || !selectedAction || !selectedMember) return null;
+
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div className="bg-white rounded-xl p-6 max-w-sm w-full shadow-xl">
+          <div className="text-center mb-4">
+            <div className="text-4xl mb-3">{selectedAction.emoji}</div>
+            <h3 className="text-lg font-semibold mb-1">{selectedAction.name}</h3>
+            <p className="text-sm text-gray-600 mb-2">with {selectedMember.name}</p>
+            <p className="text-xs text-gray-500">{selectedAction.description}</p>
+
+            {selectedAction.cost && (
+              <div className="mt-3 p-3 bg-blue-50 border border-blue-200 rounded-lg text-blue-700 text-sm">
+                💰 Cost: ${selectedAction.cost}
+              </div>
+            )}
+
+            {selectedAction.riskLevel === 'high' && (
+              <div className="mt-3 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
+                ⚠️ This action may have unpredictable results!
+              </div>
+            )}
+          </div>
+
+          <div className="flex space-x-3">
+            <Button
+              variant="outline"
+              onClick={() => setShowActionConfirm(false)}
+              className="flex-1 h-12"
+            >
+              <X size={16} className="mr-2" />
+              Cancel
+            </Button>
+            <Button
+              onClick={handleActionConfirm}
+              className={`flex-1 h-12 ${selectedAction.riskLevel === 'high' ? 'bg-red-500 hover:bg-red-600' : ''}`}
+            >
+              <Check size={16} className="mr-2" />
+              Confirm
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  // Main render
+  if (selectedMember) {
+    return (
+      <>
+        {renderInteractionMenu()}
+        {renderActionConfirmation()}
+      </>
+    );
+  }
 
   return (
-    <div className="bg-gray-50 min-h-screen">
-      <ScrollArea className="h-[calc(100vh-200px)]">
-        <div className="p-4 space-y-4">
-          <div className="text-center py-4">
-            <h2 className="text-2xl font-bold text-gray-800 mb-2">Relationships & Social Life</h2>
-            <p className="text-sm text-gray-600">
-              Build and maintain meaningful connections
-            </p>
-            <div className="text-xs text-gray-500 mt-2 bg-blue-50 p-2 rounded-lg">
-              💡 Strong relationships improve happiness and open new opportunities!
-            </div>
-          </div>
+    <div className="bg-gradient-to-br from-blue-50 to-purple-50 min-h-screen">
+      <div className="p-4">
+        {/* Header */}
+        <div className="text-center py-6">
+          <h2 className="text-2xl font-bold text-gray-800 mb-2">👥 Your Relationships</h2>
+          <p className="text-sm text-gray-600 mb-4">
+            Tap on any person to interact with them
+          </p>
 
-          {/* Current Partner Section */}
-          {character.relationshipStatus !== 'single' && (
-            <div className="space-y-2">
-              <h3 className="text-lg font-semibold text-gray-700 px-2 flex items-center gap-2">
-                💕 {character.relationshipStatus === 'married' ? 'Spouse' : 'Partner'}
-              </h3>
-              {character.familyMembers?.filter(m => 
-                (m.relationship === 'lover' || m.relationship === 'spouse') && m.alive
-              ).map((partner) => (
-                <Card key={partner.id} className="shadow-md border-2 border-pink-200">
-                  <CardContent className="p-4">
-                    <div className="flex items-center justify-between mb-3">
-                      <div className="flex items-center space-x-3">
-                        <span className="text-3xl">
-                          {character.relationshipStatus === 'married' ? '💑' : '💕'}
-                        </span>
-                        <div>
-                          <h4 className="font-semibold text-gray-800">{partner.name}</h4>
-                          <p className="text-sm text-gray-600 capitalize">
-                            {character.relationshipStatus} • Age {partner.age}
-                          </p>
-                          <div className="text-xs text-blue-600 mt-1">
-                            Compatibility: {getCompatibilityScore(partner)}%
-                          </div>
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <div className="text-xs text-gray-500 mb-1">
-                          Health: {partner.health}%
-                        </div>
-                        <div className={`text-sm font-medium px-2 py-1 rounded text-white ${getRelationshipColor(partner.relationshipQuality)}`}>
-                          {partner.relationshipQuality}%
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="mb-4">
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="text-sm font-medium text-gray-700">
-                          {getRelationshipLevel(partner.relationshipQuality)}
-                        </span>
-                        <span className="text-xs text-gray-500">
-                          Relationship Quality
-                        </span>
-                      </div>
-                      <div className="w-full bg-gray-200 rounded-full h-2">
-                        <div 
-                          className={`h-2 rounded-full ${getRelationshipColor(partner.relationshipQuality)} transition-all duration-500`}
-                          style={{ width: `${partner.relationshipQuality}%` }}
-                        />
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-2">
-                      {relationshipActions.slice(0, 4).map((action) => (
-                        <Button
-                          key={action.id}
-                          variant="outline"
-                          size="sm"
-                          disabled={!canAffordAction(action)}
-                          onClick={() => handleActionSelect(action, partner)}
-                          className={`${action.color} border text-xs py-2 h-auto hover:opacity-80 transition-opacity ${!canAffordAction(action) ? 'opacity-50' : ''}`}
-                        >
-                          <div className="flex items-center space-x-1">
-                            {action.icon}
-                            <span>{action.name}</span>
-                            {action.cost && <span className="text-xs">${action.cost}</span>}
-                          </div>
-                        </Button>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          )}
-
-          {/* Family Categories */}
-          {familyCategories.map((category) => (
-            category.members.length > 0 && (
-              <div key={category.title} className="space-y-3">
-                <h3 className="text-lg font-semibold text-gray-700 px-2 flex items-center gap-2">
-                  {category.title}
-                  <span className="text-sm bg-gray-200 text-gray-600 px-2 py-1 rounded-full">
-                    {category.members.length}
-                  </span>
-                </h3>
-                {category.members.map((member) => (
-                  <Card key={member.id} className="overflow-hidden shadow-sm">
-                    <CardContent className="p-4">
-                      <div className="flex items-center justify-between mb-3">
-                        <div className="flex items-center space-x-3">
-                          <span className="text-2xl">{getRelationshipEmoji(member.relationship)}</span>
-                          <div className="flex-1">
-                            <div className="flex items-center gap-2">
-                              <h4 className="font-semibold text-gray-800">{member.name}</h4>
-                              {!member.alive && <span className="text-xs bg-gray-200 text-gray-600 px-2 py-1 rounded">Deceased</span>}
-                            </div>
-                            <p className="text-sm text-gray-600 capitalize">
-                              {member.relationship} • Age {member.age}
-                            </p>
-                            {member.job && (
-                              <p className="text-xs text-gray-500">
-                                {member.job}
-                                {member.salary ? ` • $${member.salary}k/year` : ''}
-                              </p>
-                            )}
-                            {member.alive && (
-                              <div className="text-xs text-blue-600 mt-1">
-                                Compatibility: {getCompatibilityScore(member)}%
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                        <div className="text-right">
-                          <div className="text-xs text-gray-500 mb-1">
-                            Health: {member.health}%
-                          </div>
-                          <div className={`text-sm font-medium px-2 py-1 rounded text-white ${getRelationshipColor(member.relationshipQuality)}`}>
-                            {member.relationshipQuality}%
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="mb-4">
-                        <div className="flex items-center justify-between mb-2">
-                          <span className="text-sm font-medium text-gray-700">
-                            {getRelationshipLevel(member.relationshipQuality)}
-                          </span>
-                          <span className="text-xs text-gray-500">
-                            Relationship Quality
-                          </span>
-                        </div>
-                        <div className="w-full bg-gray-200 rounded-full h-2">
-                          <div 
-                            className={`h-2 rounded-full ${getRelationshipColor(member.relationshipQuality)} transition-all duration-500`}
-                            style={{ width: `${member.relationshipQuality}%` }}
-                          />
-                        </div>
-                      </div>
-
-                      {member.alive && (
-                        <div className="grid grid-cols-2 gap-2">
-                          {relationshipActions.slice(0, 4).map((action) => (
-                            <Button
-                              key={action.id}
-                              variant="outline"
-                              size="sm"
-                              disabled={!canAffordAction(action)}
-                              onClick={() => handleActionSelect(action, member)}
-                              className={`${action.color} border text-xs py-2 h-auto hover:opacity-80 transition-opacity ${!canAffordAction(action) ? 'opacity-50' : ''}`}
-                            >
-                              <div className="flex items-center space-x-1">
-                                {action.icon}
-                                <span>{action.name}</span>
-                                {action.cost && <span className="text-xs">${action.cost}</span>}
-                                {action.dangerous && <AlertTriangle size={12} className="text-red-500" />}
-                              </div>
-                            </Button>
-                          ))}
-                        </div>
-                      )}
-
-                      {!member.alive && (
-                        <div className="text-center py-2 text-gray-500 text-sm">
-                          💐 May they rest in peace
-                        </div>
-                      )}
-                    </CardContent>
-                  </Card>
-                ))}
+          {/* Quick Stats */}
+          <div className="bg-white rounded-xl p-4 shadow-sm mb-4">
+            <div className="grid grid-cols-3 gap-4 text-center">
+              <div>
+                <div className="text-2xl font-bold text-blue-600">{character.familyMembers.length}</div>
+                <div className="text-xs text-gray-600">Total</div>
               </div>
-            )
-          ))}
-
-          {/* Empty State */}
-          {(!character.familyMembers || character.familyMembers.length === 0) && (
-            <div className="text-center py-12">
-              <div className="text-6xl mb-4">👨‍👩‍👧‍👦</div>
-              <h3 className="text-lg font-semibold text-gray-700 mb-2">No Relationships Yet</h3>
-              <p className="text-gray-600 max-w-sm mx-auto">
-                Your relationships will appear here as you meet people and build connections throughout your life.
-              </p>
-            </div>
-          )}
-        </div>
-      </ScrollArea>
-
-      {/* Action Confirmation Modal */}
-      {showActionModal && selectedAction && selectedMember && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg p-6 max-w-sm w-full">
-            <div className="text-center mb-4">
-              <div className="mb-2">{selectedAction.icon}</div>
-              <h3 className="text-lg font-semibold">{selectedAction.name}</h3>
-              <p className="text-sm text-gray-600 mb-2">
-                with {selectedMember.name}
-              </p>
-              <p className="text-xs text-gray-500">
-                {selectedAction.description}
-              </p>
-              
-              {selectedAction.cost && (
-                <div className="mt-2 p-2 bg-blue-50 border border-blue-200 rounded text-blue-700 text-xs">
-                  💰 Cost: ${selectedAction.cost}
+              <div>
+                <div className="text-2xl font-bold text-green-600">
+                  {character.familyMembers.filter(m => m.alive).length}
                 </div>
-              )}
-              
-              {selectedAction.dangerous && (
-                <div className="mt-3 p-2 bg-red-50 border border-red-200 rounded text-red-700 text-xs">
-                  ⚠️ This action may have unpredictable results!
+                <div className="text-xs text-gray-600">Living</div>
+              </div>
+              <div>
+                <div className="text-2xl font-bold text-pink-600">
+                  {character.familyMembers.filter(m => 
+                    ['spouse', 'lover'].includes(m.relationship)
+                  ).length}
                 </div>
-              )}
-            </div>
-            
-            <div className="flex space-x-3">
-              <Button
-                variant="outline"
-                onClick={() => setShowActionModal(false)}
-                className="flex-1"
-              >
-                <X size={16} className="mr-1" />
-                Cancel
-              </Button>
-              <Button
-                onClick={handleActionConfirm}
-                disabled={!canAffordAction(selectedAction)}
-                className={`flex-1 ${selectedAction.dangerous ? 'bg-red-500 hover:bg-red-600' : ''}`}
-              >
-                <Check size={16} className="mr-1" />
-                Confirm
-              </Button>
+                <div className="text-xs text-gray-600">Romantic</div>
+              </div>
             </div>
           </div>
         </div>
-      )}
+
+        {/* Character List */}
+        <ScrollArea className="h-[calc(100vh-280px)]">
+          <div className="space-y-3">
+            {character.familyMembers.length > 0 ? (
+              character.familyMembers.map(renderCharacterCard)
+            ) : (
+              <div className="text-center py-12">
+                <div className="text-6xl mb-4">👨‍👩‍👧‍👦</div>
+                <h3 className="text-lg font-semibold text-gray-700 mb-2">No Relationships Yet</h3>
+                <p className="text-gray-600 max-w-sm mx-auto text-sm">
+                  Your relationships will appear here as you meet people and build connections throughout your life.
+                </p>
+              </div>
+            )}
+          </div>
+        </ScrollArea>
+      </div>
+
+      {renderActionConfirmation()}
     </div>
   );
 };
