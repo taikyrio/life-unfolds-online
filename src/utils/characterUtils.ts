@@ -2,6 +2,23 @@
 import { Character, EducationRecord, Asset } from '../types/game';
 import { getZodiacSign } from './zodiacUtils';
 
+export const generateRandomName = (): string => {
+  const firstNames = [
+    'Alex', 'Jordan', 'Taylor', 'Morgan', 'Casey', 'Riley', 'Avery', 'Cameron',
+    'Quinn', 'Blake', 'Sage', 'River', 'Rowan', 'Phoenix', 'Emery', 'Skylar'
+  ];
+  
+  const lastNames = [
+    'Smith', 'Johnson', 'Williams', 'Brown', 'Jones', 'Garcia', 'Miller', 'Davis',
+    'Rodriguez', 'Martinez', 'Hernandez', 'Lopez', 'Gonzalez', 'Wilson', 'Anderson', 'Thomas'
+  ];
+  
+  const firstName = firstNames[Math.floor(Math.random() * firstNames.length)];
+  const lastName = lastNames[Math.floor(Math.random() * lastNames.length)];
+  
+  return `${firstName} ${lastName}`;
+};
+
 export const createCharacter = (
   name: string,
   birthMonth: number,
@@ -44,7 +61,6 @@ export const createCharacter = (
     lifeEvents: [],
     achievements: [],
     relationshipStatus: 'single' as const,
-    nationality: 'American',
     fame: 0,
     customStats: {}
   };

@@ -63,4 +63,4 @@ export const getZodiacSign = (month: number, day: number): ZodiacSign => {
   return zodiacSigns[0];
 };
 
-export { ZodiacSign };
+export type { ZodiacSign };
