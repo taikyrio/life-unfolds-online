@@ -1,14 +1,20 @@
+
 import { Character } from '../../types/game';
+
+const getActivityEvent = (action: string, character: Character) => {
+  // Simple activity event check - can be expanded later
+  return null;
+};
 
 export const handleActivityAction = (
   character: Character,
   action: string,
+  data: any,
   ageHistory: Record<number, string[]>,
   setAgeHistory: (history: Record<number, string[]>) => void,
   onGameStateChange: (newState: any) => void,
   gameState: any,
-  toast: any,
-  data?: any
+  toast: any
 ) => {
   let updatedCharacter = { ...character };
   let message = '';
@@ -127,7 +133,7 @@ export const handleActivityAction = (
 
     case 'socialize':
     case 'hang_friends':
-      updatedCharacter.relationships = Math.min(100, updatedCharacter.relationships + 12);
+      updatedCharacter.relationships = Math.min(100, (updatedCharacter.relationships || 0) + 12);
       updatedCharacter.happiness = Math.min(100, updatedCharacter.happiness + 10);
       if (character.age <= 10) {
         message = 'You made a new friend at the playground and played games together until it was time to go home!';
@@ -152,7 +158,7 @@ export const handleActivityAction = (
     case 'party':
       updatedCharacter.happiness = Math.min(100, updatedCharacter.happiness + 8);
       updatedCharacter.health = Math.max(0, updatedCharacter.health - 3);
-      updatedCharacter.relationships = Math.min(100, updatedCharacter.relationships + 5);
+      updatedCharacter.relationships = Math.min(100, (updatedCharacter.relationships || 0) + 5);
       updatedCharacter.wealth = Math.max(0, updatedCharacter.wealth - 40);
       if (character.age <= 17) {
         message = 'You danced, laughed, and celebrated with friends at an amazing party that you\'ll remember forever!';
@@ -164,7 +170,7 @@ export const handleActivityAction = (
     case 'volunteer':
       updatedCharacter.happiness = Math.min(100, updatedCharacter.happiness + 8);
       updatedCharacter.smarts = Math.min(100, updatedCharacter.smarts + 3);
-      updatedCharacter.relationships = Math.min(100, updatedCharacter.relationships + 10);
+      updatedCharacter.relationships = Math.min(100, (updatedCharacter.relationships || 0) + 10);
       if (character.age <= 15) {
         message = 'You helped clean up the local park and felt proud knowing you made your community a better place!';
       } else {

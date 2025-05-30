@@ -163,46 +163,26 @@ export const GameBoard: React.FC<GameBoardProps> = ({ gameState, onGameStateChan
 
   // Initialize character education if not present
   useEffect(() => {
-    if (!gameState.character.education) {
+    if (!gameState.character.currentEducation) {
       const newEducation = {
-        currentStage: null,
-        currentSchool: null,
+        level: 'None',
+        institution: '',
         currentYear: 0,
         gpa: 0,
-        major: null,
-        completedStages: [],
-        testScores: [],
-        achievements: [],
-        disciplinaryActions: 0,
-        dropouts: 0
+        classmates: [],
       };
 
       const updatedCharacter = {
         ...gameState.character,
-        education: newEducation
+        currentEducation: newEducation
       };
 
       onGameStateChange({
         ...gameState,
         character: updatedCharacter
       });
-
-      // Auto-enroll in appropriate education level based on age
-      if (gameState.character.age >= 6 && gameState.character.age <= 11) {
-        setTimeout(() => {
-          handleEducationAction(gameState.character, 'enroll', { stageId: 'elementary', schoolId: 'public_elementary' }, ageHistory, setAgeHistory, onGameStateChange, gameState, toast);
-        }, 100);
-      } else if (gameState.character.age >= 12 && gameState.character.age <= 14) {
-        setTimeout(() => {
-          handleEducationAction(gameState.character, 'enroll', { stageId: 'middle', schoolId: 'public_middle' }, ageHistory, setAgeHistory, onGameStateChange, gameState, toast);
-        }, 100);
-      } else if (gameState.character.age >= 15 && gameState.character.age <= 17) {
-        setTimeout(() => {
-          handleEducationAction(gameState.character, 'enroll', { stageId: 'high', schoolId: 'public_high' }, ageHistory, setAgeHistory, onGameStateChange, gameState, toast);
-        }, 100);
-      }
     }
-  }, [gameState.character, onGameStateChange, handleEducationAction, ageHistory, setAgeHistory, gameState, toast]);
+  }, [gameState.character, onGameStateChange]);
 
   // Auto-enroll in mandatory education
   useEffect(() => {
@@ -259,7 +239,7 @@ export const GameBoard: React.FC<GameBoardProps> = ({ gameState, onGameStateChan
           </div>
           <div className="flex items-center gap-0.5 text-purple-600 min-w-0 flex-shrink">
             <span className="text-xs sm:text-sm">🤝</span>
-            <span className="text-xs sm:text-sm font-medium truncate">{Math.round(gameState.character.relationships)}</span>
+            <span className="text-xs sm:text-sm font-medium truncate">{Math.round(gameState.character.relationships || 0)}</span>
           </div>
           <div className="flex items-center gap-0.5 text-blue-600 min-w-0 flex-shrink">
             <span className="text-xs sm:text-sm">🧠</span>
@@ -331,6 +311,18 @@ export const GameBoard: React.FC<GameBoardProps> = ({ gameState, onGameStateChan
             <div className="h-full overflow-y-auto">
               <RelationshipsTab 
                 character={gameState.character} 
+                onCharacterUpdate={(updatedCharacter) => {
+                  onGameStateChange({
+                    ...gameState,
+                    character: updatedCharacter
+                  });
+                }}
+                onEvent={(message) => {
+                  toast({
+                    title: "Relationship Update",
+                    description: message,
+                  });
+                }}
               />
             </div>
           )}

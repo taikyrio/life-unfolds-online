@@ -7,9 +7,12 @@ export interface Character {
   smarts: number;
   looks: number;
   wealth: number;
+  relationships: number;
   job?: string;
   salary?: number;
+  jobLevel?: number;
   education?: string;
+  currentEducation?: CurrentEducation;
   relationshipStatus: 'single' | 'dating' | 'engaged' | 'married' | 'divorced' | 'widowed';
   partnerName?: string;
   familyMembers: FamilyMember[];
@@ -18,6 +21,13 @@ export interface Character {
   assets: Asset[];
   criminalRecord?: CriminalRecord;
   reputation?: number;
+  isPregnant?: boolean;
+  pregnancyMonths?: number;
+  flags?: string[];
+  birthplace?: string;
+  birthMonth?: number;
+  birthDay?: number;
+  zodiacSign?: ZodiacSign;
 }
 
 export interface RelationshipStats {
@@ -49,6 +59,7 @@ export interface FamilyMember {
   job?: string;
   salary?: number;
   relationshipStats: RelationshipStats;
+  relationshipQuality: number;
   personality: PersonalityTraits;
   backstory?: string;
   currentMood: 'happy' | 'sad' | 'angry' | 'neutral' | 'excited' | 'stressed';

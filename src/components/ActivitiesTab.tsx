@@ -255,7 +255,7 @@ export const ActivitiesTab: React.FC<ActivitiesTabProps> = ({ character, onActiv
                       {category.activities.map((activity) => (
                         <Button
                           key={activity.id}
-                          onClick={() => onActivity(activity.id, activity)}
+                          onClick={() => onActivity(activity.id, activity.id)}
                           disabled={!activity.available}
                           variant="outline"
                           className={`w-full h-auto p-3 text-left justify-start hover:bg-primary/5 hover:border-primary disabled:opacity-50 ${

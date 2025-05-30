@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -21,7 +20,7 @@ export const GameOverScreen: React.FC<GameOverScreenProps> = ({
   onRestart 
 }) => {
   const getLifeSummary = () => {
-    const averageStats = (character.health + character.happiness + character.relationships) / 3;
+    const averageStats = (character.health + character.happiness + (character.relationships || 0)) / 3;
     
     if (averageStats >= 80) return "You lived an extraordinary life! 🌟";
     if (averageStats >= 60) return "You lived a good life! 😊";
@@ -78,9 +77,9 @@ export const GameOverScreen: React.FC<GameOverScreenProps> = ({
               
               <div className="bg-gray-50 p-3 rounded-lg">
                 <div className="font-medium text-game-text">
-                  {getStatEmoji('relationships', character.relationships)} Love
+                  {getStatEmoji('relationships', character.relationships || 0)} Love
                 </div>
-                <div className="text-xl font-bold">{character.relationships}</div>
+                <div className="text-xl font-bold">{character.relationships || 0}</div>
               </div>
             </div>
             
