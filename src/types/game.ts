@@ -1,3 +1,4 @@
+
 export interface Character {
   id: string;
   name: string;
@@ -11,7 +12,7 @@ export interface Character {
   job?: string;
   salary?: number;
   jobLevel?: number;
-  education?: string;
+  education?: EducationRecord;
   currentEducation?: CurrentEducation;
   relationshipStatus: 'single' | 'dating' | 'engaged' | 'married' | 'divorced' | 'widowed';
   partnerName?: string;
@@ -28,6 +29,20 @@ export interface Character {
   birthMonth?: number;
   birthDay?: number;
   zodiacSign?: ZodiacSign;
+}
+
+export interface EducationRecord {
+  currentStage: string | null;
+  currentSchool: string | null;
+  currentYear: number;
+  gpa: number;
+  grades: any[];
+  completedStages: string[];
+  major: string | null;
+  testScores: number[];
+  disciplinaryActions: number;
+  achievements: string[];
+  dropouts: number;
 }
 
 export interface RelationshipStats {

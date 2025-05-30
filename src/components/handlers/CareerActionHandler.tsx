@@ -4,12 +4,12 @@ import { Character } from '../../types/game';
 export const handleCareerAction = (
   character: Character,
   action: string,
+  data: any,
   ageHistory: Record<number, string[]>,
   setAgeHistory: (history: Record<number, string[]>) => void,
   onGameStateChange: (newState: any) => void,
   gameState: any,
-  toast: any,
-  data?: any
+  toast: any
 ) => {
   let updatedCharacter = { ...character };
   let message = '';
@@ -33,7 +33,13 @@ export const handleCareerAction = (
           
           message = `${operation.name} successful! You earned $${reward}k and gained ${operation.notorietyGain} notoriety.`;
         } else {
-          updatedCharacter.criminalRecord = true;
+          updatedCharacter.criminalRecord = {
+            arrests: 1,
+            convictions: 0,
+            prisonTime: 0,
+            crimes: [operation.name],
+            notoriety: 10
+          };
           updatedCharacter.health = Math.max(0, updatedCharacter.health - 20);
           updatedCharacter.happiness = Math.max(0, updatedCharacter.happiness - 30);
           message = `${operation.name} failed! You were arrested and now have a criminal record.`;
@@ -63,7 +69,13 @@ export const handleCareerAction = (
           updatedCharacter.flags = updatedCharacter.flags?.filter(f => !f.startsWith('notoriety:')) || [];
           updatedCharacter.flags.push(`notoriety:${newNotoriety}`);
         } else {
-          updatedCharacter.criminalRecord = true;
+          updatedCharacter.criminalRecord = {
+            arrests: 1,
+            convictions: 0,
+            prisonTime: 0,
+            crimes: ['Murder attempt'],
+            notoriety: 20
+          };
           message = 'Murder attempt failed! You were caught and arrested.';
         }
       }
@@ -97,7 +109,13 @@ export const handleCareerAction = (
           
           message = `${data.name} successful! You earned $${reward}k through cybercrime.`;
         } else {
-          updatedCharacter.criminalRecord = true;
+          updatedCharacter.criminalRecord = {
+            arrests: 1,
+            convictions: 0,
+            prisonTime: 0,
+            crimes: [data.name],
+            notoriety: 15
+          };
           message = `${data.name} failed! Your digital footprint was traced back to you.`;
         }
       }
@@ -136,9 +154,9 @@ export const handleCareerAction = (
       break;
       
     case 'promote':
-      if (updatedCharacter.job && updatedCharacter.jobLevel < 10) {
+      if (updatedCharacter.job && updatedCharacter.jobLevel && updatedCharacter.jobLevel < 10) {
         updatedCharacter.jobLevel += 1;
-        updatedCharacter.salary = Math.floor(updatedCharacter.salary * 1.15);
+        updatedCharacter.salary = Math.floor((updatedCharacter.salary || 0) * 1.15);
         message = `Promoted to Level ${updatedCharacter.jobLevel}!`;
       }
       break;

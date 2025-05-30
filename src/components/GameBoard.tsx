@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Character, GameState } from '../types/game';
 import { CharacterStats } from './CharacterStats';
@@ -22,7 +23,7 @@ import { handleActivityAction } from './handlers/ActivityActionHandler';
 import { handleCareerAction } from './handlers/CareerActionHandler';
 import { handleRelationshipAction } from './handlers/RelationshipActionHandler';
 import { handleEducationAction, autoEnrollEducation } from './handlers/EducationActionHandler';
-import { handleHealthAction, handleLifestyleAction, handleMoneyAction } from './handlers/GameStateActionHandlers';
+import { handleAgeUp, handleDeath, handleEmigrate, handleSurrender, handleHealthAction, handleLifestyleAction, handleMoneyAction } from './handlers/GameStateActionHandlers';
 
 interface GameBoardProps {
   gameState: GameState;
@@ -190,21 +191,21 @@ export const GameBoard: React.FC<GameBoardProps> = ({ gameState, onGameStateChan
 
     const autoEnrollAge = (age: number) => {
       // Auto-enroll in elementary at age 6
-      if (age >= 6 && age <= 11 && !gameState.character.education.currentStage && !gameState.character.education.completedStages?.includes('elementary')) {
+      if (age >= 6 && age <= 11 && !gameState.character.education?.currentStage && !gameState.character.education?.completedStages?.includes('elementary')) {
         handleEducationAction(gameState.character, 'enroll', { stageId: 'elementary', schoolId: 'public_elementary' }, ageHistory, setAgeHistory, onGameStateChange, gameState, toast);
       }
       // Auto-enroll in middle school at age 12
-      else if (age >= 12 && age <= 14 && gameState.character.education.completedStages?.includes('elementary') && !gameState.character.education.currentStage && !gameState.character.education.completedStages?.includes('middle')) {
+      else if (age >= 12 && age <= 14 && gameState.character.education?.completedStages?.includes('elementary') && !gameState.character.education?.currentStage && !gameState.character.education?.completedStages?.includes('middle')) {
         handleEducationAction(gameState.character, 'enroll', { stageId: 'middle', schoolId: 'public_middle' }, ageHistory, setAgeHistory, onGameStateChange, gameState, toast);
       }
       // Auto-enroll in high school at age 15
-      else if (age >= 15 && age <= 17 && gameState.character.education.completedStages?.includes('middle') && !gameState.character.education.currentStage && !gameState.character.education.completedStages?.includes('high')) {
+      else if (age >= 15 && age <= 17 && gameState.character.education?.completedStages?.includes('middle') && !gameState.character.education?.currentStage && !gameState.character.education?.completedStages?.includes('high')) {
         handleEducationAction(gameState.character, 'enroll', { stageId: 'high', schoolId: 'public_high' }, ageHistory, setAgeHistory, onGameStateChange, gameState, toast);
       }
     };
 
     autoEnrollAge(gameState.character.age);
-  }, [gameState.character.age, gameState.character.education.currentStage, gameState.character.education.completedStages, handleEducationAction, gameState.character, ageHistory, setAgeHistory, onGameStateChange, gameState, toast]);
+  }, [gameState.character.age, gameState.character.education?.currentStage, gameState.character.education?.completedStages]);
 
   return (
     <div className="h-screen bg-gray-50 flex flex-col overflow-hidden">
@@ -389,7 +390,7 @@ export const GameBoard: React.FC<GameBoardProps> = ({ gameState, onGameStateChan
           isOpen={showRelationshipsMenu}
           character={gameState.character}
           onClose={() => setShowRelationshipsMenu(false)}
-          onActivity={(action, data) => handleRelationshipAction(gameState.character, action, data, ageHistory, setAgeHistory, onGameStateChange, gameState, toast)}
+          onActivity={(action, data) => handleRelationshipAction(gameState.character, action, ageHistory, setAgeHistory, onGameStateChange, gameState, toast, data)}
         />
       )}
 
