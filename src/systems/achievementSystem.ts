@@ -1,198 +1,203 @@
-
-import { Character } from '../types/game';
+import { Character, Achievement } from '../types/game';
 
 export interface Achievement {
   id: string;
   name: string;
   description: string;
   emoji: string;
-  category: 'life' | 'career' | 'relationship' | 'wealth' | 'health' | 'education' | 'family';
-  rarity: 'common' | 'uncommon' | 'rare' | 'legendary';
+  category: 'life' | 'career' | 'education' | 'wealth' | 'relationships' | 'health' | 'special';
   condition: (character: Character, eventHistory: string[]) => boolean;
 }
 
-export const achievements: Achievement[] = [
-  // Life Achievements
+const achievements: Achievement[] = [
+  // Life milestones
   {
-    id: 'first_word',
-    name: 'First Words',
-    description: 'Spoke your first word',
-    emoji: '👶',
+    id: 'first_birthday',
+    name: 'First Birthday',
+    description: 'Celebrated your first birthday',
+    emoji: '🎂',
     category: 'life',
-    rarity: 'common',
-    condition: (character, history) => history.some(event => event.includes('first word'))
+    condition: (character) => character.age >= 1
+  },
+  {
+    id: 'teenager',
+    name: 'Teenage Years',
+    description: 'Became a teenager',
+    emoji: '👦',
+    category: 'life',
+    condition: (character) => character.age >= 13
+  },
+  {
+    id: 'adult',
+    name: 'All Grown Up',
+    description: 'Reached adulthood',
+    emoji: '👨',
+    category: 'life',
+    condition: (character) => character.age >= 18
   },
   {
     id: 'centenarian',
-    name: 'Centenarian',
-    description: 'Lived to be 100 years old',
-    emoji: '🎂',
+    name: 'Century Club',
+    description: 'Lived to 100 years old',
+    emoji: '💯',
     category: 'life',
-    rarity: 'legendary',
     condition: (character) => character.age >= 100
   },
+
+  // Education achievements
   {
-    id: 'perfect_stats',
-    name: 'Perfect Being',
-    description: 'Achieved 100 in all stats',
-    emoji: '⭐',
-    category: 'life',
-    rarity: 'legendary',
-    condition: (character) => 
-      character.health >= 100 && 
-      character.happiness >= 100 && 
-      character.smarts >= 100 && 
-      character.looks >= 100 && 
-      character.relationships >= 100
+    id: 'high_school_graduate',
+    name: 'High School Graduate',
+    description: 'Completed high school education',
+    emoji: '🎓',
+    category: 'education',
+    condition: (character) => character.education.completedStages.includes('high school')
+  },
+  {
+    id: 'college_graduate',
+    name: 'College Graduate',
+    description: 'Earned a college degree',
+    emoji: '🎓',
+    category: 'education',
+    condition: (character) => character.education.completedStages.includes('college') || character.education.completedStages.includes('university')
+  },
+  {
+    id: 'masters_degree',
+    name: 'Master\'s Degree',
+    description: 'Earned a master\'s degree',
+    emoji: '📚',
+    category: 'education',
+    condition: (character) => character.education.completedStages.includes('graduate')
+  },
+  {
+    id: 'doctorate',
+    name: 'Doctorate',
+    description: 'Earned a doctoral degree',
+    emoji: '🧠',
+    category: 'education',
+    condition: (character) => character.education.completedStages.includes('doctorate')
   },
 
-  // Career Achievements
+  // Career achievements
   {
     id: 'first_job',
-    name: 'Working Person',
+    name: 'First Job',
     description: 'Got your first job',
     emoji: '💼',
     category: 'career',
-    rarity: 'common',
-    condition: (character) => !!character.job
+    condition: (character) => character.job !== undefined
   },
   {
-    id: 'millionaire',
-    name: 'Millionaire',
-    description: 'Accumulated $1,000,000 in wealth',
+    id: 'high_salary',
+    name: 'Six Figures',
+    description: 'Earned a six-figure salary',
     emoji: '💰',
-    category: 'wealth',
-    rarity: 'rare',
-    condition: (character) => character.wealth >= 1000000
+    category: 'career',
+    condition: (character) => character.salary !== undefined && character.salary >= 100
   },
   {
-    id: 'workaholic',
-    name: 'Workaholic',
-    description: 'Worked past retirement age',
-    emoji: '🏢',
+    id: 'executive',
+    name: 'Executive',
+    description: 'Reached an executive position',
+    emoji: '👔',
     category: 'career',
-    rarity: 'uncommon',
-    condition: (character) => character.age >= 65 && !!character.job
+    condition: (character) => character.jobLevel !== undefined && character.jobLevel >= 5
   },
 
-  // Relationship Achievements
+  // Wealth achievements
+  {
+    id: 'first_million',
+    name: 'Millionaire',
+    description: 'Accumulated a net worth of $1 million',
+    emoji: '💵',
+    category: 'wealth',
+    condition: (character) => character.wealth >= 1000
+  },
+  {
+    id: 'multi_millionaire',
+    name: 'Multi-Millionaire',
+    description: 'Accumulated a net worth of $10 million',
+    emoji: '🤑',
+    category: 'wealth',
+    condition: (character) => character.wealth >= 10000
+  },
+  {
+    id: 'property_owner',
+    name: 'Property Owner',
+    description: 'Purchased your first property',
+    emoji: '🏠',
+    category: 'wealth',
+    condition: (character) => character.assets.some(asset => asset.type === 'property')
+  },
+
+  // Relationship achievements
   {
     id: 'first_love',
     name: 'First Love',
-    description: 'Found your first romantic relationship',
-    emoji: '💕',
-    category: 'relationship',
-    rarity: 'common',
-    condition: (character) => character.familyMembers.some(m => 
-      m.relationship === 'lover' || m.relationship === 'spouse'
-    )
+    description: 'Experienced your first romantic relationship',
+    emoji: '❤️',
+    category: 'relationships',
+    condition: (character) => character.relationshipStatus !== 'single'
   },
   {
-    id: 'golden_anniversary',
-    name: 'Golden Anniversary',
-    description: 'Stayed married for 50+ years',
+    id: 'marriage',
+    name: 'Married',
+    description: 'Got married',
     emoji: '💍',
-    category: 'relationship',
-    rarity: 'rare',
-    condition: (character, history) => {
-      const marriageAge = history.findIndex(event => event.includes('got married'));
-      return marriageAge >= 0 && character.age - marriageAge >= 50 && 
-             character.relationshipStatus === 'married';
-    }
+    category: 'relationships',
+    condition: (character) => character.relationshipStatus === 'married'
   },
-  {
-    id: 'social_butterfly',
-    name: 'Social Butterfly',
-    description: 'Have 10+ family members and friends',
-    emoji: '🦋',
-    category: 'relationship',
-    rarity: 'uncommon',
-    condition: (character) => character.familyMembers.length >= 10
-  },
-
-  // Family Achievements
   {
     id: 'parent',
-    name: 'New Parent',
+    name: 'Parent',
     description: 'Had your first child',
     emoji: '👶',
-    category: 'family',
-    rarity: 'common',
-    condition: (character) => character.children.length > 0
+    category: 'relationships',
+    condition: (character) => character.children && character.children.length > 0
   },
   {
     id: 'big_family',
     name: 'Big Family',
-    description: 'Had 5+ children',
+    description: 'Had 3 or more children',
     emoji: '👨‍👩‍👧‍👦',
-    category: 'family',
-    rarity: 'uncommon',
-    condition: (character) => character.children.length >= 5
-  },
-  {
-    id: 'grandparent',
-    name: 'Grandparent',
-    description: 'Became a grandparent',
-    emoji: '👴',
-    category: 'family',
-    rarity: 'common',
-    condition: (character, history) => history.some(event => event.includes('grandchild'))
+    category: 'relationships',
+    condition: (character) => character.children && character.children.length >= 3
   },
 
-  // Education Achievements
+  // Health achievements
   {
-    id: 'graduate',
-    name: 'Graduate',
-    description: 'Graduated from high school',
-    emoji: '🎓',
-    category: 'education',
-    rarity: 'common',
-    condition: (character) => character.education.includes('High')
-  },
-  {
-    id: 'scholar',
-    name: 'Scholar',
-    description: 'Completed university education',
-    emoji: '📚',
-    category: 'education',
-    rarity: 'uncommon',
-    condition: (character) => character.education.includes('University')
-  },
-  {
-    id: 'genius',
-    name: 'Genius',
-    description: 'Achieved 100 smarts',
-    emoji: '🧠',
-    category: 'education',
-    rarity: 'rare',
-    condition: (character) => character.smarts >= 100
-  },
-
-  // Health Achievements
-  {
-    id: 'fitness_enthusiast',
-    name: 'Fitness Enthusiast',
-    description: 'Maintained 100 health for 10+ years',
+    id: 'fitness_buff',
+    name: 'Fitness Buff',
+    description: 'Maintained excellent health for 10 consecutive years',
     emoji: '💪',
     category: 'health',
-    rarity: 'uncommon',
-    condition: (character, history) => {
-      const recentHealth = history.slice(-10).every(event => 
-        !event.includes('health declined') && !event.includes('got sick')
-      );
-      return character.health >= 95 && recentHealth;
+    condition: (character, eventHistory) => {
+      // This is a simplified version - in reality would need to track health over time
+      return character.health >= 90;
     }
   },
+
+  // Special achievements
   {
-    id: 'survivor',
-    name: 'Survivor',
-    description: 'Survived a serious illness',
-    emoji: '🏥',
-    category: 'health',
-    rarity: 'uncommon',
-    condition: (character, history) => history.some(event => 
-      event.includes('cancer') || event.includes('heart disease')
-    )
+    id: 'well_balanced',
+    name: 'Well Balanced',
+    description: 'Achieved high stats in all categories',
+    emoji: '⚖️',
+    category: 'special',
+    condition: (character) => 
+      character.health >= 80 && 
+      character.happiness >= 80 && 
+      character.smarts >= 80 && 
+      character.looks >= 80 && 
+      character.relationships >= 80
+  },
+  {
+    id: 'celebrity',
+    name: 'Celebrity',
+    description: 'Became famous',
+    emoji: '🌟',
+    category: 'special',
+    condition: (character) => character.fame >= 80
   }
 ];
 
@@ -201,30 +206,10 @@ export const checkAchievements = (
   eventHistory: string[], 
   currentAchievements: string[]
 ): Achievement[] => {
-  const newAchievements: Achievement[] = [];
-  
-  for (const achievement of achievements) {
-    if (!currentAchievements.includes(achievement.id) && 
-        achievement.condition(character, eventHistory)) {
-      newAchievements.push(achievement);
-    }
-  }
-  
-  return newAchievements;
+  return achievements.filter(achievement => 
+    !currentAchievements.includes(achievement.id) && 
+    achievement.condition(character, eventHistory)
+  );
 };
 
-export const getAchievementsByCategory = (achievements: string[]): Record<string, Achievement[]> => {
-  const earnedAchievements = achievements.map(id => 
-    achievementList.find(a => a.id === id)
-  ).filter(Boolean) as Achievement[];
-  
-  return earnedAchievements.reduce((acc, achievement) => {
-    if (!acc[achievement.category]) {
-      acc[achievement.category] = [];
-    }
-    acc[achievement.category].push(achievement);
-    return acc;
-  }, {} as Record<string, Achievement[]>);
-};
-
-const achievementList = achievements;
+export { achievements };

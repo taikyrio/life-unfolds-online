@@ -1,134 +1,34 @@
+import { Character, EducationRecord, Asset } from '../types/game';
+import { getZodiacSign, ZodiacSign } from './zodiacUtils';
 
-import { Character, ZodiacSign } from '../types/game';
-import { generateInitialFamily } from './familyUtils';
-import { generateZodiacSign } from './zodiacUtils';
-
-const firstNames = [
-  'Alex', 'Jordan', 'Taylor', 'Morgan', 'Casey', 'Riley', 'Cameron', 'Quinn', 'Sage', 'River',
-  'Emma', 'Olivia', 'Ava', 'Isabella', 'Sophia', 'Charlotte', 'Mia', 'Amelia', 'Harper', 'Evelyn',
-  'Liam', 'Noah', 'Oliver', 'Elijah', 'James', 'William', 'Benjamin', 'Lucas', 'Henry', 'Alexander',
-  'Aria', 'Luna', 'Grace', 'Chloe', 'Penelope', 'Layla', 'Riley', 'Zoey', 'Nora', 'Lily',
-  'Mason', 'Ethan', 'Michael', 'Daniel', 'Jacob', 'Logan', 'Jackson', 'Levi', 'Sebastian', 'Mateo',
-  'Zoe', 'Elena', 'Claire', 'Maya', 'Leah', 'Madeline', 'Kylie', 'Audrey', 'Anna', 'Sarah'
-];
-
-const lastNames = [
-  'Smith', 'Johnson', 'Williams', 'Brown', 'Jones', 'Garcia', 'Miller', 'Davis', 'Rodriguez', 'Martinez',
-  'Hernandez', 'Lopez', 'Gonzalez', 'Wilson', 'Anderson', 'Thomas', 'Taylor', 'Moore', 'Jackson', 'Martin',
-  'Lee', 'Perez', 'Thompson', 'White', 'Harris', 'Sanchez', 'Clark', 'Ramirez', 'Lewis', 'Robinson',
-  'Walker', 'Young', 'Allen', 'King', 'Wright', 'Scott', 'Torres', 'Nguyen', 'Hill', 'Flores',
-  'Green', 'Adams', 'Nelson', 'Baker', 'Hall', 'Rivera', 'Campbell', 'Mitchell', 'Carter', 'Roberts'
-];
-
-const birthplaces = [
-  'New York, NY', 'Los Angeles, CA', 'Chicago, IL', 'Houston, TX', 'Phoenix, AZ',
-  'Philadelphia, PA', 'San Antonio, TX', 'San Diego, CA', 'Dallas, TX', 'San Jose, CA',
-  'Austin, TX', 'Jacksonville, FL', 'Fort Worth, TX', 'Columbus, OH', 'Charlotte, NC',
-  'San Francisco, CA', 'Indianapolis, IN', 'Seattle, WA', 'Denver, CO', 'Washington, DC',
-  'Boston, MA', 'El Paso, TX', 'Nashville, TN', 'Detroit, MI', 'Oklahoma City, OK',
-  'Portland, OR', 'Las Vegas, NV', 'Memphis, TN', 'Louisville, KY', 'Baltimore, MD'
-];
-
-export const getLifeStage = (age: number): string => {
-  if (age < 3) return 'Baby';
-  if (age < 6) return 'Toddler';
-  if (age < 13) return 'Child';
-  if (age < 18) return 'Teen';
-  if (age < 30) return 'Young Adult';
-  if (age < 50) return 'Adult';
-  if (age < 65) return 'Middle-aged';
-  return 'Senior';
-};
-
-export const getStatEmoji = (stat: string, value: number): string => {
-  const getLevel = (val: number) => {
-    if (val >= 90) return 'excellent';
-    if (val >= 70) return 'good';
-    if (val >= 50) return 'average';
-    if (val >= 30) return 'poor';
-    return 'very_poor';
-  };
-
-  const level = getLevel(value);
+export const createCharacter = (
+  name: string,
+  birthMonth: number,
+  birthDay: number
+): Character => {
+  const zodiacSign = getZodiacSign(birthMonth, birthDay);
   
-  const emojiMap: Record<string, Record<string, string>> = {
-    health: {
-      excellent: '💪',
-      good: '😊',
-      average: '😐',
-      poor: '😷',
-      very_poor: '🤒'
-    },
-    happiness: {
-      excellent: '😄',
-      good: '😊',
-      average: '😐',
-      poor: '😔',
-      very_poor: '😭'
-    },
-    smarts: {
-      excellent: '🧠',
-      good: '🤓',
-      average: '😐',
-      poor: '😕',
-      very_poor: '🤪'
-    },
-    looks: {
-      excellent: '😍',
-      good: '😊',
-      average: '😐',
-      poor: '😕',
-      very_poor: '😰'
-    },
-    wealth: {
-      excellent: '💰',
-      good: '💵',
-      average: '💳',
-      poor: '🪙',
-      very_poor: '📉'
-    },
-    relationships: {
-      excellent: '💕',
-      good: '😊',
-      average: '😐',
-      poor: '😔',
-      very_poor: '💔'
-    }
-  };
-
-  return emojiMap[stat]?.[level] || '😐';
-};
-
-export const generateRandomName = (): string => {
-  const firstName = firstNames[Math.floor(Math.random() * firstNames.length)];
-  const lastName = lastNames[Math.floor(Math.random() * lastNames.length)];
-  return `${firstName} ${lastName}`;
-};
-
-export const generateRandomStats = () => {
-  const zodiacSign = generateZodiacSign();
-  const birthplace = birthplaces[Math.floor(Math.random() * birthplaces.length)];
-  const birthWeight = 5.5 + Math.random() * 4; // 5.5 to 9.5 lbs
-  const premature = Math.random() < 0.1; // 10% chance of being premature
-  const birthMonth = Math.floor(Math.random() * 12) + 1;
-  const birthDay = Math.floor(Math.random() * 28) + 1;
-
-  // Base stats influenced by zodiac
-  let baseStats = {
-    health: Math.floor(Math.random() * 40) + 60, // 60-100
-    happiness: Math.floor(Math.random() * 40) + 60, // 60-100
-    smarts: Math.floor(Math.random() * 40) + 60, // 60-100
-    looks: Math.floor(Math.random() * 40) + 60, // 60-100
+  const baseCharacter: Character = {
+    id: `char_${Date.now()}`,
+    name,
+    birthMonth,
+    birthDay,
+    birthplace: 'United States',
+    zodiacSign,
+    health: 100,
+    happiness: 50,
+    smarts: 50,
+    looks: 50,
     wealth: 0,
-    relationships: Math.floor(Math.random() * 30) + 20, // 20-50
+    relationships: 50,
     salary: 0,
-    jobLevel: 0,
-    children: [] as string[],
+    jobLevel: 1,
+    children: [],
     education: {
       currentStage: null,
       currentSchool: null,
-      currentYear: 0,
-      gpa: 0,
+      currentYear: 1,
+      gpa: 3.0,
       grades: [],
       completedStages: [],
       major: null,
@@ -136,25 +36,14 @@ export const generateRandomStats = () => {
       disciplinaryActions: 0,
       achievements: [],
       dropouts: 0
-    },
-    assets: [] as { id: string; name: string; type: string; value: number; purchasePrice: number; purchaseAge: number; description: string }[],
+    } as EducationRecord,
+    assets: [] as Asset[],
     age: 0,
     year: new Date().getFullYear(),
     zodiacSign,
-    birthMonth,
-    birthDay,
-    pets: [] as { name: string; type: string; age: number; health: number }[],
-    birthplace,
-    birthWeight,
-    premature,
-    birthComplications: false,
-    criminalRecord: {
-      arrests: 0,
-      convictions: 0,
-      prisonTime: 0,
-      crimes: [],
-      notoriety: 0
-    },
+    familyMembers: [],
+    lifeEvents: [],
+    achievements: [],
     relationshipStatus: 'single' as const,
     nationality: 'American',
     fame: 0,
@@ -162,89 +51,106 @@ export const generateRandomStats = () => {
   };
 
   // Apply zodiac modifiers
-  if (zodiacSign.element === 'fire') {
-    baseStats.happiness += 10;
-    baseStats.relationships += 5;
-  } else if (zodiacSign.element === 'earth') {
-    baseStats.health += 10;
-    baseStats.smarts += 5;
-  } else if (zodiacSign.element === 'air') {
-    baseStats.smarts += 10;
-    baseStats.relationships += 5;
-  } else if (zodiacSign.element === 'water') {
-    baseStats.health += 5;
-    baseStats.happiness += 10;
+  if (zodiacSign) {
+    switch (zodiacSign.name) {
+      case 'Aries':
+        baseCharacter.health += 5;
+        baseCharacter.happiness -= 5;
+        break;
+      case 'Taurus':
+        baseCharacter.wealth += 10;
+        baseCharacter.happiness += 5;
+        break;
+      case 'Gemini':
+        baseCharacter.smarts += 5;
+        baseCharacter.relationships += 5;
+        break;
+      case 'Cancer':
+        baseCharacter.relationships += 10;
+        baseCharacter.happiness += 5;
+        break;
+      case 'Leo':
+        baseCharacter.looks += 10;
+        baseCharacter.happiness += 5;
+        break;
+      case 'Virgo':
+        baseCharacter.smarts += 10;
+        baseCharacter.health += 5;
+        break;
+      case 'Libra':
+        baseCharacter.looks += 5;
+        baseCharacter.relationships += 5;
+        break;
+      case 'Scorpio':
+        baseCharacter.health -= 5;
+        baseCharacter.relationships -= 5;
+        break;
+      case 'Sagittarius':
+        baseCharacter.happiness += 10;
+        baseCharacter.looks += 5;
+        break;
+      case 'Capricorn':
+        baseCharacter.wealth += 5;
+        baseCharacter.smarts += 5;
+        break;
+      case 'Aquarius':
+        baseCharacter.smarts += 5;
+        baseCharacter.happiness += 5;
+        break;
+      case 'Pisces':
+        baseCharacter.happiness += 5;
+        baseCharacter.relationships += 5;
+        break;
+      default:
+        break;
+    }
   }
 
-  // Cap stats at 100
-  baseStats.health = Math.min(100, baseStats.health);
-  baseStats.happiness = Math.min(100, baseStats.happiness);
-  baseStats.smarts = Math.min(100, baseStats.smarts);
-  baseStats.looks = Math.min(100, baseStats.looks);
-  baseStats.relationships = Math.min(100, baseStats.relationships);
-
-  return baseStats;
+  return baseCharacter;
 };
 
-export const createCharacter = (): Character => {
-  const stats = generateRandomStats();
-  const name = generateRandomName();
-  
-  // Generate family members at birth
-  const familyMembers = generateInitialFamily();
-  
+export const ageCharacter = (character: Character): Character => {
   return {
-    id: Math.random().toString(36).substring(2, 15),
-    name,
-    familyMembers,
-    lifeEvents: [],
-    achievements: [],
-    children: [],
-    fame: 0,
-    customStats: {},
-    ...stats
+    ...character,
+    age: character.age + 1,
   };
-};
-
-export const formatSalary = (salary: number): string => {
-  if (salary >= 1000) {
-    return `$${(salary / 1000).toFixed(0)}K`;
-  }
-  return `$${salary}`;
-};
-
-export const getStatColor = (value: number): string => {
-  if (value >= 80) return 'text-green-600';
-  if (value >= 60) return 'text-yellow-600';
-  if (value >= 40) return 'text-orange-600';
-  return 'text-red-600';
 };
 
 export const applyStatEffects = (character: Character, effects: any): Character => {
   const updatedCharacter = { ...character };
-  
-  Object.keys(effects).forEach(key => {
-    if (key in updatedCharacter) {
-      const currentValue = (updatedCharacter as any)[key];
-      const effect = effects[key];
-      
-      if (typeof currentValue === 'number' && typeof effect === 'number') {
-        (updatedCharacter as any)[key] = Math.max(0, Math.min(100, currentValue + effect));
-      } else if (effect !== undefined) {
-        (updatedCharacter as any)[key] = effect;
+
+  for (const key in effects) {
+    if (effects.hasOwnProperty(key)) {
+      const effectValue = effects[key];
+
+      if (typeof effectValue === 'number') {
+        // Apply number-based stat changes
+        switch (key) {
+          case 'health':
+          case 'happiness':
+          case 'smarts':
+          case 'looks':
+          case 'wealth':
+          case 'relationships':
+          case 'salary':
+          case 'fame':
+            (updatedCharacter as any)[key] = Math.max(0, Math.min(100, (character as any)[key] + effectValue));
+            break;
+          default:
+            break;
+        }
+      } else if (typeof effectValue === 'string') {
+        // Apply string-based stat changes (e.g., job)
+        (updatedCharacter as any)[key] = effectValue;
+      } else if (Array.isArray(effectValue)) {
+        // Apply array-based stat changes (e.g., education)
+        (updatedCharacter.education as any).completedStages = [
+          ...(updatedCharacter.education as any).completedStages,
+          ...effectValue
+        ];
       }
     }
-  });
-  
-  return updatedCharacter;
-};
+  }
 
-export const isGameOver = (character: Character): { gameOver: boolean; reason?: string } => {
-  if (character.health <= 0) {
-    return { gameOver: true, reason: 'Your health reached zero.' };
-  }
-  if (character.age >= 120) {
-    return { gameOver: true, reason: 'You lived to be 120 years old!' };
-  }
-  return { gameOver: false };
+  return updatedCharacter;
 };
