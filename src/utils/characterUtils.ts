@@ -137,7 +137,7 @@ export const generateRandomStats = () => {
       achievements: [],
       dropouts: 0
     },
-    assets: [] as { name: string; type: string; value: number }[],
+    assets: [] as { id: string; name: string; type: string; value: number; purchasePrice: number; purchaseAge: number; description: string }[],
     age: 0,
     year: new Date().getFullYear(),
     zodiacSign,
@@ -157,7 +157,8 @@ export const generateRandomStats = () => {
     },
     relationshipStatus: 'single' as const,
     nationality: 'American',
-    fame: 0
+    fame: 0,
+    customStats: {}
   };
 
   // Apply zodiac modifiers

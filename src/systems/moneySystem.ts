@@ -46,8 +46,8 @@ export const applyForLoan = (character: Character, requestedAmount: number): Loa
   else if (character.wealth > 0) score += 10;
 
   // Education factor (10% of score)
-  if (character.education.some(ed => ed.includes('College') || ed.includes('University'))) score += 10;
-  else if (character.education.some(ed => ed.includes('High School'))) score += 5;
+  if (character.education.completedStages.includes('college') || character.education.completedStages.includes('university')) score += 10;
+  else if (character.education.completedStages.includes('high school')) score += 5;
 
   // Criminal record factor (10% of score)
   if (character.criminalRecord) {
@@ -98,7 +98,7 @@ export const processYearlyFinances = (character: Character): Character => {
     livingExpenses = 12;
     
     // Add expenses for assets
-    const hasHouse = character.assets.some(asset => asset.type === 'real_estate');
+    const hasHouse = character.assets.some(asset => asset.type === 'property');
     const hasCar = character.assets.some(asset => asset.type === 'vehicle');
     
     if (hasHouse) livingExpenses += 8; // Property taxes, maintenance
@@ -141,7 +141,7 @@ export const calculateLoanEligibility = (character: Character): { maxAmount: num
   }
   
   // Education bonus
-  if (character.education.some(ed => ed.includes('University') || ed.includes('College'))) {
+  if (character.education.completedStages.includes('university') || character.education.completedStages.includes('college')) {
     maxAmount *= 1.5;
     minInterest = Math.max(0.03, minInterest - 0.01);
   }

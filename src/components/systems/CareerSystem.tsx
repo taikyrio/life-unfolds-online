@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -44,7 +45,7 @@ export const CareerSystem: React.FC<CareerSystemProps> = ({
 
   const isEligible = (career: typeof careerTracks[0]) => {
     const meetsEducation = career.education === 'None' || 
-      character.education.some(ed => ed.includes(career.education.split(' ')[0]));
+      character.education.completedStages.includes(career.education.toLowerCase());
     const meetsSmarts = character.smarts >= career.smarts;
     const meetsAge = character.age >= 16;
     return meetsEducation && meetsSmarts && meetsAge;

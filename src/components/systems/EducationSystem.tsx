@@ -31,7 +31,7 @@ export const EducationSystem: React.FC<EducationSystemProps> = ({
     return educationLevels.filter(level => {
       const meetsAge = character.age >= level.minAge && character.age <= level.maxAge;
       const canAfford = character.wealth >= level.cost;
-      const notCompleted = !character.education.some(ed => ed.includes(level.name.split(' ')[0]));
+      const notCompleted = !character.education.completedStages.includes(level.name.split(' ')[0]);
       return meetsAge && canAfford && notCompleted;
     });
   };
@@ -80,14 +80,14 @@ export const EducationSystem: React.FC<EducationSystemProps> = ({
       )}
 
       {/* Education History */}
-      {character.education.length > 0 && (
+      {character.education.completedStages.length > 0 && (
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="text-lg">Education Completed</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="flex flex-wrap gap-2">
-              {character.education.map((edu, index) => (
+              {character.education.completedStages.map((edu, index) => (
                 <Badge key={index} variant="secondary" className="bg-green-100 text-green-800">
                   🎓 {edu}
                 </Badge>
