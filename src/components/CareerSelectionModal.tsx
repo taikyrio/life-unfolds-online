@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -107,7 +106,7 @@ export const CareerSelectionModal: React.FC<CareerSelectionModalProps> = ({
     return careerOptions.filter(career => {
       const meetsAge = character.age >= career.requirements.age;
       const meetsEducation = !career.requirements.education || 
-        character.education.some(edu => edu.includes(career.requirements.education!));
+        character.education.completedStages.includes(career.requirements.education);
       const meetsSmarts = !career.requirements.smarts || character.smarts >= career.requirements.smarts;
       const meetsLooks = !career.requirements.looks || character.looks >= career.requirements.looks;
       
