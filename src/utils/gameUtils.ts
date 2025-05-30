@@ -124,7 +124,24 @@ export const generateInitialFamily = (): FamilyMember[] => {
     health: Math.floor(Math.random() * 30) + 70, // 70-100 health
     relationshipQuality: Math.floor(Math.random() * 40) + 60, // 60-100 relationship
     job: jobs[Math.floor(Math.random() * jobs.length)],
-    salary: Math.floor(Math.random() * 80000) + 30000 // $30k-$110k
+    salary: Math.floor(Math.random() * 80000) + 30000, // $30k-$110k
+    relationshipStats: {
+      relationshipLevel: Math.floor(Math.random() * 40) + 60,
+      trust: Math.floor(Math.random() * 40) + 60,
+      respect: Math.floor(Math.random() * 40) + 60,
+      lastInteraction: new Date().toISOString(),
+      interactionHistory: []
+    },
+    personality: {
+      kindness: Math.floor(Math.random() * 100),
+      loyalty: Math.floor(Math.random() * 100),
+      intelligence: Math.floor(Math.random() * 100),
+      humor: Math.floor(Math.random() * 100),
+      ambition: Math.floor(Math.random() * 100),
+      stability: Math.floor(Math.random() * 100),
+      generosity: Math.floor(Math.random() * 100)
+    },
+    currentMood: 'neutral' as const
   };
   
   // Generate mother
@@ -137,7 +154,24 @@ export const generateInitialFamily = (): FamilyMember[] => {
     health: Math.floor(Math.random() * 30) + 70,
     relationshipQuality: Math.floor(Math.random() * 40) + 60,
     job: jobs[Math.floor(Math.random() * jobs.length)],
-    salary: Math.floor(Math.random() * 80000) + 25000
+    salary: Math.floor(Math.random() * 80000) + 25000,
+    relationshipStats: {
+      relationshipLevel: Math.floor(Math.random() * 40) + 60,
+      trust: Math.floor(Math.random() * 40) + 60,
+      respect: Math.floor(Math.random() * 40) + 60,
+      lastInteraction: new Date().toISOString(),
+      interactionHistory: []
+    },
+    personality: {
+      kindness: Math.floor(Math.random() * 100),
+      loyalty: Math.floor(Math.random() * 100),
+      intelligence: Math.floor(Math.random() * 100),
+      humor: Math.floor(Math.random() * 100),
+      ambition: Math.floor(Math.random() * 100),
+      stability: Math.floor(Math.random() * 100),
+      generosity: Math.floor(Math.random() * 100)
+    },
+    currentMood: 'neutral' as const
   };
   
   familyMembers.push(father, mother);
@@ -151,7 +185,24 @@ export const generateInitialFamily = (): FamilyMember[] => {
       age: Math.floor(Math.random() * 10) + 1, // 1-10 years old
       alive: true,
       health: Math.floor(Math.random() * 20) + 80,
-      relationshipQuality: Math.floor(Math.random() * 60) + 40
+      relationshipQuality: Math.floor(Math.random() * 60) + 40,
+      relationshipStats: {
+        relationshipLevel: Math.floor(Math.random() * 60) + 40,
+        trust: Math.floor(Math.random() * 60) + 40,
+        respect: Math.floor(Math.random() * 60) + 40,
+        lastInteraction: new Date().toISOString(),
+        interactionHistory: []
+      },
+      personality: {
+        kindness: Math.floor(Math.random() * 100),
+        loyalty: Math.floor(Math.random() * 100),
+        intelligence: Math.floor(Math.random() * 100),
+        humor: Math.floor(Math.random() * 100),
+        ambition: Math.floor(Math.random() * 100),
+        stability: Math.floor(Math.random() * 100),
+        generosity: Math.floor(Math.random() * 100)
+      },
+      currentMood: 'neutral' as const
     };
     familyMembers.push(sibling);
   }
@@ -165,7 +216,24 @@ export const generateInitialFamily = (): FamilyMember[] => {
       age: Math.floor(Math.random() * 20) + 60, // 60-80 years old
       alive: true,
       health: Math.floor(Math.random() * 40) + 30, // 30-70 health (older)
-      relationshipQuality: Math.floor(Math.random() * 50) + 50
+      relationshipQuality: Math.floor(Math.random() * 50) + 50,
+      relationshipStats: {
+        relationshipLevel: Math.floor(Math.random() * 50) + 50,
+        trust: Math.floor(Math.random() * 50) + 50,
+        respect: Math.floor(Math.random() * 50) + 50,
+        lastInteraction: new Date().toISOString(),
+        interactionHistory: []
+      },
+      personality: {
+        kindness: Math.floor(Math.random() * 100),
+        loyalty: Math.floor(Math.random() * 100),
+        intelligence: Math.floor(Math.random() * 100),
+        humor: Math.floor(Math.random() * 100),
+        ambition: Math.floor(Math.random() * 100),
+        stability: Math.floor(Math.random() * 100),
+        generosity: Math.floor(Math.random() * 100)
+      },
+      currentMood: 'neutral' as const
     };
     familyMembers.push(grandparent);
   }
@@ -259,8 +327,13 @@ export const createCharacter = (): Character => {
   const familyMembers = generateInitialFamily();
   
   return {
+    id: Math.random().toString(36).substring(2, 15),
     name,
     familyMembers,
+    lifeEvents: [],
+    achievements: [],
+    children: [],
+    fame: 0,
     ...stats
   };
 };
