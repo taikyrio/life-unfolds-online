@@ -1,16 +1,14 @@
-
 import { Character } from '../../types/game';
-import { getActivityEvent } from '../../data/activityEvents';
 
 export const handleActivityAction = (
   character: Character,
   action: string,
-  data: any,
   ageHistory: Record<number, string[]>,
   setAgeHistory: (history: Record<number, string[]>) => void,
   onGameStateChange: (newState: any) => void,
   gameState: any,
-  toast: any
+  toast: any,
+  data?: any
 ) => {
   let updatedCharacter = { ...character };
   let message = '';

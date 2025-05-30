@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Character, FamilyMember, RelationshipAction } from '../types/game';
 import { Card, CardContent } from '@/components/ui/card';
@@ -108,21 +109,41 @@ export const RelationshipsTab: React.FC<RelationshipsTabProps> = ({
 
   const handleActionConfirm = () => {
     if (selectedAction && selectedMember) {
+      console.log('Executing action:', selectedAction.id, 'on member:', selectedMember.id);
+      
       const result = executeRelationshipAction(character, selectedMember.id, selectedAction.id);
+      console.log('Action result:', result);
+
+      // Create a new character object to ensure state updates
+      const updatedCharacter = { ...character };
 
       // Apply effects to character
       if (result.effects.wealth !== undefined) {
-        character.wealth = Math.max(0, character.wealth + result.effects.wealth);
+        updatedCharacter.wealth = Math.max(0, updatedCharacter.wealth + result.effects.wealth);
       }
       if (result.effects.happiness !== undefined) {
-        character.happiness = Math.max(0, Math.min(100, character.happiness + result.effects.happiness));
+        updatedCharacter.happiness = Math.max(0, Math.min(100, updatedCharacter.happiness + result.effects.happiness));
       }
       if (result.effects.relationshipStatus) {
-        character.relationshipStatus = result.effects.relationshipStatus;
+        updatedCharacter.relationshipStatus = result.effects.relationshipStatus;
       }
 
-      onCharacterUpdate(character);
+      // Update the specific family member in the character's family members array
+      const memberIndex = updatedCharacter.familyMembers.findIndex(m => m.id === selectedMember.id);
+      if (memberIndex !== -1) {
+        updatedCharacter.familyMembers[memberIndex] = { 
+          ...updatedCharacter.familyMembers[memberIndex],
+          ...selectedMember 
+        };
+      }
+
+      console.log('Updated character:', updatedCharacter);
+      
+      onCharacterUpdate(updatedCharacter);
       onEvent(result.message);
+      
+      // Update selected member to reflect changes
+      setSelectedMember(updatedCharacter.familyMembers.find(m => m.id === selectedMember.id) || null);
     }
 
     setShowActionConfirm(false);
