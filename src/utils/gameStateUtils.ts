@@ -1,22 +1,63 @@
 
 import { Character } from '../types/game';
-import { ageFamilyMembers } from './familyUtils';
-import { processYearlyFinances } from '../systems/moneySystem';
 
-export const getRandomElement = <T>(array: T[]): T => {
-  return array[Math.floor(Math.random() * array.length)];
+export const getLifeStage = (age: number): string => {
+  if (age < 1) return 'Baby';
+  if (age < 4) return 'Toddler';
+  if (age < 13) return 'Child';
+  if (age < 18) return 'Teen';
+  if (age < 30) return 'Young Adult';
+  if (age < 50) return 'Adult';
+  if (age < 65) return 'Middle-aged';
+  return 'Senior';
 };
 
-export const ageCharacter = (character: Character): Character => {
-  let updatedCharacter = { ...character };
+export const isGameOver = (character: Character): { gameOver: boolean; reason?: string } => {
+  if (character.health <= 0) {
+    return { gameOver: true, reason: 'You died from poor health.' };
+  }
+  
+  if (character.age >= 120) {
+    return { gameOver: true, reason: 'You lived an extraordinary long life and passed away peacefully.' };
+  }
+  
+  return { gameOver: false };
+};
 
-  updatedCharacter.age += 1;
+export const getStatColor = (value: number): string => {
+  if (value >= 80) return 'text-green-600';
+  if (value >= 60) return 'text-yellow-600';
+  if (value >= 40) return 'text-orange-600';
+  return 'text-red-600';
+};
 
-  // Age all family members and handle deaths
-  updatedCharacter.familyMembers = ageFamilyMembers(updatedCharacter.familyMembers);
+export const getStatEmoji = (statName: string, value?: number): string => {
+  const val = value || 50;
+  const emojis = {
+    health: val >= 80 ? '💚' : val >= 60 ? '💛' : val >= 40 ? '🧡' : '❤️',
+    happiness: val >= 80 ? '😄' : val >= 60 ? '😊' : val >= 40 ? '😐' : '😢',
+    smarts: val >= 80 ? '🧠' : val >= 60 ? '📚' : val >= 40 ? '🤓' : '📖',
+    looks: val >= 80 ? '✨' : val >= 60 ? '😊' : val >= 40 ? '🙂' : '😕',
+    wealth: val >= 80 ? '💰' : val >= 60 ? '💵' : val >= 40 ? '💴' : '💸',
+    relationships: val >= 80 ? '💕' : val >= 60 ? '❤️' : val >= 40 ? '💛' : '💔'
+  };
+  
+  return emojis[statName as keyof typeof emojis] || '❓';
+};
 
-  // Process yearly finances - fix the money system
-  updatedCharacter = processYearlyFinances(updatedCharacter);
-
-  return updatedCharacter;
+export const generateRandomName = (): string => {
+  const firstNames = [
+    'Alex', 'Jordan', 'Taylor', 'Morgan', 'Casey', 'Riley', 'Avery', 'Cameron',
+    'Quinn', 'Blake', 'Sage', 'River', 'Rowan', 'Phoenix', 'Emery', 'Skylar'
+  ];
+  
+  const lastNames = [
+    'Smith', 'Johnson', 'Williams', 'Brown', 'Jones', 'Garcia', 'Miller', 'Davis',
+    'Rodriguez', 'Martinez', 'Hernandez', 'Lopez', 'Gonzalez', 'Wilson', 'Anderson', 'Thomas'
+  ];
+  
+  const firstName = firstNames[Math.floor(Math.random() * firstNames.length)];
+  const lastName = lastNames[Math.floor(Math.random() * lastNames.length)];
+  
+  return `${firstName} ${lastName}`;
 };

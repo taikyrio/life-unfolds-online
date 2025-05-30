@@ -6,7 +6,7 @@ import { createCharacter } from '@/utils/gameUtils';
 
 const Index = () => {
   const [gameState, setGameState] = useState<GameState>(() => {
-    const character = createCharacter();
+    const character = createCharacter('Player', 1, 1);
     return {
       character,
       currentEvent: null,

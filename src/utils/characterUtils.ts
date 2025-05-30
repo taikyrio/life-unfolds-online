@@ -1,5 +1,6 @@
+
 import { Character, EducationRecord, Asset } from '../types/game';
-import { getZodiacSign, ZodiacSign } from './zodiacUtils';
+import { getZodiacSign } from './zodiacUtils';
 
 export const createCharacter = (
   name: string,
@@ -39,8 +40,6 @@ export const createCharacter = (
     } as EducationRecord,
     assets: [] as Asset[],
     age: 0,
-    year: new Date().getFullYear(),
-    zodiacSign,
     familyMembers: [],
     lifeEvents: [],
     achievements: [],
