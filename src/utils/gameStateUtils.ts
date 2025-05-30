@@ -1,5 +1,6 @@
 
 import { Character } from '../types/game';
+import { checkForHealthConditions } from '../systems/healthSystem';
 
 export const getLifeStage = (age: number): string => {
   if (age < 1) return 'Baby';
@@ -13,12 +14,40 @@ export const getLifeStage = (age: number): string => {
 };
 
 export const isGameOver = (character: Character): { gameOver: boolean; reason?: string } => {
-  if (character.health <= 0) {
-    return { gameOver: true, reason: 'You died from poor health.' };
-  }
-  
+  // Check for extreme old age
   if (character.age >= 120) {
     return { gameOver: true, reason: 'You lived an extraordinary long life and passed away peacefully.' };
+  }
+  
+  // Check for critical health conditions
+  const healthCondition = checkForHealthConditions(character);
+  const isYoungAdult = character.age >= 18 && character.age <= 35;
+  
+  // Young adults with low health but no serious illness have a chance to recover
+  if (character.health <= 0) {
+    if (isYoungAdult && !healthCondition) {
+      // 40% chance of emergency recovery for young adults without serious illness
+      if (Math.random() < 0.4) {
+        return { gameOver: false }; // They survive and can recover
+      }
+    }
+    
+    // Determine death reason based on conditions
+    if (healthCondition) {
+      return { gameOver: true, reason: `You died from complications related to ${healthCondition.name}.` };
+    } else if (character.age > 70) {
+      return { gameOver: true, reason: 'Your health gave out due to old age.' };
+    } else if (character.age > 35) {
+      return { gameOver: true, reason: 'You died from poor health and lifestyle choices.' };
+    } else {
+      return { gameOver: true, reason: 'A tragic accident took your life at a young age.' };
+    }
+  }
+  
+  // Critical health warning for young adults
+  if (character.health <= 20 && isYoungAdult) {
+    // This is a warning state, not death - they need medical attention
+    return { gameOver: false };
   }
   
   return { gameOver: false };

@@ -1,16 +1,19 @@
 
 import { Character, EducationRecord, Asset } from '../types/game';
 import { getZodiacSign } from './zodiacUtils';
+import { generateInitialFamily } from './familyUtils';
 
 export const generateRandomName = (): string => {
   const firstNames = [
     'Alex', 'Jordan', 'Taylor', 'Morgan', 'Casey', 'Riley', 'Avery', 'Cameron',
-    'Quinn', 'Blake', 'Sage', 'River', 'Rowan', 'Phoenix', 'Emery', 'Skylar'
+    'Quinn', 'Blake', 'Sage', 'River', 'Rowan', 'Phoenix', 'Emery', 'Skylar',
+    'Jamie', 'Reese', 'Finley', 'Harper', 'Peyton', 'Kendall', 'Logan', 'Hayden'
   ];
   
   const lastNames = [
     'Smith', 'Johnson', 'Williams', 'Brown', 'Jones', 'Garcia', 'Miller', 'Davis',
-    'Rodriguez', 'Martinez', 'Hernandez', 'Lopez', 'Gonzalez', 'Wilson', 'Anderson', 'Thomas'
+    'Rodriguez', 'Martinez', 'Hernandez', 'Lopez', 'Gonzalez', 'Wilson', 'Anderson', 'Thomas',
+    'Taylor', 'Moore', 'Jackson', 'Martin', 'Lee', 'Perez', 'Thompson', 'White'
   ];
   
   const firstName = firstNames[Math.floor(Math.random() * firstNames.length)];
@@ -19,12 +22,25 @@ export const generateRandomName = (): string => {
   return `${firstName} ${lastName}`;
 };
 
+const randomizeInitialStats = () => {
+  return {
+    health: Math.floor(Math.random() * 31) + 70, // 70-100
+    happiness: Math.floor(Math.random() * 51) + 30, // 30-80
+    smarts: Math.floor(Math.random() * 71) + 20, // 20-90
+    looks: Math.floor(Math.random() * 71) + 20, // 20-90
+    wealth: Math.floor(Math.random() * 21), // 0-20
+    relationships: Math.floor(Math.random() * 41) + 40 // 40-80
+  };
+};
+
 export const createCharacter = (
   name: string,
   birthMonth: number,
   birthDay: number
 ): Character => {
   const zodiacSign = getZodiacSign(birthMonth, birthDay);
+  const initialStats = randomizeInitialStats();
+  const initialFamily = generateInitialFamily();
   
   const baseCharacter: Character = {
     id: `char_${Date.now()}`,
@@ -33,12 +49,12 @@ export const createCharacter = (
     birthDay,
     birthplace: 'United States',
     zodiacSign,
-    health: 100,
-    happiness: 50,
-    smarts: 50,
-    looks: 50,
-    wealth: 0,
-    relationships: 50,
+    health: initialStats.health,
+    happiness: initialStats.happiness,
+    smarts: initialStats.smarts,
+    looks: initialStats.looks,
+    wealth: initialStats.wealth,
+    relationships: initialStats.relationships,
     salary: 0,
     jobLevel: 1,
     children: [],
@@ -57,7 +73,7 @@ export const createCharacter = (
     } as EducationRecord,
     assets: [] as Asset[],
     age: 0,
-    familyMembers: [],
+    familyMembers: initialFamily,
     lifeEvents: [],
     achievements: [],
     relationshipStatus: 'single' as const,
@@ -65,56 +81,56 @@ export const createCharacter = (
     customStats: {}
   };
 
-  // Apply zodiac modifiers
+  // Apply zodiac modifiers to the randomized stats
   if (zodiacSign) {
     switch (zodiacSign.name) {
       case 'Aries':
-        baseCharacter.health += 5;
-        baseCharacter.happiness -= 5;
+        baseCharacter.health = Math.min(100, baseCharacter.health + 5);
+        baseCharacter.happiness = Math.max(0, baseCharacter.happiness - 5);
         break;
       case 'Taurus':
-        baseCharacter.wealth += 10;
-        baseCharacter.happiness += 5;
+        baseCharacter.wealth = Math.min(100, baseCharacter.wealth + 10);
+        baseCharacter.happiness = Math.min(100, baseCharacter.happiness + 5);
         break;
       case 'Gemini':
-        baseCharacter.smarts += 5;
-        baseCharacter.relationships += 5;
+        baseCharacter.smarts = Math.min(100, baseCharacter.smarts + 5);
+        baseCharacter.relationships = Math.min(100, baseCharacter.relationships + 5);
         break;
       case 'Cancer':
-        baseCharacter.relationships += 10;
-        baseCharacter.happiness += 5;
+        baseCharacter.relationships = Math.min(100, baseCharacter.relationships + 10);
+        baseCharacter.happiness = Math.min(100, baseCharacter.happiness + 5);
         break;
       case 'Leo':
-        baseCharacter.looks += 10;
-        baseCharacter.happiness += 5;
+        baseCharacter.looks = Math.min(100, baseCharacter.looks + 10);
+        baseCharacter.happiness = Math.min(100, baseCharacter.happiness + 5);
         break;
       case 'Virgo':
-        baseCharacter.smarts += 10;
-        baseCharacter.health += 5;
+        baseCharacter.smarts = Math.min(100, baseCharacter.smarts + 10);
+        baseCharacter.health = Math.min(100, baseCharacter.health + 5);
         break;
       case 'Libra':
-        baseCharacter.looks += 5;
-        baseCharacter.relationships += 5;
+        baseCharacter.looks = Math.min(100, baseCharacter.looks + 5);
+        baseCharacter.relationships = Math.min(100, baseCharacter.relationships + 5);
         break;
       case 'Scorpio':
-        baseCharacter.health -= 5;
-        baseCharacter.relationships -= 5;
+        baseCharacter.health = Math.max(0, baseCharacter.health - 5);
+        baseCharacter.relationships = Math.max(0, baseCharacter.relationships - 5);
         break;
       case 'Sagittarius':
-        baseCharacter.happiness += 10;
-        baseCharacter.looks += 5;
+        baseCharacter.happiness = Math.min(100, baseCharacter.happiness + 10);
+        baseCharacter.looks = Math.min(100, baseCharacter.looks + 5);
         break;
       case 'Capricorn':
-        baseCharacter.wealth += 5;
-        baseCharacter.smarts += 5;
+        baseCharacter.wealth = Math.min(100, baseCharacter.wealth + 5);
+        baseCharacter.smarts = Math.min(100, baseCharacter.smarts + 5);
         break;
       case 'Aquarius':
-        baseCharacter.smarts += 5;
-        baseCharacter.happiness += 5;
+        baseCharacter.smarts = Math.min(100, baseCharacter.smarts + 5);
+        baseCharacter.happiness = Math.min(100, baseCharacter.happiness + 5);
         break;
       case 'Pisces':
-        baseCharacter.happiness += 5;
-        baseCharacter.relationships += 5;
+        baseCharacter.happiness = Math.min(100, baseCharacter.happiness + 5);
+        baseCharacter.relationships = Math.min(100, baseCharacter.relationships + 5);
         break;
       default:
         break;

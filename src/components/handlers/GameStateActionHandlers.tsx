@@ -1,4 +1,7 @@
+
 import { Character } from '../../types/game';
+import { isGameOver } from '../../utils/gameStateUtils';
+import { ageFamilyMembers, generateNewRelationships } from '../../utils/familyUtils';
 
 export const handleAgeUp = (
   character: Character,
@@ -16,22 +19,54 @@ export const handleAgeUp = (
   updatedCharacter.age += 1;
   ageEvents.push(`You aged up to ${updatedCharacter.age}!`);
 
-  // Update health (example: slight chance of health decrease with age)
-  if (updatedCharacter.age > 60 && Math.random() < 0.3) {
-    updatedCharacter.health = Math.max(0, updatedCharacter.health - 5);
-    ageEvents.push("You feel a bit weaker as you get older.");
+  // Age family members and add new relationships
+  updatedCharacter.familyMembers = ageFamilyMembers(updatedCharacter.familyMembers);
+  const newRelationships = generateNewRelationships(updatedCharacter);
+  updatedCharacter.familyMembers = [...updatedCharacter.familyMembers, ...newRelationships];
+
+  // Natural health changes with age
+  if (updatedCharacter.age > 50 && Math.random() < 0.2) {
+    updatedCharacter.health = Math.max(0, updatedCharacter.health - 3);
+    ageEvents.push("You feel the effects of aging on your health.");
+  } else if (updatedCharacter.age > 30 && Math.random() < 0.1) {
+    updatedCharacter.health = Math.max(0, updatedCharacter.health - 1);
+    ageEvents.push("You notice minor changes in your health.");
   }
 
-  // Check for death
-  if (updatedCharacter.health <= 0) {
-    ageEvents.push("Unfortunately, your health gave out. Game Over.");
+  // Young adult health recovery chance
+  const isYoungAdult = updatedCharacter.age >= 18 && updatedCharacter.age <= 35;
+  if (isYoungAdult && updatedCharacter.health < 30 && Math.random() < 0.3) {
+    updatedCharacter.health = Math.min(100, updatedCharacter.health + 15);
+    ageEvents.push("Your young body shows remarkable recovery!");
+  }
+
+  // Check for game over
+  const gameOverCheck = isGameOver(updatedCharacter);
+  if (gameOverCheck.gameOver) {
+    ageEvents.push(gameOverCheck.reason || "Game Over");
     onGameStateChange({
       ...gameState,
       character: updatedCharacter,
       gameOver: true,
-      gameOverReason: "Died of old age"
+      gameOverReason: gameOverCheck.reason
+    });
+    
+    toast({
+      title: "Game Over",
+      description: gameOverCheck.reason,
+      variant: "destructive",
     });
     return;
+  }
+
+  // Critical health warning for young adults
+  if (updatedCharacter.health <= 20 && isYoungAdult) {
+    ageEvents.push("⚠️ Your health is critically low! Seek medical attention immediately!");
+    toast({
+      title: "Critical Health Warning",
+      description: "Your health is dangerously low. Consider visiting a doctor or hospital.",
+      variant: "destructive",
+    });
   }
 
   const newAgeHistory = { ...ageHistory };
