@@ -37,6 +37,14 @@ export interface Character {
   healthInsurance?: HealthInsurance;
   socialMediaAccounts?: SocialMediaAccount[];
   realEstate?: RealEstateProperty[];
+  // Phase 3 additions
+  currentCountry?: string;
+  citizenship?: string[];
+  personalityType?: string;
+  mentalHealthConditions?: string[];
+  politicalAffiliation?: string;
+  environmentalAwareness?: number;
+  politicalInfluence?: number;
 }
 
 export interface EducationRecord {
