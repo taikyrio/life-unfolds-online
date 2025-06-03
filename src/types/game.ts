@@ -1,4 +1,3 @@
-
 export interface Character {
   id: string;
   name: string;
@@ -12,7 +11,8 @@ export interface Character {
   job?: string;
   salary?: number;
   jobLevel?: number;
-  education: EducationRecord; // Changed back to EducationRecord
+  jobPerformance?: JobPerformance;
+  education: EducationRecord;
   currentEducation?: CurrentEducation;
   relationshipStatus: 'single' | 'dating' | 'engaged' | 'married' | 'divorced' | 'widowed';
   partnerName?: string;
@@ -32,6 +32,11 @@ export interface Character {
   children: string[];
   customStats?: Record<string, number>;
   fame: number;
+  // Phase 2 additions
+  legalStatus?: LegalStatus;
+  healthInsurance?: HealthInsurance;
+  socialMediaAccounts?: SocialMediaAccount[];
+  realEstate?: RealEstateProperty[];
 }
 
 export interface EducationRecord {
@@ -267,4 +272,86 @@ export interface GameState {
   eventHistory: string[];
   achievements: string[];
   eventTracker: EventTracker;
+}
+
+export interface JobPerformance {
+  currentLevel: number;
+  yearsAtLevel: number;
+  totalExperience: number;
+  performanceRating: number;
+  promotionEligible: boolean;
+}
+
+export interface LegalStatus {
+  currentCases: LegalCase[];
+  prisonTime: number;
+  totalArrestsCount: number;
+  lawyerName?: string;
+  onProbation: boolean;
+  probationMonths: number;
+  courtDates: CourtDate[];
+}
+
+export interface LegalCase {
+  id: string;
+  type: 'criminal' | 'civil' | 'traffic';
+  charge: string;
+  severity: 'misdemeanor' | 'felony' | 'infraction';
+  status: 'pending' | 'trial' | 'settled' | 'dismissed';
+  fineAmount?: number;
+  prisonSentence?: number;
+  dateCreated: string;
+}
+
+export interface CourtDate {
+  id: string;
+  caseId: string;
+  date: string;
+  type: 'hearing' | 'trial' | 'sentencing';
+  result?: 'guilty' | 'not_guilty' | 'mistrial' | 'plea_deal';
+}
+
+export interface HealthInsurance {
+  provider: string;
+  monthlyPremium: number;
+  deductible: number;
+  coveragePercentage: number;
+  maxCoverage: number;
+  active: boolean;
+}
+
+export interface SocialMediaAccount {
+  platform: 'instagram' | 'twitter' | 'facebook' | 'tiktok' | 'youtube';
+  username: string;
+  followers: number;
+  verified: boolean;
+  monetized: boolean;
+  monthlyIncome: number;
+  posts: SocialMediaPost[];
+}
+
+export interface SocialMediaPost {
+  id: string;
+  content: string;
+  likes: number;
+  shares: number;
+  comments: number;
+  datePosted: string;
+  viral: boolean;
+}
+
+export interface RealEstateProperty {
+  id: string;
+  type: 'house' | 'apartment' | 'condo' | 'mansion' | 'commercial';
+  address: string;
+  purchasePrice: number;
+  currentValue: number;
+  monthlyPayment?: number;
+  rentIncome?: number;
+  owned: boolean;
+  mortgage?: {
+    remaining: number;
+    monthlyPayment: number;
+    interestRate: number;
+  };
 }
