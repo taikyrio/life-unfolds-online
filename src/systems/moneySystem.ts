@@ -1,5 +1,14 @@
 
 import { Character } from '../types/game';
+import { 
+  FinancialTransaction, 
+  FinancialRecord, 
+  Loan, 
+  Investment, 
+  RecurringExpense,
+  FinancialGoal,
+  BankAccount 
+} from '../types/finance';
 
 export interface LoanApplication {
   amount: number;
@@ -8,6 +17,71 @@ export interface LoanApplication {
   monthlyPayment: number;
   reason?: string;
 }
+
+// Initialize financial record for new characters
+export const initializeFinancialRecord = (): FinancialRecord => {
+  return {
+    bankBalance: 0,
+    transactionHistory: [],
+    yearlyIncome: 0,
+    yearlyExpenses: 0,
+    totalLifetimeEarnings: 0,
+    totalLifetimeSpending: 0,
+    currentLoans: [],
+    investments: [],
+    recurringExpenses: []
+  };
+};
+
+// Core transaction system
+export const modifyBankBalance = (
+  character: Character, 
+  amount: number, 
+  reason: string, 
+  category: FinancialTransaction['category'],
+  recurring = false
+): Character => {
+  const updatedCharacter = { ...character };
+  
+  // Initialize financial record if it doesn't exist
+  if (!updatedCharacter.financialRecord) {
+    updatedCharacter.financialRecord = initializeFinancialRecord();
+  }
+
+  const financialRecord = { ...updatedCharacter.financialRecord };
+  
+  // Update bank balance
+  financialRecord.bankBalance += amount;
+  
+  // Sync with wealth (for backward compatibility)
+  updatedCharacter.wealth = Math.max(0, Math.floor(financialRecord.bankBalance / 1000));
+
+  // Create transaction record
+  const transaction: FinancialTransaction = {
+    id: `txn_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+    year: updatedCharacter.age,
+    type: amount >= 0 ? 'Income' : 'Expense',
+    amount: Math.abs(amount),
+    description: reason,
+    category: category,
+    recurring: recurring,
+    timestamp: Date.now()
+  };
+
+  financialRecord.transactionHistory.push(transaction);
+
+  // Update yearly totals
+  if (amount >= 0) {
+    financialRecord.yearlyIncome += amount;
+    financialRecord.totalLifetimeEarnings += amount;
+  } else {
+    financialRecord.yearlyExpenses += Math.abs(amount);
+    financialRecord.totalLifetimeSpending += Math.abs(amount);
+  }
+
+  updatedCharacter.financialRecord = financialRecord;
+  return updatedCharacter;
+};
 
 export const calculateYearlySalaryIncrease = (character: Character): number => {
   if (!character.job || character.salary === 0) return 0;
@@ -83,47 +157,326 @@ export const applyForLoan = (character: Character, requestedAmount: number): Loa
   };
 };
 
-export const processYearlyFinances = (character: Character): Character => {
-  const updatedCharacter = { ...character };
+// Enhanced recurring expense system
+export const getRecurringExpenses = (character: Character): RecurringExpense[] => {
+  const expenses: RecurringExpense[] = [];
   
-  // Add yearly salary to wealth
-  if (character.job && character.salary > 0) {
-    updatedCharacter.wealth += character.salary;
-  }
-  
-  // Deduct living expenses based on age and lifestyle
-  let livingExpenses = 0;
+  // Basic living expenses
   if (character.age >= 18) {
-    // Base living expenses
-    livingExpenses = 12;
+    const livingWithParents = character.age < 25 && character.familyMembers.some(m => 
+      m.relationship === 'mother' || m.relationship === 'father'
+    );
     
-    // Add expenses for assets
-    const hasHouse = character.assets.some(asset => asset.type === 'property');
-    const hasCar = character.assets.some(asset => asset.type === 'vehicle');
-    
-    if (hasHouse) livingExpenses += 8; // Property taxes, maintenance
-    if (hasCar) livingExpenses += 3; // Insurance, gas, maintenance
-    
-    // Reduce expenses if living with family
-    if (character.age < 25 && character.familyMembers.some(m => m.relationship === 'mother' || m.relationship === 'father')) {
-      livingExpenses = Math.floor(livingExpenses * 0.5);
+    if (!livingWithParents) {
+      expenses.push({
+        id: 'rent',
+        name: 'Rent/Housing',
+        amount: 800 + Math.random() * 400, // $800-1200/month
+        frequency: 'Monthly',
+        category: 'Rent',
+        startAge: 18
+      });
     }
-  } else if (character.age >= 16) {
-    livingExpenses = 2; // Minimal expenses for teens
+    
+    expenses.push(
+      {
+        id: 'food',
+        name: 'Food & Groceries',
+        amount: 300 + Math.random() * 200, // $300-500/month
+        frequency: 'Monthly',
+        category: 'Food',
+        startAge: 16
+      },
+      {
+        id: 'phone',
+        name: 'Phone Bill',
+        amount: 50 + Math.random() * 50, // $50-100/month
+        frequency: 'Monthly',
+        category: 'Phone',
+        startAge: 16
+      }
+    );
   }
   
-  updatedCharacter.wealth = Math.max(0, updatedCharacter.wealth - livingExpenses);
+  // Asset-based expenses
+  const hasHouse = character.assets.some(asset => asset.type === 'property');
+  const hasCar = character.assets.some(asset => asset.type === 'vehicle');
+  
+  if (hasHouse) {
+    expenses.push({
+      id: 'property_tax',
+      name: 'Property Tax & Maintenance',
+      amount: 200 + Math.random() * 300, // $200-500/month
+      frequency: 'Monthly',
+      category: 'Other',
+      startAge: character.age
+    });
+  }
+  
+  if (hasCar) {
+    expenses.push({
+      id: 'car_expenses',
+      name: 'Car Insurance & Maintenance',
+      amount: 150 + Math.random() * 150, // $150-300/month
+      frequency: 'Monthly',
+      category: 'Car Maintenance',
+      startAge: character.age
+    });
+  }
+  
+  return expenses;
+};
+
+// Validation system
+export const canAfford = (character: Character, amount: number): boolean => {
+  const balance = character.financialRecord?.bankBalance || character.wealth * 1000;
+  return balance >= amount;
+};
+
+export const validatePurchase = (character: Character, amount: number, itemName: string): {
+  canPurchase: boolean;
+  message: string;
+} => {
+  if (!canAfford(character, amount)) {
+    const balance = character.financialRecord?.bankBalance || character.wealth * 1000;
+    const shortfall = amount - balance;
+    return {
+      canPurchase: false,
+      message: `You need $${shortfall.toLocaleString()} more to afford ${itemName}. Current balance: $${balance.toLocaleString()}`
+    };
+  }
+  
+  return {
+    canPurchase: true,
+    message: `Purchase confirmed: ${itemName} for $${amount.toLocaleString()}`
+  };
+};
+
+export const processYearlyFinances = (character: Character): Character => {
+  let updatedCharacter = { ...character };
+  
+  // Initialize financial record if needed
+  if (!updatedCharacter.financialRecord) {
+    updatedCharacter.financialRecord = initializeFinancialRecord();
+  }
+  
+  // Reset yearly totals
+  updatedCharacter.financialRecord.yearlyIncome = 0;
+  updatedCharacter.financialRecord.yearlyExpenses = 0;
+  
+  // Add yearly salary
+  if (character.job && character.salary && character.salary > 0) {
+    const salaryAmount = character.salary * 1000; // Convert to dollars
+    updatedCharacter = modifyBankBalance(
+      updatedCharacter,
+      salaryAmount,
+      `Annual salary from ${character.job}`,
+      'Salary',
+      true
+    );
+  }
+  
+  // Process recurring expenses
+  const recurringExpenses = getRecurringExpenses(character);
+  
+  for (const expense of recurringExpenses) {
+    if (expense.startAge <= character.age && (!expense.endAge || expense.endAge >= character.age)) {
+      const yearlyAmount = expense.frequency === 'Monthly' ? expense.amount * 12 : expense.amount;
+      
+      updatedCharacter = modifyBankBalance(
+        updatedCharacter,
+        -yearlyAmount,
+        expense.name,
+        expense.category as FinancialTransaction['category'],
+        true
+      );
+    }
+  }
+  
+  // Process loan payments
+  if (updatedCharacter.financialRecord.currentLoans.length > 0) {
+    const updatedLoans: Loan[] = [];
+    
+    for (const loan of updatedCharacter.financialRecord.currentLoans) {
+      if (loan.remainingMonths > 0) {
+        const yearlyPayment = loan.monthlyPayment * 12;
+        
+        updatedCharacter = modifyBankBalance(
+          updatedCharacter,
+          -yearlyPayment,
+          `Loan payment to ${loan.lender}`,
+          'Loan',
+          true
+        );
+        
+        const updatedLoan = { 
+          ...loan, 
+          remainingMonths: loan.remainingMonths - 12,
+          amount: Math.max(0, loan.amount - yearlyPayment)
+        };
+        
+        if (updatedLoan.remainingMonths > 0) {
+          updatedLoans.push(updatedLoan);
+        }
+      }
+    }
+    
+    updatedCharacter.financialRecord.currentLoans = updatedLoans;
+  }
+  
+  // Random financial events
+  if (Math.random() < 0.15) { // 15% chance of random expense
+    const randomExpenses = [
+      { name: 'Car repair', amount: 500 + Math.random() * 1500, category: 'Car Maintenance' },
+      { name: 'Medical bill', amount: 200 + Math.random() * 800, category: 'Medical' },
+      { name: 'Home repair', amount: 300 + Math.random() * 1200, category: 'Other' },
+      { name: 'Traffic fine', amount: 50 + Math.random() * 200, category: 'Fine' },
+      { name: 'Emergency expense', amount: 100 + Math.random() * 500, category: 'Other' }
+    ];
+    
+    const randomExpense = randomExpenses[Math.floor(Math.random() * randomExpenses.length)];
+    
+    updatedCharacter = modifyBankBalance(
+      updatedCharacter,
+      -randomExpense.amount,
+      randomExpense.name,
+      randomExpense.category as FinancialTransaction['category']
+    );
+  }
   
   return updatedCharacter;
 };
 
 export const formatCurrency = (amount: number): string => {
-  if (amount >= 1000) {
-    return `$${(amount / 1000).toFixed(1)}M`;
-  } else if (amount >= 100) {
-    return `$${amount}k`;
+  if (amount >= 1000000) {
+    return `$${(amount / 1000000).toFixed(1)}M`;
+  } else if (amount >= 1000) {
+    return `$${(amount / 1000).toFixed(1)}k`;
   }
-  return `$${amount}k`;
+  return `$${amount.toLocaleString()}`;
+};
+
+// Investment system
+export const createInvestment = (
+  character: Character,
+  type: Investment['type'],
+  amount: number,
+  description: string
+): Character => {
+  if (!canAfford(character, amount)) {
+    return character;
+  }
+
+  let updatedCharacter = modifyBankBalance(
+    character,
+    -amount,
+    `Investment in ${type}: ${description}`,
+    'Investment'
+  );
+
+  if (!updatedCharacter.financialRecord) {
+    updatedCharacter.financialRecord = initializeFinancialRecord();
+  }
+
+  const investment: Investment = {
+    id: `inv_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+    type,
+    amount,
+    currentValue: amount,
+    annualReturn: getInvestmentReturn(type),
+    yearPurchased: character.age,
+    description
+  };
+
+  updatedCharacter.financialRecord.investments.push(investment);
+  return updatedCharacter;
+};
+
+export const getInvestmentReturn = (type: Investment['type']): number => {
+  const returns = {
+    'Stocks': 0.08 + (Math.random() * 0.12), // 8-20% with volatility
+    'Bonds': 0.03 + (Math.random() * 0.04), // 3-7%
+    'Real Estate': 0.05 + (Math.random() * 0.08), // 5-13%
+    'Crypto': 0.15 + (Math.random() * 0.25), // 15-40% (very volatile)
+    'Savings Account': 0.01 + (Math.random() * 0.02), // 1-3%
+    'CD': 0.02 + (Math.random() * 0.03) // 2-5%
+  };
+  return returns[type];
+};
+
+// Loan creation
+export const createLoan = (
+  character: Character,
+  amount: number,
+  type: Loan['type'],
+  lender: string,
+  interestRate: number,
+  termMonths: number
+): Character => {
+  let updatedCharacter = modifyBankBalance(
+    character,
+    amount,
+    `Loan from ${lender}`,
+    'Loan'
+  );
+
+  if (!updatedCharacter.financialRecord) {
+    updatedCharacter.financialRecord = initializeFinancialRecord();
+  }
+
+  const monthlyPayment = (amount * (interestRate / 12)) / (1 - Math.pow(1 + (interestRate / 12), -termMonths));
+
+  const loan: Loan = {
+    id: `loan_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+    amount,
+    originalAmount: amount,
+    interestRate,
+    monthlyPayment,
+    remainingMonths: termMonths,
+    type,
+    lender,
+    startYear: character.age
+  };
+
+  updatedCharacter.financialRecord.currentLoans.push(loan);
+  return updatedCharacter;
+};
+
+// Financial analytics
+export const getFinancialSummary = (character: Character): {
+  netWorth: number;
+  monthlyIncome: number;
+  monthlyExpenses: number;
+  totalAssets: number;
+  totalLiabilities: number;
+  debtToIncomeRatio: number;
+} => {
+  const financialRecord = character.financialRecord || initializeFinancialRecord();
+  
+  const totalAssets = financialRecord.bankBalance + 
+    financialRecord.investments.reduce((sum, inv) => sum + inv.currentValue, 0) +
+    character.assets.reduce((sum, asset) => sum + (asset.value || 0), 0);
+  
+  const totalLiabilities = financialRecord.currentLoans.reduce((sum, loan) => sum + loan.amount, 0);
+  
+  const netWorth = totalAssets - totalLiabilities;
+  
+  const monthlyIncome = (character.salary || 0) * 1000 / 12;
+  const monthlyExpenses = getRecurringExpenses(character)
+    .filter(exp => exp.frequency === 'Monthly')
+    .reduce((sum, exp) => sum + exp.amount, 0);
+  
+  const debtToIncomeRatio = monthlyIncome > 0 ? 
+    (financialRecord.currentLoans.reduce((sum, loan) => sum + loan.monthlyPayment, 0) / monthlyIncome) : 0;
+
+  return {
+    netWorth,
+    monthlyIncome,
+    monthlyExpenses,
+    totalAssets,
+    totalLiabilities,
+    debtToIncomeRatio
+  };
 };
 
 export const calculateLoanEligibility = (character: Character): { maxAmount: number; minInterest: number } => {

@@ -1,6 +1,6 @@
 
 export interface EducationRecord {
-  levels: string[]; // Changed from being a direct array to having a levels property
+  levels: string[]; // For backward compatibility
   gpa?: number;
   graduationYear?: number;
   currentGPA?: number;
@@ -15,6 +15,16 @@ export interface EducationRecord {
   suspensions?: number;
   detentions?: number;
   graduationHonors?: 'summa_cum_laude' | 'magna_cum_laude' | 'cum_laude' | 'none';
+  // New education system properties
+  currentStage?: string | null;
+  currentSchool?: string | null;
+  currentYear?: number;
+  completedStages?: string[];
+  achievements?: string[];
+  major?: string;
+  testScores?: number[];
+  disciplinaryActions?: number;
+  dropouts?: number;
 }
 
 export interface CurrentEducation {

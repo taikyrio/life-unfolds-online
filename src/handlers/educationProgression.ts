@@ -50,7 +50,7 @@ const handleGraduation = (
   ageHistory?: Record<number, string[]>,
   setAgeHistory?: (history: Record<number, string[]>) => void
 ): Character => {
-  const updatedCharacter = { ...character };
+  let updatedCharacter = { ...character };
 
   // Graduate the character
   updatedCharacter.education.completedStages.push(updatedCharacter.education.currentStage!);
@@ -82,7 +82,7 @@ const handleGraduation = (
       [updatedCharacter.age]: [...currentHistory, graduationMessage]
     });
 
-      updatedCharacter = checkAutoProgressionToNextLevel(updatedCharacter, ageHistory, setAgeHistory);
+    updatedCharacter = checkAutoProgressionToNextLevel(updatedCharacter, ageHistory, setAgeHistory);
   }
 
   return updatedCharacter;

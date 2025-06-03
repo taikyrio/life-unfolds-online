@@ -4,6 +4,7 @@ import { EducationRecord, CurrentEducation } from './education';
 import { LegalStatus } from './legal';
 import { HealthInsurance } from './health';
 import { SocialMediaAccount, RealEstateProperty } from './social';
+import { FinancialRecord } from './finance';
 
 export interface Character {
   id: string;
@@ -19,6 +20,7 @@ export interface Character {
   salary?: number;
   jobLevel?: number;
   jobPerformance?: JobPerformance;
+  financialRecord?: FinancialRecord;
   education: EducationRecord;
   currentEducation?: CurrentEducation;
   relationshipStatus: 'single' | 'dating' | 'engaged' | 'married' | 'divorced' | 'widowed';
