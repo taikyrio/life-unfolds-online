@@ -177,7 +177,8 @@ export const GameBoard: React.FC<GameBoardProps> = ({ gameState, onGameStateChan
           testScores: [],
           disciplinaryActions: 0,
           achievements: [],
-          dropouts: 0
+          dropouts: 0,
+          levels: []
         }
       };
 
@@ -193,16 +194,21 @@ export const GameBoard: React.FC<GameBoardProps> = ({ gameState, onGameStateChan
     if (!gameState.character.education) return;
 
     const autoEnrollAge = (age: number) => {
+      // Ensure education object exists and is properly structured
+      if (!gameState.character.education || !Array.isArray(gameState.character.education.completedStages)) {
+        return;
+      }
+
       // Auto-enroll in elementary at age 6
-      if (age >= 6 && age <= 11 && !gameState.character.education?.currentStage && !gameState.character.education?.completedStages?.includes('elementary')) {
+      if (age >= 6 && age <= 11 && !gameState.character.education.currentStage && !gameState.character.education.completedStages.includes('elementary')) {
         handleEducationAction(gameState.character, 'enroll', { stageId: 'elementary', schoolId: 'public_elementary' }, ageHistory, setAgeHistory, onGameStateChange, gameState, toast);
       }
       // Auto-enroll in middle school at age 12
-      else if (age >= 12 && age <= 14 && gameState.character.education?.completedStages?.includes('elementary') && !gameState.character.education?.currentStage && !gameState.character.education?.completedStages?.includes('middle')) {
+      else if (age >= 12 && age <= 14 && gameState.character.education.completedStages.includes('elementary') && !gameState.character.education.currentStage && !gameState.character.education.completedStages.includes('middle')) {
         handleEducationAction(gameState.character, 'enroll', { stageId: 'middle', schoolId: 'public_middle' }, ageHistory, setAgeHistory, onGameStateChange, gameState, toast);
       }
       // Auto-enroll in high school at age 15
-      else if (age >= 15 && age <= 17 && gameState.character.education?.completedStages?.includes('middle') && !gameState.character.education?.currentStage && !gameState.character.education?.completedStages?.includes('high')) {
+      else if (age >= 15 && age <= 17 && gameState.character.education.completedStages.includes('middle') && !gameState.character.education.currentStage && !gameState.character.education.completedStages.includes('high')) {
         handleEducationAction(gameState.character, 'enroll', { stageId: 'high', schoolId: 'public_high' }, ageHistory, setAgeHistory, onGameStateChange, gameState, toast);
       }
     };
