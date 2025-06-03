@@ -1,5 +1,5 @@
-
 import { Character } from './character';
+import { StatEffects, Choice } from './core';
 
 export interface LifeEvent {
   id: string;
@@ -20,40 +20,6 @@ export interface LifeEvent {
   };
 }
 
-export interface Choice {
-  id: string;
-  text: string;
-  effects: StatEffects;
-  emoji?: string;
-  consequences?: string[];
-  unlocks?: string[];
-  flags?: string[];
-}
-
-export interface StatEffects {
-  health?: number;
-  happiness?: number;
-  smarts?: number;
-  looks?: number;
-  wealth?: number;
-  relationships?: number;
-  salary?: number;
-  fame?: number;
-  notoriety?: number;
-  job?: string;
-  jobLevel?: number;
-  education?: string[];
-  currentEducation?: any;
-  relationshipStatus?: 'single' | 'dating' | 'engaged' | 'married' | 'divorced' | 'widowed';
-  partnerName?: string;
-  children?: string[];
-  criminalRecord?: boolean;
-  familyMemberHealth?: { id: string; change: number };
-  familyMemberRelationship?: { id: string; change: number };
-  newFamilyMember?: any;
-  socialCircleChange?: { id: string; influence: number };
-}
-
 export interface EventTracker {
   triggeredEvents: Set<string>;
   lastEventAge: number;
@@ -70,3 +36,6 @@ export interface GameState {
   achievements: string[];
   eventTracker: EventTracker;
 }
+
+// Re-export for backward compatibility
+export { StatEffects, Choice };

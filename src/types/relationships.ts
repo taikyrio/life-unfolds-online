@@ -1,4 +1,6 @@
 
+import { PersonalityTraits } from './core';
+
 export interface FamilyMember {
   id: string;
   name: string;
@@ -105,6 +107,3 @@ export interface SocialCircle {
   activities: string[];
   influence: number; // How much this circle affects decisions
 }
-
-// Import PersonalityTraits from character types
-import { PersonalityTraits } from './character';

@@ -1,3 +1,9 @@
+import { PersonalityTraits, ZodiacSign, Asset, CriminalRecord, JobPerformance } from './core';
+import { FamilyMember } from './relationships';
+import { EducationRecord, CurrentEducation } from './education';
+import { LegalStatus } from './legal';
+import { HealthInsurance } from './health';
+import { SocialMediaAccount, RealEstateProperty } from './social';
 
 export interface Character {
   id: string;
@@ -46,48 +52,5 @@ export interface Character {
   politicalAffiliation?: string;
   environmentalAwareness?: number;
   politicalInfluence?: number;
-}
-
-export interface JobPerformance {
-  currentLevel: number;
-  yearsAtLevel: number;
-  totalExperience: number;
-  performanceRating: number;
-  promotionEligible: boolean;
-}
-
-export interface Asset {
-  id: string;
-  name: string;
-  type: 'property' | 'vehicle' | 'investment' | 'collectible';
-  value: number;
-  purchasePrice: number;
-  purchaseAge: number;
-  description: string;
-}
-
-export interface CriminalRecord {
-  arrests: number;
-  convictions: number;
-  prisonTime: number;
-  crimes: string[];
-  notoriety: number;
-}
-
-export interface ZodiacSign {
-  name: string;
-  emoji: string;
-  traits: string[];
-  luckyNumbers: number[];
-  element: 'fire' | 'earth' | 'air' | 'water';
-}
-
-export interface PersonalityTraits {
-  kindness: number; // 0-100
-  loyalty: number; // 0-100
-  intelligence: number; // 0-100
-  humor: number; // 0-100
-  ambition: number; // 0-100
-  stability: number; // 0-100
-  generosity: number; // 0-100
+  personalityTraits?: PersonalityTraits;
 }

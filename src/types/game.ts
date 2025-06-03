@@ -1,5 +1,6 @@
 
 // Re-export all types from the focused type files
+export * from './core';
 export * from './character';
 export * from './relationships';
 export * from './education';
@@ -16,3 +17,4 @@ export type { LegalStatus, LegalCase } from './legal';
 export type { HealthInsurance } from './health';
 export type { SocialMediaAccount, RealEstateProperty } from './social';
 export type { LifeEvent, Choice, StatEffects, EventTracker, GameState } from './gameState';
+export type { PersonalityTraits, ZodiacSign, Asset, CriminalRecord, JobPerformance } from './core';
