@@ -1,4 +1,3 @@
-
 import { Character, LegalCase, CourtDate, LegalStatus } from '../types/game';
 
 export interface LegalEvent {
@@ -23,6 +22,14 @@ export interface DefenseOption {
   successRate: number;
   description: string;
   type: 'self_defense' | 'public_defender' | 'private_lawyer' | 'plea_deal';
+}
+
+export interface LegalCaseResult {
+  wealth: number;
+  happiness: number;
+  reputation: number;
+  prisonTime?: number;
+  probation?: number;
 }
 
 export const legalEvents: LegalEvent[] = [
@@ -149,10 +156,10 @@ export const resolveLegalCase = (
   character: Character,
   legalEvent: LegalEvent,
   defenseChoice: DefenseOption
-): { success: boolean; result: string; effects: any } => {
+): { success: boolean; result: string; effects: LegalCaseResult } => {
   const success = Math.random() < (defenseChoice.successRate / 100);
   
-  const effects = {
+  const effects: LegalCaseResult = {
     wealth: -defenseChoice.cost,
     happiness: success ? 10 : -20,
     reputation: success ? 5 : -15
