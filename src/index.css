@@ -6,58 +6,79 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-    --primary: 221.2 83.2% 53.3%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 210 40% 96%;
-    --secondary-foreground: 222.2 84% 4.9%;
-    --muted: 210 40% 96%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 210 40% 96%;
-    --accent-foreground: 222.2 84% 4.9%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 221.2 83.2% 53.3%;
-    --radius: 0.75rem;
-    --chart-1: 12 76% 61%;
-    --chart-2: 173 58% 39%;
-    --chart-3: 197 37% 24%;
-    --chart-4: 43 74% 66%;
-    --chart-5: 27 87% 67%;
+    /* Apple Design System Colors */
+    --background: 210 20% 98%;
+    --foreground: 210 40% 8%;
+    --card: 210 20% 98%;
+    --card-foreground: 210 40% 8%;
+    --popover: 210 20% 98%;
+    --popover-foreground: 210 40% 8%;
+    --primary: 217 91% 60%;
+    --primary-foreground: 210 20% 98%;
+    --secondary: 214 32% 91%;
+    --secondary-foreground: 210 40% 8%;
+    --muted: 214 32% 91%;
+    --muted-foreground: 215 25% 27%;
+    --accent: 214 32% 91%;
+    --accent-foreground: 210 40% 8%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 210 20% 98%;
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    --ring: 217 91% 60%;
+    --radius: 1.25rem;
+    
+    /* Apple-specific variables */
+    --glass-bg: rgba(255, 255, 255, 0.1);
+    --glass-border: rgba(255, 255, 255, 0.2);
+    --blur-strength: 20px;
+    --shadow-light: 0 8px 32px rgba(0, 0, 0, 0.1);
+    --shadow-medium: 0 16px 64px rgba(0, 0, 0, 0.15);
+    --shadow-heavy: 0 24px 80px rgba(0, 0, 0, 0.25);
+    --transition-apple: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    
+    /* Chart colors */
+    --chart-1: 217 91% 60%;
+    --chart-2: 142 76% 36%;
+    --chart-3: 346 87% 43%;
+    --chart-4: 45 93% 47%;
+    --chart-5: 271 91% 65%;
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
+    --background: 222 84% 5%;
     --foreground: 210 40% 98%;
-    --card: 222.2 84% 4.9%;
+    --card: 222 84% 5%;
     --card-foreground: 210 40% 98%;
-    --popover: 222.2 84% 4.9%;
+    --popover: 222 84% 5%;
     --popover-foreground: 210 40% 98%;
-    --primary: 217.2 91.2% 59.8%;
-    --primary-foreground: 222.2 84% 4.9%;
-    --secondary: 217.2 32.6% 17.5%;
+    --primary: 217 91% 60%;
+    --primary-foreground: 222 84% 5%;
+    --secondary: 217 33% 18%;
     --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 217.2 32.6% 17.5%;
+    --muted: 217 33% 18%;
+    --muted-foreground: 215 20% 65%;
+    --accent: 217 33% 18%;
     --accent-foreground: 210 40% 98%;
-    --destructive: 0 62.8% 30.6%;
+    --destructive: 0 63% 31%;
     --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 224.3 76.3% 94.1%;
-    --chart-1: 220 70% 50%;
-    --chart-2: 160 60% 45%;
-    --chart-3: 30 80% 55%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%;
+    --border: 217 33% 18%;
+    --input: 217 33% 18%;
+    --ring: 217 91% 60%;
+    
+    /* Dark mode glass effects */
+    --glass-bg: rgba(0, 0, 0, 0.3);
+    --glass-border: rgba(255, 255, 255, 0.1);
+    --shadow-light: 0 8px 32px rgba(0, 0, 0, 0.3);
+    --shadow-medium: 0 16px 64px rgba(0, 0, 0, 0.4);
+    --shadow-heavy: 0 24px 80px rgba(0, 0, 0, 0.5);
+    
+    /* Dark chart colors */
+    --chart-1: 217 91% 60%;
+    --chart-2: 142 76% 36%;
+    --chart-3: 346 87% 43%;
+    --chart-4: 45 93% 47%;
+    --chart-5: 271 91% 65%;
   }
 }
 
@@ -70,36 +91,221 @@
   }
 }
 
-/* Mobile-specific utilities */
+/* Apple Design System Utilities */
 @layer utilities {
+  /* Glass Morphism Effects */
+  .glass-card {
+    background: var(--glass-bg);
+    backdrop-filter: blur(var(--blur-strength));
+    -webkit-backdrop-filter: blur(var(--blur-strength));
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--shadow-light);
+  }
+  
+  .glass-overlay {
+    background: var(--glass-bg);
+    backdrop-filter: blur(calc(var(--blur-strength) * 1.5));
+    -webkit-backdrop-filter: blur(calc(var(--blur-strength) * 1.5));
+    border: 1px solid var(--glass-border);
+  }
+
+  /* Apple-style depth and shadows */
+  .apple-shadow-sm {
+    box-shadow: var(--shadow-light);
+  }
+  
+  .apple-shadow-md {
+    box-shadow: var(--shadow-medium);
+  }
+  
+  .apple-shadow-lg {
+    box-shadow: var(--shadow-heavy);
+  }
+
+  /* Apple transitions */
+  .apple-transition {
+    transition: all 0.3s var(--transition-apple);
+  }
+  
+  .apple-hover {
+    @apply apple-transition hover:scale-105 hover:shadow-lg active:scale-95;
+  }
+
+  /* visionOS spatial design */
+  .spatial-depth {
+    transform-style: preserve-3d;
+    perspective: 1000px;
+  }
+  
+  .spatial-float {
+    transform: translateZ(20px);
+  }
+
+  /* iOS-style safe areas */
   .safe-area-pb {
     padding-bottom: env(safe-area-inset-bottom);
+  }
+  
+  .safe-area-pt {
+    padding-top: env(safe-area-inset-top);
   }
 
   .touch-action-manipulation {
     touch-action: manipulation;
   }
 
-  /* Improved touch targets for mobile */
+  /* Enhanced touch feedback */
   .touch-feedback {
-    @apply touch-action-manipulation active:scale-95 transition-transform;
+    @apply touch-action-manipulation apple-transition active:scale-95;
+  }
+  
+  /* Apple button styles */
+  .apple-button {
+    @apply glass-card apple-hover touch-feedback rounded-2xl px-6 py-3 font-medium min-h-[44px] flex items-center justify-center;
+  }
+  
+  .apple-button-primary {
+    @apply bg-blue-500 text-white border-blue-600 hover:bg-blue-600;
+  }
+  
+  .apple-button-secondary {
+    @apply bg-white/20 text-current border-white/30;
+  }
+
+  /* Mobile-first responsive utilities */
+  .mobile-container {
+    @apply px-4 mx-auto max-w-screen-sm;
+  }
+  
+  .mobile-card {
+    @apply glass-card rounded-3xl p-4 apple-shadow-md;
+  }
+  
+  .mobile-button {
+    @apply w-full min-h-[52px] rounded-2xl font-semibold text-lg apple-transition active:scale-95;
+  }
+  
+  .mobile-grid {
+    @apply grid gap-3;
+  }
+  
+  .mobile-stat-grid {
+    @apply grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3;
+  }
+  
+  .mobile-tab-bar {
+    @apply flex overflow-x-auto scrollbar-hide gap-2 px-4 py-3;
+  }
+  
+  .mobile-tab {
+    @apply flex-shrink-0 min-w-[60px] apple-button text-center;
   }
 }
 
-/* Enhanced mobile responsiveness */
-@media (max-width: 768px) {
-  .container {
+/* Device-specific optimizations */
+
+/* iPhone SE (375px) - Ultra compact layout */
+@media (max-width: 375px) {
+  .mobile-container {
+    @apply px-3;
+  }
+  
+  .mobile-card {
+    @apply p-3 rounded-2xl;
+  }
+  
+  .mobile-button {
+    @apply min-h-[48px] text-sm px-3;
+  }
+  
+  .mobile-stat-grid {
+    @apply grid-cols-2 gap-2;
+  }
+  
+  .mobile-tab {
+    @apply min-w-[50px] px-2;
+  }
+  
+  /* Compact text sizes for SE */
+  h1 { @apply text-lg; }
+  h2 { @apply text-base; }
+  h3 { @apply text-sm; }
+}
+
+/* iPhone 12/13/14 Mini (390px) */
+@media (min-width: 376px) and (max-width: 390px) {
+  .mobile-container {
     @apply px-4;
   }
-
-  /* Better spacing for mobile cards */
-  .mobile-card {
-    @apply mx-4 rounded-lg shadow-sm;
+  
+  .mobile-stat-grid {
+    @apply grid-cols-3 gap-3;
   }
+}
 
-  /* Improved button sizing for touch */
+/* iPhone 12/13/14/15 Standard (393px) & iPhone 16 (393px) */
+@media (min-width: 391px) and (max-width: 430px) {
+  .mobile-container {
+    @apply px-4;
+  }
+  
+  .mobile-stat-grid {
+    @apply grid-cols-3 gap-3;
+  }
+  
   .mobile-button {
-    @apply min-h-[44px] px-4;
+    @apply min-h-[52px];
+  }
+}
+
+/* iPhone 12/13/14/15/16 Pro Max (428px-430px) */
+@media (min-width: 428px) and (max-width: 430px) {
+  .mobile-stat-grid {
+    @apply grid-cols-4 gap-3;
+  }
+}
+
+/* Samsung Galaxy S20/S21/S22/S23 Standard (360px-412px) */
+@media (min-width: 360px) and (max-width: 412px) {
+  .mobile-container {
+    @apply px-4;
+  }
+  
+  .mobile-stat-grid {
+    @apply grid-cols-3 gap-3;
+  }
+}
+
+/* Samsung Galaxy S20/S21/S22/S23 Ultra & Note series (412px-428px) */
+@media (min-width: 412px) and (max-width: 428px) {
+  .mobile-stat-grid {
+    @apply grid-cols-4 gap-3;
+  }
+}
+
+/* Google Pixel phones (393px-411px) */
+@media (min-width: 393px) and (max-width: 411px) {
+  .mobile-container {
+    @apply px-4;
+  }
+  
+  .mobile-stat-grid {
+    @apply grid-cols-3 gap-3;
+  }
+}
+
+/* Tablet and larger devices */
+@media (min-width: 768px) {
+  .mobile-container {
+    @apply max-w-md mx-auto px-6;
+  }
+  
+  .mobile-stat-grid {
+    @apply grid-cols-5 gap-4;
+  }
+  
+  .mobile-button {
+    @apply min-h-[56px] text-base;
   }
 }
 
