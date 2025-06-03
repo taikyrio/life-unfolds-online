@@ -1,5 +1,6 @@
 
 import { Character, EducationRecord, Asset } from '../types/game';
+import { JobPerformance } from '../types/career';
 import { getZodiacSign } from './zodiacUtils';
 import { generateInitialFamily } from './familyUtils';
 
@@ -7,13 +8,16 @@ export const generateRandomName = (): string => {
   const firstNames = [
     'Alex', 'Jordan', 'Taylor', 'Morgan', 'Casey', 'Riley', 'Avery', 'Cameron',
     'Quinn', 'Blake', 'Sage', 'River', 'Rowan', 'Phoenix', 'Emery', 'Skylar',
-    'Jamie', 'Reese', 'Finley', 'Harper', 'Peyton', 'Kendall', 'Logan', 'Hayden'
+    'Jamie', 'Reese', 'Finley', 'Harper', 'Peyton', 'Kendall', 'Logan', 'Hayden',
+    'Emma', 'Liam', 'Olivia', 'Noah', 'Ava', 'Ethan', 'Sophia', 'Mason',
+    'Isabella', 'William', 'Mia', 'James', 'Charlotte', 'Benjamin', 'Amelia', 'Lucas'
   ];
   
   const lastNames = [
     'Smith', 'Johnson', 'Williams', 'Brown', 'Jones', 'Garcia', 'Miller', 'Davis',
     'Rodriguez', 'Martinez', 'Hernandez', 'Lopez', 'Gonzalez', 'Wilson', 'Anderson', 'Thomas',
-    'Taylor', 'Moore', 'Jackson', 'Martin', 'Lee', 'Perez', 'Thompson', 'White'
+    'Taylor', 'Moore', 'Jackson', 'Martin', 'Lee', 'Perez', 'Thompson', 'White',
+    'Harris', 'Sanchez', 'Clark', 'Ramirez', 'Lewis', 'Robinson', 'Walker', 'Young'
   ];
   
   const firstName = firstNames[Math.floor(Math.random() * firstNames.length)];
@@ -78,7 +82,15 @@ export const createCharacter = (
     achievements: [],
     relationshipStatus: 'single' as const,
     fame: 0,
-    customStats: {}
+    customStats: {},
+    // Add job performance tracking
+    jobPerformance: {
+      currentLevel: 1,
+      yearsAtLevel: 0,
+      totalExperience: 0,
+      performanceRating: 50,
+      promotionEligible: false
+    } as JobPerformance
   };
 
   // Apply zodiac modifiers to the randomized stats

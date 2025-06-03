@@ -1,12 +1,12 @@
 
 import { Character, EventTracker } from '../../types/game';
-import { getLifeStage } from '../../utils/gameUtils';
+import { getLifeStage } from '../../utils/gameStateUtils';
 import { DynamicEvent } from './eventTypes';
 import { childhoodEvents } from './childhoodEvents';
 import { teenageEvents } from './teenageEvents';
 import { adultEvents } from './adultEvents';
 import { seniorEvents } from './seniorEvents';
-import { expandedLifeEvents } from '../expandedEvents';
+import { expandedLifeEvents } from '../expandedLifeEvents';
 
 export const createDynamicEventSystem = () => {
   const events: DynamicEvent[] = [
@@ -14,7 +14,17 @@ export const createDynamicEventSystem = () => {
     ...teenageEvents,
     ...adultEvents,
     ...seniorEvents,
-    ...expandedLifeEvents
+    // Convert expanded life events to dynamic events
+    ...expandedLifeEvents.map(event => ({
+      ...event,
+      conditions: {
+        minAge: event.ageRequirement?.min,
+        maxAge: event.ageRequirement?.max,
+        probability: 0.3
+      },
+      weight: 1,
+      flags: []
+    }))
   ];
 
   const getAvailableEvents = (character: Character, eventTracker: EventTracker): DynamicEvent[] => {
@@ -56,6 +66,11 @@ export const createDynamicEventSystem = () => {
       // Check if event was already triggered recently
       if (eventTracker.triggeredEvents.has(event.id)) return false;
       
+      // Check cooldown
+      const cooldownKey = `${event.id}_cooldown`;
+      const lastTriggered = eventTracker.eventCooldowns.get(cooldownKey);
+      if (lastTriggered && (character.age - lastTriggered) < 2) return false;
+      
       return true;
     });
   };
@@ -64,11 +79,11 @@ export const createDynamicEventSystem = () => {
     if (availableEvents.length === 0) return null;
     
     // Weighted random selection
-    const totalWeight = availableEvents.reduce((sum, event) => sum + event.weight, 0);
+    const totalWeight = availableEvents.reduce((sum, event) => sum + (event.weight || 1), 0);
     let random = Math.random() * totalWeight;
     
     for (const event of availableEvents) {
-      random -= event.weight;
+      random -= (event.weight || 1);
       if (random <= 0) return event;
     }
     
