@@ -12,7 +12,7 @@ import { checkAchievements } from '../../systems/achievementSystem';
 import { processYearlyFinances } from '../../systems/moneySystem';
 import { applyStatBalancing } from '../../utils/statBalancing';
 import { getLifeStage } from '../../utils/gameStateUtils';
-import { autoEnrollEducation } from '../handlers/EducationActionHandler';
+import { autoEnrollEducation } from '../../handlers/educationProgression';
 
 export const processAgeUp = (
   gameState: GameState,
