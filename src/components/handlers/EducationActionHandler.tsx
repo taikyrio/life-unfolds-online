@@ -1,6 +1,7 @@
-
 import { Character } from '../../types/game';
 import { educationStages, educationEvents, getAvailableSchools, calculateGPA, universityMajors } from '../../data/educationData';
+import { autoEnrollEducation } from '../../handlers/educationProgression';
+import { initializeEducationData, isMandatoryEducationAge } from '../../utils/educationHelpers';
 
 export const handleEducationAction = (
   character: Character,
@@ -16,21 +17,7 @@ export const handleEducationAction = (
   let message = '';
 
   // Initialize education data if not present
-  if (!updatedCharacter.education) {
-    updatedCharacter.education = {
-      currentStage: null,
-      currentSchool: null,
-      currentYear: 0,
-      gpa: 0,
-      grades: [],
-      completedStages: [],
-      major: null,
-      testScores: [],
-      disciplinaryActions: 0,
-      achievements: [],
-      dropouts: 0
-    };
-  }
+  updatedCharacter = initializeEducationData(updatedCharacter);
 
   switch (action) {
     case 'enroll':
@@ -207,57 +194,9 @@ export const handleEducationAction = (
       break;
 
     case 'progress_year':
-      if (!updatedCharacter.education.currentStage) break;
-
-      const currentStageData = educationStages.find(s => s.id === updatedCharacter.education.currentStage);
-      if (!currentStageData) break;
-
-      updatedCharacter.education.currentYear += 1;
-
-      // Random GPA fluctuation based on smarts
-      const gpaChange = (Math.random() - 0.5) * 0.3 + (updatedCharacter.smarts / 200);
-      updatedCharacter.education.gpa = Math.max(0, Math.min(4.0, updatedCharacter.education.gpa + gpaChange));
-
-      // Check for graduation
-      if (updatedCharacter.education.currentYear >= currentStageData.duration) {
-        // Graduate the character
-        updatedCharacter.education.completedStages.push(updatedCharacter.education.currentStage);
-        updatedCharacter.education.currentStage = null;
-        updatedCharacter.education.currentSchool = null;
-        updatedCharacter.education.currentYear = 0;
-
-        // Bonuses based on GPA
-        const gpa = updatedCharacter.education.gpa;
-        if (gpa >= 3.7) {
-          updatedCharacter.smarts = Math.min(100, updatedCharacter.smarts + 15);
-          updatedCharacter.education.achievements.push('Graduated with Honors');
-          message = `Congratulations! You graduated ${currentStageData.name} with honors (GPA: ${gpa.toFixed(2)})!`;
-        } else if (gpa >= 3.0) {
-          updatedCharacter.smarts = Math.min(100, updatedCharacter.smarts + 10);
-          message = `You graduated ${currentStageData.name} with a GPA of ${gpa.toFixed(2)}!`;
-        } else {
-          updatedCharacter.smarts = Math.min(100, updatedCharacter.smarts + 5);
-          message = `You barely graduated ${currentStageData.name} with a GPA of ${gpa.toFixed(2)}.`;
-        }
-
-        updatedCharacter.happiness += 25;
-
-        // Add to age history
-        const currentHistory = ageHistory[updatedCharacter.age] || [];
-        setAgeHistory({
-          ...ageHistory,
-          [updatedCharacter.age]: [...currentHistory, message]
-        });
-      } else {
-        message = `Completed year ${updatedCharacter.education.currentYear} of ${currentStageData.name}. Current GPA: ${updatedCharacter.education.gpa.toFixed(2)}`;
-        
-        // Add to age history
-        const currentHistory = ageHistory[updatedCharacter.age] || [];
-        setAgeHistory({
-          ...ageHistory,
-          [updatedCharacter.age]: [...currentHistory, message]
-        });
-      }
+      // Use the new auto-progression system
+      updatedCharacter = autoEnrollEducation(updatedCharacter, ageHistory, setAgeHistory);
+      message = 'Education year progressed successfully.';
       break;
 
     case 'random_event':
@@ -296,65 +235,9 @@ export const handleEducationAction = (
   }
 };
 
-// Auto-enrollment function to be called on age progression
-export const autoEnrollEducation = (character: Character, ageHistory?: Record<number, string[]>, setAgeHistory?: (history: Record<number, string[]>) => void) => {
-  // Don't auto-enroll if already enrolled
-  if (character.education?.currentStage) return character;
 
-  // Mandatory education stages by age
-  let requiredStage = null;
 
-  if (character.age >= 6 && character.age <= 11 && !character.education?.completedStages?.includes('elementary')) {
-    requiredStage = 'elementary';
-  } else if (character.age >= 12 && character.age <= 14 && character.education?.completedStages?.includes('elementary') && !character.education?.completedStages?.includes('middle')) {
-    requiredStage = 'middle';
-  } else if (character.age >= 15 && character.age <= 17 && character.education?.completedStages?.includes('middle') && !character.education?.completedStages?.includes('high')) {
-    requiredStage = 'high';
-  }
 
-  // If mandatory education is required, auto-enroll
-  if (requiredStage) {
-    const stage = educationStages.find(s => s.id === requiredStage);
-    const publicSchool = stage?.schools.find(school => school.type === 'public');
-
-    if (stage && publicSchool) {
-      // Add to age history if provided
-      if (ageHistory && setAgeHistory) {
-        const currentHistory = ageHistory[character.age] || [];
-        const message = `Automatically enrolled in ${stage.name} at ${publicSchool.name}`;
-        setAgeHistory({
-          ...ageHistory,
-          [character.age]: [...currentHistory, message]
-        });
-      }
-
-      return {
-        ...character,
-        education: {
-          ...character.education,
-          currentStage: stage.id,
-          currentSchool: publicSchool.id,
-          currentYear: 1,
-          gpa: 2.0 + (character.smarts / 50),
-          grades: character.education?.grades || [],
-          completedStages: character.education?.completedStages || [],
-          major: character.education?.major || null,
-          testScores: character.education?.testScores || [],
-          disciplinaryActions: character.education?.disciplinaryActions || 0,
-          achievements: character.education?.achievements || [],
-          dropouts: character.education?.dropouts || 0
-        }
-      };
-    }
-  }
-
-  return character;
-};
-
-// Check if education is mandatory for current age
-export const isMandatoryEducationAge = (age: number) => {
-  return age >= 6 && age <= 16;
-};
 
 // Check if character needs to be in school
 export const shouldBeInSchool = (character: Character) => {
@@ -375,4 +258,27 @@ export const shouldBeInSchool = (character: Character) => {
   }
 
   return false;
+};
+// Update education level based on completed stages
+export const updateEducationLevel = (character: Character): Character => {
+  const updatedCharacter = { ...character };
+  const completedStages = updatedCharacter.education?.completedStages || [];
+
+  if (completedStages.includes('elementary')) {
+    updatedCharacter.educationLevel = 'Elementary School';
+  }
+  if (completedStages.includes('middle_school')) {
+    updatedCharacter.educationLevel = 'Middle School';
+  }
+  if (completedStages.includes('high_school')) {
+    updatedCharacter.educationLevel = 'High School';
+  }
+  if (completedStages.includes('university')) {
+    updatedCharacter.educationLevel = 'University';
+  }
+  if (completedStages.includes('graduate')) {
+    updatedCharacter.educationLevel = 'Graduate School';
+  }
+
+  return updatedCharacter;
 };

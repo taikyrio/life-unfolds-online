@@ -10,6 +10,9 @@ import { lifeEvents } from '../../data/lifeEvents';
 import { checkForHealthConditions } from '../../systems/healthSystem';
 import { checkAchievements } from '../../systems/achievementSystem';
 import { processYearlyFinances } from '../../systems/moneySystem';
+import { applyStatBalancing } from '../../utils/statBalancing';
+import { getLifeStage } from '../../utils/gameStateUtils';
+import { autoEnrollEducation } from '../handlers/EducationActionHandler';
 
 export const processAgeUp = (
   gameState: GameState,
@@ -27,6 +30,9 @@ export const processAgeUp = (
 
   // Age the character
   updatedCharacter = ageCharacter(updatedCharacter);
+
+  // Process education year progression
+  updatedCharacter = autoEnrollEducation(updatedCharacter, ageHistory, setAgeHistory);
 
   // Process yearly finances
   updatedCharacter = processYearlyFinances(updatedCharacter);
@@ -56,12 +62,18 @@ export const processAgeUp = (
     updatedCharacter.happiness = Math.max(0, updatedCharacter.happiness + healthCondition.effects.happiness);
   }
 
-  // Check for dynamic events
+  // Improved event selection with context awareness
   const availableEvents = dynamicEventSystem.getAvailableEvents(updatedCharacter, gameState.eventTracker);
   const selectedEvent = dynamicEventSystem.selectEvent(availableEvents);
 
+  // Calculate event probability based on character state and age
+  const baseEventProbability = 0.3;
+  const ageFactor = updatedCharacter.age < 18 ? 0.8 : updatedCharacter.age < 65 ? 1.0 : 0.6;
+  const healthFactor = updatedCharacter.health < 30 ? 1.2 : 1.0;
+  const eventProbability = Math.min(0.6, baseEventProbability * ageFactor * healthFactor);
+
   let hasEvent = false;
-  if (selectedEvent && Math.random() < 0.3) {
+  if (selectedEvent && Math.random() < eventProbability) {
     onGameStateChange({
       ...gameState,
       character: updatedCharacter,
@@ -71,26 +83,67 @@ export const processAgeUp = (
     hasEvent = true;
   }
 
-  // Check for random life events from static events
-  if (!hasEvent && Math.random() < 0.4) {
+  // Enhanced static event selection with better filtering
+  if (!hasEvent && Math.random() < 0.5) {
     const eligibleEvents = lifeEvents.filter(event => {
+      // Age requirements
       if (event.ageRequirement) {
         const { min, max } = event.ageRequirement;
         if (min && updatedCharacter.age < min) return false;
         if (max && updatedCharacter.age > max) return false;
       }
+
+      // Additional context-based filtering
+      if (event.requirements) {
+        const { requirements } = event;
+        if (requirements.education && 
+            (!Array.isArray(updatedCharacter.education) || !updatedCharacter.education.includes(requirements.education))) return false;
+        if (requirements.job && updatedCharacter.job !== requirements.job) return false;
+        if (requirements.relationshipStatus && updatedCharacter.relationshipStatus !== requirements.relationshipStatus) return false;
+        if (requirements.wealth && updatedCharacter.wealth < requirements.wealth) return false;
+      }
+
+      // Avoid repetitive events (check last 8 events instead of 5)
+      const recentEvents = newEventHistory.slice(-8);
+      if (recentEvents.some(eventText => eventText.includes(event.title))) return false;
+
+      // Prevent certain events from happening too frequently
+      if (event.category === 'health' && recentEvents.some(e => e.includes('health') || e.includes('doctor'))) return false;
+      if (event.category === 'career' && updatedCharacter.age < 16) return false;
+
       return true;
     });
 
     if (eligibleEvents.length > 0) {
-      const randomEvent = eligibleEvents[Math.floor(Math.random() * eligibleEvents.length)];
-      onGameStateChange({
-        ...gameState,
-        character: updatedCharacter,
-        currentEvent: randomEvent,
-        eventHistory: newEventHistory
+      // Weight events by category relevance to current life stage
+      const weightedEvents = eligibleEvents.map(event => {
+        let weight = 1;
+        const lifeStage = getLifeStage(updatedCharacter.age);
+
+        if (lifeStage === 'Teen' && event.category === 'education') weight = 2;
+        if (lifeStage === 'Young Adult' && event.category === 'career') weight = 2;
+        if (lifeStage === 'Adult' && event.category === 'family') weight = 1.5;
+        if (updatedCharacter.health < 50 && event.category === 'health') weight = 2;
+
+        return { event, weight };
       });
-      hasEvent = true;
+
+      const totalWeight = weightedEvents.reduce((sum, item) => sum + item.weight, 0);
+      let randomValue = Math.random() * totalWeight;
+
+      for (const weightedEvent of weightedEvents) {
+        randomValue -= weightedEvent.weight;
+        if (randomValue <= 0) {
+          onGameStateChange({
+            ...gameState,
+            character: updatedCharacter,
+            currentEvent: weightedEvent.event,
+            eventHistory: newEventHistory
+          });
+          hasEvent = true;
+          break;
+        }
+      }
     }
   }
 
@@ -169,16 +222,58 @@ export const processChoice = (
 
   let updatedCharacter = applyStatEffects(gameState.character, choice.effects);
 
+  // Apply stat balancing to make effects more realistic
+  updatedCharacter = applyStatBalancing(updatedCharacter);
+
   if (choice.flags) {
     updatedCharacter.flags = [...(updatedCharacter.flags || []), ...choice.flags];
+  }
+
+  // Add delayed consequences system
+  if (choice.effects.wealth && Math.abs(choice.effects.wealth) > 50) {
+    // Large wealth changes might have tax implications or attract attention
+    updatedCharacter.delayedEvents = updatedCharacter.delayedEvents || [];
+    if (choice.effects.wealth > 0) {
+      updatedCharacter.delayedEvents.push({
+        age: updatedCharacter.age + 1,
+        type: 'wealth_gain_attention',
+        message: 'Your recent wealth gain has attracted attention from various parties.',
+        effects: { notoriety: 10 }
+      });
+    }
+  }
+
+  // Track significant life decisions for future reference
+  if (choice.effects.education || choice.effects.job || choice.effects.relationshipStatus) {
+    updatedCharacter.majorDecisions = updatedCharacter.majorDecisions || [];
+    updatedCharacter.majorDecisions.push({
+      age: updatedCharacter.age,
+      decision: choice.text,
+      event: gameState.currentEvent.title
+    });
   }
 
   const eventDescription = `${gameState.currentEvent.title}: ${choice.text}`;
   let ageEvents = ageHistory[updatedCharacter.age] || [];
   ageEvents.push(eventDescription);
 
+  // Enhanced consequences with probability
   if (choice.consequences) {
-    ageEvents.push(...choice.consequences);
+    choice.consequences.forEach(consequence => {
+      // Some consequences might not always happen
+      if (Math.random() < 0.8) {
+        ageEvents.push(consequence);
+      }
+    });
+  }
+
+  // Add choice-specific follow-up events
+  if (choice.effects.criminalRecord) {
+    ageEvents.push("Your criminal record may affect future opportunities.");
+  }
+
+  if (choice.effects.fame && choice.effects.fame > 20) {
+    ageEvents.push("Your growing fame is starting to change how people treat you.");
   }
 
   const newAgeHistory = { ...ageHistory };
@@ -190,7 +285,14 @@ export const processChoice = (
   const newEventTracker = {
     ...gameState.eventTracker,
     triggeredEvents: new Set([...gameState.eventTracker.triggeredEvents, gameState.currentEvent.id]),
-    lastEventAge: updatedCharacter.age
+    lastEventAge: updatedCharacter.age,
+    choiceHistory: [...(gameState.eventTracker.choiceHistory || []), {
+      age: updatedCharacter.age,
+      eventId: gameState.currentEvent.id,
+      choiceId: choice.id,
+      impact: Math.abs(Object.values(choice.effects).reduce((sum: number, val) => 
+        sum + (typeof val === 'number' ? val : 0), 0))
+    }]
   };
 
   onGameStateChange({
