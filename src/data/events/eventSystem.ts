@@ -6,7 +6,7 @@ import { childhoodEvents } from './childhoodEvents';
 import { teenageEvents } from './teenageEvents';
 import { adultEvents } from './adultEvents';
 import { seniorEvents } from './seniorEvents';
-import { expandedLifeEvents } from '../expandedLifeEvents';
+import { expandedLifeEvents } from './expandedLifeEvents';
 
 export const createDynamicEventSystem = () => {
   const events: DynamicEvent[] = [

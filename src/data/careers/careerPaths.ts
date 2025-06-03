@@ -1,39 +1,6 @@
 
 import { Career, CareerLevel } from '../../types/career';
 
-export interface Career {
-  id: string;
-  name: string;
-  category: 'business' | 'healthcare' | 'education' | 'technology' | 'creative' | 'service' | 'legal' | 'government';
-  description: string;
-  requirements: {
-    education?: string;
-    experience?: number;
-    minStats?: {
-      smarts?: number;
-      looks?: number;
-      health?: number;
-    };
-  };
-  levels: CareerLevel[];
-  benefits: string[];
-}
-
-export interface CareerLevel {
-  level: number;
-  title: string;
-  salary: number;
-  description: string;
-  promotionRequirements?: {
-    yearsExperience?: number;
-    performance?: number;
-    minStats?: {
-      smarts?: number;
-      relationships?: number;
-    };
-  };
-}
-
 export const careerPaths: Career[] = [
   {
     id: 'medicine',
@@ -164,7 +131,7 @@ export const careerPaths: Career[] = [
     description: 'Climb the corporate ladder',
     requirements: {
       education: 'Business School',
-      minStats: { smarts: 60, relationships: 60 }
+      minStats: { smarts: 60 }
     },
     levels: [
       {
@@ -217,126 +184,6 @@ export const careerPaths: Career[] = [
       }
     ],
     benefits: ['Networking Opportunities', 'Leadership Experience', 'High Earning Potential', 'Global Travel']
-  },
-  {
-    id: 'entertainment',
-    name: 'Entertainment Industry',
-    category: 'creative',
-    description: 'Entertain the masses',
-    requirements: {
-      minStats: { looks: 70, relationships: 60 }
-    },
-    levels: [
-      {
-        level: 1,
-        title: 'Background Actor',
-        salary: 15,
-        description: 'Small roles in productions'
-      },
-      {
-        level: 2,
-        title: 'Supporting Actor',
-        salary: 35,
-        description: 'Supporting roles in shows',
-        promotionRequirements: { yearsExperience: 2, performance: 70 }
-      },
-      {
-        level: 3,
-        title: 'Lead Actor',
-        salary: 80,
-        description: 'Leading roles in productions',
-        promotionRequirements: { yearsExperience: 3, performance: 80, minStats: { looks: 75 } }
-      },
-      {
-        level: 4,
-        title: 'TV Star',
-        salary: 150,
-        description: 'Star of television shows',
-        promotionRequirements: { yearsExperience: 2, performance: 85, minStats: { looks: 80 } }
-      },
-      {
-        level: 5,
-        title: 'Movie Star',
-        salary: 300,
-        description: 'Leading movie actor',
-        promotionRequirements: { yearsExperience: 3, performance: 90, minStats: { looks: 85 } }
-      },
-      {
-        level: 6,
-        title: 'A-List Celebrity',
-        salary: 600,
-        description: 'Top tier celebrity status',
-        promotionRequirements: { yearsExperience: 5, performance: 95, minStats: { looks: 90, relationships: 80 } }
-      },
-      {
-        level: 7,
-        title: 'Hollywood Legend',
-        salary: 1000,
-        description: 'Legendary status in entertainment',
-        promotionRequirements: { yearsExperience: 10, performance: 98, minStats: { looks: 95, relationships: 85 } }
-      }
-    ],
-    benefits: ['Fame', 'Creative Expression', 'High Earning Potential', 'Global Recognition']
-  },
-  {
-    id: 'sports',
-    name: 'Professional Sports',
-    category: 'service',
-    description: 'Compete at the highest level',
-    requirements: {
-      minStats: { health: 80, looks: 60 }
-    },
-    levels: [
-      {
-        level: 1,
-        title: 'Amateur Athlete',
-        salary: 0,
-        description: 'Training and competing locally'
-      },
-      {
-        level: 2,
-        title: 'College Athlete',
-        salary: 0,
-        description: 'Competing at college level',
-        promotionRequirements: { yearsExperience: 1, performance: 75 }
-      },
-      {
-        level: 3,
-        title: 'Minor League Player',
-        salary: 25,
-        description: 'Professional minor league',
-        promotionRequirements: { yearsExperience: 2, performance: 80, minStats: { health: 85 } }
-      },
-      {
-        level: 4,
-        title: 'Professional Athlete',
-        salary: 120,
-        description: 'Major league professional',
-        promotionRequirements: { yearsExperience: 2, performance: 85, minStats: { health: 90 } }
-      },
-      {
-        level: 5,
-        title: 'Star Player',
-        salary: 300,
-        description: 'Team star and fan favorite',
-        promotionRequirements: { yearsExperience: 3, performance: 90, minStats: { health: 90 } }
-      },
-      {
-        level: 6,
-        title: 'Superstar',
-        salary: 600,
-        description: 'League superstar',
-        promotionRequirements: { yearsExperience: 5, performance: 95, minStats: { health: 95 } }
-      },
-      {
-        level: 7,
-        title: 'Hall of Famer',
-        salary: 800,
-        description: 'Legendary career achievement',
-        promotionRequirements: { yearsExperience: 10, performance: 98 }
-      }
-    ],
-    benefits: ['Fame', 'Physical Fitness', 'Competition', 'Endorsement Deals']
   }
 ];
 
