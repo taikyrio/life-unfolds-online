@@ -217,86 +217,88 @@ export const GameBoard: React.FC<GameBoardProps> = ({ gameState, onGameStateChan
   }, [gameState.character.age, gameState.character.education?.currentStage, gameState.character.education?.completedStages]);
 
   return (
-    <div className="h-screen bg-gray-50 flex flex-col overflow-hidden">
-      {/* Ultra Compact Header */}
-      <div className="bg-white border-b border-gray-200 px-2 sm:px-3 py-1 flex-shrink-0">
-        <div className="flex items-center justify-between gap-2">
-          <div className="flex items-center gap-1 sm:gap-2 min-w-0 flex-1">
-            <div className="w-5 h-5 sm:w-6 sm:h-6 bg-orange-200 rounded-full flex items-center justify-center text-xs sm:text-sm flex-shrink-0">
-              👶
+    <div className="min-h-screen flex flex-col overflow-hidden bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
+      {/* Device-optimized Header */}
+      <div className="glass-card border-0 border-b border-white/20 safe-area-pt flex-shrink-0 relative z-20">
+        <div className="mobile-container py-3 sm:py-4">
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
+              <div className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center text-base sm:text-lg md:text-xl flex-shrink-0 apple-shadow-sm">
+                👤
+              </div>
+              <div className="min-w-0 flex-1">
+                <h1 className="text-base sm:text-lg md:text-xl font-bold text-gray-900 dark:text-white truncate">{gameState.character.name}</h1>
+                <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-300">Age {gameState.character.age}</p>
+              </div>
             </div>
-            <div className="min-w-0 flex-1">
-              <h2 className="text-xs sm:text-sm font-bold text-blue-600 truncate">{gameState.character.name}</h2>
-              <p className="text-xs text-gray-600">Age {gameState.character.age}</p>
+            <div className="glass-card px-2 sm:px-3 md:px-4 py-1 sm:py-2 rounded-xl sm:rounded-2xl apple-shadow-sm flex-shrink-0">
+              <div className="text-sm sm:text-lg md:text-xl font-bold bg-gradient-to-r from-green-500 to-emerald-600 bg-clip-text text-transparent">
+                ${gameState.character.wealth}k
+              </div>
             </div>
-          </div>
-          <div className="text-right flex-shrink-0">
-            <div className="text-xs sm:text-sm font-bold text-green-600">${gameState.character.wealth}k</div>
           </div>
         </div>
       </div>
 
-      {/* Responsive Stats Bar */}
-      <div className="bg-white border-b border-gray-200 px-1 sm:px-2 py-1 flex-shrink-0">
-        <div className="flex justify-between items-center gap-1 overflow-hidden">
-          <div className="flex items-center gap-0.5 text-red-600 min-w-0 flex-shrink">
-            <span className="text-xs sm:text-sm">❤️</span>
-            <span className="text-xs sm:text-sm font-medium truncate">{Math.round(gameState.character.health)}</span>
-          </div>
-          <div className="flex items-center gap-0.5 text-yellow-600 min-w-0 flex-shrink">
-            <span className="text-xs sm:text-sm">😊</span>
-            <span className="text-xs sm:text-sm font-medium truncate">{Math.round(gameState.character.happiness)}</span>
-          </div>
-          <div className="flex items-center gap-0.5 text-purple-600 min-w-0 flex-shrink">
-            <span className="text-xs sm:text-sm">🤝</span>
-            <span className="text-xs sm:text-sm font-medium truncate">{Math.round(gameState.character.relationships || 0)}</span>
-          </div>
-          <div className="flex items-center gap-0.5 text-blue-600 min-w-0 flex-shrink">
-            <span className="text-xs sm:text-sm">🧠</span>
-            <span className="text-xs sm:text-sm font-medium truncate">{Math.round(gameState.character.smarts)}</span>
-          </div>
-          <div className="flex items-center gap-0.5 text-green-600 min-w-0 flex-shrink">
-            <span className="text-xs sm:text-sm">💰</span>
-            <span className="text-xs sm:text-sm font-medium truncate">{gameState.character.wealth}k</span>
+      {/* Device-responsive Stats Dashboard */}
+      <div className="glass-card border-0 border-b border-white/20 flex-shrink-0 relative z-20">
+        <div className="mobile-container py-2 sm:py-3 md:py-4">
+          <div className="mobile-stat-grid">
+            {[
+              { label: 'Health', value: Math.round(gameState.character.health), icon: '❤️', color: 'from-red-400 to-red-600' },
+              { label: 'Happy', value: Math.round(gameState.character.happiness), icon: '😊', color: 'from-yellow-400 to-orange-500' },
+              { label: 'Social', value: Math.round(gameState.character.relationships || 0), icon: '🤝', color: 'from-purple-400 to-pink-500' },
+              { label: 'Smarts', value: Math.round(gameState.character.smarts), icon: '🧠', color: 'from-blue-400 to-cyan-500' },
+              { label: 'Looks', value: Math.round(gameState.character.looks), icon: '✨', color: 'from-indigo-400 to-purple-500' }
+            ].map((stat) => (
+              <div key={stat.label} className="mobile-card p-2 sm:p-3 apple-hover spatial-float touch-feedback">
+                <div className="text-center space-y-1 sm:space-y-2">
+                  <div className="text-lg sm:text-xl md:text-2xl">{stat.icon}</div>
+                  <div className={`text-base sm:text-lg md:text-xl font-bold bg-gradient-to-r ${stat.color} bg-clip-text text-transparent`}>
+                    {stat.value}
+                  </div>
+                  <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-300 font-medium truncate">{stat.label}</div>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </div>
 
-      {/* Responsive Tab Navigation */}
-      <div className="bg-white border-b border-gray-200 px-2 sm:px-4 py-2 flex-shrink-0">
-        <div className="flex justify-between items-center gap-1 sm:gap-2 max-w-full">
+      {/* Device-responsive Tab Navigation */}
+      <div className="glass-card border-0 border-b border-white/20 flex-shrink-0 relative z-20">
+        <div className="flex overflow-x-auto scrollbar-hide gap-1 sm:gap-2 px-2 sm:px-4 py-2 sm:py-3">
           {[
-            { id: 'life', icon: '🏠' },
-            { id: 'activities', icon: '🎯' },
-            { id: 'careers', icon: '💼' },
-            { id: 'education', icon: '📚' },
-            { id: 'health', icon: '❤️' },
-            { id: 'money', icon: '💰' },
-            { id: 'relationships', icon: '💕' },
-            { id: 'assets', icon: '🏆' }
+            { id: 'life', icon: '🏠', label: 'Life' },
+            { id: 'activities', icon: '🎯', label: 'Activities' },
+            { id: 'careers', icon: '💼', label: 'Career' },
+            { id: 'education', icon: '📚', label: 'School' },
+            { id: 'health', icon: '❤️', label: 'Health' },
+            { id: 'money', icon: '💰', label: 'Money' },
+            { id: 'relationships', icon: '💕', label: 'Love' },
+            { id: 'assets', icon: '🏆', label: 'Assets' }
           ].map((tab) => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id as typeof activeTab)}
-              className={`flex-1 min-w-0 px-2 sm:px-3 py-2 rounded-lg text-base sm:text-lg font-medium transition-all duration-200 ${
+              className={`mobile-tab flex-shrink-0 min-w-[48px] sm:min-w-[60px] px-2 sm:px-3 py-2 sm:py-3 rounded-xl sm:rounded-2xl touch-feedback ${
                 activeTab === tab.id
-                  ? 'bg-blue-100 text-blue-700 shadow-sm scale-105'
-                  : 'text-gray-600 hover:bg-gray-100 hover:scale-105'
+                  ? 'bg-blue-500/20 border-blue-400/30 text-blue-600 dark:text-blue-400 scale-105 apple-shadow-sm'
+                  : 'apple-button-secondary text-gray-600 dark:text-gray-300 hover:bg-gray-100/50 dark:hover:bg-gray-700/50'
               }`}
-              style={{ 
-                fontSize: 'clamp(0.9rem, 2.5vw, 1.2rem)',
-                padding: 'clamp(0.4rem, 1vw, 0.75rem)'
-              }}
             >
-              <span className="block">{tab.icon}</span>
+              <div className="flex flex-col items-center gap-0.5 sm:gap-1">
+                <span className="text-base sm:text-lg md:text-xl">{tab.icon}</span>
+                <span className="text-[10px] sm:text-xs font-medium truncate leading-tight">{tab.label}</span>
+              </div>
             </button>
           ))}
         </div>
       </div>
 
-      {/* Main Content Area - Optimized for small screens */}
-      <div className="flex-1 overflow-hidden">
-        <div className="h-full">
+      {/* Mobile-optimized Main Content Area */}
+      <div className="flex-1 overflow-hidden relative">
+        <div className="h-full overflow-y-auto scrollbar-hide mobile-container py-4">
           {activeTab === 'life' && (
             <div className="h-full">
               <LifeTab 

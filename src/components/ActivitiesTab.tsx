@@ -201,116 +201,119 @@ export const ActivitiesTab: React.FC<ActivitiesTabProps> = ({ character, onActiv
   };
 
   return (
-    <div className="pb-32 bg-gray-50 min-h-screen">
-      <div className="px-4 pt-6">
-        <div className="text-center mb-6">
-          <h2 className="text-2xl font-bold text-game-text mb-2">Activities Menu</h2>
-          <p className="text-gray-600 text-sm">
-            {isInSchool ? `School life activities for a ${lifeStage.toLowerCase()}` : `Life activities for a ${lifeStage.toLowerCase()}`}
-          </p>
-          <div className="text-xs text-gray-500 mt-1">
-            Tap categories to expand • ⭐ = Popularity rating
+    <div className="space-y-4">
+      {/* Mobile-optimized Header */}
+      <div className="mobile-card text-center">
+        <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Activities</h2>
+        <p className="text-gray-600 dark:text-gray-300 text-sm">
+          {isInSchool ? `School life for a ${lifeStage.toLowerCase()}` : `Life activities for a ${lifeStage.toLowerCase()}`}
+        </p>
+        <div className="text-xs text-gray-500 dark:text-gray-400 mt-2">
+          Tap categories to expand
+        </div>
+      </div>
+
+      {/* Mobile-first Activity Categories */}
+      <div className="space-y-3">
+        {activityCategories.map((category) => {
+          const isExpanded = expandedCategories.includes(category.title);
+          const availableActivities = category.activities.filter(activity => activity.available);
+
+          return (
+            <div key={category.title} className="mobile-card overflow-hidden">
+              {/* Category Header */}
+              <button 
+                className="w-full p-4 touch-feedback"
+                onClick={() => toggleCategory(category.title)}
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className={`p-3 rounded-2xl ${category.color} text-white apple-shadow-sm`}>
+                      <category.icon size={20} />
+                    </div>
+                    <div className="text-left">
+                      <div className="flex items-center gap-2">
+                        <span className="font-semibold text-gray-900 dark:text-white">{category.title}</span>
+                        <span className="text-xs bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 px-2 py-1 rounded-full">
+                          {availableActivities.length}
+                        </span>
+                      </div>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                        {category.description}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="text-gray-400">
+                    {isExpanded ? (
+                      <ChevronDown size={20} className="transition-transform" />
+                    ) : (
+                      <ChevronRight size={20} className="transition-transform" />
+                    )}
+                  </div>
+                </div>
+              </button>
+
+              {/* Expanded Activities */}
+              {isExpanded && (
+                <div className="px-4 pb-4 space-y-2 border-t border-gray-100 dark:border-gray-700 pt-4">
+                  {category.activities.map((activity) => (
+                    <button
+                      key={activity.id}
+                      onClick={() => onActivity(activity.id, activity.id)}
+                      disabled={!activity.available}
+                      className={`mobile-button text-left ${
+                        activity.available 
+                          ? 'bg-white/80 dark:bg-gray-800/80 border border-gray-200 dark:border-gray-700 hover:bg-blue-50 dark:hover:bg-blue-900/30' 
+                          : 'bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 opacity-50 cursor-not-allowed'
+                      } ${category.title === 'Risky Activities' ? 'border-red-200 dark:border-red-800' : ''}`}
+                    >
+                      <div className="w-full">
+                        <div className="flex items-center justify-between mb-1">
+                          <div className="font-medium text-sm text-gray-900 dark:text-white">{activity.name}</div>
+                          <div className="flex items-center gap-1">
+                            {getPopularityStars(activity.popularity)}
+                          </div>
+                        </div>
+                        <div className="text-xs text-gray-500 dark:text-gray-400 leading-tight">{activity.description}</div>
+                        {!activity.available && (
+                          <div className="text-xs text-red-500 dark:text-red-400 mt-1">
+                            Requirements not met
+                          </div>
+                        )}
+                      </div>
+                    </button>
+                  ))}
+
+                  {availableActivities.length === 0 && (
+                    <div className="text-center py-6 text-gray-500 dark:text-gray-400 text-sm">
+                      No activities available in this category
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Mobile-optimized Quick Tips */}
+      <div className="mobile-card bg-blue-50/50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800">
+        <div className="flex items-start gap-3">
+          <div className="p-2 bg-blue-500 rounded-2xl text-white flex-shrink-0">
+            <Home size={20} />
+          </div>
+          <div>
+            <p className="text-sm font-semibold text-blue-800 dark:text-blue-200 mb-2">
+              Activity Tips
+            </p>
+            <div className="text-xs text-blue-600 dark:text-blue-300 space-y-1">
+              <div>• Activities affect your stats and relationships</div>
+              <div>• Some activities cost money or have requirements</div>
+              <div>• Risky activities can have serious consequences</div>
+              <div>• Popularity shows how much others enjoy the activity</div>
+            </div>
           </div>
         </div>
-
-        <div className="space-y-3">
-          {activityCategories.map((category) => {
-            const isExpanded = expandedCategories.includes(category.title);
-            const availableActivities = category.activities.filter(activity => activity.available);
-
-            return (
-              <Card key={category.title} className="shadow-sm border border-gray-200 overflow-hidden">
-                <CardHeader 
-                  className="pb-3 cursor-pointer hover:bg-gray-50 transition-colors"
-                  onClick={() => toggleCategory(category.title)}
-                >
-                  <CardTitle className="flex items-center justify-between text-base">
-                    <div className="flex items-center gap-3">
-                      <div className={`p-2 rounded-lg ${category.color} text-white`}>
-                        <category.icon size={18} />
-                      </div>
-                      <div>
-                        <div className="flex items-center gap-2">
-                          {category.title}
-                          <span className="text-xs bg-gray-200 text-gray-600 px-2 py-1 rounded-full">
-                            {availableActivities.length}
-                          </span>
-                        </div>
-                        <p className="text-xs text-gray-500 font-normal mt-1">
-                          {category.description}
-                        </p>
-                      </div>
-                    </div>
-                    {isExpanded ? (
-                      <ChevronDown size={20} className="text-gray-400 transition-transform" />
-                    ) : (
-                      <ChevronRight size={20} className="text-gray-400 transition-transform" />
-                    )}
-                  </CardTitle>
-                </CardHeader>
-
-                {isExpanded && (
-                  <CardContent className="pt-0">
-                    <div className="space-y-2">
-                      {category.activities.map((activity) => (
-                        <Button
-                          key={activity.id}
-                          onClick={() => onActivity(activity.id, activity.id)}
-                          disabled={!activity.available}
-                          variant="outline"
-                          className={`w-full h-auto p-3 text-left justify-start hover:bg-primary/5 hover:border-primary disabled:opacity-50 ${
-                            category.title === 'Risky Activities' ? 'border-red-200 hover:border-red-400' : ''
-                          }`}
-                        >
-                          <div className="w-full">
-                            <div className="flex items-center justify-between mb-1">
-                              <div className="font-medium text-sm">{activity.name}</div>
-                              <div className="flex items-center gap-1">
-                                {getPopularityStars(activity.popularity)}
-                              </div>
-                            </div>
-                            <div className="text-xs text-gray-500">{activity.description}</div>
-                            {!activity.available && (
-                              <div className="text-xs text-red-500 mt-1">
-                                Requirements not met
-                              </div>
-                            )}
-                          </div>
-                        </Button>
-                      ))}
-
-                      {availableActivities.length === 0 && (
-                        <div className="text-center py-4 text-gray-500 text-sm">
-                          No activities available in this category
-                        </div>
-                      )}
-                    </div>
-                  </CardContent>
-                )}
-              </Card>
-            );
-          })}
-        </div>
-
-        {/* Quick Actions */}
-        <Card className="mt-6 bg-blue-50 border-blue-200">
-          <CardContent className="pt-4">
-            <div className="flex items-center gap-3">
-              <Home size={20} className="text-blue-600" />
-              <div>
-                <p className="text-sm font-medium text-blue-800">
-                  Quick Tips for Activities
-                </p>
-                <div className="text-xs text-blue-600 space-y-1 mt-1">
-                  <div>• Activities affect your stats and relationships</div>
-                  <div>• Some activities cost money or have requirements</div>
-                  <div>• Risky activities can have serious consequences</div>
-                  <div>• Popularity shows how much others enjoy the activity</div>
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
       </div>
     </div>
   );

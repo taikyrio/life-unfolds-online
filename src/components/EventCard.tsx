@@ -11,29 +11,35 @@ interface EventCardProps {
 
 export const EventCard: React.FC<EventCardProps> = ({ event, onChoice }) => {
   return (
-    <Card className="w-full animate-scale-in shadow-lg border border-gray-200">
-      <CardHeader className="text-center pb-2 bg-gradient-to-b from-blue-50 to-white rounded-t-lg">
-        <div className="text-3xl mb-1">{event.emoji}</div>
-        <CardTitle className="text-sm font-bold text-gray-800 mb-1">
+    <div className="mobile-card animate-scale-in apple-shadow-lg">
+      {/* Mobile-optimized Event Header */}
+      <div className="text-center pb-4 bg-gradient-to-b from-blue-50/50 to-transparent rounded-t-3xl p-6">
+        <div className="w-16 h-16 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center text-3xl mx-auto mb-4 apple-shadow-sm">
+          {event.emoji}
+        </div>
+        <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-3">
           {event.title}
-        </CardTitle>
-        <p className="text-gray-600 text-xs leading-relaxed">
+        </h3>
+        <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">
           {event.description}
         </p>
-      </CardHeader>
-      <CardContent className="space-y-1 p-2">
+      </div>
+
+      {/* Mobile-first Choice Buttons */}
+      <div className="space-y-3 px-6 pb-6">
         {event.choices.map((choice) => (
-          <Button
+          <button
             key={choice.id}
             onClick={() => onChoice(choice.id)}
-            variant="outline"
-            className="w-full justify-start text-left h-auto py-2 px-3 hover:bg-blue-50 transition-all duration-200 border-gray-300 hover:border-blue-300"
+            className="mobile-button bg-white/80 dark:bg-gray-800/80 border border-gray-200 dark:border-gray-700 hover:bg-blue-50 dark:hover:bg-blue-900/30 text-gray-900 dark:text-white apple-shadow-sm"
           >
-            <span className="mr-2 text-lg">{choice.emoji}</span>
-            <span className="text-xs font-medium text-gray-700">{choice.text}</span>
-          </Button>
+            <div className="flex items-center gap-3 text-left">
+              <span className="text-2xl flex-shrink-0">{choice.emoji}</span>
+              <span className="text-sm font-medium leading-tight">{choice.text}</span>
+            </div>
+          </button>
         ))}
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 };
