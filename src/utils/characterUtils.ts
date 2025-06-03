@@ -1,4 +1,3 @@
-
 import { Character, EducationRecord, Asset } from '../types/game';
 import { JobPerformance } from '../types/career';
 import { getZodiacSign } from './zodiacUtils';
@@ -12,17 +11,17 @@ export const generateRandomName = (): string => {
     'Emma', 'Liam', 'Olivia', 'Noah', 'Ava', 'Ethan', 'Sophia', 'Mason',
     'Isabella', 'William', 'Mia', 'James', 'Charlotte', 'Benjamin', 'Amelia', 'Lucas'
   ];
-  
+
   const lastNames = [
     'Smith', 'Johnson', 'Williams', 'Brown', 'Jones', 'Garcia', 'Miller', 'Davis',
     'Rodriguez', 'Martinez', 'Hernandez', 'Lopez', 'Gonzalez', 'Wilson', 'Anderson', 'Thomas',
     'Taylor', 'Moore', 'Jackson', 'Martin', 'Lee', 'Perez', 'Thompson', 'White',
     'Harris', 'Sanchez', 'Clark', 'Ramirez', 'Lewis', 'Robinson', 'Walker', 'Young'
   ];
-  
+
   const firstName = firstNames[Math.floor(Math.random() * firstNames.length)];
   const lastName = lastNames[Math.floor(Math.random() * lastNames.length)];
-  
+
   return `${firstName} ${lastName}`;
 };
 
@@ -45,7 +44,7 @@ export const createCharacter = (
   const zodiacSign = getZodiacSign(birthMonth, birthDay);
   const initialStats = randomizeInitialStats();
   const initialFamily = generateInitialFamily();
-  
+
   const baseCharacter: Character = {
     id: `char_${Date.now()}`,
     name,
