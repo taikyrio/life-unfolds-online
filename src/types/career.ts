@@ -67,3 +67,36 @@ export interface Career {
     };
   };
 }
+
+export interface MusicArtist {
+  id: string;
+  name: string;
+  genre: string;
+  members: number;
+  fans: number;
+  records: MusicRecord[];
+  totalRecordsSold: number;
+  totalEarnings: number;
+  isActive: boolean;
+}
+
+export interface MusicRecord {
+  id: string;
+  name: string;
+  tracks: number;
+  productionTime: number;
+  releaseDate: string;
+  salesTarget: number;
+  actualSales: number;
+  certified: boolean;
+}
+
+export interface Tour {
+  id: string;
+  name: string;
+  artistId: string;
+  venues: number;
+  earnings: number;
+  fanGain: number;
+  year: number;
+}

@@ -38,7 +38,9 @@ export const handleCareerAction = (
             convictions: 0,
             prisonTime: 0,
             crimes: [operation.name],
-            notoriety: 10
+            notoriety: 10,
+            totalSentence: 0,
+            currentlyIncarcerated: false
           };
           updatedCharacter.health = Math.max(0, updatedCharacter.health - 20);
           updatedCharacter.happiness = Math.max(0, updatedCharacter.happiness - 30);
@@ -74,10 +76,49 @@ export const handleCareerAction = (
             convictions: 0,
             prisonTime: 0,
             crimes: ['Murder attempt'],
-            notoriety: 20
+            notoriety: 20,
+            totalSentence: 0,
+            currentlyIncarcerated: false
           };
           message = 'Murder attempt failed! You were caught and arrested.';
         }
+      }
+      break;
+
+    case 'create_artist':
+      if (!updatedCharacter.musicArtists) {
+        updatedCharacter.musicArtists = [];
+      }
+      const newArtist = {
+        id: Date.now().toString(),
+        name: 'New Artist',
+        genre: 'Pop',
+        members: 1,
+        fans: 0,
+        records: [],
+        totalRecordsSold: 0,
+        totalEarnings: 0,
+        isActive: true
+      };
+      updatedCharacter.musicArtists.push(newArtist);
+      message = 'Created new music artist!';
+      break;
+
+    case 'create_record':
+      if (updatedCharacter.musicArtists && updatedCharacter.musicArtists.length > 0) {
+        const artist = updatedCharacter.musicArtists[0];
+        const newRecord = {
+          id: Date.now().toString(),
+          name: 'New Record',
+          tracks: 8,
+          productionTime: 1,
+          releaseDate: new Date().toISOString(),
+          salesTarget: 10000,
+          actualSales: 0,
+          certified: false
+        };
+        artist.records.push(newRecord);
+        message = 'Started producing a new record!';
       }
       break;
 
@@ -114,7 +155,9 @@ export const handleCareerAction = (
             convictions: 0,
             prisonTime: 0,
             crimes: [data.name],
-            notoriety: 15
+            notoriety: 15,
+            totalSentence: 0,
+            currentlyIncarcerated: false
           };
           message = `${data.name} failed! Your digital footprint was traced back to you.`;
         }

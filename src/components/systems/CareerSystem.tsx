@@ -3,11 +3,11 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
 import { Character } from '../../types/game';
-import { Briefcase, TrendingUp, DollarSign, Star, Skull, Trophy, Shield } from 'lucide-react';
+import { Briefcase, TrendingUp, DollarSign, Star, Skull, Trophy, Music2, ChevronRight } from 'lucide-react';
 import { CriminalDLC } from './dlc/CriminalDLC';
 import { FameDLC } from './dlc/FameDLC';
+import { MusicianDLC } from './dlc/MusicianDLC';
 
 interface CareerSystemProps {
   character: Character;
@@ -76,7 +76,7 @@ export const CareerSystem: React.FC<CareerSystemProps> = ({
         <Button 
           variant="ghost" 
           onClick={() => setActiveDLC(null)}
-          className="mb-4"
+          className="mb-4 text-white"
         >
           ← Back to Careers
         </Button>
@@ -91,7 +91,7 @@ export const CareerSystem: React.FC<CareerSystemProps> = ({
         <Button 
           variant="ghost" 
           onClick={() => setActiveDLC(null)}
-          className="mb-4"
+          className="mb-4 text-white"
         >
           ← Back to Careers
         </Button>
@@ -100,13 +100,28 @@ export const CareerSystem: React.FC<CareerSystemProps> = ({
     );
   }
 
+  if (activeDLC === 'musician') {
+    return (
+      <div>
+        <Button 
+          variant="ghost" 
+          onClick={() => setActiveDLC(null)}
+          className="mb-4 text-white"
+        >
+          ← Back to Careers
+        </Button>
+        <MusicianDLC character={character} onCareerAction={onCareerAction} />
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-4">
       {/* Special Careers Section */}
-      <Card className="border-purple-200 bg-gradient-to-r from-purple-50 to-pink-50">
+      <Card className="glass border-white/20">
         <CardHeader className="pb-3">
-          <CardTitle className="text-lg flex items-center gap-2">
-            <Star className="h-5 w-5 text-purple-600" />
+          <CardTitle className="text-lg flex items-center gap-2 text-white">
+            <Star className="h-5 w-5 text-purple-400" />
             Special Careers - DLC Packs
           </CardTitle>
         </CardHeader>
@@ -114,30 +129,49 @@ export const CareerSystem: React.FC<CareerSystemProps> = ({
           <div className="grid grid-cols-1 gap-3">
             <Button
               variant="outline"
-              className="justify-start h-auto p-4 bg-red-50 border-red-200 hover:bg-red-100"
+              className="justify-between h-auto p-4 bg-red-500/10 border-red-500/30 hover:bg-red-500/20 text-white"
               onClick={() => setActiveDLC('criminal')}
             >
               <div className="flex items-center gap-3">
-                <Skull className="h-6 w-6 text-red-600" />
+                <Skull className="h-6 w-6 text-red-400" />
                 <div className="text-left">
-                  <div className="font-semibold text-red-800">Criminal Empire</div>
-                  <div className="text-sm text-red-600">Build your criminal organization</div>
+                  <div className="font-semibold text-red-300">Criminal Empire</div>
+                  <div className="text-sm text-red-400">Build your criminal organization</div>
                 </div>
               </div>
+              <ChevronRight className="h-5 w-5 text-red-400" />
             </Button>
             
             <Button
               variant="outline"
-              className="justify-start h-auto p-4 bg-yellow-50 border-yellow-200 hover:bg-yellow-100"
+              className="justify-between h-auto p-4 bg-yellow-500/10 border-yellow-500/30 hover:bg-yellow-500/20 text-white"
               onClick={() => setActiveDLC('fame')}
             >
               <div className="flex items-center gap-3">
-                <Trophy className="h-6 w-6 text-yellow-600" />
+                <Trophy className="h-6 w-6 text-yellow-400" />
                 <div className="text-left">
-                  <div className="font-semibold text-yellow-800">Fame & Fortune</div>
-                  <div className="text-sm text-yellow-600">Become a celebrity or influencer</div>
+                  <div className="font-semibold text-yellow-300">Fame & Fortune</div>
+                  <div className="text-sm text-yellow-400">Become a celebrity or influencer</div>
                 </div>
               </div>
+              <ChevronRight className="h-5 w-5 text-yellow-400" />
+            </Button>
+
+            <Button
+              variant="outline"
+              className="justify-between h-auto p-4 bg-purple-500/10 border-purple-500/30 hover:bg-purple-500/20 text-white"
+              onClick={() => setActiveDLC('musician')}
+              disabled={character.age < 10}
+            >
+              <div className="flex items-center gap-3">
+                <Music2 className="h-6 w-6 text-purple-400" />
+                <div className="text-left">
+                  <div className="font-semibold text-purple-300">Musician</div>
+                  <div className="text-sm text-purple-400">Create music, tour, and build your fanbase</div>
+                  {character.age < 10 && <div className="text-xs text-red-400">Available at age 10+</div>}
+                </div>
+              </div>
+              <ChevronRight className="h-5 w-5 text-purple-400" />
             </Button>
           </div>
         </CardContent>
@@ -145,37 +179,37 @@ export const CareerSystem: React.FC<CareerSystemProps> = ({
 
       {/* Current Job Status */}
       {character.job ? (
-        <Card className="border-green-200 bg-green-50">
+        <Card className="glass border-green-500/30">
           <CardHeader className="pb-3">
-            <CardTitle className="text-lg flex items-center gap-2">
-              <Briefcase className="h-5 w-5 text-green-600" />
+            <CardTitle className="text-lg flex items-center gap-2 text-white">
+              <Briefcase className="h-5 w-5 text-green-400" />
               Current Position
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
             <div>
               <div className="flex justify-between items-center mb-1">
-                <span className="font-medium">{character.job}</span>
-                <Badge variant="secondary">Level {character.jobLevel}</Badge>
+                <span className="font-medium text-white">{character.job}</span>
+                <Badge variant="secondary" className="bg-white/20 text-white">Level {character.jobLevel}</Badge>
               </div>
-              <div className="text-sm text-gray-600">
+              <div className="text-sm text-white/70">
                 <div>💰 Salary: ${getCurrentSalary()}k/year</div>
               </div>
             </div>
 
             {getPromotionRequirements() && (
-              <div className="bg-white rounded-lg p-3 border">
-                <h4 className="font-medium text-sm mb-2 flex items-center gap-1">
+              <div className="bg-white/10 rounded-lg p-3 border border-white/20">
+                <h4 className="font-medium text-sm mb-2 flex items-center gap-1 text-white">
                   <TrendingUp className="h-4 w-4" />
                   Next Promotion
                 </h4>
-                <div className="text-xs text-gray-600 space-y-1">
+                <div className="text-xs text-white/70 space-y-1">
                   <div>Smarts needed: {getPromotionRequirements()!.smartsRequired}</div>
                   <div>Experience: {getPromotionRequirements()!.yearsRequired} years</div>
                 </div>
                 <Button
                   size="sm"
-                  className="w-full mt-2"
+                  className="w-full mt-2 bg-green-500 hover:bg-green-600"
                   onClick={() => onCareerAction('promote')}
                   disabled={character.smarts < getPromotionRequirements()!.smartsRequired}
                 >
@@ -187,7 +221,7 @@ export const CareerSystem: React.FC<CareerSystemProps> = ({
             <Button
               variant="outline"
               size="sm"
-              className="w-full"
+              className="w-full border-red-500/50 text-red-300 hover:bg-red-500/20"
               onClick={() => onCareerAction('quit')}
             >
               Quit Job
@@ -195,8 +229,8 @@ export const CareerSystem: React.FC<CareerSystemProps> = ({
           </CardContent>
         </Card>
       ) : (
-        <Card>
-          <CardContent className="p-4 text-center text-gray-500">
+        <Card className="glass border-white/20">
+          <CardContent className="p-4 text-center text-white/70">
             <Briefcase className="h-8 w-8 mx-auto mb-2 opacity-50" />
             <p>Currently unemployed</p>
           </CardContent>
@@ -204,17 +238,17 @@ export const CareerSystem: React.FC<CareerSystemProps> = ({
       )}
 
       {/* Available Jobs */}
-      <Card>
+      <Card className="glass border-white/20">
         <CardHeader className="pb-3">
-          <CardTitle className="text-lg">Regular Job Opportunities</CardTitle>
+          <CardTitle className="text-lg text-white">Regular Job Opportunities</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
           {careerTracks.filter(career => isEligible(career)).map(career => (
-            <div key={career.id} className="border rounded-lg p-3 hover:bg-gray-50">
+            <div key={career.id} className="border border-white/10 rounded-lg p-3 hover:bg-white/5 transition-colors">
               <div className="flex justify-between items-start">
                 <div className="flex-1">
-                  <h3 className="font-medium">{career.name}</h3>
-                  <div className="flex items-center gap-4 text-xs text-gray-600 mt-1">
+                  <h3 className="font-medium text-white">{career.name}</h3>
+                  <div className="flex items-center gap-4 text-xs text-white/60 mt-1">
                     <span className="flex items-center gap-1">
                       <DollarSign className="h-3 w-3" />
                       ${career.baseSalary}k starting
@@ -224,7 +258,7 @@ export const CareerSystem: React.FC<CareerSystemProps> = ({
                       Max Level {career.maxLevel}
                     </span>
                   </div>
-                  <div className="text-xs text-gray-500 mt-1">
+                  <div className="text-xs text-white/50 mt-1">
                     Requires: {career.education}, {career.smarts} smarts
                   </div>
                 </div>
@@ -232,6 +266,7 @@ export const CareerSystem: React.FC<CareerSystemProps> = ({
                   size="sm"
                   onClick={() => onCareerAction('apply', { careerId: career.id })}
                   disabled={character.job === career.name}
+                  className="bg-blue-500 hover:bg-blue-600"
                 >
                   {character.job === career.name ? 'Current' : 'Apply'}
                 </Button>

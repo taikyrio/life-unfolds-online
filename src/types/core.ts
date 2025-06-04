@@ -1,4 +1,3 @@
-
 export interface PersonalityTraits {
   extraversion: number;
   agreeableness: number;
@@ -28,11 +27,11 @@ export interface Asset {
 export interface CriminalRecord {
   arrests: number;
   convictions: number;
+  prisonTime: number;
   crimes: string[];
+  notoriety: number;
   totalSentence: number;
   currentlyIncarcerated: boolean;
-  notoriety: number;
-  prisonTime: number;
 }
 
 export interface JobPerformance {
