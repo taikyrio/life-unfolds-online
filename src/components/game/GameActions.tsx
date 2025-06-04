@@ -5,21 +5,22 @@ import { handleActivityAction } from '../handlers/ActivityActionHandler';
 import { handleEducationAction } from '../handlers/EducationActionHandler';
 import { handleCareerAction } from '../handlers/CareerActionHandler';
 import { handleRelationshipAction } from '../handlers/RelationshipActionHandler';
-import { toast } from '../ui/use-toast';
+import { useToast } from '@/hooks/use-toast';
 
 interface GameActionsProps {
   gameState: GameState;
   onGameStateChange: (newState: GameState) => void;
-  ageHistory: any[];
-  setAgeHistory: React.Dispatch<React.SetStateAction<any[]>>;
+  ageHistory: Record<number, string[]>;
+  setAgeHistory: React.Dispatch<React.SetStateAction<Record<number, string[]>>>;
 }
 
-export const GameActions: React.FC<GameActionsProps> = ({
+export const useGameActions = ({
   gameState,
   onGameStateChange,
   ageHistory,
   setAgeHistory
-}) => {
+}: GameActionsProps) => {
+  const { toast } = useToast();
 
   const handleCriminalOperation = (operation: any) => {
     console.log('Criminal operation:', operation);
@@ -103,12 +104,12 @@ export const GameActions: React.FC<GameActionsProps> = ({
     handleRelationshipAction(
       gameState.character,
       action,
-      data,
       ageHistory,
       setAgeHistory,
       onGameStateChange,
       gameState,
-      toast
+      toast,
+      data
     );
   };
 
@@ -123,4 +124,4 @@ export const GameActions: React.FC<GameActionsProps> = ({
   };
 };
 
-export default GameActions;
+export default useGameActions;

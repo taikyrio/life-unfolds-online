@@ -68,6 +68,20 @@ export const GameBoard: React.FC<GameBoardProps> = ({ gameState, onGameStateChan
     processChoice(gameState, choiceId, ageHistory, setAgeHistory, onGameStateChange);
   };
 
+  const handleCharacterUpdate = (updatedCharacter: Character) => {
+    onGameStateChange({
+      ...gameState,
+      character: updatedCharacter
+    });
+  };
+
+  const handleEvent = (message: string) => {
+    toast({
+      title: "Event",
+      description: message,
+    });
+  };
+
   if (gameState.gameOver) {
     return <GameOverScreen 
       character={gameState.character} 
@@ -364,6 +378,8 @@ export const GameBoard: React.FC<GameBoardProps> = ({ gameState, onGameStateChan
             <div className="h-full overflow-y-auto">
               <MoneyTab 
                 character={gameState.character}
+                onCharacterUpdate={handleCharacterUpdate}
+                onEvent={handleEvent}
               />
             </div>
           )}
