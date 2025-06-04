@@ -1,8 +1,7 @@
+
 @import "tailwindcss/base";
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
-
-/* Keep existing code for animations and base styles */
 
 @layer base {
   :root {
@@ -28,21 +27,22 @@
     --ring: 217 91% 60%;
     --radius: 1.25rem;
     
-    /* Apple-specific variables */
-    --glass-bg: rgba(255, 255, 255, 0.1);
-    --glass-border: rgba(255, 255, 255, 0.2);
-    --blur-strength: 20px;
-    --shadow-light: 0 8px 32px rgba(0, 0, 0, 0.1);
-    --shadow-medium: 0 16px 64px rgba(0, 0, 0, 0.15);
-    --shadow-heavy: 0 24px 80px rgba(0, 0, 0, 0.25);
-    --transition-apple: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    /* Apple-specific design tokens */
+    --apple-blur: 40px;
+    --apple-glass-bg: rgba(255, 255, 255, 0.1);
+    --apple-glass-border: rgba(255, 255, 255, 0.2);
+    --apple-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
+    --apple-shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.06);
+    --apple-shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.05);
+    --apple-shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.1), 0 10px 10px rgba(0, 0, 0, 0.04);
+    --apple-transition: cubic-bezier(0.25, 0.46, 0.45, 0.94);
     
-    /* Chart colors */
-    --chart-1: 217 91% 60%;
-    --chart-2: 142 76% 36%;
-    --chart-3: 346 87% 43%;
-    --chart-4: 45 93% 47%;
-    --chart-5: 271 91% 65%;
+    /* visionOS depth layers */
+    --depth-1: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+    --depth-2: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+    --depth-3: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
+    --depth-4: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
+    --depth-5: 0 19px 38px rgba(0, 0, 0, 0.30), 0 15px 12px rgba(0, 0, 0, 0.22);
   }
 
   .dark {
@@ -67,18 +67,8 @@
     --ring: 217 91% 60%;
     
     /* Dark mode glass effects */
-    --glass-bg: rgba(0, 0, 0, 0.3);
-    --glass-border: rgba(255, 255, 255, 0.1);
-    --shadow-light: 0 8px 32px rgba(0, 0, 0, 0.3);
-    --shadow-medium: 0 16px 64px rgba(0, 0, 0, 0.4);
-    --shadow-heavy: 0 24px 80px rgba(0, 0, 0, 0.5);
-    
-    /* Dark chart colors */
-    --chart-1: 217 91% 60%;
-    --chart-2: 142 76% 36%;
-    --chart-3: 346 87% 43%;
-    --chart-4: 45 93% 47%;
-    --chart-5: 271 91% 65%;
+    --apple-glass-bg: rgba(0, 0, 0, 0.3);
+    --apple-glass-border: rgba(255, 255, 255, 0.1);
   }
 }
 
@@ -87,249 +77,211 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-sans;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 }
 
 /* Apple Design System Utilities */
 @layer utilities {
-  /* Glass Morphism Effects */
-  .glass-card {
-    background: var(--glass-bg);
-    backdrop-filter: blur(var(--blur-strength));
-    -webkit-backdrop-filter: blur(var(--blur-strength));
-    border: 1px solid var(--glass-border);
-    box-shadow: var(--shadow-light);
+  /* Glass Morphism System */
+  .apple-glass {
+    background: var(--apple-glass-bg);
+    backdrop-filter: blur(var(--apple-blur));
+    -webkit-backdrop-filter: blur(var(--apple-blur));
+    border: 1px solid var(--apple-glass-border);
   }
   
-  .glass-overlay {
-    background: var(--glass-bg);
-    backdrop-filter: blur(calc(var(--blur-strength) * 1.5));
-    -webkit-backdrop-filter: blur(calc(var(--blur-strength) * 1.5));
-    border: 1px solid var(--glass-border);
+  .apple-glass-card {
+    @apply apple-glass rounded-3xl;
+    box-shadow: var(--depth-2);
+  }
+  
+  .apple-glass-subtle {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
   }
 
-  /* Apple-style depth and shadows */
-  .apple-shadow-sm {
-    box-shadow: var(--shadow-light);
-  }
-  
-  .apple-shadow-md {
-    box-shadow: var(--shadow-medium);
-  }
-  
-  .apple-shadow-lg {
-    box-shadow: var(--shadow-heavy);
-  }
+  /* Apple Shadow System */
+  .apple-shadow-1 { box-shadow: var(--depth-1); }
+  .apple-shadow-2 { box-shadow: var(--depth-2); }
+  .apple-shadow-3 { box-shadow: var(--depth-3); }
+  .apple-shadow-4 { box-shadow: var(--depth-4); }
+  .apple-shadow-5 { box-shadow: var(--depth-5); }
 
-  /* Apple transitions */
+  /* Apple Transitions */
   .apple-transition {
-    transition: all 0.3s var(--transition-apple);
+    transition: all 0.4s var(--apple-transition);
   }
   
-  .apple-hover {
-    @apply apple-transition hover:scale-105 hover:shadow-lg active:scale-95;
+  .apple-transition-fast {
+    transition: all 0.2s var(--apple-transition);
   }
 
-  /* visionOS spatial design */
-  .spatial-depth {
+  /* Apple Interaction States */
+  .apple-hover {
+    @apply apple-transition hover:scale-[1.02] active:scale-[0.98];
+  }
+  
+  .apple-press {
+    @apply apple-transition-fast active:scale-95 active:brightness-95;
+  }
+
+  /* visionOS Spatial Design */
+  .vision-depth {
     transform-style: preserve-3d;
     perspective: 1000px;
   }
   
-  .spatial-float {
-    transform: translateZ(20px);
-  }
-
-  /* iOS-style safe areas */
-  .safe-area-pb {
-    padding-bottom: env(safe-area-inset-bottom);
+  .vision-float {
+    transform: translateZ(30px);
   }
   
-  .safe-area-pt {
-    padding-top: env(safe-area-inset-top);
+  .vision-elevated {
+    transform: translateZ(60px);
   }
 
-  .touch-action-manipulation {
-    touch-action: manipulation;
-  }
-
-  /* Enhanced touch feedback */
-  .touch-feedback {
-    @apply touch-action-manipulation apple-transition active:scale-95;
-  }
-  
-  /* Apple button styles */
-  .apple-button {
-    @apply glass-card apple-hover touch-feedback rounded-2xl px-6 py-3 font-medium min-h-[44px] flex items-center justify-center;
-  }
-  
+  /* Apple Button System */
   .apple-button-primary {
-    @apply bg-blue-500 text-white border-blue-600 hover:bg-blue-600;
+    @apply bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-2xl px-6 py-3 apple-press apple-shadow-2;
+    background: linear-gradient(135deg, #007AFF 0%, #5856D6 100%);
   }
   
   .apple-button-secondary {
-    @apply bg-white/20 text-current border-white/30;
+    @apply apple-glass-card hover:bg-white/10 text-current font-medium px-6 py-3 apple-press;
+  }
+  
+  .apple-button-destructive {
+    @apply bg-red-500 hover:bg-red-600 text-white font-semibold rounded-2xl px-6 py-3 apple-press apple-shadow-2;
+    background: linear-gradient(135deg, #FF3B30 0%, #D70015 100%);
   }
 
-  /* Mobile-first responsive utilities */
-  .mobile-container {
-    @apply px-4 mx-auto max-w-screen-sm;
+  /* Apple Card System */
+  .apple-card {
+    @apply apple-glass-card p-6 apple-hover;
   }
   
-  .mobile-card {
-    @apply glass-card rounded-3xl p-4 apple-shadow-md;
+  .apple-card-compact {
+    @apply apple-glass-card p-4 apple-hover;
   }
   
-  .mobile-button {
-    @apply w-full min-h-[52px] rounded-2xl font-semibold text-lg apple-transition active:scale-95;
+  .apple-card-minimal {
+    @apply apple-glass-subtle rounded-2xl p-4 apple-hover;
+  }
+
+  /* Mobile-first Apple Design */
+  .mobile-apple-container {
+    @apply px-4 mx-auto max-w-sm;
   }
   
-  .mobile-grid {
-    @apply grid gap-3;
+  .mobile-apple-card {
+    @apply apple-card rounded-3xl;
   }
   
-  .mobile-stat-grid {
-    @apply grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3;
+  .mobile-apple-button {
+    @apply w-full min-h-[52px] rounded-2xl font-semibold text-lg apple-press;
+  }
+
+  /* Apple Typography Scale */
+  .apple-title-1 {
+    @apply text-3xl font-bold tracking-tight;
   }
   
-  .mobile-tab-bar {
-    @apply flex overflow-x-auto scrollbar-hide gap-2 px-4 py-3;
+  .apple-title-2 {
+    @apply text-2xl font-bold tracking-tight;
   }
   
-  .mobile-tab {
-    @apply flex-shrink-0 min-w-[60px] apple-button text-center;
+  .apple-title-3 {
+    @apply text-xl font-semibold;
+  }
+  
+  .apple-headline {
+    @apply text-lg font-semibold;
+  }
+  
+  .apple-body {
+    @apply text-base leading-relaxed;
+  }
+  
+  .apple-caption {
+    @apply text-sm text-gray-600 dark:text-gray-400;
+  }
+
+  /* Apple Input System */
+  .apple-input {
+    @apply apple-glass-subtle rounded-xl px-4 py-3 text-base border-0 focus:outline-none focus:ring-2 focus:ring-blue-500/50 apple-transition;
+  }
+
+  /* Safe Area Support */
+  .safe-area-top {
+    padding-top: env(safe-area-inset-top);
+  }
+  
+  .safe-area-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  
+  .safe-area-left {
+    padding-left: env(safe-area-inset-left);
+  }
+  
+  .safe-area-right {
+    padding-right: env(safe-area-inset-right);
+  }
+
+  /* Apple Navigation */
+  .apple-nav-bar {
+    @apply apple-glass sticky top-0 z-50 border-b border-white/10;
+  }
+  
+  .apple-tab-bar {
+    @apply apple-glass-card border-t border-white/10;
+  }
+
+  /* Accessibility & Interaction */
+  .apple-focus-ring {
+    @apply focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:ring-offset-2 focus:ring-offset-transparent;
+  }
+  
+  .apple-touch-target {
+    @apply min-h-[44px] min-w-[44px] flex items-center justify-center;
   }
 }
 
 /* Device-specific optimizations */
-
-/* iPhone SE (375px) - Ultra compact layout */
-@media (max-width: 375px) {
-  .mobile-container {
+@media (max-width: 390px) {
+  .mobile-apple-container {
     @apply px-3;
   }
   
-  .mobile-card {
-    @apply p-3 rounded-2xl;
+  .mobile-apple-card {
+    @apply p-4 rounded-2xl;
   }
   
-  .mobile-button {
-    @apply min-h-[48px] text-sm px-3;
-  }
-  
-  .mobile-stat-grid {
-    @apply grid-cols-2 gap-2;
-  }
-  
-  .mobile-tab {
-    @apply min-w-[50px] px-2;
-  }
-  
-  /* Compact text sizes for SE */
-  h1 { @apply text-lg; }
-  h2 { @apply text-base; }
-  h3 { @apply text-sm; }
-}
-
-/* iPhone 12/13/14 Mini (390px) */
-@media (min-width: 376px) and (max-width: 390px) {
-  .mobile-container {
-    @apply px-4;
-  }
-  
-  .mobile-stat-grid {
-    @apply grid-cols-3 gap-3;
+  .mobile-apple-button {
+    @apply min-h-[48px] text-base;
   }
 }
 
-/* iPhone 12/13/14/15 Standard (393px) & iPhone 16 (393px) */
-@media (min-width: 391px) and (max-width: 430px) {
-  .mobile-container {
-    @apply px-4;
-  }
-  
-  .mobile-stat-grid {
-    @apply grid-cols-3 gap-3;
-  }
-  
-  .mobile-button {
-    @apply min-h-[52px];
-  }
-}
-
-/* iPhone 12/13/14/15/16 Pro Max (428px-430px) */
-@media (min-width: 428px) and (max-width: 430px) {
-  .mobile-stat-grid {
-    @apply grid-cols-4 gap-3;
-  }
-}
-
-/* Samsung Galaxy S20/S21/S22/S23 Standard (360px-412px) */
-@media (min-width: 360px) and (max-width: 412px) {
-  .mobile-container {
-    @apply px-4;
-  }
-  
-  .mobile-stat-grid {
-    @apply grid-cols-3 gap-3;
-  }
-}
-
-/* Samsung Galaxy S20/S21/S22/S23 Ultra & Note series (412px-428px) */
-@media (min-width: 412px) and (max-width: 428px) {
-  .mobile-stat-grid {
-    @apply grid-cols-4 gap-3;
-  }
-}
-
-/* Google Pixel phones (393px-411px) */
-@media (min-width: 393px) and (max-width: 411px) {
-  .mobile-container {
-    @apply px-4;
-  }
-  
-  .mobile-stat-grid {
-    @apply grid-cols-3 gap-3;
-  }
-}
-
-/* Tablet and larger devices */
 @media (min-width: 768px) {
-  .mobile-container {
+  .mobile-apple-container {
     @apply max-w-md mx-auto px-6;
   }
   
-  .mobile-stat-grid {
-    @apply grid-cols-5 gap-4;
-  }
-  
-  .mobile-button {
-    @apply min-h-[56px] text-base;
+  .mobile-apple-button {
+    @apply min-h-[56px] text-lg;
   }
 }
 
-/* Hide scrollbars for better mobile experience */
-.scrollbar-hide {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
-
-.scrollbar-hide::-webkit-scrollbar {
-  display: none;
-}
-
-/* Ensure text doesn't overflow on very small screens */
-@media (max-width: 320px) {
-  .text-xs {
-    font-size: 10px;
-  }
-}
-
-@keyframes scale-in {
+/* Advanced Apple Visual Effects */
+@keyframes apple-scale-in {
   from {
     opacity: 0;
-    transform: scale(0.9);
+    transform: scale(0.95);
   }
   to {
     opacity: 1;
@@ -337,24 +289,7 @@
   }
 }
 
-.animate-scale-in {
-  animation: scale-in 0.3s ease-out;
-}
-
-@keyframes fade-in {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-.animate-fade-in {
-  animation: fade-in 0.3s ease-out;
-}
-
-@keyframes slide-up {
+@keyframes apple-slide-up {
   from {
     opacity: 0;
     transform: translateY(20px);
@@ -365,6 +300,54 @@
   }
 }
 
-.animate-slide-up {
-  animation: slide-up 0.4s ease-out;
+@keyframes apple-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.animate-apple-scale-in {
+  animation: apple-scale-in 0.4s var(--apple-transition);
+}
+
+.animate-apple-slide-up {
+  animation: apple-slide-up 0.5s var(--apple-transition);
+}
+
+.animate-apple-fade-in {
+  animation: apple-fade-in 0.3s ease-out;
+}
+
+/* Hide scrollbars with Apple-style behavior */
+.apple-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+}
+
+.apple-scrollbar::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+.apple-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.apple-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 10px;
+}
+
+.apple-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+/* Apple-style selection */
+::selection {
+  background: rgba(0, 122, 255, 0.3);
+  color: inherit;
+}
+
+::-moz-selection {
+  background: rgba(0, 122, 255, 0.3);
+  color: inherit;
 }

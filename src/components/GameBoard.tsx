@@ -55,7 +55,6 @@ export const GameBoard: React.FC<GameBoardProps> = ({ gameState, onGameStateChan
     }
   }, [gameState, onGameStateChange]);
 
-  // Show event overlay when there's a current event
   useEffect(() => {
     setShowEventOverlay(!!gameState.currentEvent);
   }, [gameState.currentEvent]);
@@ -107,7 +106,6 @@ export const GameBoard: React.FC<GameBoardProps> = ({ gameState, onGameStateChan
   }
 
   const handleCriminalOperation = (operation: any) => {
-    // Handle criminal operations
     console.log('Criminal operation:', operation);
     toast({
       title: "Criminal Operation",
@@ -116,7 +114,6 @@ export const GameBoard: React.FC<GameBoardProps> = ({ gameState, onGameStateChan
   };
 
   const handleCybercrime = (crime: any) => {
-    // Handle cybercrime activities
     console.log('Cybercrime:', crime);
     toast({
       title: "Cybercrime",
@@ -125,7 +122,6 @@ export const GameBoard: React.FC<GameBoardProps> = ({ gameState, onGameStateChan
   };
 
   const handleMurder = (target: any) => {
-    // Handle murder activities
     console.log('Murder target:', target);
     toast({
       title: "Murder",
@@ -134,7 +130,6 @@ export const GameBoard: React.FC<GameBoardProps> = ({ gameState, onGameStateChan
   };
 
   const handleActivity = (activityId: string, activityData?: any) => {
-    // Check if it's a special activity type
     if (activityData && activityData.type) {
       if (activityData.type === 'criminal_operation') {
         handleCriminalOperation(activityData);
@@ -148,7 +143,6 @@ export const GameBoard: React.FC<GameBoardProps> = ({ gameState, onGameStateChan
       }
     }
 
-    // Handle regular activities
     handleActivityAction(
       gameState.character,
       activityId,
@@ -161,7 +155,6 @@ export const GameBoard: React.FC<GameBoardProps> = ({ gameState, onGameStateChan
     );
   };
 
-  // Initialize character education if not present
   useEffect(() => {
     if (!gameState.character.education) {
       const updatedCharacter = {
@@ -189,25 +182,20 @@ export const GameBoard: React.FC<GameBoardProps> = ({ gameState, onGameStateChan
     }
   }, [gameState.character, onGameStateChange]);
 
-  // Auto-enroll in mandatory education
   useEffect(() => {
     if (!gameState.character.education) return;
 
     const autoEnrollAge = (age: number) => {
-      // Ensure education object exists and is properly structured
       if (!gameState.character.education || !Array.isArray(gameState.character.education.completedStages)) {
         return;
       }
 
-      // Auto-enroll in elementary at age 6
       if (age >= 6 && age <= 11 && !gameState.character.education.currentStage && !gameState.character.education.completedStages.includes('elementary')) {
         handleEducationAction(gameState.character, 'enroll', { stageId: 'elementary', schoolId: 'public_elementary' }, ageHistory, setAgeHistory, onGameStateChange, gameState, toast);
       }
-      // Auto-enroll in middle school at age 12
       else if (age >= 12 && age <= 14 && gameState.character.education.completedStages.includes('elementary') && !gameState.character.education.currentStage && !gameState.character.education.completedStages.includes('middle')) {
         handleEducationAction(gameState.character, 'enroll', { stageId: 'middle', schoolId: 'public_middle' }, ageHistory, setAgeHistory, onGameStateChange, gameState, toast);
       }
-      // Auto-enroll in high school at age 15
       else if (age >= 15 && age <= 17 && gameState.character.education.completedStages.includes('middle') && !gameState.character.education.currentStage && !gameState.character.education.completedStages.includes('high')) {
         handleEducationAction(gameState.character, 'enroll', { stageId: 'high', schoolId: 'public_high' }, ageHistory, setAgeHistory, onGameStateChange, gameState, toast);
       }
@@ -218,21 +206,21 @@ export const GameBoard: React.FC<GameBoardProps> = ({ gameState, onGameStateChan
 
   return (
     <div className="min-h-screen flex flex-col overflow-hidden bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
-      {/* Device-optimized Header */}
-      <div className="glass-card border-0 border-b border-white/20 safe-area-pt flex-shrink-0 relative z-20">
-        <div className="mobile-container py-3 sm:py-4">
-          <div className="flex items-center justify-between gap-2">
-            <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
-              <div className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center text-base sm:text-lg md:text-xl flex-shrink-0 apple-shadow-sm">
+      {/* Apple-style Header */}
+      <div className="apple-nav-bar safe-area-top flex-shrink-0 relative z-20">
+        <div className="mobile-apple-container py-4">
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex items-center gap-3 min-w-0 flex-1">
+              <div className="w-12 h-12 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center text-xl flex-shrink-0 apple-shadow-2 vision-float">
                 👤
               </div>
               <div className="min-w-0 flex-1">
-                <h1 className="text-base sm:text-lg md:text-xl font-bold text-gray-900 dark:text-white truncate">{gameState.character.name}</h1>
-                <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-300">Age {gameState.character.age}</p>
+                <h1 className="apple-title-3 text-gray-900 dark:text-white truncate">{gameState.character.name}</h1>
+                <p className="apple-caption">Age {gameState.character.age}</p>
               </div>
             </div>
-            <div className="glass-card px-2 sm:px-3 md:px-4 py-1 sm:py-2 rounded-xl sm:rounded-2xl apple-shadow-sm flex-shrink-0">
-              <div className="text-sm sm:text-lg md:text-xl font-bold bg-gradient-to-r from-green-500 to-emerald-600 bg-clip-text text-transparent">
+            <div className="apple-glass-card px-4 py-2 rounded-2xl apple-shadow-1 flex-shrink-0">
+              <div className="apple-headline bg-gradient-to-r from-green-500 to-emerald-600 bg-clip-text text-transparent">
                 ${gameState.character.wealth}k
               </div>
             </div>
@@ -240,10 +228,10 @@ export const GameBoard: React.FC<GameBoardProps> = ({ gameState, onGameStateChan
         </div>
       </div>
 
-      {/* Device-responsive Stats Dashboard */}
-      <div className="glass-card border-0 border-b border-white/20 flex-shrink-0 relative z-20">
-        <div className="mobile-container py-2 sm:py-3 md:py-4">
-          <div className="mobile-stat-grid">
+      {/* Apple-style Stats Dashboard */}
+      <div className="apple-glass border-b border-white/10 flex-shrink-0 relative z-20">
+        <div className="mobile-apple-container py-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
             {[
               { label: 'Health', value: Math.round(gameState.character.health), icon: '❤️', color: 'from-red-400 to-red-600' },
               { label: 'Happy', value: Math.round(gameState.character.happiness), icon: '😊', color: 'from-yellow-400 to-orange-500' },
@@ -251,13 +239,13 @@ export const GameBoard: React.FC<GameBoardProps> = ({ gameState, onGameStateChan
               { label: 'Smarts', value: Math.round(gameState.character.smarts), icon: '🧠', color: 'from-blue-400 to-cyan-500' },
               { label: 'Looks', value: Math.round(gameState.character.looks), icon: '✨', color: 'from-indigo-400 to-purple-500' }
             ].map((stat) => (
-              <div key={stat.label} className="mobile-card p-2 sm:p-3 apple-hover spatial-float touch-feedback">
-                <div className="text-center space-y-1 sm:space-y-2">
-                  <div className="text-lg sm:text-xl md:text-2xl">{stat.icon}</div>
-                  <div className={`text-base sm:text-lg md:text-xl font-bold bg-gradient-to-r ${stat.color} bg-clip-text text-transparent`}>
+              <div key={stat.label} className="apple-card-compact text-center vision-depth apple-hover">
+                <div className="space-y-2">
+                  <div className="text-2xl vision-float">{stat.icon}</div>
+                  <div className={`apple-title-3 bg-gradient-to-r ${stat.color} bg-clip-text text-transparent`}>
                     {stat.value}
                   </div>
-                  <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-300 font-medium truncate">{stat.label}</div>
+                  <div className="apple-caption font-medium truncate">{stat.label}</div>
                 </div>
               </div>
             ))}
@@ -265,9 +253,9 @@ export const GameBoard: React.FC<GameBoardProps> = ({ gameState, onGameStateChan
         </div>
       </div>
 
-      {/* Device-responsive Tab Navigation */}
-      <div className="glass-card border-0 border-b border-white/20 flex-shrink-0 relative z-20">
-        <div className="flex overflow-x-auto scrollbar-hide gap-1 sm:gap-2 px-2 sm:px-4 py-2 sm:py-3">
+      {/* Apple-style Tab Navigation */}
+      <div className="apple-glass border-b border-white/10 flex-shrink-0 relative z-20">
+        <div className="flex overflow-x-auto apple-scrollbar gap-2 px-4 py-3">
           {[
             { id: 'life', icon: '🏠', label: 'Life' },
             { id: 'activities', icon: '🎯', label: 'Activities' },
@@ -281,24 +269,24 @@ export const GameBoard: React.FC<GameBoardProps> = ({ gameState, onGameStateChan
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id as typeof activeTab)}
-              className={`mobile-tab flex-shrink-0 min-w-[48px] sm:min-w-[60px] px-2 sm:px-3 py-2 sm:py-3 rounded-xl sm:rounded-2xl touch-feedback ${
+              className={`flex-shrink-0 min-w-[60px] px-4 py-3 rounded-2xl apple-press vision-depth ${
                 activeTab === tab.id
-                  ? 'bg-blue-500/20 border-blue-400/30 text-blue-600 dark:text-blue-400 scale-105 apple-shadow-sm'
-                  : 'apple-button-secondary text-gray-600 dark:text-gray-300 hover:bg-gray-100/50 dark:hover:bg-gray-700/50'
+                  ? 'apple-glass-card text-blue-600 dark:text-blue-400 scale-105 apple-shadow-2'
+                  : 'apple-glass-subtle text-gray-600 dark:text-gray-300 hover:bg-white/10'
               }`}
             >
-              <div className="flex flex-col items-center gap-0.5 sm:gap-1">
-                <span className="text-base sm:text-lg md:text-xl">{tab.icon}</span>
-                <span className="text-[10px] sm:text-xs font-medium truncate leading-tight">{tab.label}</span>
+              <div className="flex flex-col items-center gap-1">
+                <span className="text-xl vision-float">{tab.icon}</span>
+                <span className="text-xs font-medium truncate leading-tight">{tab.label}</span>
               </div>
             </button>
           ))}
         </div>
       </div>
 
-      {/* Mobile-optimized Main Content Area */}
+      {/* Apple-style Main Content Area */}
       <div className="flex-1 overflow-hidden relative">
-        <div className="h-full overflow-y-auto scrollbar-hide mobile-container py-4">
+        <div className="h-full overflow-y-auto apple-scrollbar mobile-apple-container py-6">
           {activeTab === 'life' && (
             <div className="h-full">
               <LifeTab 

@@ -1,8 +1,6 @@
 
 import React from 'react';
 import { LifeEvent } from '../types/game';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 
 interface EventCardProps {
   event: LifeEvent;
@@ -11,31 +9,31 @@ interface EventCardProps {
 
 export const EventCard: React.FC<EventCardProps> = ({ event, onChoice }) => {
   return (
-    <div className="mobile-card animate-scale-in apple-shadow-lg">
-      {/* Mobile-optimized Event Header */}
-      <div className="text-center pb-4 bg-gradient-to-b from-blue-50/50 to-transparent rounded-t-3xl p-6">
-        <div className="w-16 h-16 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center text-3xl mx-auto mb-4 apple-shadow-sm">
+    <div className="apple-card animate-apple-scale-in vision-depth">
+      {/* Apple-style Event Header */}
+      <div className="text-center pb-6 bg-gradient-to-b from-blue-50/30 to-transparent rounded-t-3xl">
+        <div className="w-20 h-20 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center text-4xl mx-auto mb-6 apple-shadow-3 vision-elevated">
           {event.emoji}
         </div>
-        <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-3">
+        <h3 className="apple-title-3 text-gray-900 dark:text-white mb-4">
           {event.title}
         </h3>
-        <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">
+        <p className="apple-body text-gray-600 dark:text-gray-300 leading-relaxed max-w-sm mx-auto">
           {event.description}
         </p>
       </div>
 
-      {/* Mobile-first Choice Buttons */}
-      <div className="space-y-3 px-6 pb-6">
+      {/* Apple-style Choice Buttons */}
+      <div className="space-y-4">
         {event.choices.map((choice) => (
           <button
             key={choice.id}
             onClick={() => onChoice(choice.id)}
-            className="mobile-button bg-white/80 dark:bg-gray-800/80 border border-gray-200 dark:border-gray-700 hover:bg-blue-50 dark:hover:bg-blue-900/30 text-gray-900 dark:text-white apple-shadow-sm"
+            className="w-full apple-glass-card hover:bg-white/10 dark:hover:bg-white/5 text-gray-900 dark:text-white apple-press min-h-[60px] apple-shadow-2"
           >
-            <div className="flex items-center gap-3 text-left">
-              <span className="text-2xl flex-shrink-0">{choice.emoji}</span>
-              <span className="text-sm font-medium leading-tight">{choice.text}</span>
+            <div className="flex items-center gap-4 text-left px-2">
+              <span className="text-3xl flex-shrink-0 vision-float">{choice.emoji}</span>
+              <span className="apple-body font-medium leading-tight flex-1">{choice.text}</span>
             </div>
           </button>
         ))}
