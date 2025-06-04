@@ -221,30 +221,30 @@ export const GameBoard: React.FC<GameBoardProps> = ({ gameState, onGameStateChan
   }, [gameState.character.age, gameState.character.education?.currentStage, gameState.character.education?.completedStages]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 safe-area-top safe-area-bottom">
-      {/* Header */}
-      <div className="apple-glass-card sticky top-0 z-50 border-b border-white/10 px-6 py-4">
+    <div className="min-h-screen max-h-screen overflow-hidden bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 flex flex-col">
+      {/* Compact Header */}
+      <div className="flex-shrink-0 bg-white/80 dark:bg-slate-900/80 backdrop-blur-lg border-b border-white/10 px-3 py-2">
         <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-3">
-            <div className="w-12 h-12 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center text-xl apple-shadow-2">
+          <div className="flex items-center space-x-2">
+            <div className="w-8 h-8 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center text-sm">
               👤
             </div>
             <div>
-              <h1 className="apple-title-2 text-gray-900 dark:text-white">{gameState.character.name}</h1>
-              <p className="apple-caption">Age {gameState.character.age}</p>
+              <h1 className="text-sm font-bold text-gray-900 dark:text-white">{gameState.character.name}</h1>
+              <p className="text-xs text-gray-500">Age {gameState.character.age}</p>
             </div>
           </div>
-          <div className="apple-glass-card px-4 py-2 rounded-2xl">
-            <div className="apple-headline text-green-600 dark:text-green-400">
+          <div className="bg-white/60 dark:bg-slate-800/60 backdrop-blur px-2 py-1 rounded-lg">
+            <div className="text-sm font-bold text-green-600 dark:text-green-400">
               ${gameState.character.wealth}k
             </div>
           </div>
         </div>
       </div>
 
-      {/* Stats Dashboard */}
-      <div className="apple-glass border-b border-white/10 px-6 py-4">
-        <div className="grid grid-cols-5 gap-4">
+      {/* Compact Stats */}
+      <div className="flex-shrink-0 bg-white/60 dark:bg-slate-900/60 backdrop-blur border-b border-white/10 px-3 py-2">
+        <div className="grid grid-cols-5 gap-2">
           {[
             { label: 'Health', value: Math.round(gameState.character.health), icon: '❤️', color: 'text-red-500' },
             { label: 'Happy', value: Math.round(gameState.character.happiness), icon: '😊', color: 'text-yellow-500' },
@@ -252,49 +252,45 @@ export const GameBoard: React.FC<GameBoardProps> = ({ gameState, onGameStateChan
             { label: 'Smarts', value: Math.round(gameState.character.smarts), icon: '🧠', color: 'text-blue-500' },
             { label: 'Looks', value: Math.round(gameState.character.looks), icon: '✨', color: 'text-indigo-500' }
           ].map((stat) => (
-            <div key={stat.label} className="apple-card-compact text-center">
-              <div className="text-2xl mb-2">{stat.icon}</div>
-              <div className={`apple-title-3 ${stat.color} mb-1`}>{stat.value}</div>
-              <div className="apple-caption">{stat.label}</div>
+            <div key={stat.label} className="text-center">
+              <div className="text-lg">{stat.icon}</div>
+              <div className={`text-xs font-bold ${stat.color}`}>{stat.value}</div>
             </div>
           ))}
         </div>
       </div>
 
-      {/* Tab Navigation */}
-      <div className="apple-glass border-b border-white/10 px-6 py-3">
-        <div className="flex space-x-2 overflow-x-auto">
+      {/* Icon-only Navigation */}
+      <div className="flex-shrink-0 bg-white/60 dark:bg-slate-900/60 backdrop-blur border-b border-white/10 px-2 py-1">
+        <div className="flex justify-between items-center">
           {[
-            { id: 'life', icon: '🏠', label: 'Life' },
-            { id: 'activities', icon: '🎯', label: 'Activities' },
-            { id: 'careers', icon: '💼', label: 'Career' },
-            { id: 'education', icon: '📚', label: 'School' },
-            { id: 'health', icon: '❤️', label: 'Health' },
-            { id: 'money', icon: '💰', label: 'Money' },
-            { id: 'relationships', icon: '💕', label: 'Love' },
-            { id: 'assets', icon: '🏆', label: 'Assets' }
+            { id: 'life', icon: '🏠' },
+            { id: 'activities', icon: '🎯' },
+            { id: 'careers', icon: '💼' },
+            { id: 'education', icon: '📚' },
+            { id: 'health', icon: '❤️' },
+            { id: 'money', icon: '💰' },
+            { id: 'relationships', icon: '💕' },
+            { id: 'assets', icon: '🏆' }
           ].map((tab) => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id as typeof activeTab)}
-              className={`flex-shrink-0 px-4 py-2 rounded-xl apple-transition ${
+              className={`p-2 rounded-lg transition-colors ${
                 activeTab === tab.id
-                  ? 'apple-glass-card text-blue-600 dark:text-blue-400 apple-shadow-2'
-                  : 'apple-glass-subtle text-gray-600 dark:text-gray-300 hover:bg-white/10'
+                  ? 'bg-white/80 dark:bg-slate-800/80 shadow-sm'
+                  : 'hover:bg-white/40 dark:hover:bg-slate-800/40'
               }`}
             >
-              <div className="flex items-center space-x-2">
-                <span>{tab.icon}</span>
-                <span className="text-sm font-medium">{tab.label}</span>
-              </div>
+              <span className="text-lg">{tab.icon}</span>
             </button>
           ))}
         </div>
       </div>
 
-      {/* Main Content */}
-      <div className="flex-1 p-6">
-        <div className="max-w-4xl mx-auto">
+      {/* Main Content Area - Takes remaining space */}
+      <div className="flex-1 overflow-auto p-3">
+        <div className="max-w-full mx-auto h-full">
           {activeTab === 'life' && (
             <LifeTab 
               character={gameState.character}
@@ -364,6 +360,14 @@ export const GameBoard: React.FC<GameBoardProps> = ({ gameState, onGameStateChan
           )}
         </div>
       </div>
+
+      {/* Floating Age Up Button */}
+      <button
+        onClick={ageUp}
+        className="fixed bottom-4 right-4 w-12 h-12 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white rounded-full shadow-lg flex items-center justify-center text-xl font-bold transition-all duration-200 hover:scale-105 z-50"
+      >
+        +
+      </button>
 
       {/* Modals and Overlays */}
       {showActivitiesMenu && (

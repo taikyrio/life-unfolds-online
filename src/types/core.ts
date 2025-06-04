@@ -51,11 +51,16 @@ export interface StatEffects {
   wealth?: number;
   relationships?: number;
   fame?: number;
+  education?: string;
+  job?: string;
+  relationshipStatus?: string;
+  criminalRecord?: Partial<CriminalRecord>;
 }
 
 export interface Choice {
   id: string;
   text: string;
+  emoji?: string;
   effects: StatEffects;
   probability?: number;
   requirements?: {
@@ -68,4 +73,6 @@ export interface Choice {
   };
   unlocks?: string[];
   oneTime?: boolean;
+  flags?: string[];
+  consequences?: string[];
 }

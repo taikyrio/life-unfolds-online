@@ -40,6 +40,7 @@ export interface Activity {
     minWealth?: number;
     education?: string;
   };
+  category: string;
 }
 
 export interface CrimeOperation {

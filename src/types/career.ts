@@ -49,13 +49,13 @@ export interface CareerPath {
   };
 }
 
-// Legacy Career interface for backwards compatibility
 export interface Career {
   id: string;
   name: string;
   description: string;
   salary: number;
   category?: string;
+  levels?: CareerLevel[];
   requirements?: {
     education?: string;
     minAge?: number;
