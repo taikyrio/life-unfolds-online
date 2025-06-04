@@ -1,223 +1,221 @@
-
 import React from 'react';
 import { Character, LifeEvent } from '../types/game';
 import { EventCard } from './EventCard';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Separator } from '@/components/ui/separator';
+import { formatMoney } from '../utils/gameUtils';
+import { Heart, Brain, DollarSign, Users, Calendar, MapPin } from 'lucide-react';
 
 interface LifeTabProps {
   character: Character;
   eventHistory: string[];
-  currentEvent?: LifeEvent | null;
+  ageHistory: { age: number; events: string[] }[];
   onAgeUp: () => void;
   onChoice?: (choiceId: string) => void;
-  ageHistory?: Record<number, string[]>;
 }
 
-export const LifeTab: React.FC<LifeTabProps> = ({ 
-  character, 
-  eventHistory, 
-  currentEvent, 
-  onAgeUp, 
-  onChoice,
-  ageHistory = {}
+export const LifeTab: React.FC<LifeTabProps> = ({
+  character,
+  eventHistory,
+  ageHistory,
+  onAgeUp,
+  onChoice
 }) => {
-  const getAgeDescription = (age: number) => {
-    if (age === 0) {
-      return `I was born a ${Math.random() > 0.5 ? 'male' : 'female'} in ${character.birthplace}.`;
-    }
-
-    const events = ageHistory[age] || [];
-
-    if (events.length === 0) {
-      return `I am ${age} years old.`;
-    }
-
-    return events.join('\n');
+  const getLifeStage = (age: number) => {
+    if (age < 2) return { stage: 'Baby', emoji: '👶', color: 'bg-pink-500' };
+    if (age < 4) return { stage: 'Toddler', emoji: '🧒', color: 'bg-orange-500' };
+    if (age < 13) return { stage: 'Child', emoji: '🧒', color: 'bg-yellow-500' };
+    if (age < 20) return { stage: 'Teenager', emoji: '👦', color: 'bg-green-500' };
+    if (age < 60) return { stage: 'Adult', emoji: '🧑', color: 'bg-blue-500' };
+    return { stage: 'Senior', emoji: '👴', color: 'bg-purple-500' };
   };
 
-  // Generate age entries from 0 to current age
-  const ageEntries = [];
-  for (let age = 0; age <= character.age; age++) {
-    ageEntries.push({
-      age,
-      description: getAgeDescription(age)
-    });
-  }
-
-  const getMonthName = (month: number): string => {
-    const months = [
-      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
-    ];
-    return months[month - 1] || 'Jan';
-  };
-
-  const getAgeStage = (age: number): { stage: string; emoji: string; color: string } => {
-    if (age === 0) return { stage: 'Baby', emoji: '👶', color: 'from-pink-400 to-pink-600' };
-    if (age <= 4) return { stage: 'Toddler', emoji: '🧒', color: 'from-blue-400 to-blue-600' };
-    if (age <= 12) return { stage: 'Child', emoji: '👧', color: 'from-green-400 to-green-600' };
-    if (age <= 17) return { stage: 'Teen', emoji: '🧑‍🎓', color: 'from-purple-400 to-purple-600' };
-    if (age <= 25) return { stage: 'Young Adult', emoji: '🧑‍💼', color: 'from-indigo-400 to-indigo-600' };
-    if (age <= 50) return { stage: 'Adult', emoji: '👨‍💼', color: 'from-yellow-400 to-yellow-600' };
-    if (age <= 65) return { stage: 'Middle-aged', emoji: '👨‍🦳', color: 'from-orange-400 to-orange-600' };
-    return { stage: 'Senior', emoji: '👴', color: 'from-gray-400 to-gray-600' };
-  };
+  const lifeStage = getLifeStage(character.age);
+  const zodiacSigns = ['Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo', 'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces'];
+  const characterZodiac = character.zodiacSign || zodiacSigns[Math.floor(Math.random() * zodiacSigns.length)];
 
   return (
-    <div className="h-full flex flex-col space-y-4">
-      {/* Apple-style Character Profile Card */}
-      <div className="apple-card space-y-6">
-        <div className="text-center space-y-4">
-          <div className="relative">
-            <div className="w-20 h-20 mx-auto bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center text-3xl apple-shadow-3 vision-float">
-              {getAgeStage(character.age).emoji}
-            </div>
-            <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 apple-glass-subtle px-3 py-1 rounded-full">
-              <span className="text-xs font-medium bg-gradient-to-r from-blue-500 to-purple-600 bg-clip-text text-transparent">
-                {getAgeStage(character.age).stage}
-              </span>
-            </div>
-          </div>
-          
-          <div className="space-y-2">
-            <h1 className="apple-title-2 text-gray-900 dark:text-white">{character.name}</h1>
-            <div className="apple-glass-card px-4 py-2 rounded-2xl inline-block apple-shadow-1">
-              <span className="apple-headline bg-gradient-to-r from-blue-500 to-purple-600 bg-clip-text text-transparent">
-                Age {character.age}
-              </span>
-            </div>
-          </div>
-        </div>
-        
-        {/* Apple-style Info Grid */}
-        <div className="grid grid-cols-2 gap-4">
-          <div className="apple-card-minimal text-center vision-depth">
-            <div className="text-2xl mb-2">🎂</div>
-            <div className="apple-body font-medium text-gray-900 dark:text-white">
-              {getMonthName(character.birthMonth || 1)} {character.birthDay}
-            </div>
-            <div className="apple-caption mt-1">Birthday</div>
-          </div>
-          <div className="apple-card-minimal text-center vision-depth">
-            <div className="text-2xl mb-2">{character.zodiacSign?.emoji || '⭐'}</div>
-            <div className="apple-body font-medium text-gray-900 dark:text-white">
-              {character.zodiacSign?.name || 'Unknown'}
-            </div>
-            <div className="apple-caption mt-1">Zodiac</div>
-          </div>
-        </div>
+    <div className="h-full bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 p-4 overflow-hidden">
+      <div className="h-full grid grid-cols-1 lg:grid-cols-3 gap-4">
 
-        {/* Apple-style Family Members */}
-        {character.familyMembers.length > 0 && (
-          <div className="space-y-4">
-            <h3 className="apple-headline text-gray-900 dark:text-white flex items-center gap-3">
-              <span className="text-2xl">👨‍👩‍👧‍👦</span>
-              <span>Family</span>
-            </h3>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-              {character.familyMembers.slice(0, 6).map(member => (
-                <div key={member.id} className="apple-card-compact text-center vision-depth apple-hover">
-                  <div className="space-y-2">
-                    <div className="text-xl">
-                      {member.relationship === 'father' && '👨'}
-                      {member.relationship === 'mother' && '👩'}
-                      {member.relationship === 'sibling' && '👫'}
-                      {member.relationship === 'spouse' && '💑'}
-                      {member.relationship === 'lover' && '💕'}
-                      {member.relationship === 'child' && '👶'}
-                    </div>
-                    <div className="apple-body font-medium text-gray-900 dark:text-white truncate">
-                      {member.name.split(' ')[0]}
-                    </div>
-                    <div className="apple-caption capitalize">
-                      {member.relationship}
-                    </div>
+        {/* Left Column - Character Profile */}
+        <div className="lg:col-span-1 space-y-4">
+          {/* Main Character Card */}
+          <Card className="glass-card border-0">
+            <CardContent className="p-6">
+              {/* Character Avatar */}
+              <div className="text-center mb-4">
+                <div className={`w-24 h-24 mx-auto rounded-full ${lifeStage.color} flex items-center justify-center text-4xl mb-3 shadow-lg`}>
+                  {lifeStage.emoji}
+                </div>
+                <Badge className={`${lifeStage.color} text-white px-3 py-1 text-sm font-medium`}>
+                  {lifeStage.stage}
+                </Badge>
+              </div>
+
+              {/* Character Name & Age */}
+              <div className="text-center mb-6">
+                <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-1">
+                  {character.firstName} {character.lastName}
+                </h1>
+                <p className="text-lg text-gray-600 dark:text-gray-400">Age {character.age}</p>
+              </div>
+
+              {/* Stats Grid */}
+              <div className="grid grid-cols-2 gap-3 mb-4">
+                <div className="flex items-center gap-2 p-2 bg-red-50 dark:bg-red-900/20 rounded-lg">
+                  <Heart className="w-4 h-4 text-red-500" />
+                  <div>
+                    <div className="text-xs text-gray-600 dark:text-gray-400">Health</div>
+                    <div className="font-semibold text-red-600">{character.health}%</div>
                   </div>
                 </div>
-              ))}
-              {character.familyMembers.length > 6 && (
-                <div className="apple-card-compact flex items-center justify-center">
-                  <div className="text-center">
-                    <div className="text-lg text-gray-400 mb-1">•••</div>
-                    <span className="apple-caption font-medium">
-                      +{character.familyMembers.length - 6} more
-                    </span>
+                <div className="flex items-center gap-2 p-2 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg">
+                  <Brain className="w-4 h-4 text-yellow-500" />
+                  <div>
+                    <div className="text-xs text-gray-600 dark:text-gray-400">Happiness</div>
+                    <div className="font-semibold text-yellow-600">{character.happiness}%</div>
                   </div>
                 </div>
-              )}
-            </div>
-          </div>
-        )}
-      </div>
+                <div className="flex items-center gap-2 p-2 bg-green-50 dark:bg-green-900/20 rounded-lg">
+                  <DollarSign className="w-4 h-4 text-green-500" />
+                  <div>
+                    <div className="text-xs text-gray-600 dark:text-gray-400">Money</div>
+                    <div className="font-semibold text-green-600">{formatMoney(character.wealth)}</div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2 p-2 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                  <Users className="w-4 h-4 text-blue-500" />
+                  <div>
+                    <div className="text-xs text-gray-600 dark:text-gray-400">Smarts</div>
+                    <div className="font-semibold text-blue-600">{character.smarts}%</div>
+                  </div>
+                </div>
+              </div>
 
-      {/* Apple-style Life History */}
-      <div className="flex-1 overflow-hidden">
-        <div className="apple-card h-full">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="apple-title-3 text-gray-900 dark:text-white flex items-center gap-3">
-              <span className="text-2xl">📚</span>
-              <span>Life Story</span>
-            </h2>
-            <div className="apple-glass-subtle px-3 py-2 rounded-full">
-              <span className="apple-caption font-medium">
-                {ageEntries.length} {ageEntries.length === 1 ? 'year' : 'years'}
-              </span>
-            </div>
-          </div>
+              {/* Personal Info */}
+              <div className="space-y-3">
+                <div className="flex items-center gap-2 p-2 bg-orange-50 dark:bg-orange-900/20 rounded-lg">
+                  <Calendar className="w-4 h-4 text-orange-500" />
+                  <div>
+                    <div className="text-xs text-gray-600 dark:text-gray-400">Birthday</div>
+                    <div className="font-semibold">Oct 9</div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2 p-2 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
+                  <div className="text-lg">♎</div>
+                  <div>
+                    <div className="text-xs text-gray-600 dark:text-gray-400">Zodiac Sign</div>
+                    <div className="font-semibold">{characterZodiac}</div>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
 
-          <ScrollArea className="h-full apple-scrollbar">
-            <div className="space-y-4 pb-4">
-              {ageEntries.reverse().map(entry => (
-                <div key={entry.age} className="apple-card-minimal vision-depth apple-hover">
-                  <div className="flex items-start gap-4">
-                    <div className="flex-shrink-0">
-                      <div className={`w-12 h-12 rounded-full flex items-center justify-center text-lg font-bold bg-gradient-to-br ${getAgeStage(entry.age).color} text-white apple-shadow-2 vision-float`}>
-                        {entry.age}
+          {/* Family Section */}
+          <Card className="glass-card border-0">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-lg flex items-center gap-2">
+                👨‍👩‍👧‍👦 Family
+                <Badge variant="secondary" className="ml-auto">
+                  {character.family?.length || 0} members
+                </Badge>
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="pt-0">
+              <div className="space-y-2">
+                {character.family?.slice(0, 3).map((member, index) => (
+                  <div key={index} className="flex items-center justify-between p-2 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm">👤</span>
+                      <span className="font-medium text-sm">{member.name}</span>
+                    </div>
+                    <Badge variant="outline" className="text-xs">{member.relationship}</Badge>
+                  </div>
+                )) || (
+                  <p className="text-gray-500 text-sm">No family members yet</p>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Right Column - Life Story & Recent Events */}
+        <div className="lg:col-span-2 space-y-4">
+          {/* Life Story */}
+          <Card className="glass-card border-0 h-full">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-xl flex items-center gap-2">
+                📚 Life Story
+                <Badge variant="secondary" className="ml-auto">
+                  {ageHistory.length} years lived
+                </Badge>
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="pt-0 h-[calc(100%-80px)]">
+              <ScrollArea className="h-full pr-4">
+                <div className="space-y-3">
+                  {ageHistory.length === 0 ? (
+                    <div className="text-center py-8">
+                      <div className="text-6xl mb-4">🌟</div>
+                      <h3 className="text-xl font-semibold mb-2">Your life story begins!</h3>
+                      <p className="text-gray-600 dark:text-gray-400 mb-4">
+                        Start aging up to create memories and experiences.
+                      </p>
+                      <Button onClick={onAgeUp} className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700">
+                        Begin Your Journey
+                      </Button>
+                    </div>
+                  ) : (
+                    <>
+                      {ageHistory.slice().reverse().map((yearData, index) => (
+                        <div key={`${yearData.age}-${index}`} className="border-l-2 border-blue-200 dark:border-blue-700 pl-4 pb-4 relative">
+                          <div className="absolute -left-2 top-0 w-4 h-4 bg-blue-500 rounded-full"></div>
+                          <div className="flex items-center gap-2 mb-2">
+                            <Badge variant="outline" className="font-semibold">
+                              Age {yearData.age}
+                            </Badge>
+                            <span className="text-xs text-gray-500">
+                              {getLifeStage(yearData.age).stage}
+                            </span>
+                          </div>
+                          <div className="space-y-1">
+                            {yearData.events.length > 0 ? (
+                              yearData.events.map((event, eventIndex) => (
+                                <div key={eventIndex} className="text-sm text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 p-2 rounded-md shadow-sm">
+                                  {event}
+                                </div>
+                              ))
+                            ) : (
+                              <div className="text-sm text-gray-500 italic">
+                                Nothing notable happened this year.
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+
+                      {/* Age Up Button at bottom */}
+                      <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
+                        <Button 
+                          onClick={onAgeUp} 
+                          className="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-semibold py-3"
+                        >
+                          🎂 Age Up to {character.age + 1}
+                        </Button>
                       </div>
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="apple-body text-gray-700 dark:text-gray-300 leading-relaxed">
-                        <span className="font-semibold text-gray-900 dark:text-white">Age {entry.age}:</span>{' '}
-                        <span className="whitespace-pre-line">{entry.description}</span>
-                      </div>
-                    </div>
-                  </div>
+                    </>
+                  )}
                 </div>
-              ))}
-
-              {ageEntries.length === 0 && (
-                <div className="text-center py-16">
-                  <div className="text-6xl mb-6 opacity-50">📖</div>
-                  <p className="apple-body text-gray-500 dark:text-gray-400">Your life story will appear here...</p>
-                </div>
-              )}
-            </div>
-          </ScrollArea>
+              </ScrollArea>
+            </CardContent>
+          </Card>
         </div>
       </div>
-
-      {/* Apple-style Age Up Button */}
-      {!currentEvent && (
-        <div className="safe-area-bottom pt-4">
-          <button
-            onClick={onAgeUp}
-            className="apple-button-primary w-full min-h-[56px] flex items-center justify-center gap-3 animate-apple-scale-in"
-          >
-            <span className="text-xl">⏰</span>
-            <span className="apple-headline">Age Up</span>
-          </button>
-        </div>
-      )}
-
-      {/* Current Event Display */}
-      {currentEvent && onChoice && (
-        <div className="p-4">
-          <EventCard 
-            event={currentEvent} 
-            onChoice={onChoice}
-          />
-        </div>
-      )}
     </div>
   );
 };
