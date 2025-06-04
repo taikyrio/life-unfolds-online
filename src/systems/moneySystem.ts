@@ -18,6 +18,58 @@ export const initializeFinancialRecord = (): FinancialRecord => {
   };
 };
 
+export const processYearlyFinances = (character: Character): Character => {
+  const updatedCharacter = { ...character };
+  
+  if (!updatedCharacter.financialRecord) {
+    updatedCharacter.financialRecord = initializeFinancialRecord();
+  }
+
+  // Process investment returns
+  updatedCharacter.financialRecord.investments = updatedCharacter.financialRecord.investments.map(investment => {
+    const return_rate = investment.annualReturn || 0.07; // Default 7% return
+    const newValue = investment.currentValue * (1 + return_rate);
+    return {
+      ...investment,
+      currentValue: newValue,
+      roi: ((newValue - investment.amount) / investment.amount) * 100
+    };
+  });
+
+  // Process loan payments
+  updatedCharacter.financialRecord.currentLoans = updatedCharacter.financialRecord.currentLoans.map(loan => {
+    const monthlyPayment = loan.monthlyPayment || (loan.remaining * 0.1 / 12);
+    const yearlyPayment = monthlyPayment * 12;
+    const newRemaining = Math.max(0, loan.remaining - yearlyPayment);
+    
+    return {
+      ...loan,
+      remaining: newRemaining,
+      remainingMonths: Math.max(0, loan.remainingMonths - 12)
+    };
+  });
+
+  // Calculate yearly income from job
+  if (character.salary) {
+    const yearlyIncome = character.salary * 1000; // Convert from thousands
+    updatedCharacter.financialRecord.bankBalance += yearlyIncome;
+    
+    const transaction: Transaction = {
+      id: Date.now().toString(),
+      amount: yearlyIncome,
+      description: 'Annual salary',
+      category: 'Income',
+      type: 'Income',
+      year: character.age,
+      date: new Date().toISOString()
+    };
+    
+    updatedCharacter.financialRecord.transactionHistory.push(transaction);
+  }
+
+  return updatedCharacter;
+};
+
 export const modifyBankBalance = (
   character: Character,
   amount: number,

@@ -60,4 +60,5 @@ export interface Character {
   educationLevel?: string;
   delayedEvents?: any[];
   majorDecisions?: any[];
+  disasterHistory?: any[];
 }

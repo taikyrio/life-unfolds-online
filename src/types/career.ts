@@ -45,3 +45,20 @@ export interface CareerPath {
     };
   };
 }
+
+// Legacy Career interface for backwards compatibility
+export interface Career {
+  id: string;
+  name: string;
+  description: string;
+  salary: number;
+  requirements?: {
+    education?: string;
+    minAge?: number;
+    minStats?: {
+      smarts?: number;
+      looks?: number;
+      relationships?: number;
+    };
+  };
+}
