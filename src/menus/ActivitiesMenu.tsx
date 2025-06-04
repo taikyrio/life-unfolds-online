@@ -50,50 +50,96 @@ export const ActivitiesMenu: React.FC<ActivitiesMenuProps> = ({
 
   if (!isOpen) return null;
 
+  const selectedCategoryData = activityCategories.find(c => c.id === selectedCategory);
+
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-end justify-center p-4">
-      <div className="bg-white rounded-t-3xl w-full max-w-md max-h-[80vh] overflow-hidden shadow-2xl transform transition-transform duration-300 ease-out translate-y-0">
-        {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-purple-50">
-          <div>
-            <h2 className="text-xl font-bold text-gray-900">
-              {selectedCategory ? 
-                activityCategories.find(c => c.id === selectedCategory)?.title : 
-                'Choose Activity'
-              }
-            </h2>
-            <p className="text-sm text-gray-600 mt-1">
-              Age: {character.age} | Wealth: ${character.wealth}
-              {codingSkill > 0 && ` | Coding: ${codingSkill}`}
-              {notoriety > 0 && ` | Notoriety: ${notoriety}`}
-            </p>
+    <div className="fixed inset-0 bg-black/30 backdrop-blur-2xl z-50 flex items-center justify-center p-4">
+      <div className="glass-backdrop rounded-3xl w-full max-w-4xl max-h-[90vh] overflow-hidden shadow-2xl border border-white/20 dark:border-gray-700/30 transform transition-all duration-500 ease-out scale-100">
+        {/* Enhanced Header */}
+        <div className="apple-header sticky top-0 z-10">
+          <div className="flex items-center gap-4 flex-1">
+            {selectedCategory && (
+              <button
+                onClick={() => setSelectedCategory(null)}
+                className="apple-back-button flex items-center gap-2 px-3 py-2 rounded-xl hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-colors duration-200"
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="m15 18-6-6 6-6"/>
+                </svg>
+                Back
+              </button>
+            )}
+            <div className="flex-1">
+              <h2 className="apple-title flex items-center gap-3">
+                {selectedCategoryData && (
+                  <span className="text-2xl">{selectedCategoryData.emoji}</span>
+                )}
+                {selectedCategory ? selectedCategoryData?.title : 'Activities'}
+              </h2>
+              <div className="flex items-center gap-4 mt-1 text-xs text-gray-500 dark:text-gray-400">
+                <span className="flex items-center gap-1">
+                  🎂 Age {character.age}
+                </span>
+                <span className="flex items-center gap-1">
+                  💰 ${character.wealth.toLocaleString()}
+                </span>
+                {codingSkill > 0 && (
+                  <span className="flex items-center gap-1">
+                    💻 Coding {codingSkill}
+                  </span>
+                )}
+                {notoriety > 0 && (
+                  <span className="flex items-center gap-1">
+                    🚨 Notoriety {notoriety}
+                  </span>
+                )}
+              </div>
+            </div>
           </div>
           <button
-            onClick={selectedCategory ? () => setSelectedCategory(null) : onClose}
-            className="w-10 h-10 rounded-full bg-white shadow-md flex items-center justify-center hover:bg-gray-50 transition-all duration-200 hover:scale-105"
+            onClick={onClose}
+            className="w-10 h-10 rounded-2xl bg-gray-100/80 dark:bg-gray-800/80 backdrop-blur-sm flex items-center justify-center hover:bg-gray-200/80 dark:hover:bg-gray-700/80 transition-all duration-200 group"
           >
-            <X size={20} className="text-gray-600" />
+            <X size={18} className="text-gray-600 dark:text-gray-400 group-hover:text-gray-800 dark:group-hover:text-gray-200 transition-colors duration-200" />
           </button>
         </div>
 
-        {/* Content */}
-        <div className="p-6 overflow-y-auto max-h-[calc(80vh-120px)]">
+        {/* Enhanced Content */}
+        <div className="p-8 overflow-y-auto max-h-[calc(90vh-120px)] mobile-scroll">
           {!selectedCategory ? (
-            <div className="space-y-4">
-              <p className="text-gray-600 text-sm mb-4">What would you like to do?</p>
-              {activityCategories.map((category) => (
-                <ActivityCategoryCard
-                  key={category.id}
-                  category={category}
-                  onClick={() => setSelectedCategory(category.id)}
-                />
-              ))}
+            <div className="space-y-6">
+              <div className="text-center mb-8">
+                <p className="text-gray-600 dark:text-gray-300 text-lg font-medium mb-2">
+                  What would you like to do?
+                </p>
+                <p className="text-gray-500 dark:text-gray-400 text-sm">
+                  Choose from {activityCategories.length} activity categories
+                </p>
+              </div>
+              
+              <div className="category-grid">
+                {activityCategories.map((category) => (
+                  <ActivityCategoryCard
+                    key={category.id}
+                    category={category}
+                    onClick={() => setSelectedCategory(category.id)}
+                  />
+                ))}
+              </div>
             </div>
           ) : (
-            <div className="space-y-4">
-              {activityCategories
-                .find(c => c.id === selectedCategory)
-                ?.activities.map((activity) => {
+            <div className="space-y-6">
+              <div className="text-center mb-8">
+                <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+                  {selectedCategoryData?.title}
+                </h3>
+                <p className="text-gray-500 dark:text-gray-400 text-sm">
+                  {selectedCategoryData?.activities.length} {selectedCategoryData?.activities.length === 1 ? 'activity' : 'activities'} available
+                </p>
+              </div>
+              
+              <div className="activity-grid">
+                {selectedCategoryData?.activities.map((activity) => {
                   const canUse = canUseActivity(activity, character, hasPartner);
                   const requirementText = getRequirementText(activity, character, hasPartner);
                   
@@ -109,6 +155,7 @@ export const ActivitiesMenu: React.FC<ActivitiesMenuProps> = ({
                     />
                   );
                 })}
+              </div>
             </div>
           )}
         </div>

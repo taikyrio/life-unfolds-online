@@ -22,6 +22,7 @@ export interface Character {
   jobLevel?: number;
   jobPerformance?: JobPerformance;
   financialRecord?: FinancialRecord;
+  moneyState?: any;
   education: EducationRecord;
   currentEducation?: CurrentEducation;
   relationshipStatus: 'single' | 'dating' | 'engaged' | 'married' | 'divorced' | 'widowed';

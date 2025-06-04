@@ -4,8 +4,8 @@ import { initializeEducationData } from '../utils/educationHelpers';
 
 export const autoEnrollEducation = (
   character: Character,
-  ageHistory?: Record<number, string[]>,
-  setAgeHistory?: (history: Record<number, string[]>) => void
+  ageHistory?: { age: number; events: string[] }[],
+  setAgeHistory?: (history: { age: number; events: string[] }[]) => void
 ): Character => {
   let updatedCharacter = initializeEducationData(character);
 
@@ -21,12 +21,15 @@ export const autoEnrollEducation = (
 
       // Add to age history
       if (ageHistory && setAgeHistory) {
-        const currentHistory = ageHistory[updatedCharacter.age] || [];
+        const existingEntry = ageHistory.find(entry => entry.age === updatedCharacter.age);
         const message = `Advanced to year ${updatedCharacter.education.currentYear} of ${currentStageData.name}`;
-        setAgeHistory({
-          ...ageHistory,
-          [updatedCharacter.age]: [...currentHistory, message]
-        });
+        
+        if (existingEntry) {
+          existingEntry.events.push(message);
+          setAgeHistory([...ageHistory]);
+        } else {
+          setAgeHistory([...ageHistory, { age: updatedCharacter.age, events: [message] }]);
+        }
       }
 
       // Check for graduation

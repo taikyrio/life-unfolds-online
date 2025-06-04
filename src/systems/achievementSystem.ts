@@ -82,7 +82,7 @@ const achievements: Achievement[] = [
     description: 'Graduated from high school',
     emoji: '🎓',
     category: 'education',
-    condition: (character) => character.education?.completedStages?.includes('high') || false
+    condition: (character) => character.age >= 15 && (character.education?.completedStages?.includes('high') || false)
   },
   {
     id: 'college_graduate',
@@ -90,7 +90,7 @@ const achievements: Achievement[] = [
     description: 'Earned a college degree',
     emoji: '🏫',
     category: 'education',
-    condition: (character) => character.education?.completedStages?.includes('university') || false
+    condition: (character) => character.age >= 18 && (character.education?.completedStages?.includes('university') || false)
   },
   {
     id: 'academic_excellence',
@@ -112,7 +112,7 @@ const achievements: Achievement[] = [
     description: 'Got your first job',
     emoji: '💼',
     category: 'career',
-    condition: (character) => character.job !== 'Unemployed' && character.job !== ''
+    condition: (character) => character.job && character.job !== 'Unemployed' && character.job !== ''
   },
   {
     id: 'career_climber',
@@ -120,7 +120,7 @@ const achievements: Achievement[] = [
     description: 'Reached executive level in your career',
     emoji: '🚀',
     category: 'career',
-    condition: (character) => character.jobLevel >= 8
+    condition: (character) => character.age >= 18 && character.jobLevel >= 8
   },
 
   // Relationship achievements
@@ -130,7 +130,7 @@ const achievements: Achievement[] = [
     description: 'Found your first romantic relationship',
     emoji: '💕',
     category: 'relationships',
-    condition: (character) => character.relationshipStatus !== 'single'
+    condition: (character) => character.age >= 13 && character.relationshipStatus !== 'single'
   },
   {
     id: 'married',
@@ -138,7 +138,7 @@ const achievements: Achievement[] = [
     description: 'Got married',
     emoji: '💒',
     category: 'relationships',
-    condition: (character) => character.relationshipStatus === 'married'
+    condition: (character) => character.age >= 16 && character.relationshipStatus === 'married'
   },
   {
     id: 'social_butterfly',

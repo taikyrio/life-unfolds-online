@@ -1,9 +1,11 @@
 export interface PersonalityTraits {
-  extraversion: number;
-  agreeableness: number;
-  conscientiousness: number;
-  neuroticism: number;
-  openness: number;
+  kindness: number;
+  loyalty: number;
+  intelligence: number;
+  humor: number;
+  ambition: number;
+  stability: number;
+  generosity: number;
 }
 
 export interface ZodiacSign {
@@ -35,11 +37,11 @@ export interface CriminalRecord {
 }
 
 export interface JobPerformance {
-  rating: number;
-  reviews: string[];
-  promotions: number;
-  warnings: number;
-  yearsAtCompany: number;
+  currentLevel: number;
+  yearsAtLevel: number;
+  totalExperience: number;
+  performanceRating: number;
+  promotionEligible: boolean;
 }
 
 export interface StatEffects {

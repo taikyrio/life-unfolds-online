@@ -180,8 +180,14 @@ export const useGameLogic = ({ gameState, onGameStateChange }: UseGameLogicProps
     handleRelationshipAction(gameState.character, action, data, ageHistory, setAgeHistory, onGameStateChange, gameState, toast);
   }, [gameState, ageHistory, onGameStateChange, toast]);
 
+  // Convert ageHistory Record to array format for LifeTab component
+  const ageHistoryArray = Object.entries(ageHistory).map(([age, events]) => ({
+    age: parseInt(age),
+    events
+  })).sort((a, b) => a.age - b.age);
+
   return {
-    ageHistory,
+    ageHistory: ageHistoryArray,
     showEventOverlay,
     setShowEventOverlay,
     ageUp,

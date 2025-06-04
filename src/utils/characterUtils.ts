@@ -1,7 +1,7 @@
 import { Character, EducationRecord, Asset } from '../types/game';
-import { JobPerformance } from '../types/career';
 import { getZodiacSign } from './zodiacUtils';
 import { generateInitialFamily } from './familyUtils';
+import { initializeMoneyState, formatMoney } from './moneySystem';
 
 export const generateRandomName = (): string => {
   const firstNames = [
@@ -31,7 +31,7 @@ const randomizeInitialStats = () => {
     happiness: Math.floor(Math.random() * 51) + 30, // 30-80
     smarts: Math.floor(Math.random() * 71) + 20, // 20-90
     looks: Math.floor(Math.random() * 71) + 20, // 20-90
-    wealth: Math.floor(Math.random() * 21), // 0-20
+    wealth: 0, // Start with $0
     relationships: Math.floor(Math.random() * 41) + 40 // 40-80
   };
 };
@@ -68,11 +68,12 @@ export const createCharacter = (
       gpa: 3.0,
       grades: [],
       completedStages: [],
-      major: null,
+      major: undefined,
       testScores: [],
       disciplinaryActions: 0,
       achievements: [],
-      dropouts: 0
+      dropouts: 0,
+      levels: []
     } as EducationRecord,
     assets: [] as Asset[],
     age: 0,
@@ -82,6 +83,8 @@ export const createCharacter = (
     relationshipStatus: 'single' as const,
     fame: 0,
     customStats: {},
+    // Add money state for dynamic financial system
+    moneyState: initializeMoneyState(),
     // Add job performance tracking
     jobPerformance: {
       currentLevel: 1,
@@ -89,7 +92,7 @@ export const createCharacter = (
       totalExperience: 0,
       performanceRating: 50,
       promotionEligible: false
-    } as JobPerformance
+    }
   };
 
   // Apply zodiac modifiers to the randomized stats
