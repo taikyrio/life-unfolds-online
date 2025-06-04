@@ -1,4 +1,3 @@
-
 export interface EducationRecord {
   levels: string[]; // For backward compatibility
   gpa?: number;
@@ -25,6 +24,7 @@ export interface EducationRecord {
   testScores?: number[];
   disciplinaryActions?: number;
   dropouts?: number;
+  grades?: any[]; // Added for compatibility
 }
 
 export interface CurrentEducation {
@@ -43,6 +43,7 @@ export interface CurrentEducation {
   socialClubs?: string[];
   academicClubs?: string[];
   sportsTeams?: string[];
+  currentYear?: number; // Added for compatibility
 }
 
 export interface EducationPath {

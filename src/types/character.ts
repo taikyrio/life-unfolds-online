@@ -1,3 +1,4 @@
+
 import { PersonalityTraits, ZodiacSign, Asset, CriminalRecord, JobPerformance } from './core';
 import { FamilyMember } from './relationships';
 import { EducationRecord, CurrentEducation } from './education';
@@ -55,4 +56,8 @@ export interface Character {
   environmentalAwareness?: number;
   politicalInfluence?: number;
   personalityTraits?: PersonalityTraits;
+  // Additional properties needed by the system
+  educationLevel?: string;
+  delayedEvents?: any[];
+  majorDecisions?: any[];
 }

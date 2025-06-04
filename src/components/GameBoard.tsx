@@ -21,7 +21,7 @@ import { processAgeUp, processChoice } from './game/GameLogic';
 import { handleActivityAction } from './handlers/ActivityActionHandler';
 import { handleCareerAction } from './handlers/CareerActionHandler';
 import { handleRelationshipAction } from './handlers/RelationshipActionHandler';
-import { handleEducationAction, autoEnrollEducation } from './handlers/EducationActionHandler';
+import { handleEducationAction } from './handlers/EducationActionHandler';
 import { handleAgeUp, handleDeath, handleEmigrate, handleSurrender, handleHealthAction, handleLifestyleAction, handleMoneyAction } from './handlers/GameStateActionHandlers';
 
 interface GameBoardProps {
@@ -49,7 +49,8 @@ export const GameBoard: React.FC<GameBoardProps> = ({ gameState, onGameStateChan
         eventTracker: {
           triggeredEvents: new Set(),
           lastEventAge: 0,
-          eventCooldowns: new Map()
+          eventCooldowns: new Map(),
+          choiceHistory: []
         }
       });
     }
@@ -86,7 +87,8 @@ export const GameBoard: React.FC<GameBoardProps> = ({ gameState, onGameStateChan
               testScores: [],
               disciplinaryActions: 0,
               achievements: [],
-              dropouts: 0
+              dropouts: 0,
+              levels: []
             }
           },
           currentEvent: null,
@@ -97,7 +99,8 @@ export const GameBoard: React.FC<GameBoardProps> = ({ gameState, onGameStateChan
           eventTracker: {
             triggeredEvents: new Set(),
             lastEventAge: 0,
-            eventCooldowns: new Map()
+            eventCooldowns: new Map(),
+            choiceHistory: []
           }
         };
         onGameStateChange(newGameState);
@@ -164,7 +167,6 @@ export const GameBoard: React.FC<GameBoardProps> = ({ gameState, onGameStateChan
           currentSchool: null,
           currentYear: 0,
           gpa: 0,
-          grades: [],
           completedStages: [],
           major: null,
           testScores: [],
@@ -362,7 +364,6 @@ export const GameBoard: React.FC<GameBoardProps> = ({ gameState, onGameStateChan
             <div className="h-full overflow-y-auto">
               <MoneyTab 
                 character={gameState.character}
-                onMoneyAction={(action, data) => handleMoneyAction(gameState.character, action, data, ageHistory, setAgeHistory, onGameStateChange, gameState, toast)}
               />
             </div>
           )}

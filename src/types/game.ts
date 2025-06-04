@@ -8,6 +8,8 @@ export * from './legal';
 export * from './health';
 export * from './social';
 export * from './gameState';
+export * from './finance';
+export * from './career';
 
 // Legacy exports for backward compatibility
 export type { Character } from './character';
@@ -18,3 +20,5 @@ export type { HealthInsurance } from './health';
 export type { SocialMediaAccount, RealEstateProperty } from './social';
 export type { LifeEvent, Choice, StatEffects, EventTracker, GameState } from './gameState';
 export type { PersonalityTraits, ZodiacSign, Asset, CriminalRecord, JobPerformance } from './core';
+export type { FinancialRecord } from './finance';
+export type { CareerLevel, CareerPath } from './career';

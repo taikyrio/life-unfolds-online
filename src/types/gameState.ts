@@ -1,3 +1,4 @@
+
 import { Character } from './character';
 import { StatEffects, Choice } from './core';
 
@@ -24,6 +25,7 @@ export interface EventTracker {
   triggeredEvents: Set<string>;
   lastEventAge: number;
   eventCooldowns: Map<string, number>;
+  choiceHistory?: any[];
 }
 
 export interface GameState {
