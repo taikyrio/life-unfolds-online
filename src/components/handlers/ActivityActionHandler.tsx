@@ -10,15 +10,16 @@ export const handleActivityAction = (
   character: Character,
   action: string,
   data: any,
-  ageHistory: Record<number, string[]>,
-  setAgeHistory: (history: Record<number, string[]>) => void,
+  ageHistory: { age: number; events: string[] }[],
+  setAgeHistory: (history: { age: number; events: string[] }[]) => void,
   onGameStateChange: (newState: any) => void,
   gameState: any,
   toast: any
 ) => {
   let updatedCharacter = { ...character };
   let message = '';
-  let ageEvents = ageHistory[updatedCharacter.age] || [];
+  const existingEntry = ageHistory.find(entry => entry.age === updatedCharacter.age);
+  let ageEvents = existingEntry ? existingEntry.events : [];
 
   // Check if this activity has a special event
   const activityEvent = getActivityEvent(action, character);

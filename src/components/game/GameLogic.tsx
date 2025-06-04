@@ -6,6 +6,8 @@ import {
 } from '../../utils/gameUtils';
 import { evolveStatsNaturally, getStatMessage } from '../../utils/statEvolution';
 import { dynamicEventSystem } from '../../data/dynamicEvents';
+import { allRandomEvents } from '../../data/events/expandedRandomEvents';
+import { processCareerProgression, calculateYearlySalary } from '../../systems/careerProgressionSystem';
 import { lifeEvents } from '../../data/lifeEvents';
 import { checkForHealthConditions } from '../../systems/healthSystem';
 import { checkAchievements } from '../../systems/achievementSystem';
@@ -16,8 +18,8 @@ import { autoEnrollEducation } from '../../handlers/educationProgression';
 
 export const processAgeUp = (
   gameState: GameState,
-  ageHistory: Record<number, string[]>,
-  setAgeHistory: (history: Record<number, string[]>) => void,
+  ageHistory: { age: number; events: string[] }[],
+  setAgeHistory: (history: { age: number; events: string[] }[]) => void,
   onGameStateChange: (newState: GameState) => void,
   toast: any
 ) => {
@@ -62,9 +64,45 @@ export const processAgeUp = (
     updatedCharacter.happiness = Math.max(0, updatedCharacter.happiness + healthCondition.effects.happiness);
   }
 
-  // Improved event selection with context awareness
+  // Process career progression
+  if (updatedCharacter.job && updatedCharacter.job !== 'Unemployed') {
+    updatedCharacter.workExperience = (updatedCharacter.workExperience || 0) + 1;
+    
+    const careerProgression = processCareerProgression(updatedCharacter);
+    if (careerProgression.promoted) {
+      updatedCharacter.jobLevel = (updatedCharacter.jobLevel || 0) + 1;
+      updatedCharacter.job = careerProgression.newTitle || updatedCharacter.job;
+      updatedCharacter.salary = calculateYearlySalary(updatedCharacter);
+      currentAgeEvents.push(careerProgression.message);
+    }
+  }
+
+  // Enhanced event selection with expanded event pool
   const availableEvents = dynamicEventSystem.getAvailableEvents(updatedCharacter, gameState.eventTracker);
-  const selectedEvent = dynamicEventSystem.selectEvent(availableEvents);
+  
+  // Add random events based on life circumstances
+  const contextualEvents = allRandomEvents.filter(event => {
+    const conditions = event.conditions;
+    if (!conditions) return false;
+    
+    // Age check
+    if (conditions.minAge && updatedCharacter.age < conditions.minAge) return false;
+    if (conditions.maxAge && updatedCharacter.age > conditions.maxAge) return false;
+    
+    // Job check
+    if (conditions.hasJob !== undefined) {
+      const hasJob = updatedCharacter.job && updatedCharacter.job !== 'Unemployed';
+      if (conditions.hasJob !== hasJob) return false;
+    }
+    
+    // Probability check
+    if (conditions.probability && Math.random() > conditions.probability) return false;
+    
+    return true;
+  });
+  
+  const allAvailableEvents = [...availableEvents, ...contextualEvents];
+  const selectedEvent = dynamicEventSystem.selectEvent(allAvailableEvents);
 
   // Calculate event probability based on character state and age
   const baseEventProbability = 0.3;
