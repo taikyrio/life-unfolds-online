@@ -23,6 +23,7 @@ import { handleCareerAction } from './handlers/CareerActionHandler';
 import { handleRelationshipAction } from './handlers/RelationshipActionHandler';
 import { handleEducationAction } from './handlers/EducationActionHandler';
 import { handleAgeUp, handleDeath, handleEmigrate, handleSurrender, handleHealthAction, handleLifestyleAction, handleMoneyAction } from './handlers/GameStateActionHandlers';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface GameBoardProps {
   gameState: GameState;
@@ -39,6 +40,7 @@ export const GameBoard: React.FC<GameBoardProps> = ({ gameState, onGameStateChan
   const [ageHistory, setAgeHistory] = useState<Record<number, string[]>>({});
   const [showEventOverlay, setShowEventOverlay] = useState(false);
   const { toast } = useToast();
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     if (!gameState.gameStarted) {
@@ -221,30 +223,32 @@ export const GameBoard: React.FC<GameBoardProps> = ({ gameState, onGameStateChan
   }, [gameState.character.age, gameState.character.education?.currentStage, gameState.character.education?.completedStages]);
 
   return (
-    <div className="min-h-screen max-h-screen overflow-hidden bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 flex flex-col">
-      {/* Compact Header */}
-      <div className="flex-shrink-0 bg-white/80 dark:bg-slate-900/80 backdrop-blur-lg border-b border-white/10 px-3 py-2">
+    <div className="h-screen flex flex-col bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 overflow-hidden">
+      {/* Header - Mobile Optimized */}
+      <div className="flex-shrink-0 bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl border-b border-white/20 px-3 py-2 safe-area-pt">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
             <div className="w-8 h-8 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center text-sm">
               👤
             </div>
             <div>
-              <h1 className="text-sm font-bold text-gray-900 dark:text-white">{gameState.character.name}</h1>
+              <h1 className="text-sm font-bold text-gray-900 dark:text-white truncate max-w-[120px]">
+                {gameState.character.name}
+              </h1>
               <p className="text-xs text-gray-500">Age {gameState.character.age}</p>
             </div>
           </div>
-          <div className="bg-white/60 dark:bg-slate-800/60 backdrop-blur px-2 py-1 rounded-lg">
+          <div className="bg-white/70 dark:bg-slate-800/70 backdrop-blur px-2 py-1 rounded-lg">
             <div className="text-sm font-bold text-green-600 dark:text-green-400">
-              ${gameState.character.wealth}k
+              ${Math.round(gameState.character.wealth)}k
             </div>
           </div>
         </div>
       </div>
 
-      {/* Compact Stats */}
-      <div className="flex-shrink-0 bg-white/60 dark:bg-slate-900/60 backdrop-blur border-b border-white/10 px-3 py-2">
-        <div className="grid grid-cols-5 gap-2">
+      {/* Stats Bar - Compact Mobile */}
+      <div className="flex-shrink-0 bg-white/70 dark:bg-slate-900/70 backdrop-blur-lg border-b border-white/10 px-2 py-2">
+        <div className="grid grid-cols-5 gap-1">
           {[
             { label: 'Health', value: Math.round(gameState.character.health), icon: '❤️', color: 'text-red-500' },
             { label: 'Happy', value: Math.round(gameState.character.happiness), icon: '😊', color: 'text-yellow-500' },
@@ -253,44 +257,49 @@ export const GameBoard: React.FC<GameBoardProps> = ({ gameState, onGameStateChan
             { label: 'Looks', value: Math.round(gameState.character.looks), icon: '✨', color: 'text-indigo-500' }
           ].map((stat) => (
             <div key={stat.label} className="text-center">
-              <div className="text-lg">{stat.icon}</div>
+              <div className="text-sm">{stat.icon}</div>
               <div className={`text-xs font-bold ${stat.color}`}>{stat.value}</div>
             </div>
           ))}
         </div>
       </div>
 
-      {/* Icon-only Navigation */}
-      <div className="flex-shrink-0 bg-white/60 dark:bg-slate-900/60 backdrop-blur border-b border-white/10 px-2 py-1">
-        <div className="flex justify-between items-center">
+      {/* Navigation - Icon Only for Mobile */}
+      <div className="flex-shrink-0 bg-white/70 dark:bg-slate-900/70 backdrop-blur-lg border-b border-white/10 px-1 py-1">
+        <div className="flex justify-between items-center overflow-x-auto">
           {[
-            { id: 'life', icon: '🏠' },
-            { id: 'activities', icon: '🎯' },
-            { id: 'careers', icon: '💼' },
-            { id: 'education', icon: '📚' },
-            { id: 'health', icon: '❤️' },
-            { id: 'money', icon: '💰' },
-            { id: 'relationships', icon: '💕' },
-            { id: 'assets', icon: '🏆' }
+            { id: 'life', icon: '🏠', label: 'Life' },
+            { id: 'activities', icon: '🎯', label: 'Activities' },
+            { id: 'careers', icon: '💼', label: 'Careers' },
+            { id: 'education', icon: '📚', label: 'Education' },
+            { id: 'health', icon: '❤️', label: 'Health' },
+            { id: 'money', icon: '💰', label: 'Money' },
+            { id: 'relationships', icon: '💕', label: 'Relationships' },
+            { id: 'assets', icon: '🏆', label: 'Assets' }
           ].map((tab) => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id as typeof activeTab)}
-              className={`p-2 rounded-lg transition-colors ${
+              className={`p-2 rounded-lg transition-all duration-200 flex flex-col items-center min-w-[44px] ${
                 activeTab === tab.id
-                  ? 'bg-white/80 dark:bg-slate-800/80 shadow-sm'
-                  : 'hover:bg-white/40 dark:hover:bg-slate-800/40'
+                  ? 'bg-white/90 dark:bg-slate-800/90 shadow-md scale-105'
+                  : 'hover:bg-white/50 dark:hover:bg-slate-800/50'
               }`}
             >
-              <span className="text-lg">{tab.icon}</span>
+              <span className={`${isMobile ? 'text-lg' : 'text-xl'}`}>{tab.icon}</span>
+              {!isMobile && (
+                <span className="text-xs mt-1 text-gray-600 dark:text-gray-300">
+                  {tab.label}
+                </span>
+              )}
             </button>
           ))}
         </div>
       </div>
 
-      {/* Main Content Area - Takes remaining space */}
-      <div className="flex-1 overflow-auto p-3">
-        <div className="max-w-full mx-auto h-full">
+      {/* Main Content - Full Height with Proper Mobile Spacing */}
+      <div className="flex-1 overflow-hidden">
+        <div className="h-full overflow-y-auto pb-16">
           {activeTab === 'life' && (
             <LifeTab 
               character={gameState.character}
@@ -361,12 +370,15 @@ export const GameBoard: React.FC<GameBoardProps> = ({ gameState, onGameStateChan
         </div>
       </div>
 
-      {/* Floating Age Up Button */}
+      {/* Floating Age Up Button - Mobile Optimized */}
       <button
         onClick={ageUp}
-        className="fixed bottom-4 right-4 w-12 h-12 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white rounded-full shadow-lg flex items-center justify-center text-xl font-bold transition-all duration-200 hover:scale-105 z-50"
+        className={`fixed ${isMobile ? 'bottom-4 right-4 w-14 h-14' : 'bottom-6 right-6 w-16 h-16'} bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white rounded-full shadow-2xl flex items-center justify-center font-bold transition-all duration-200 hover:scale-105 z-50 safe-area-mb`}
+        style={{ 
+          boxShadow: '0 8px 32px rgba(34, 197, 94, 0.3)' 
+        }}
       >
-        +
+        <span className={`${isMobile ? 'text-xl' : 'text-2xl'}`}>+</span>
       </button>
 
       {/* Modals and Overlays */}

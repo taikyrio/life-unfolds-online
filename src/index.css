@@ -1,74 +1,62 @@
 
-@import "tailwindcss/base";
-@import "tailwindcss/components";
-@import "tailwindcss/utilities";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 @layer base {
   :root {
-    /* Apple Design System Colors */
-    --background: 210 20% 98%;
-    --foreground: 210 40% 8%;
-    --card: 210 20% 98%;
-    --card-foreground: 210 40% 8%;
-    --popover: 210 20% 98%;
-    --popover-foreground: 210 40% 8%;
-    --primary: 217 91% 60%;
-    --primary-foreground: 210 20% 98%;
-    --secondary: 214 32% 91%;
-    --secondary-foreground: 210 40% 8%;
-    --muted: 214 32% 91%;
-    --muted-foreground: 215 25% 27%;
-    --accent: 214 32% 91%;
-    --accent-foreground: 210 40% 8%;
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 210 20% 98%;
-    --border: 214 32% 91%;
-    --input: 214 32% 91%;
-    --ring: 217 91% 60%;
-    --radius: 1.25rem;
-    
-    /* Apple-specific design tokens */
-    --apple-blur: 40px;
-    --apple-glass-bg: rgba(255, 255, 255, 0.1);
-    --apple-glass-border: rgba(255, 255, 255, 0.2);
-    --apple-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
-    --apple-shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.06);
-    --apple-shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.05);
-    --apple-shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.1), 0 10px 10px rgba(0, 0, 0, 0.04);
-    --apple-transition: cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    
-    /* visionOS depth layers */
-    --depth-1: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
-    --depth-2: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
-    --depth-3: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
-    --depth-4: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
-    --depth-5: 0 19px 38px rgba(0, 0, 0, 0.30), 0 15px 12px rgba(0, 0, 0, 0.22);
+    --background: 0 0% 100%;
+    --foreground: 240 10% 3.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 240 10% 3.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 3.9%;
+    --primary: 240 9% 3.9%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 240 4.8% 95.9%;
+    --secondary-foreground: 240 5.9% 10%;
+    --muted: 240 4.8% 95.9%;
+    --muted-foreground: 240 3.8% 46.1%;
+    --accent: 240 4.8% 95.9%;
+    --accent-foreground: 240 5.9% 10%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 5.9% 90%;
+    --input: 240 5.9% 90%;
+    --ring: 240 10% 3.9%;
+    --chart-1: 12 76% 61%;
+    --chart-2: 173 58% 39%;
+    --chart-3: 197 37% 24%;
+    --chart-4: 43 74% 66%;
+    --chart-5: 27 87% 67%;
+    --radius: 0.5rem;
   }
 
   .dark {
-    --background: 222 84% 5%;
-    --foreground: 210 40% 98%;
-    --card: 222 84% 5%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222 84% 5%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 217 91% 60%;
-    --primary-foreground: 222 84% 5%;
-    --secondary: 217 33% 18%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217 33% 18%;
-    --muted-foreground: 215 20% 65%;
-    --accent: 217 33% 18%;
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 63% 31%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217 33% 18%;
-    --input: 217 33% 18%;
-    --ring: 217 91% 60%;
-    
-    /* Dark mode glass effects */
-    --apple-glass-bg: rgba(0, 0, 0, 0.3);
-    --apple-glass-border: rgba(255, 255, 255, 0.1);
+    --background: 240 10% 3.9%;
+    --foreground: 0 0% 98%;
+    --card: 240 10% 3.9%;
+    --card-foreground: 0 0% 98%;
+    --popover: 240 10% 3.9%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 0 0% 98%;
+    --primary-foreground: 240 5.9% 10%;
+    --secondary: 240 3.7% 15.9%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 240 3.7% 15.9%;
+    --muted-foreground: 240 5% 64.9%;
+    --accent: 240 3.7% 15.9%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 3.7% 15.9%;
+    --input: 240 3.7% 15.9%;
+    --ring: 240 4.9% 83.9%;
+    --chart-1: 220 70% 50%;
+    --chart-2: 160 60% 45%;
+    --chart-3: 30 80% 55%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 340 75% 55%;
   }
 }
 
@@ -77,277 +65,112 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground font-sans;
-    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+    @apply bg-background text-foreground;
   }
 }
 
-/* Apple Design System Utilities */
+/* Mobile-specific utilities */
 @layer utilities {
-  /* Glass Morphism System */
-  .apple-glass {
-    background: var(--apple-glass-bg);
-    backdrop-filter: blur(var(--apple-blur));
-    -webkit-backdrop-filter: blur(var(--apple-blur));
-    border: 1px solid var(--apple-glass-border);
-  }
-  
-  .apple-glass-card {
-    @apply apple-glass rounded-3xl;
-    box-shadow: var(--depth-2);
-  }
-  
-  .apple-glass-subtle {
-    background: rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-  }
-
-  /* Apple Shadow System */
-  .apple-shadow-1 { box-shadow: var(--depth-1); }
-  .apple-shadow-2 { box-shadow: var(--depth-2); }
-  .apple-shadow-3 { box-shadow: var(--depth-3); }
-  .apple-shadow-4 { box-shadow: var(--depth-4); }
-  .apple-shadow-5 { box-shadow: var(--depth-5); }
-
-  /* Apple Transitions */
-  .apple-transition {
-    transition: all 0.4s var(--apple-transition);
-  }
-  
-  .apple-transition-fast {
-    transition: all 0.2s var(--apple-transition);
-  }
-
-  /* Apple Interaction States */
-  .apple-hover {
-    @apply apple-transition hover:scale-[1.02] active:scale-[0.98];
-  }
-  
-  .apple-press {
-    @apply apple-transition-fast active:scale-95 active:brightness-95;
-  }
-
-  /* visionOS Spatial Design */
-  .vision-depth {
-    transform-style: preserve-3d;
-    perspective: 1000px;
-  }
-  
-  .vision-float {
-    transform: translateZ(30px);
-  }
-  
-  .vision-elevated {
-    transform: translateZ(60px);
-  }
-
-  /* Apple Button System */
-  .apple-button-primary {
-    @apply bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-2xl px-6 py-3 apple-press apple-shadow-2;
-    background: linear-gradient(135deg, #007AFF 0%, #5856D6 100%);
-  }
-  
-  .apple-button-secondary {
-    @apply apple-glass-card hover:bg-white/10 text-current font-medium px-6 py-3 apple-press;
-  }
-  
-  .apple-button-destructive {
-    @apply bg-red-500 hover:bg-red-600 text-white font-semibold rounded-2xl px-6 py-3 apple-press apple-shadow-2;
-    background: linear-gradient(135deg, #FF3B30 0%, #D70015 100%);
-  }
-
-  /* Apple Card System */
-  .apple-card {
-    @apply apple-glass-card p-6 apple-hover;
-  }
-  
-  .apple-card-compact {
-    @apply apple-glass-card p-4 apple-hover;
-  }
-  
-  .apple-card-minimal {
-    @apply apple-glass-subtle rounded-2xl p-4 apple-hover;
-  }
-
-  /* Mobile-first Apple Design */
-  .mobile-apple-container {
-    @apply px-4 mx-auto max-w-sm;
-  }
-  
-  .mobile-apple-card {
-    @apply apple-card rounded-3xl;
-  }
-  
-  .mobile-apple-button {
-    @apply w-full min-h-[52px] rounded-2xl font-semibold text-lg apple-press;
-  }
-
-  /* Apple Typography Scale */
-  .apple-title-1 {
-    @apply text-3xl font-bold tracking-tight;
-  }
-  
-  .apple-title-2 {
-    @apply text-2xl font-bold tracking-tight;
-  }
-  
-  .apple-title-3 {
-    @apply text-xl font-semibold;
-  }
-  
-  .apple-headline {
-    @apply text-lg font-semibold;
-  }
-  
-  .apple-body {
-    @apply text-base leading-relaxed;
-  }
-  
-  .apple-caption {
-    @apply text-sm text-gray-600 dark:text-gray-400;
-  }
-
-  /* Apple Input System */
-  .apple-input {
-    @apply apple-glass-subtle rounded-xl px-4 py-3 text-base border-0 focus:outline-none focus:ring-2 focus:ring-blue-500/50 apple-transition;
-  }
-
-  /* Safe Area Support */
-  .safe-area-top {
+  .safe-area-pt {
     padding-top: env(safe-area-inset-top);
   }
   
-  .safe-area-bottom {
+  .safe-area-pb {
     padding-bottom: env(safe-area-inset-bottom);
   }
   
-  .safe-area-left {
-    padding-left: env(safe-area-inset-left);
+  .safe-area-mb {
+    margin-bottom: env(safe-area-inset-bottom);
   }
   
-  .safe-area-right {
-    padding-right: env(safe-area-inset-right);
-  }
-
-  /* Apple Navigation */
-  .apple-nav-bar {
-    @apply apple-glass sticky top-0 z-50 border-b border-white/10;
+  /* Custom scrollbar for mobile */
+  .mobile-scroll::-webkit-scrollbar {
+    width: 2px;
   }
   
-  .apple-tab-bar {
-    @apply apple-glass-card border-t border-white/10;
-  }
-
-  /* Accessibility & Interaction */
-  .apple-focus-ring {
-    @apply focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:ring-offset-2 focus:ring-offset-transparent;
+  .mobile-scroll::-webkit-scrollbar-track {
+    background: transparent;
   }
   
-  .apple-touch-target {
-    @apply min-h-[44px] min-w-[44px] flex items-center justify-center;
+  .mobile-scroll::-webkit-scrollbar-thumb {
+    background: rgba(156, 163, 175, 0.3);
+    border-radius: 1px;
+  }
+  
+  /* Touch-friendly buttons */
+  .touch-button {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  /* Backdrop blur utilities */
+  .backdrop-blur-xl {
+    backdrop-filter: blur(24px);
+  }
+  
+  .backdrop-blur-lg {
+    backdrop-filter: blur(16px);
+  }
+  
+  /* Glass morphism effect */
+  .glass {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+  
+  .glass-dark {
+    background: rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
   }
 }
 
-/* Device-specific optimizations */
-@media (max-width: 390px) {
-  .mobile-apple-container {
-    @apply px-3;
+/* Smooth transitions for mobile interactions */
+@media (max-width: 768px) {
+  * {
+    -webkit-tap-highlight-color: transparent;
   }
   
-  .mobile-apple-card {
-    @apply p-4 rounded-2xl;
+  button, .touch-button {
+    transform: scale(1);
+    transition: transform 0.1s ease-in-out;
   }
   
-  .mobile-apple-button {
-    @apply min-h-[48px] text-base;
-  }
-}
-
-@media (min-width: 768px) {
-  .mobile-apple-container {
-    @apply max-w-md mx-auto px-6;
-  }
-  
-  .mobile-apple-button {
-    @apply min-h-[56px] text-lg;
-  }
-}
-
-/* Advanced Apple Visual Effects */
-@keyframes apple-scale-in {
-  from {
-    opacity: 0;
+  button:active, .touch-button:active {
     transform: scale(0.95);
   }
-  to {
-    opacity: 1;
-    transform: scale(1);
+  
+  /* Optimize font sizes for mobile */
+  .text-xs {
+    font-size: 0.75rem;
+  }
+  
+  .text-sm {
+    font-size: 0.875rem;
+  }
+  
+  /* Better spacing for mobile */
+  .mobile-p-2 {
+    padding: 0.5rem;
+  }
+  
+  .mobile-p-3 {
+    padding: 0.75rem;
+  }
+  
+  .mobile-p-4 {
+    padding: 1rem;
   }
 }
 
-@keyframes apple-slide-up {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
+/* Responsive grid utilities */
+@media (max-width: 640px) {
+  .grid-cols-auto-fit {
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
   }
-  to {
-    opacity: 1;
-    transform: translateY(0);
+  
+  .grid-cols-auto-fill {
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
   }
-}
-
-@keyframes apple-fade-in {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-.animate-apple-scale-in {
-  animation: apple-scale-in 0.4s var(--apple-transition);
-}
-
-.animate-apple-slide-up {
-  animation: apple-slide-up 0.5s var(--apple-transition);
-}
-
-.animate-apple-fade-in {
-  animation: apple-fade-in 0.3s ease-out;
-}
-
-/* Hide scrollbars with Apple-style behavior */
-.apple-scrollbar {
-  scrollbar-width: thin;
-  scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
-}
-
-.apple-scrollbar::-webkit-scrollbar {
-  width: 4px;
-  height: 4px;
-}
-
-.apple-scrollbar::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.apple-scrollbar::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.3);
-  border-radius: 10px;
-}
-
-.apple-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.5);
-}
-
-/* Apple-style selection */
-::selection {
-  background: rgba(0, 122, 255, 0.3);
-  color: inherit;
-}
-
-::-moz-selection {
-  background: rgba(0, 122, 255, 0.3);
-  color: inherit;
 }
