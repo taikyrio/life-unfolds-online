@@ -20,7 +20,7 @@ interface LifeTabProps {
 export const LifeTab: React.FC<LifeTabProps> = ({
   character,
   eventHistory,
-  ageHistory,
+  ageHistory = [],
   onAgeUp,
   onChoice
 }) => {
@@ -35,7 +35,7 @@ export const LifeTab: React.FC<LifeTabProps> = ({
 
   const lifeStage = getLifeStage(character.age);
   const zodiacSigns = ['Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo', 'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces'];
-  const characterZodiac = character.zodiacSign || zodiacSigns[Math.floor(Math.random() * zodiacSigns.length)];
+  const characterZodiac = character.zodiacSign?.name || zodiacSigns[Math.floor(Math.random() * zodiacSigns.length)];
 
   return (
     <div className="h-full bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 p-4 overflow-hidden">
@@ -59,7 +59,7 @@ export const LifeTab: React.FC<LifeTabProps> = ({
               {/* Character Name & Age */}
               <div className="text-center mb-6">
                 <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-1">
-                  {character.firstName} {character.lastName}
+                  {character.name}
                 </h1>
                 <p className="text-lg text-gray-600 dark:text-gray-400">Age {character.age}</p>
               </div>
@@ -122,13 +122,13 @@ export const LifeTab: React.FC<LifeTabProps> = ({
               <CardTitle className="text-lg flex items-center gap-2">
                 👨‍👩‍👧‍👦 Family
                 <Badge variant="secondary" className="ml-auto">
-                  {character.family?.length || 0} members
+                  {character.familyMembers?.length || 0} members
                 </Badge>
               </CardTitle>
             </CardHeader>
             <CardContent className="pt-0">
               <div className="space-y-2">
-                {character.family?.slice(0, 3).map((member, index) => (
+                {character.familyMembers?.slice(0, 3).map((member, index) => (
                   <div key={index} className="flex items-center justify-between p-2 bg-gray-50 dark:bg-gray-800 rounded-lg">
                     <div className="flex items-center gap-2">
                       <span className="text-sm">👤</span>

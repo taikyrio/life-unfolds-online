@@ -79,28 +79,30 @@ export const GameBoard: React.FC<GameBoardProps> = ({ gameState, onGameStateChan
   }
 
   return (
-    <div className="h-screen flex flex-col bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 overflow-hidden">
+    <div className="game-container h-screen flex flex-col bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 overflow-hidden">
       <GameHeader character={gameState.character} />
       <StatsBar character={gameState.character} />
       <TabNavigation activeTab={activeTab} onTabChange={(tab) => setActiveTab(tab)} />
       
-      <TabContent
-        activeTab={activeTab}
-        character={gameState.character}
-        gameState={gameState}
-        eventHistory={gameState.eventHistory}
-        ageHistory={ageHistory}
-        onAgeUp={ageUp}
-        onChoice={handleChoice}
-        onActivity={handleActivity}
-        onGameStateChange={onGameStateChange}
-        onCharacterUpdate={handleCharacterUpdate}
-        onEvent={handleEvent}
-        onCareerAction={handleCareerAction}
-        onEducationAction={handleEducationAction}
-        onHealthAction={handleHealthAction}
-        onLifestyleAction={handleLifestyleAction}
-      />
+      <div className="game-content flex-1 overflow-y-auto">
+        <TabContent
+          activeTab={activeTab}
+          character={gameState.character}
+          gameState={gameState}
+          eventHistory={gameState.eventHistory}
+          ageHistory={ageHistory}
+          onAgeUp={ageUp}
+          onChoice={handleChoice}
+          onActivity={handleActivity}
+          onGameStateChange={onGameStateChange}
+          onCharacterUpdate={handleCharacterUpdate}
+          onEvent={handleEvent}
+          onCareerAction={handleCareerAction}
+          onEducationAction={handleEducationAction}
+          onHealthAction={handleHealthAction}
+          onLifestyleAction={handleLifestyleAction}
+        />
+      </div>
       
       <AgeUpButton onAgeUp={ageUp} />
       
