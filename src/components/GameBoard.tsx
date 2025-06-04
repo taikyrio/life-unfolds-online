@@ -221,57 +221,49 @@ export const GameBoard: React.FC<GameBoardProps> = ({ gameState, onGameStateChan
   }, [gameState.character.age, gameState.character.education?.currentStage, gameState.character.education?.completedStages]);
 
   return (
-    <div className="min-h-screen flex flex-col overflow-hidden bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
-      {/* Apple-style Header */}
-      <div className="apple-nav-bar safe-area-top flex-shrink-0 relative z-20">
-        <div className="mobile-apple-container py-4">
-          <div className="flex items-center justify-between gap-4">
-            <div className="flex items-center gap-3 min-w-0 flex-1">
-              <div className="w-12 h-12 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center text-xl flex-shrink-0 apple-shadow-2 vision-float">
-                👤
-              </div>
-              <div className="min-w-0 flex-1">
-                <h1 className="apple-title-3 text-gray-900 dark:text-white truncate">{gameState.character.name}</h1>
-                <p className="apple-caption">Age {gameState.character.age}</p>
-              </div>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 safe-area-top safe-area-bottom">
+      {/* Header */}
+      <div className="apple-glass-card sticky top-0 z-50 border-b border-white/10 px-6 py-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-3">
+            <div className="w-12 h-12 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center text-xl apple-shadow-2">
+              👤
             </div>
-            <div className="apple-glass-card px-4 py-2 rounded-2xl apple-shadow-1 flex-shrink-0">
-              <div className="apple-headline bg-gradient-to-r from-green-500 to-emerald-600 bg-clip-text text-transparent">
-                ${gameState.character.wealth}k
-              </div>
+            <div>
+              <h1 className="apple-title-2 text-gray-900 dark:text-white">{gameState.character.name}</h1>
+              <p className="apple-caption">Age {gameState.character.age}</p>
+            </div>
+          </div>
+          <div className="apple-glass-card px-4 py-2 rounded-2xl">
+            <div className="apple-headline text-green-600 dark:text-green-400">
+              ${gameState.character.wealth}k
             </div>
           </div>
         </div>
       </div>
 
-      {/* Apple-style Stats Dashboard */}
-      <div className="apple-glass border-b border-white/10 flex-shrink-0 relative z-20">
-        <div className="mobile-apple-container py-4">
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
-            {[
-              { label: 'Health', value: Math.round(gameState.character.health), icon: '❤️', color: 'from-red-400 to-red-600' },
-              { label: 'Happy', value: Math.round(gameState.character.happiness), icon: '😊', color: 'from-yellow-400 to-orange-500' },
-              { label: 'Social', value: Math.round(gameState.character.relationships || 0), icon: '🤝', color: 'from-purple-400 to-pink-500' },
-              { label: 'Smarts', value: Math.round(gameState.character.smarts), icon: '🧠', color: 'from-blue-400 to-cyan-500' },
-              { label: 'Looks', value: Math.round(gameState.character.looks), icon: '✨', color: 'from-indigo-400 to-purple-500' }
-            ].map((stat) => (
-              <div key={stat.label} className="apple-card-compact text-center vision-depth apple-hover">
-                <div className="space-y-2">
-                  <div className="text-2xl vision-float">{stat.icon}</div>
-                  <div className={`apple-title-3 bg-gradient-to-r ${stat.color} bg-clip-text text-transparent`}>
-                    {stat.value}
-                  </div>
-                  <div className="apple-caption font-medium truncate">{stat.label}</div>
-                </div>
-              </div>
-            ))}
-          </div>
+      {/* Stats Dashboard */}
+      <div className="apple-glass border-b border-white/10 px-6 py-4">
+        <div className="grid grid-cols-5 gap-4">
+          {[
+            { label: 'Health', value: Math.round(gameState.character.health), icon: '❤️', color: 'text-red-500' },
+            { label: 'Happy', value: Math.round(gameState.character.happiness), icon: '😊', color: 'text-yellow-500' },
+            { label: 'Social', value: Math.round(gameState.character.relationships || 0), icon: '🤝', color: 'text-purple-500' },
+            { label: 'Smarts', value: Math.round(gameState.character.smarts), icon: '🧠', color: 'text-blue-500' },
+            { label: 'Looks', value: Math.round(gameState.character.looks), icon: '✨', color: 'text-indigo-500' }
+          ].map((stat) => (
+            <div key={stat.label} className="apple-card-compact text-center">
+              <div className="text-2xl mb-2">{stat.icon}</div>
+              <div className={`apple-title-3 ${stat.color} mb-1`}>{stat.value}</div>
+              <div className="apple-caption">{stat.label}</div>
+            </div>
+          ))}
         </div>
       </div>
 
-      {/* Apple-style Tab Navigation */}
-      <div className="apple-glass border-b border-white/10 flex-shrink-0 relative z-20">
-        <div className="flex overflow-x-auto apple-scrollbar gap-2 px-4 py-3">
+      {/* Tab Navigation */}
+      <div className="apple-glass border-b border-white/10 px-6 py-3">
+        <div className="flex space-x-2 overflow-x-auto">
           {[
             { id: 'life', icon: '🏠', label: 'Life' },
             { id: 'activities', icon: '🎯', label: 'Activities' },
@@ -285,113 +277,95 @@ export const GameBoard: React.FC<GameBoardProps> = ({ gameState, onGameStateChan
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id as typeof activeTab)}
-              className={`flex-shrink-0 min-w-[60px] px-4 py-3 rounded-2xl apple-press vision-depth ${
+              className={`flex-shrink-0 px-4 py-2 rounded-xl apple-transition ${
                 activeTab === tab.id
-                  ? 'apple-glass-card text-blue-600 dark:text-blue-400 scale-105 apple-shadow-2'
+                  ? 'apple-glass-card text-blue-600 dark:text-blue-400 apple-shadow-2'
                   : 'apple-glass-subtle text-gray-600 dark:text-gray-300 hover:bg-white/10'
               }`}
             >
-              <div className="flex flex-col items-center gap-1">
-                <span className="text-xl vision-float">{tab.icon}</span>
-                <span className="text-xs font-medium truncate leading-tight">{tab.label}</span>
+              <div className="flex items-center space-x-2">
+                <span>{tab.icon}</span>
+                <span className="text-sm font-medium">{tab.label}</span>
               </div>
             </button>
           ))}
         </div>
       </div>
 
-      {/* Apple-style Main Content Area */}
-      <div className="flex-1 overflow-hidden relative">
-        <div className="h-full overflow-y-auto apple-scrollbar mobile-apple-container py-6">
+      {/* Main Content */}
+      <div className="flex-1 p-6">
+        <div className="max-w-4xl mx-auto">
           {activeTab === 'life' && (
-            <div className="h-full">
-              <LifeTab 
-                character={gameState.character}
-                eventHistory={gameState.eventHistory}
-                currentEvent={gameState.currentEvent}
-                onAgeUp={ageUp}
-                onChoice={handleChoice}
-                ageHistory={ageHistory}
-              />
-            </div>
+            <LifeTab 
+              character={gameState.character}
+              eventHistory={gameState.eventHistory}
+              currentEvent={gameState.currentEvent}
+              onAgeUp={ageUp}
+              onChoice={handleChoice}
+              ageHistory={ageHistory}
+            />
           )}
           {activeTab === 'activities' && (
-            <div className="h-full overflow-y-auto">
-              <ActivitiesTab 
-                character={gameState.character} 
-                onActivity={handleActivity}
-              />
-            </div>
+            <ActivitiesTab 
+              character={gameState.character} 
+              onActivity={handleActivity}
+            />
           )}
           {activeTab === 'relationships' && (
-            <div className="h-full overflow-y-auto">
-              <RelationshipsTab 
-                character={gameState.character} 
-                onCharacterUpdate={(updatedCharacter) => {
-                  onGameStateChange({
-                    ...gameState,
-                    character: updatedCharacter
-                  });
-                }}
-                onEvent={(message) => {
-                  toast({
-                    title: "Relationship Update",
-                    description: message,
-                  });
-                }}
-              />
-            </div>
+            <RelationshipsTab 
+              character={gameState.character} 
+              onCharacterUpdate={(updatedCharacter) => {
+                onGameStateChange({
+                  ...gameState,
+                  character: updatedCharacter
+                });
+              }}
+              onEvent={(message) => {
+                toast({
+                  title: "Relationship Update",
+                  description: message,
+                });
+              }}
+            />
           )}
           {activeTab === 'careers' && (
-            <div className="h-full overflow-y-auto">
-              <CareersTab 
-                character={gameState.character}
-                onCareerAction={(action, data) => handleCareerAction(gameState.character, action, data, ageHistory, setAgeHistory, onGameStateChange, gameState, toast)}
-              />
-            </div>
+            <CareersTab 
+              character={gameState.character}
+              onCareerAction={(action, data) => handleCareerAction(gameState.character, action, data, ageHistory, setAgeHistory, onGameStateChange, gameState, toast)}
+            />
           )}
           {activeTab === 'education' && (
-            <div className="h-full overflow-y-auto">
-              <EducationTab 
-                character={gameState.character}
-                onEducationAction={(action, data) => handleEducationAction(gameState.character, action, data, ageHistory, setAgeHistory, onGameStateChange, gameState, toast)}
-              />
-            </div>
+            <EducationTab 
+              character={gameState.character}
+              onEducationAction={(action, data) => handleEducationAction(gameState.character, action, data, ageHistory, setAgeHistory, onGameStateChange, gameState, toast)}
+            />
           )}
           {activeTab === 'health' && (
-            <div className="h-full overflow-y-auto">
-              <HealthTab 
-                character={gameState.character}
-                onHealthAction={(action, data) => handleHealthAction(gameState.character, action, data, ageHistory, setAgeHistory, onGameStateChange, gameState, toast)}
-              />
-            </div>
+            <HealthTab 
+              character={gameState.character}
+              onHealthAction={(action, data) => handleHealthAction(gameState.character, action, data, ageHistory, setAgeHistory, onGameStateChange, gameState, toast)}
+            />
           )}
           {activeTab === 'lifestyle' && (
-            <div className="h-full overflow-y-auto">
-              <LifestyleTab 
-                character={gameState.character}
-                onLifestyleAction={(action, data) => handleLifestyleAction(gameState.character, action, data, ageHistory, setAgeHistory, onGameStateChange, gameState, toast)}
-              />
-            </div>
+            <LifestyleTab 
+              character={gameState.character}
+              onLifestyleAction={(action, data) => handleLifestyleAction(gameState.character, action, data, ageHistory, setAgeHistory, onGameStateChange, gameState, toast)}
+            />
           )}
           {activeTab === 'money' && (
-            <div className="h-full overflow-y-auto">
-              <MoneyTab 
-                character={gameState.character}
-                onCharacterUpdate={handleCharacterUpdate}
-                onEvent={handleEvent}
-              />
-            </div>
+            <MoneyTab 
+              character={gameState.character}
+              onCharacterUpdate={handleCharacterUpdate}
+              onEvent={handleEvent}
+            />
           )}
           {activeTab === 'assets' && (
-            <div className="h-full overflow-y-auto">
-              <AssetsTab character={gameState.character} />
-            </div>
+            <AssetsTab character={gameState.character} />
           )}
         </div>
       </div>
 
-      {/* Modals */}
+      {/* Modals and Overlays */}
       {showActivitiesMenu && (
         <ActivitiesMenu
           isOpen={showActivitiesMenu}
@@ -433,7 +407,6 @@ export const GameBoard: React.FC<GameBoardProps> = ({ gameState, onGameStateChan
         />
       )}
 
-      {/* Event Overlay */}
       {showEventOverlay && gameState.currentEvent && (
         <EventOverlay
           event={gameState.currentEvent}

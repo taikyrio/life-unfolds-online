@@ -12,6 +12,7 @@ export interface CareerLevel {
       smarts?: number;
       relationships?: number;
       looks?: number;
+      health?: number;
     };
   };
   responsibilities: string[];
@@ -24,6 +25,7 @@ export interface CareerLevel {
       smarts?: number;
       relationships?: number;
       looks?: number;
+      health?: number;
     };
   };
 }
@@ -42,6 +44,7 @@ export interface CareerPath {
       smarts?: number;
       looks?: number;
       relationships?: number;
+      health?: number;
     };
   };
 }
@@ -52,6 +55,7 @@ export interface Career {
   name: string;
   description: string;
   salary: number;
+  category?: string;
   requirements?: {
     education?: string;
     minAge?: number;
@@ -59,6 +63,7 @@ export interface Career {
       smarts?: number;
       looks?: number;
       relationships?: number;
+      health?: number;
     };
   };
 }

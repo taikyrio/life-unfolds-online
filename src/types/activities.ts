@@ -32,10 +32,32 @@ export interface Activity {
   name: string;
   description: string;
   effects: Record<string, number>;
+  cost?: number;
+  resultText?: string;
   requirements?: {
     minAge?: number;
     maxAge?: number;
     minWealth?: number;
     education?: string;
   };
+}
+
+export interface CrimeOperation {
+  id: string;
+  name: string;
+  description: string;
+  difficulty: number;
+  risk: number;
+  reward: number;
+  type: 'criminal_operation';
+}
+
+export interface CybercrimeOperation {
+  id: string;
+  name: string;
+  description: string;
+  difficulty: number;
+  risk: number;
+  reward: number;
+  type: 'cybercrime';
 }
