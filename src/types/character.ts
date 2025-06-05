@@ -87,7 +87,7 @@ export interface Character {
   birthDay?: number;
   zodiacSign?: ZodiacSign;
   children: string[];
-  customStats?: Record<string, number>;
+  customStats?: Record<string, any>;
   fame: number;
   // Phase 2 additions
   legalStatus?: LegalStatus;
