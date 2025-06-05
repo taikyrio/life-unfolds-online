@@ -46,6 +46,9 @@ export const createCharacter = (
   const initialStats = randomizeInitialStats();
   const playerLastName = name.split(' ')[1] || 'Smith';
   const initialFamily = generateInitialFamily(playerLastName);
+  
+  // Generate random birth year between 2000-2025
+  const birthYear = 2000 + Math.floor(Math.random() * 26);
 
   const baseCharacter: Character = {
     id: `char_${Date.now()}`,
@@ -53,6 +56,7 @@ export const createCharacter = (
     gender,
     birthMonth,
     birthDay,
+    birthYear,
     birthplace: 'United States',
     zodiacSign,
     health: initialStats.health,

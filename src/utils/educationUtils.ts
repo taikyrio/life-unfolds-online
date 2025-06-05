@@ -116,7 +116,7 @@ export const getEligibleDegrees = (character: Character): EducationLevel[] => {
     }
     
     // Special requirements
-    if (level.id === 'university' && !character.education.completedStages.includes('high')) return false;
+    if (level.id === 'university' && !character.education.completedStages.includes('high_school')) return false;
     if (level.id === 'graduate' && !character.education.completedStages.includes('university')) return false;
     if (level.id === 'medical' && !character.education.completedStages.includes('university')) return false;
     if (level.id === 'law' && !character.education.completedStages.includes('university')) return false;
@@ -138,11 +138,11 @@ export const shouldAutoEnrollInSchool = (character: Character): string | null =>
   if (character.age >= 6 && character.age <= 11 && !character.education.completedStages.includes('elementary')) {
     return 'elementary';
   }
-  if (character.age >= 12 && character.age <= 14 && character.education.completedStages.includes('elementary') && !character.education.completedStages.includes('middle')) {
-    return 'middle';
+  if (character.age >= 12 && character.age <= 14 && character.education.completedStages.includes('elementary') && !character.education.completedStages.includes('middle_school')) {
+    return 'middle_school';
   }
-  if (character.age >= 15 && character.age <= 17 && character.education.completedStages.includes('middle') && !character.education.completedStages.includes('high')) {
-    return 'high';
+  if (character.age >= 15 && character.age <= 17 && character.education.completedStages.includes('middle_school') && !character.education.completedStages.includes('high_school')) {
+    return 'high_school';
   }
   
   return null;
@@ -218,7 +218,7 @@ export const getEducationRequirementForJob = (jobId: string): string | null => {
   const jobEducationMap: Record<string, string> = {
     'fast_food': null,
     'retail': null,
-    'office_assistant': 'high',
+    'office_assistant': 'high_school',
     'teacher': 'university',
     'nurse': 'university',
     'engineer': 'university',
