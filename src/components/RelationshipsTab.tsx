@@ -8,7 +8,8 @@ import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { 
   Heart, MessageCircle, Gift, ArrowLeft, Phone, Coffee, 
-  Home, Smile, Frown, AlertTriangle, X, Check, DollarSign
+  Home, Smile, Frown, AlertTriangle, X, Check, DollarSign, 
+  ChevronRight, Users, Star, Zap, Clock, MapPin
 } from 'lucide-react';
 import { relationshipManager, executeRelationshipAction } from '../systems/relationshipSystem';
 
@@ -27,35 +28,69 @@ export const RelationshipsTab: React.FC<RelationshipsTabProps> = ({
   const [selectedAction, setSelectedAction] = useState<RelationshipAction | null>(null);
   const [showActionConfirm, setShowActionConfirm] = useState(false);
 
-  const getRelationshipEmoji = (relationship: string) => {
-    const emojis = {
-      father: '👨‍👦', mother: '👩‍👧', stepfather: '👨‍👦', stepmother: '👩‍👧',
+  // Categorize family members
+  const categorizeMembers = () => {
+    const categories = {
+      family: character.familyMembers.filter(m => 
+        ['father', 'mother', 'stepfather', 'stepmother', 'sibling', 'stepsibling', 
+         'halfsibling', 'child', 'stepchild', 'adoptedchild', 'grandparent', 'grandchild'].includes(m.relationship)
+      ),
+      romantic: character.familyMembers.filter(m => 
+        ['spouse', 'lover', 'affair', 'ex'].includes(m.relationship)
+      ),
+      social: character.familyMembers.filter(m => 
+        ['friend', 'bestfriend', 'acquaintance', 'coworker', 'boss', 'employee', 
+         'classmate', 'teacher', 'neighbor'].includes(m.relationship)
+      ),
+      other: character.familyMembers.filter(m => 
+        ['enemy', 'rival', 'stranger'].includes(m.relationship)
+      )
+    };
+    return categories;
+  };
+
+  const getPersonIcon = (relationship: string) => {
+    const icons = {
+      father: '👨‍💼', mother: '👩‍💼', stepfather: '👨‍💼', stepmother: '👩‍💼',
       sibling: '👫', stepsibling: '👫', halfsibling: '👫',
       child: '👶', stepchild: '👶', adoptedchild: '👶',
       grandparent: '👴', grandchild: '👶',
-      spouse: '💑', lover: '💕', ex: '💔', affair: '💋',
-      friend: '👥', bestfriend: '🤝', acquaintance: '👋',
-      enemy: '😠', rival: '⚔️',
-      coworker: '🏢', boss: '👔', employee: '👷',
-      classmate: '🎓', teacher: '👩‍🏫',
-      neighbor: '🏠', stranger: '❓'
+      spouse: '💍', lover: '💕', ex: '💔', affair: '🔥',
+      friend: '👥', bestfriend: '⭐', acquaintance: '👋',
+      enemy: '⚔️', rival: '🏆',
+      coworker: '💼', boss: '👔', employee: '👷',
+      classmate: '🎓', teacher: '📚',
+      neighbor: '🏘️', stranger: '❓'
     };
-    return emojis[relationship as keyof typeof emojis] || '👤';
+    return icons[relationship as keyof typeof icons] || '👤';
   };
 
-  const getRelationshipColor = (level: number) => {
-    if (level >= 80) return 'bg-green-500';
-    if (level >= 60) return 'bg-lime-500';
-    if (level >= 40) return 'bg-yellow-500';
-    if (level >= 20) return 'bg-orange-500';
-    return 'bg-red-500';
+  const getRelationshipGradient = (level: number) => {
+    if (level >= 80) return 'from-emerald-400 to-green-500';
+    if (level >= 60) return 'from-blue-400 to-cyan-500';
+    if (level >= 40) return 'from-yellow-400 to-orange-500';
+    if (level >= 20) return 'from-orange-500 to-red-500';
+    return 'from-red-500 to-pink-500';
   };
 
-  const getMoodEmoji = (mood: string) => {
-    const moods = {
-      happy: '😊', sad: '😢', angry: '😠', neutral: '😐', excited: '🤩', stressed: '😰'
+  const getCategoryColor = (category: string) => {
+    const colors = {
+      family: 'from-purple-500 to-indigo-600',
+      romantic: 'from-pink-500 to-rose-600', 
+      social: 'from-blue-500 to-cyan-600',
+      other: 'from-gray-500 to-slate-600'
     };
-    return moods[mood as keyof typeof moods] || '😐';
+    return colors[category as keyof typeof colors] || 'from-gray-500 to-slate-600';
+  };
+
+  const getCategoryIcon = (category: string) => {
+    const icons = {
+      family: '👨‍👩‍👧‍👦',
+      romantic: '💕',
+      social: '👥',
+      other: '🌐'
+    };
+    return icons[category as keyof typeof icons] || '👤';
   };
 
   const getContextualActions = (member: FamilyMember): RelationshipAction[] => {
@@ -63,34 +98,23 @@ export const RelationshipsTab: React.FC<RelationshipsTabProps> = ({
     const characterAge = character.age;
     const memberAge = member.age || 30;
 
-    // Filter actions based on context and life stage
     return baseActions.filter(action => {
-      // Age restrictions
       if (action.minAge && characterAge < action.minAge) return false;
       if (action.maxAge && characterAge > action.maxAge) return false;
-
-      // Life stage contextual filtering
       if (characterAge < 16) {
-        // Child - limited actions
         return ['compliment', 'hug', 'spend_time', 'ask_for_money'].includes(action.id);
       }
-
       if (characterAge < 25) {
-        // Young adult - no proposing unless in love
         if (action.id === 'propose' && member.relationshipStats?.relationshipLevel < 80) return false;
       }
-
-      // Special contextual rules
       if (member.relationship === 'child' && memberAge < 10) {
         return ['hug', 'spend_time', 'compliment'].includes(action.id);
       }
-
       if (member.relationship === 'child' && memberAge >= 10) {
         return ['compliment', 'hug', 'spend_time', 'argue', 'ignore'].includes(action.id);
       }
-
       return true;
-    }).slice(0, 8); // Limit to 8 actions for mobile
+    }).slice(0, 8);
   };
 
   const handleCharacterTap = (member: FamilyMember) => {
@@ -102,22 +126,15 @@ export const RelationshipsTab: React.FC<RelationshipsTabProps> = ({
       onEvent(`You can't afford this action (costs $${action.cost})`);
       return;
     }
-
     setSelectedAction(action);
     setShowActionConfirm(true);
   };
 
   const handleActionConfirm = () => {
     if (selectedAction && selectedMember) {
-      console.log('Executing action:', selectedAction.id, 'on member:', selectedMember.id);
-      
       const result = executeRelationshipAction(character, selectedMember.id, selectedAction.id);
-      console.log('Action result:', result);
-
-      // Create a new character object to ensure state updates
       const updatedCharacter = { ...character };
 
-      // Apply effects to character
       if (result.effects.wealth !== undefined) {
         updatedCharacter.wealth = Math.max(0, updatedCharacter.wealth + result.effects.wealth);
       }
@@ -128,7 +145,6 @@ export const RelationshipsTab: React.FC<RelationshipsTabProps> = ({
         updatedCharacter.relationshipStatus = result.effects.relationshipStatus;
       }
 
-      // Update the specific family member in the character's family members array
       const memberIndex = updatedCharacter.familyMembers.findIndex(m => m.id === selectedMember.id);
       if (memberIndex !== -1) {
         updatedCharacter.familyMembers[memberIndex] = { 
@@ -137,12 +153,8 @@ export const RelationshipsTab: React.FC<RelationshipsTabProps> = ({
         };
       }
 
-      console.log('Updated character:', updatedCharacter);
-      
       onCharacterUpdate(updatedCharacter);
       onEvent(result.message);
-      
-      // Update selected member to reflect changes
       setSelectedMember(updatedCharacter.familyMembers.find(m => m.id === selectedMember.id) || null);
     }
 
@@ -154,9 +166,8 @@ export const RelationshipsTab: React.FC<RelationshipsTabProps> = ({
     return !action.cost || character.wealth >= action.cost;
   };
 
-  // Mobile-optimized character card
+  // Modern iOS 19-style character card
   const renderCharacterCard = (member: FamilyMember) => {
-    // Ensure member exists and has required properties
     if (!member) return null;
 
     const stats = member.relationshipStats || {
@@ -169,75 +180,115 @@ export const RelationshipsTab: React.FC<RelationshipsTabProps> = ({
       interactionHistory: []
     };
 
-    // Ensure personality exists with default values
-    const personality = member.personality || {
-      kindness: 50,
-      loyalty: 50,
-      intelligence: 50,
-      humor: 50,
-      ambition: 50,
-      stability: 50,
-      generosity: 50
-    };
-
     const relationshipLevel = stats.relationshipLevel;
+    const gradientClass = getRelationshipGradient(relationshipLevel);
 
     return (
-      <Card 
+      <div 
         key={member.id} 
-        className="mb-4 overflow-hidden shadow-md border-l-4 active:scale-95 transition-all duration-200 cursor-pointer"
-        style={{ borderLeftColor: getRelationshipColor(relationshipLevel).replace('bg-', '#') }}
+        className="group relative overflow-hidden rounded-3xl bg-white/80 backdrop-blur-xl border border-white/20 shadow-lg hover:shadow-xl transition-all duration-500 hover:scale-[1.02] cursor-pointer mb-4"
         onClick={() => handleCharacterTap(member)}
       >
-        <CardContent className="p-4">
+        {/* Subtle gradient overlay */}
+        <div className={`absolute inset-0 bg-gradient-to-br ${gradientClass} opacity-5 group-hover:opacity-10 transition-opacity duration-300`} />
+        
+        <div className="relative p-6">
           <div className="flex items-center space-x-4">
-            {/* Character Icon & Mood */}
-            <div className="flex flex-col items-center">
-              <div className="text-4xl mb-1">{getRelationshipEmoji(member.relationship)}</div>
-              <div className="text-lg">{getMoodEmoji(member.currentMood || 'neutral')}</div>
+            {/* Enhanced Avatar with glow effect */}
+            <div className="relative">
+              <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${gradientClass} flex items-center justify-center text-white text-2xl shadow-lg`}>
+                {getPersonIcon(member.relationship)}
+              </div>
+              {/* Status indicator */}
+              <div className={`absolute -top-1 -right-1 w-5 h-5 rounded-full ${
+                !member.alive ? 'bg-gray-400' : 
+                member.isEstranged ? 'bg-red-400' : 
+                relationshipLevel >= 80 ? 'bg-green-400' : 
+                relationshipLevel >= 60 ? 'bg-blue-400' : 
+                'bg-yellow-400'
+              } border-2 border-white shadow-sm`} />
             </div>
 
-            {/* Character Info */}
-            <div className="flex-1">
-              <div className="flex items-center gap-2 mb-1">
-                <h3 className="font-bold text-lg text-gray-800">{member.name}</h3>
-                {!member.alive && <Badge variant="secondary" className="text-xs">💀</Badge>}
-                {member.isEstranged && <Badge variant="destructive" className="text-xs">Estranged</Badge>}
+            {/* Member Info */}
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-3 mb-2">
+                <h3 className="font-bold text-xl text-gray-900 truncate">{member.name}</h3>
+                {member.age && (
+                  <Badge variant="secondary" className="bg-gray-100 text-gray-600 text-xs rounded-full px-2 py-1">
+                    {member.age}
+                  </Badge>
+                )}
+              </div>
+              
+              <div className="flex items-center gap-2 mb-3">
+                <span className="text-sm font-medium text-gray-600 capitalize">
+                  {member.relationship.replace(/([A-Z])/g, ' $1').trim()}
+                </span>
+                {!member.alive && <Badge variant="destructive" className="text-xs rounded-full">💀</Badge>}
+                {member.isEstranged && <Badge variant="destructive" className="text-xs rounded-full">Estranged</Badge>}
               </div>
 
-              <p className="text-sm text-gray-600 capitalize mb-2">
-                {member.relationship.replace(/([A-Z])/g, ' $1').trim()} • Age {member.age || 'Unknown'}
-              </p>
-
-              {/* Relationship Level Bar */}
-              <div className="mb-2">
-                <div className="flex justify-between items-center mb-1">
-                  <span className="text-xs font-medium text-gray-700">Relationship</span>
-                  <span className="text-xs text-gray-500">{relationshipLevel}%</span>
+              {/* Modern relationship meter */}
+              <div className="space-y-2">
+                <div className="flex justify-between items-center">
+                  <span className="text-xs font-medium text-gray-500">Connection</span>
+                  <span className="text-xs font-bold text-gray-700">{relationshipLevel}%</span>
                 </div>
-                <Progress value={relationshipLevel} className="h-2" />
-              </div>
-
-              {/* Quick Status */}
-              <div className="flex items-center space-x-3 text-xs text-gray-500">
-                <span>💪 {member.health || 100}%</span>
-                <span>💖 {stats.trust}%</span>
-                {member.job && <span>💼 {member.job}</span>}
+                <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
+                  <div 
+                    className={`h-full bg-gradient-to-r ${gradientClass} transition-all duration-700 ease-out`}
+                    style={{ width: `${relationshipLevel}%` }}
+                  />
+                </div>
               </div>
             </div>
 
-            {/* Tap Indicator */}
-            <div className="text-gray-400">
-              <div className="text-xl">👆</div>
-              <div className="text-xs text-center">Tap</div>
+            {/* Action indicator */}
+            <div className="flex flex-col items-center space-y-2">
+              <ChevronRight className="text-gray-400 w-6 h-6 group-hover:text-gray-600 transition-colors" />
+              {stats.lastInteraction && (
+                <div className="flex items-center text-xs text-gray-400">
+                  <Clock className="w-3 h-3 mr-1" />
+                  <span>Recent</span>
+                </div>
+              )}
             </div>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     );
   };
 
-  // Mobile-optimized interaction menu
+  // Category section renderer with modern styling
+  const renderCategorySection = (title: string, members: FamilyMember[], category: string) => {
+    if (members.length === 0) return null;
+
+    const gradientClass = getCategoryColor(category);
+    const icon = getCategoryIcon(category);
+
+    return (
+      <div className="mb-8">
+        {/* Modern category header */}
+        <div className={`relative overflow-hidden rounded-2xl bg-gradient-to-r ${gradientClass} p-6 mb-4 shadow-lg`}>
+          <div className="absolute inset-0 bg-white/10 backdrop-blur-xl" />
+          <div className="relative flex items-center justify-center space-x-3">
+            <span className="text-3xl">{icon}</span>
+            <h2 className="text-2xl font-bold text-white tracking-wide">{title}</h2>
+            <Badge variant="secondary" className="bg-white/20 text-white border-white/30 rounded-full">
+              {members.length}
+            </Badge>
+          </div>
+        </div>
+        
+        {/* Members list */}
+        <div className="space-y-0">
+          {members.map(renderCharacterCard)}
+        </div>
+      </div>
+    );
+  };
+
+  // Enhanced interaction menu with iOS 19 styling
   const renderInteractionMenu = () => {
     if (!selectedMember) return null;
 
@@ -252,106 +303,150 @@ export const RelationshipsTab: React.FC<RelationshipsTabProps> = ({
       interactionHistory: []
     };
 
+    const gradientClass = getRelationshipGradient(stats.relationshipLevel);
+
     return (
-      <div className="fixed inset-0 bg-white z-50 flex flex-col">
-        {/* Header */}
-        <div className="bg-gradient-to-r from-blue-500 to-purple-600 text-white p-4 shadow-lg">
-          <div className="flex items-center space-x-3">
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              onClick={() => setSelectedMember(null)}
-              className="text-white hover:bg-white/20 p-2"
-            >
-              <ArrowLeft size={20} />
-            </Button>
-            <div className="flex items-center space-x-3 flex-1">
-              <div className="text-3xl">{getRelationshipEmoji(selectedMember.relationship)}</div>
-              <div>
-                <h2 className="text-xl font-bold">{selectedMember.name}</h2>
-                <p className="text-sm opacity-90 capitalize">
-                  {selectedMember.relationship.replace(/([A-Z])/g, ' $1').trim()}
-                </p>
+      <div className="fixed inset-0 bg-gradient-to-br from-slate-50 to-gray-100 z-50 flex flex-col">
+        {/* Enhanced header with gradient */}
+        <div className={`relative overflow-hidden bg-gradient-to-r ${gradientClass} shadow-xl`}>
+          <div className="absolute inset-0 bg-white/10 backdrop-blur-xl" />
+          <div className="relative p-6 pt-12">
+            <div className="flex items-center space-x-4">
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={() => setSelectedMember(null)}
+                className="text-white hover:bg-white/20 p-3 rounded-2xl transition-all duration-200"
+              >
+                <ArrowLeft size={22} />
+              </Button>
+              <div className="flex items-center space-x-4 flex-1">
+                <div className="w-14 h-14 bg-white/20 rounded-2xl flex items-center justify-center text-2xl backdrop-blur-sm">
+                  {getPersonIcon(selectedMember.relationship)}
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold text-white">{selectedMember.name}</h2>
+                  <p className="text-white/80 font-medium capitalize">
+                    {selectedMember.relationship.replace(/([A-Z])/g, ' $1').trim()}
+                  </p>
+                </div>
               </div>
             </div>
-            <div className="text-2xl">{getMoodEmoji(selectedMember.currentMood || 'neutral')}</div>
           </div>
         </div>
 
         <ScrollArea className="flex-1">
-          <div className="p-4">
-            {/* Relationship Status */}
-            <Card className="mb-4">
-              <CardContent className="p-4">
-                <h3 className="font-semibold mb-3 text-gray-800">Relationship Status</h3>
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <div className="text-xs text-gray-600 mb-1">Relationship</div>
-                    <div className="flex items-center space-x-2">
-                      <Progress value={stats.relationshipLevel} className="h-2 flex-1" />
-                      <span className="text-sm font-medium">{stats.relationshipLevel}%</span>
+          <div className="p-6 space-y-6">
+            {/* Enhanced relationship status card */}
+            <Card className="overflow-hidden bg-white/80 backdrop-blur-xl border-white/20 shadow-lg rounded-3xl">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-xl font-bold text-gray-800">Connection Details</h3>
+                  <div className="flex items-center space-x-2">
+                    <Heart className="w-5 h-5 text-pink-500" />
+                    <span className="text-lg font-bold text-gray-700">{stats.relationshipLevel}%</span>
+                  </div>
+                </div>
+                
+                <div className="grid grid-cols-2 gap-4 mb-4">
+                  <div className="space-y-2">
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm font-medium text-gray-600">Bond</span>
+                      <span className="text-sm font-bold text-gray-700">{stats.relationshipLevel}%</span>
+                    </div>
+                    <div className="w-full h-3 bg-gray-200 rounded-full overflow-hidden">
+                      <div 
+                        className={`h-full bg-gradient-to-r ${gradientClass} transition-all duration-500`}
+                        style={{ width: `${stats.relationshipLevel}%` }}
+                      />
                     </div>
                   </div>
-                  <div>
-                    <div className="text-xs text-gray-600 mb-1">Trust</div>
-                    <div className="flex items-center space-x-2">
-                      <Progress value={stats.trust} className="h-2 flex-1" />
-                      <span className="text-sm font-medium">{stats.trust}%</span>
+                  <div className="space-y-2">
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm font-medium text-gray-600">Trust</span>
+                      <span className="text-sm font-bold text-gray-700">{stats.trust}%</span>
+                    </div>
+                    <div className="w-full h-3 bg-gray-200 rounded-full overflow-hidden">
+                      <div 
+                        className="h-full bg-gradient-to-r from-blue-400 to-cyan-500 transition-all duration-500"
+                        style={{ width: `${stats.trust}%` }}
+                      />
                     </div>
                   </div>
                 </div>
 
-                {/* Last Interaction */}
+                {/* Last interaction */}
                 {stats.interactionHistory && stats.interactionHistory.length > 0 && (
-                  <div className="mt-3 p-3 bg-gray-50 rounded-lg">
-                    <div className="text-xs text-gray-600 mb-1">Last Interaction</div>
-                    <div className="text-sm text-gray-800">
-                      {stats.interactionHistory[stats.interactionHistory.length - 1]?.description || 'No recent interactions'}
+                  <div className="p-4 bg-gradient-to-r from-gray-50 to-gray-100 rounded-2xl border border-gray-200">
+                    <div className="flex items-center space-x-2 mb-2">
+                      <Clock className="w-4 h-4 text-gray-500" />
+                      <span className="text-sm font-medium text-gray-600">Last Interaction</span>
                     </div>
+                    <p className="text-sm text-gray-800 leading-relaxed">
+                      {stats.interactionHistory[stats.interactionHistory.length - 1]?.description || 'No recent interactions'}
+                    </p>
                   </div>
                 )}
               </CardContent>
             </Card>
 
-            {/* Actions Grid */}
+            {/* Enhanced actions grid */}
             {selectedMember.alive && !selectedMember.isBlocked && (
-              <div className="space-y-3">
-                <h3 className="font-semibold text-gray-800">What would you like to do?</h3>
-                <div className="grid grid-cols-2 gap-3">
-                  {availableActions.map((action) => {
-                    const canUse = canAffordAction(action);
-                    return (
-                      <Button
-                        key={action.id}
-                        variant="outline"
-                        className={`h-20 flex flex-col items-center justify-center space-y-1 text-xs active:scale-95 transition-all ${
-                          !canUse ? 'opacity-50 cursor-not-allowed' : 'hover:shadow-md'
-                        }`}
-                        disabled={!canUse}
-                        onClick={() => handleActionSelect(action)}
-                      >
-                        <div className="text-xl">{action.emoji}</div>
-                        <div className="font-medium text-center">{action.name}</div>
-                        {action.cost && (
-                          <div className="text-xs text-gray-500">${action.cost}</div>
-                        )}
-                        {action.riskLevel === 'high' && (
-                          <AlertTriangle size={12} className="text-red-500" />
-                        )}
-                      </Button>
-                    );
-                  })}
-                </div>
-              </div>
+              <Card className="overflow-hidden bg-white/80 backdrop-blur-xl border-white/20 shadow-lg rounded-3xl">
+                <CardContent className="p-6">
+                  <div className="flex items-center space-x-3 mb-6">
+                    <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl flex items-center justify-center">
+                      <Zap className="w-4 h-4 text-white" />
+                    </div>
+                    <h3 className="text-xl font-bold text-gray-800">Quick Actions</h3>
+                  </div>
+                  
+                  <div className="grid grid-cols-2 gap-4">
+                    {availableActions.map((action) => {
+                      const canUse = canAffordAction(action);
+                      return (
+                        <Button
+                          key={action.id}
+                          variant="outline"
+                          className={`group relative overflow-hidden h-24 flex flex-col items-center justify-center space-y-2 text-sm rounded-2xl border-2 transition-all duration-300 ${
+                            !canUse 
+                              ? 'opacity-40 cursor-not-allowed border-gray-200 bg-gray-50' 
+                              : 'border-gray-200 bg-white hover:border-blue-300 hover:bg-blue-50 hover:scale-105 active:scale-95'
+                          }`}
+                          disabled={!canUse}
+                          onClick={() => handleActionSelect(action)}
+                        >
+                          {canUse && (
+                            <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                          )}
+                          <div className="relative z-10 flex flex-col items-center space-y-2">
+                            <div className="text-2xl">{action.emoji}</div>
+                            <div className="font-semibold text-center leading-tight">{action.name}</div>
+                            {action.cost && (
+                              <div className="text-xs text-gray-500 font-medium">${action.cost}</div>
+                            )}
+                            {action.riskLevel === 'high' && (
+                              <AlertTriangle size={14} className="text-amber-500" />
+                            )}
+                          </div>
+                        </Button>
+                      );
+                    })}
+                  </div>
+                </CardContent>
+              </Card>
             )}
 
-            {/* Deceased Notice */}
+            {/* Memorial card for deceased */}
             {!selectedMember.alive && (
-              <div className="text-center py-8">
-                <div className="text-6xl mb-4">🕊️</div>
-                <h3 className="text-xl font-semibold text-gray-700 mb-2">In Loving Memory</h3>
-                <p className="text-gray-600">{selectedMember.name} is no longer with us</p>
-              </div>
+              <Card className="overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200 border-gray-300 shadow-lg rounded-3xl">
+                <CardContent className="p-8 text-center">
+                  <div className="text-6xl mb-6">🕊️</div>
+                  <h3 className="text-2xl font-bold text-gray-700 mb-3">In Loving Memory</h3>
+                  <p className="text-gray-600 text-lg">{selectedMember.name}</p>
+                  <p className="text-gray-500 text-sm mt-2">Forever in our hearts</p>
+                </CardContent>
+              </Card>
             )}
           </div>
         </ScrollArea>
@@ -359,47 +454,59 @@ export const RelationshipsTab: React.FC<RelationshipsTabProps> = ({
     );
   };
 
-  // Action confirmation modal
+  // Enhanced action confirmation modal
   const renderActionConfirmation = () => {
     if (!showActionConfirm || !selectedAction || !selectedMember) return null;
 
     return (
-      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-        <div className="bg-white rounded-xl p-6 max-w-sm w-full shadow-xl">
-          <div className="text-center mb-4">
-            <div className="text-4xl mb-3">{selectedAction.emoji}</div>
-            <h3 className="text-lg font-semibold mb-1">{selectedAction.name}</h3>
-            <p className="text-sm text-gray-600 mb-2">with {selectedMember.name}</p>
-            <p className="text-xs text-gray-500">{selectedAction.description}</p>
+      <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-6">
+        <div className="bg-white/95 backdrop-blur-xl rounded-3xl p-8 max-w-sm w-full shadow-2xl border border-white/20">
+          <div className="text-center mb-6">
+            <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-purple-600 rounded-3xl flex items-center justify-center text-4xl mx-auto mb-4 shadow-lg">
+              {selectedAction.emoji}
+            </div>
+            <h3 className="text-2xl font-bold text-gray-800 mb-2">{selectedAction.name}</h3>
+            <p className="text-gray-600 font-medium mb-2">with {selectedMember.name}</p>
+            <p className="text-sm text-gray-500 leading-relaxed">{selectedAction.description}</p>
 
             {selectedAction.cost && (
-              <div className="mt-3 p-3 bg-blue-50 border border-blue-200 rounded-lg text-blue-700 text-sm">
-                💰 Cost: ${selectedAction.cost}
+              <div className="mt-4 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-2xl">
+                <div className="flex items-center justify-center space-x-2 text-blue-700">
+                  <DollarSign className="w-4 h-4" />
+                  <span className="font-semibold">Cost: ${selectedAction.cost}</span>
+                </div>
               </div>
             )}
 
             {selectedAction.riskLevel === 'high' && (
-              <div className="mt-3 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
-                ⚠️ This action may have unpredictable results!
+              <div className="mt-4 p-4 bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-2xl">
+                <div className="flex items-center justify-center space-x-2 text-amber-700">
+                  <AlertTriangle className="w-4 h-4" />
+                  <span className="text-sm font-medium">This action may have unpredictable results!</span>
+                </div>
               </div>
             )}
           </div>
 
-          <div className="flex space-x-3">
+          <div className="flex space-x-4">
             <Button
               variant="outline"
               onClick={() => setShowActionConfirm(false)}
-              className="flex-1 h-12"
+              className="flex-1 h-14 rounded-2xl border-2 border-gray-200 hover:border-gray-300 bg-white hover:bg-gray-50 transition-all duration-200"
             >
-              <X size={16} className="mr-2" />
-              Cancel
+              <X size={18} className="mr-2" />
+              <span className="font-semibold">Cancel</span>
             </Button>
             <Button
               onClick={handleActionConfirm}
-              className={`flex-1 h-12 ${selectedAction.riskLevel === 'high' ? 'bg-red-500 hover:bg-red-600' : ''}`}
+              className={`flex-1 h-14 rounded-2xl font-semibold transition-all duration-200 ${
+                selectedAction.riskLevel === 'high' 
+                  ? 'bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600' 
+                  : 'bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700'
+              } text-white shadow-lg hover:shadow-xl hover:scale-105 active:scale-95`}
             >
-              <Check size={16} className="mr-2" />
-              Confirm
+              <Check size={18} className="mr-2" />
+              <span>Confirm</span>
             </Button>
           </div>
         </div>
@@ -417,58 +524,51 @@ export const RelationshipsTab: React.FC<RelationshipsTabProps> = ({
     );
   }
 
-  return (
-    <div className="bg-gradient-to-br from-blue-50 to-purple-50 min-h-screen">
-      <div className="p-4">
-        {/* Header */}
-        <div className="text-center py-6">
-          <h2 className="text-2xl font-bold text-gray-800 mb-2">👥 Your Relationships</h2>
-          <p className="text-sm text-gray-600 mb-4">
-            Tap on any person to interact with them
-          </p>
+  const categories = categorizeMembers();
 
-          {/* Quick Stats */}
-          <div className="bg-white rounded-xl p-4 shadow-sm mb-4">
-            <div className="grid grid-cols-3 gap-4 text-center">
-              <div>
-                <div className="text-2xl font-bold text-blue-600">{character.familyMembers.length}</div>
-                <div className="text-xs text-gray-600">Total</div>
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
+      {/* Modern header with glassmorphism */}
+      <div className="sticky top-0 z-40 bg-white/80 backdrop-blur-xl border-b border-white/20 shadow-sm">
+        <div className="p-6">
+          <div className="text-center">
+            <div className="flex items-center justify-center space-x-3 mb-2">
+              <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center">
+                <Users className="w-5 h-5 text-white" />
               </div>
-              <div>
-                <div className="text-2xl font-bold text-green-600">
-                  {character.familyMembers.filter(m => m.alive).length}
-                </div>
-                <div className="text-xs text-gray-600">Living</div>
-              </div>
-              <div>
-                <div className="text-2xl font-bold text-pink-600">
-                  {character.familyMembers.filter(m => 
-                    ['spouse', 'lover'].includes(m.relationship)
-                  ).length}
-                </div>
-                <div className="text-xs text-gray-600">Romantic</div>
-              </div>
+              <h1 className="text-3xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent">
+                Connections
+              </h1>
             </div>
+            <p className="text-gray-600 font-medium">
+              Your relationship network • {character.familyMembers.length} people
+            </p>
           </div>
         </div>
-
-        {/* Character List */}
-        <ScrollArea className="h-[calc(100vh-280px)]">
-          <div className="space-y-3">
-            {character.familyMembers.length > 0 ? (
-              character.familyMembers.map(renderCharacterCard)
-            ) : (
-              <div className="text-center py-12">
-                <div className="text-6xl mb-4">👨‍👩‍👧‍👦</div>
-                <h3 className="text-lg font-semibold text-gray-700 mb-2">No Relationships Yet</h3>
-                <p className="text-gray-600 max-w-sm mx-auto text-sm">
-                  Your relationships will appear here as you meet people and build connections throughout your life.
-                </p>
-              </div>
-            )}
-          </div>
-        </ScrollArea>
       </div>
+
+      <ScrollArea className="h-[calc(100vh-140px)]">
+        <div className="p-6 pb-24">
+          {/* Categories */}
+          {renderCategorySection("Family", categories.family, "family")}
+          {renderCategorySection("Romance", categories.romantic, "romantic")}
+          {renderCategorySection("Social Circle", categories.social, "social")}
+          {renderCategorySection("Others", categories.other, "other")}
+
+          {/* Enhanced empty state */}
+          {character.familyMembers.length === 0 && (
+            <div className="text-center py-16 px-6">
+              <div className="w-32 h-32 bg-gradient-to-br from-blue-100 to-purple-100 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
+                <Users className="w-16 h-16 text-gray-400" />
+              </div>
+              <h3 className="text-2xl font-bold text-gray-700 mb-3">Your Story Begins</h3>
+              <p className="text-gray-600 max-w-sm mx-auto leading-relaxed">
+                Build meaningful connections and relationships as you navigate through life's journey.
+              </p>
+            </div>
+          )}
+        </div>
+      </ScrollArea>
 
       {renderActionConfirmation()}
     </div>
