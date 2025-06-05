@@ -3,12 +3,20 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { DollarSign, Star, GraduationCap, Brain } from 'lucide-react';
 import { Character } from '../../types/game';
-import { Career } from '../../data/careers/types';
+// Define the career type based on actual data structure
+interface CareerTrack {
+  id: string;
+  name: string;
+  baseSalary: number;
+  maxLevel: number;
+  education: string;
+  smarts: number;
+}
 
 interface JobListingsProps {
   character: Character;
-  careerTracks: Career[];
-  isEligible: (career: Career) => boolean;
+  careerTracks: CareerTrack[];
+  isEligible: (career: CareerTrack) => boolean;
   onCareerAction: (action: string, data?: any) => void;
 }
 
@@ -21,7 +29,7 @@ export const JobListings: React.FC<JobListingsProps> = ({
   const eligibleCareers = careerTracks.filter(career => isEligible(career));
   const ineligibleCareers = careerTracks.filter(career => !isEligible(career));
 
-  const CareerCard = ({ career, eligible }: { career: Career; eligible: boolean }) => (
+  const CareerCard = ({ career, eligible }: { career: CareerTrack; eligible: boolean }) => (
     <div className={`
       bg-white/70 backdrop-blur-xl rounded-2xl p-4 border border-white/20 shadow-lg
       transition-all duration-300 hover:scale-[1.02] hover:shadow-xl
@@ -36,25 +44,25 @@ export const JobListings: React.FC<JobListingsProps> = ({
               <div className="w-6 h-6 bg-green-100 rounded-lg flex items-center justify-center">
                 <DollarSign className="h-3 w-3 text-green-600" />
               </div>
-              <span className="text-gray-600">${Math.floor(career.levels[0]?.salary / 1000)}k</span>
+              <span className="text-gray-600">${Math.floor(career.baseSalary / 1000)}k</span>
             </div>
             <div className="flex items-center gap-1.5 text-sm">
               <div className="w-6 h-6 bg-yellow-100 rounded-lg flex items-center justify-center">
                 <Star className="h-3 w-3 text-yellow-600" />
               </div>
-              <span className="text-gray-600">Level {career.levels.length}</span>
+              <span className="text-gray-600">Level {career.maxLevel}</span>
             </div>
             <div className="flex items-center gap-1.5 text-sm">
               <div className="w-6 h-6 bg-blue-100 rounded-lg flex items-center justify-center">
                 <GraduationCap className="h-3 w-3 text-blue-600" />
               </div>
-              <span className="text-gray-600">{career.requirements.education || 'None'}</span>
+              <span className="text-gray-600">{career.education || 'None'}</span>
             </div>
             <div className="flex items-center gap-1.5 text-sm">
               <div className="w-6 h-6 bg-purple-100 rounded-lg flex items-center justify-center">
                 <Brain className="h-3 w-3 text-purple-600" />
               </div>
-              <span className="text-gray-600">{career.requirements.stats?.smarts || career.levels[0]?.requirements?.stats?.smarts || 0}+</span>
+              <span className="text-gray-600">{career.smarts || 0}+</span>
             </div>
           </div>
         </div>
