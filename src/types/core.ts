@@ -88,6 +88,7 @@ export interface StatEffects {
   notoriety?: number;
   partnerName?: string;
   salary?: number;
+  jobLevel?: number;
 }
 
 export interface Choice {
