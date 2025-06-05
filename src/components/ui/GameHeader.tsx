@@ -2,6 +2,7 @@ import React from 'react';
 import { Character } from '../../types/game';
 import { Button } from '../ui/button';
 import { Settings, Menu } from 'lucide-react';
+import { formatMoney } from '../../utils/money/formatting';
 
 interface GameHeaderProps {
   character: Character;
@@ -9,6 +10,17 @@ interface GameHeaderProps {
 }
 
 export const GameHeader: React.FC<GameHeaderProps> = ({ character, onOpenSettings }) => {
+  // Calculate current year based on birth year and age
+  const getCurrentYear = () => {
+    if (character.birthYear) {
+      return character.birthYear + character.age;
+    }
+    // Fallback for existing characters without birth year
+    return new Date().getFullYear();
+  };
+
+  const currentYear = getCurrentYear();
+
   return (
     <div className="flex-shrink-0 bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl border-b border-white/20 px-3 py-2 safe-area-pt">
       <div className="flex items-center justify-between">
@@ -20,14 +32,21 @@ export const GameHeader: React.FC<GameHeaderProps> = ({ character, onOpenSetting
             <h1 className="text-sm font-bold text-gray-900 dark:text-white truncate max-w-[120px]">
               {character.name}
             </h1>
-            <p className="text-xs text-gray-500">Age {character.age}</p>
+            <p className="text-xs text-gray-500">
+              Age {character.age} • {currentYear}
+              {character.birthYear && (
+                <span className="text-xs text-gray-400 ml-1">
+                  (Born {character.birthYear})
+                </span>
+              )}
+            </p>
           </div>
         </div>
         
         <div className="flex items-center space-x-2">
           <div className="bg-white/70 dark:bg-slate-800/70 backdrop-blur px-2 py-1 rounded-lg">
             <div className="text-sm font-bold text-green-600 dark:text-green-400">
-              ${Math.round(character.wealth)}k
+              {formatMoney(character.wealth || 0)}
             </div>
           </div>
           

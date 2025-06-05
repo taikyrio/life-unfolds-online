@@ -11,22 +11,45 @@ interface BirthStoryProps {
 }
 
 const generateBirthStory = (character: Character) => {
-  const locations = [
-    'at City General Hospital',
-    'at Saint Mary\'s Medical Center',
-    'at Memorial Hospital',
-    'at home with a midwife',
-    'at Regional Medical Center'
+  const countries = [
+    { name: 'United States', locations: ['at City General Hospital', 'at Saint Mary\'s Medical Center', 'at Memorial Hospital', 'at home with a midwife', 'at Regional Medical Center'] },
+    { name: 'Canada', locations: ['at Toronto General Hospital', 'at Vancouver Medical Center', 'at Montreal Children\'s Hospital', 'at home in Quebec', 'at Calgary Health Center'] },
+    { name: 'United Kingdom', locations: ['at Royal London Hospital', 'at Birmingham Women\'s Hospital', 'at home in Manchester', 'at Edinburgh Royal Infirmary', 'at Cardiff Medical Center'] },
+    { name: 'Australia', locations: ['at Sydney Hospital', 'at Melbourne Medical Center', 'at Brisbane Women\'s Hospital', 'at home in Perth', 'at Adelaide General Hospital'] },
+    { name: 'Germany', locations: ['at Berlin Medical Center', 'at Munich Hospital', 'at Hamburg University Hospital', 'at home in Frankfurt', 'at Cologne General Hospital'] },
+    { name: 'France', locations: ['at Paris Medical Center', 'at Lyon Hospital', 'at Marseille General Hospital', 'at home in Nice', 'at Toulouse Medical Center'] },
+    { name: 'Japan', locations: ['at Tokyo Medical Center', 'at Osaka Hospital', 'at Kyoto General Hospital', 'at home in Yokohama', 'at Nagoya Medical Center'] },
+    { name: 'Brazil', locations: ['at São Paulo Hospital', 'at Rio de Janeiro Medical Center', 'at Brasília General Hospital', 'at home in Salvador', 'at Fortaleza Medical Center'] }
   ];
 
   const motherNames = [
     'Sarah', 'Jennifer', 'Lisa', 'Michelle', 'Angela', 'Melissa', 'Brenda', 'Amy',
-    'Anna', 'Rebecca', 'Virginia', 'Kathleen', 'Pamela', 'Martha', 'Debra', 'Rachel'
+    'Anna', 'Rebecca', 'Virginia', 'Kathleen', 'Pamela', 'Martha', 'Debra', 'Rachel',
+    'Emma', 'Sophie', 'Charlotte', 'Isabella', 'Olivia', 'Grace', 'Lily', 'Chloe'
   ];
 
   const fatherNames = [
     'Michael', 'Christopher', 'Matthew', 'Joshua', 'David', 'James', 'Daniel', 'Robert',
-    'John', 'Joseph', 'Andrew', 'Ryan', 'Brandon', 'Jason', 'Justin', 'William'
+    'John', 'Joseph', 'Andrew', 'Ryan', 'Brandon', 'Jason', 'Justin', 'William',
+    'Alexander', 'Benjamin', 'Lucas', 'Henry', 'Sebastian', 'Owen', 'Gabriel', 'Nathan'
+  ];
+
+  const parentJobs = [
+    'teacher', 'doctor', 'engineer', 'nurse', 'lawyer', 'accountant', 'chef', 'artist',
+    'mechanic', 'police officer', 'firefighter', 'pharmacist', 'architect', 'journalist',
+    'software developer', 'business owner', 'retail manager', 'electrician', 'plumber',
+    'construction worker', 'social worker', 'librarian', 'photographer', 'musician'
+  ];
+
+  const conceptionStories = [
+    'after your parents had been trying to conceive for several months',
+    'as a wonderful surprise during their honeymoon',
+    'when your parents decided they were ready to start a family',
+    'after your parents had been married for a few years',
+    'as an unexpected but joyful surprise',
+    'when your parents felt financially stable enough for a child',
+    'after your parents moved into their new home',
+    'during a romantic anniversary celebration'
   ];
 
   const circumstances = [
@@ -36,7 +59,10 @@ const generateBirthStory = (character: Character) => {
     'during a thunderstorm',
     'on a peaceful Sunday',
     'just before midnight',
-    'during the early morning hours'
+    'during the early morning hours',
+    'on a bright spring day',
+    'during autumn leaves falling',
+    'on New Year\'s Eve'
   ];
 
   const reactions = [
@@ -45,15 +71,21 @@ const generateBirthStory = (character: Character) => {
     'Your father couldn\'t stop smiling.',
     'The whole family was excited to meet you.',
     'Your parents had been trying for years.',
-    'You were a wonderful surprise to your parents.'
+    'You were a wonderful surprise to your parents.',
+    'Your grandparents flew in just to meet you.',
+    'Your parents immediately called all their friends and family.'
   ];
 
-  const weights = ['6 lbs 2 oz', '7 lbs 8 oz', '6 lbs 15 oz', '8 lbs 1 oz', '7 lbs 3 oz', '6 lbs 11 oz'];
+  const weights = ['5 lbs 8 oz', '6 lbs 2 oz', '7 lbs 8 oz', '6 lbs 15 oz', '8 lbs 1 oz', '7 lbs 3 oz', '6 lbs 11 oz', '8 lbs 5 oz'];
 
-  const location = locations[Math.floor(Math.random() * locations.length)];
+  const selectedCountry = countries[Math.floor(Math.random() * countries.length)];
+  const location = selectedCountry.locations[Math.floor(Math.random() * selectedCountry.locations.length)];
   const playerLastName = character.name.split(' ')[1] || 'Smith';
   const motherName = `${motherNames[Math.floor(Math.random() * motherNames.length)]} ${playerLastName}`;
   const fatherName = `${fatherNames[Math.floor(Math.random() * fatherNames.length)]} ${playerLastName}`;
+  const motherJob = parentJobs[Math.floor(Math.random() * parentJobs.length)];
+  const fatherJob = parentJobs[Math.floor(Math.random() * parentJobs.length)];
+  const conceptionStory = conceptionStories[Math.floor(Math.random() * conceptionStories.length)];
   const circumstance = circumstances[Math.floor(Math.random() * circumstances.length)];
   const reaction = reactions[Math.floor(Math.random() * reactions.length)];
   const weight = weights[Math.floor(Math.random() * weights.length)];
@@ -63,8 +95,12 @@ const generateBirthStory = (character: Character) => {
 
   return {
     location,
+    country: selectedCountry.name,
     motherName,
     fatherName,
+    motherJob,
+    fatherJob,
+    conceptionStory,
     circumstance,
     reaction,
     weight,
@@ -93,7 +129,7 @@ export const BirthStory: React.FC<BirthStoryProps> = ({ character, onContinue })
           
           <div className="space-y-3 text-sm text-gray-700 dark:text-gray-300">
             <p>
-              <strong>{character.name}</strong> was born {story.location} {story.circumstance}.
+              <strong>{character.name}</strong> was born on {new Date(character.birthYear || new Date().getFullYear(), (character.birthMonth || 1) - 1, character.birthDay || 1).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })} in <strong>{story.country}</strong> {story.location} {story.circumstance}.
             </p>
             
             <p>
@@ -101,7 +137,11 @@ export const BirthStory: React.FC<BirthStoryProps> = ({ character, onContinue })
             </p>
             
             <p>
-              Your parents, <strong>{story.motherName}</strong> and <strong>{story.fatherName}</strong>, welcomed {story.article} into the world.
+              Your mother, <strong>{story.motherName}</strong> (a {story.motherJob}), and your father, <strong>{story.fatherName}</strong> (a {story.fatherJob}), welcomed {story.article} into the world.
+            </p>
+            
+            <p>
+              You were conceived {story.conceptionStory}.
             </p>
             
             <p className="text-center italic">

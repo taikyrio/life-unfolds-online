@@ -46,7 +46,7 @@ export const CharacterCustomization: React.FC<CharacterCustomizationProps> = ({
       'Smith', 'Johnson', 'Brown', 'Davis', 'Miller', 'Wilson', 'Moore', 'Taylor',
       'Anderson', 'Thomas', 'Jackson', 'White', 'Harris', 'Martin', 'Thompson', 'Garcia'
     ];
-    
+
     const firstNames = gender === 'male' ? maleNames : femaleNames;
     const randomFirstName = firstNames[Math.floor(Math.random() * firstNames.length)];
     const randomLastName = lastNames[Math.floor(Math.random() * lastNames.length)];
@@ -61,10 +61,10 @@ export const CharacterCustomization: React.FC<CharacterCustomizationProps> = ({
       extreme: [0, 100],
       high: [50, 90]
     };
-    
+
     const [min, max] = ranges[randomMode];
     const getRandomStat = () => Math.floor(Math.random() * (max - min + 1)) + min;
-    
+
     setHappiness([getRandomStat()]);
     setHealth([getRandomStat()]);
     setSmarts([getRandomStat()]);
@@ -73,40 +73,37 @@ export const CharacterCustomization: React.FC<CharacterCustomizationProps> = ({
 
   const handleCreateCharacter = () => {
     const fullName = `${firstName.trim()} ${lastName.trim()}`.trim() || 'Unnamed Character';
+
+    // Generate random birth year between 2000-2025
+    const currentYear = new Date().getFullYear();
+    const minBirthYear = 2000;
+    const maxBirthYear = Math.min(2025, currentYear);
+    const birthYear = Math.floor(Math.random() * (maxBirthYear - minBirthYear + 1)) + minBirthYear;
+
+    // Generate random birth month (1-12) and day (1-28 for simplicity)
+    const birthMonth = Math.floor(Math.random() * 12) + 1;
+    const birthDay = Math.floor(Math.random() * 28) + 1;
+
     const newCharacter: Character = {
       id: 'player',
       name: fullName,
       gender: gender,
       age: 0,
+      birthYear: birthYear,
+      birthMonth: birthMonth,
+      birthDay: birthDay,
       happiness: happiness[0],
       health: health[0],
       smarts: smarts[0],
       looks: looks[0],
-      wealth: Math.floor(Math.random() * 10000),
+      wealth: 0, // Start with no money as a newborn
       relationships: Math.floor((looks[0] + happiness[0]) / 2),
-      relationshipStatus: 'single',
-      familyMembers: [],
-      lifeEvents: [],
       achievements: [],
       assets: [],
       children: [],
-      fame: 0,
-      education: {
-        currentStage: null,
-        currentSchool: null,
-        currentYear: 0,
-        gpa: 0,
-        grades: [],
-        completedStages: [],
-        major: undefined,
-        testScores: [],
-        disciplinaryActions: 0,
-        achievements: [],
-        dropouts: 0,
-        levels: []
-      }
+      fame: 0
     };
-    
+
     onCreateCharacter(newCharacter);
     onClose();
   };
@@ -138,7 +135,7 @@ export const CharacterCustomization: React.FC<CharacterCustomizationProps> = ({
             <X className="h-4 w-4" />
           </Button>
         </CardHeader>
-        
+
         <CardContent className="space-y-6">
           {/* Character Name */}
           <div className="space-y-2">
