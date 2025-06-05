@@ -18,8 +18,8 @@ import { autoEnrollEducation } from '../../handlers/educationProgression';
 
 export const processAgeUp = (
   gameState: GameState,
-  ageHistory: { age: number; events: string[] }[],
-  setAgeHistory: (history: { age: number; events: string[] }[]) => void,
+  ageHistory: Record<number, string[]>,
+  setAgeHistory: (history: Record<number, string[]>) => void,
   onGameStateChange: (newState: GameState) => void,
   toast: any
 ) => {
@@ -229,8 +229,8 @@ export const processAgeUp = (
   }
 
   // Update age history
-  const newAgeHistory = { ...ageHistory };
   if (currentAgeEvents.length > 0) {
+    const newAgeHistory = { ...ageHistory };
     newAgeHistory[updatedCharacter.age] = currentAgeEvents;
     setAgeHistory(newAgeHistory);
   }

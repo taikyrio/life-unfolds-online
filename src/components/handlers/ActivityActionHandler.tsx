@@ -1,4 +1,3 @@
-
 import { Character } from '../../types/game';
 
 const getActivityEvent = (action: string, character: Character) => {
@@ -10,20 +9,19 @@ export const handleActivityAction = (
   character: Character,
   action: string,
   data: any,
-  ageHistory: { age: number; events: string[] }[],
-  setAgeHistory: (history: { age: number; events: string[] }[]) => void,
+  ageHistory: Record<number, string[]>,
+  setAgeHistory: (history: Record<number, string[]>) => void,
   onGameStateChange: (newState: any) => void,
   gameState: any,
   toast: any
 ) => {
   let updatedCharacter = { ...character };
   let message = '';
-  const existingEntry = ageHistory.find(entry => entry.age === updatedCharacter.age);
-  let ageEvents = existingEntry ? existingEntry.events : [];
+  let ageEvents = ageHistory[updatedCharacter.age] || [];
 
   // Check if this activity has a special event
   const activityEvent = getActivityEvent(action, character);
-  
+
   if (activityEvent) {
     // Set the event in game state to show the event overlay
     onGameStateChange({
@@ -212,18 +210,16 @@ export const handleActivityAction = (
       break;
   }
 
+  // Add the activity message to age history for life story logging
   if (message) {
-    ageEvents.push(message);
-    const newAgeHistory = { ...ageHistory };
-    newAgeHistory[updatedCharacter.age] = ageEvents;
-    setAgeHistory(newAgeHistory);
-
-    toast({
-      title: "Activity Complete",
-      description: message,
+    const currentEvents = ageHistory[updatedCharacter.age] || [];
+    setAgeHistory({
+      ...ageHistory,
+      [updatedCharacter.age]: [...currentEvents, message]
     });
   }
 
+  // Update the game state with the new character
   onGameStateChange({
     ...gameState,
     character: updatedCharacter
