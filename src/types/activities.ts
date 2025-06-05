@@ -4,6 +4,10 @@ export interface ActivityOption {
   title: string;
   description: string;
   emoji: string;
+  minAge?: number;
+  maxAge?: number;
+  minWealth?: number;
+  requiresPartner?: boolean;
   effects: {
     health?: number;
     happiness?: number;
@@ -13,10 +17,6 @@ export interface ActivityOption {
     relationships?: number;
     fame?: number;
   };
-  minAge?: number;
-  maxAge?: number;
-  minWealth?: number;
-  requiresPartner?: boolean;
   category: string;
 }
 
@@ -27,30 +27,11 @@ export interface ActivityCategory {
   activities: ActivityOption[];
 }
 
-export interface Activity {
-  id: string;
-  name: string;
-  description: string;
-  effects: Record<string, number>;
-  cost?: number;
-  resultText?: string;
-  requirements?: {
-    minAge?: number;
-    maxAge?: number;
-    minWealth?: number;
-    education?: string;
-  };
-  category: string;
-}
-
 export interface CrimeOperation {
-  id: string;
   name: string;
-  description: string;
-  difficulty: number;
-  risk: number;
   reward: number;
-  type: 'criminal_operation';
+  arrestChance: number;
+  notorietyGain: number;
 }
 
 export interface CybercrimeOperation {
@@ -60,5 +41,18 @@ export interface CybercrimeOperation {
   difficulty: number;
   risk: number;
   reward: number;
-  type: 'cybercrime';
+}
+
+export interface ActivityResult {
+  success: boolean;
+  message: string;
+  effects?: {
+    health?: number;
+    happiness?: number;
+    smarts?: number;
+    looks?: number;
+    wealth?: number;
+    relationships?: number;
+    fame?: number;
+  };
 }

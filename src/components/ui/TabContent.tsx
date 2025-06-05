@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Character, GameState } from '../../types/game';
 import { LifeTab } from '../LifeTab';
@@ -52,7 +53,6 @@ export const TabContent: React.FC<TabContentProps> = ({
           <LifeTab 
             character={character}
             eventHistory={eventHistory}
-            currentEvent={gameState.currentEvent}
             onAgeUp={onAgeUp}
             onChoice={onChoice}
             ageHistory={ageHistory}
@@ -115,7 +115,13 @@ export const TabContent: React.FC<TabContentProps> = ({
           />
         );
       case 'assets':
-        return <AssetsTab character={character} />;
+        return (
+          <AssetsTab 
+            character={character}
+            onCharacterUpdate={onCharacterUpdate}
+            onEvent={onEvent}
+          />
+        );
       default:
         return null;
     }

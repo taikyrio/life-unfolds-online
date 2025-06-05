@@ -84,6 +84,10 @@ export interface StatEffects {
   job?: string;
   relationshipStatus?: string;
   criminalRecord?: Partial<CriminalRecord>;
+  // Additional properties that were missing
+  notoriety?: number;
+  partnerName?: string;
+  salary?: number;
 }
 
 export interface Choice {

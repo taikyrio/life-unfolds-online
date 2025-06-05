@@ -2,21 +2,25 @@
 import { Character } from '../types/game';
 import { StatEffects } from '../types/core';
 
-export const getStatEmoji = (statName: string): string => {
-  const statEmojis: Record<string, string> = {
-    health: '❤️',
-    happiness: '😊',
-    smarts: '🧠',
-    looks: '✨',
-    wealth: '💰',
-    relationships: '👥',
-    fame: '⭐',
-    education: '🎓',
-    job: '💼',
-    age: '🎂'
+export const getStatEmoji = (statName: string, value?: number): string => {
+  const val = value || 50;
+  const emojis = {
+    health: val >= 80 ? '💚' : val >= 60 ? '💛' : val >= 40 ? '🧡' : '❤️',
+    happiness: val >= 80 ? '😄' : val >= 60 ? '😊' : val >= 40 ? '😐' : '😢',
+    smarts: val >= 80 ? '🧠' : val >= 60 ? '📚' : val >= 40 ? '🤓' : '📖',
+    looks: val >= 80 ? '✨' : val >= 60 ? '😊' : val >= 40 ? '🙂' : '😕',
+    wealth: val >= 80 ? '💰' : val >= 60 ? '💵' : val >= 40 ? '💴' : '💸',
+    relationships: val >= 80 ? '💕' : val >= 60 ? '❤️' : val >= 40 ? '💛' : '💔'
   };
-  
-  return statEmojis[statName.toLowerCase()] || '📊';
+
+  return emojis[statName as keyof typeof emojis] || '❓';
+};
+
+export const getStatColor = (value: number): string => {
+  if (value >= 80) return 'text-green-600';
+  if (value >= 60) return 'text-yellow-600';
+  if (value >= 40) return 'text-orange-600';
+  return 'text-red-600';
 };
 
 export const getLifeStage = (age: number): string => {
