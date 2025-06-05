@@ -7,6 +7,52 @@ import { HealthInsurance } from './health';
 import { SocialMediaAccount, RealEstateProperty } from './social';
 import { FinancialRecord } from './finance';
 
+export interface MusicArtist {
+  id: string;
+  name: string;
+  genre: string;
+  members: number;
+  fans: number;
+  records: MusicRecord[];
+  tours: MusicTour[];
+  disbanded: boolean;
+}
+
+export interface MusicRecord {
+  id: string;
+  name: string;
+  tracks: number;
+  productionTime: number;
+  releaseDate: Date;
+  sales: number;
+  certified: boolean;
+  inProduction: boolean;
+  earnings: number;
+}
+
+export interface MusicTour {
+  id: string;
+  name: string;
+  venues: number;
+  earnings: number;
+  fanGain: number;
+  year: number;
+}
+
+export interface MusicCareer {
+  level: number;
+  fans: number;
+  albums: number;
+  singles: number;
+  reputation: number;
+  currentProject: string | null;
+  lastRelease: string | null;
+  earnings: number;
+  artists: MusicArtist[];
+  studioSlots: number;
+  hasMoreStudioTime: boolean;
+}
+
 export interface Character {
   id: string;
   name: string;
@@ -62,4 +108,9 @@ export interface Character {
   delayedEvents?: any[];
   majorDecisions?: any[];
   disasterHistory?: any[];
+  workExperience?: number;
+  // Music career properties
+  musicCareer?: MusicCareer;
+  musicArtists?: MusicArtist[];
+  money?: number; // For compatibility with money system
 }

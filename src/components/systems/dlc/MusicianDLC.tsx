@@ -1,13 +1,8 @@
 
-import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Character } from '../../../types/game';
-import { MusicArtist, MusicRecord, Tour } from '../../../types/career';
-import { Music, Users, Disc3, MapPin, BarChart3, X } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Button } from '../../ui/button';
+import { Clock } from 'lucide-react';
+import { Character, MusicArtist, MusicRecord, MusicCareer } from '../../../types/character';
 
 interface MusicianDLCProps {
   character: Character;
@@ -18,245 +13,254 @@ export const MusicianDLC: React.FC<MusicianDLCProps> = ({
   character, 
   onCareerAction 
 }) => {
-  const [showCreateArtist, setShowCreateArtist] = useState(false);
-  const [showCreateRecord, setShowCreateRecord] = useState(false);
-  const [showTourPlanning, setShowTourPlanning] = useState(false);
-  const [showArtistStats, setShowArtistStats] = useState(false);
+  const [selectedArtist, setSelectedArtist] = useState<string | null>(null);
 
-  // Mock data - in real implementation this would come from character
-  const artists: MusicArtist[] = character.musicArtists || [];
-  const selectedArtist = artists[0];
-
-  const musicGenres = [
-    'Pop', 'Rock', 'Hip-Hop', 'R&B', 'Country', 'Electronic', 'Jazz', 'Classical'
-  ];
-
-  const CreateArtistModal = () => (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <Card className="w-full max-w-md glass border-white/20">
-        <CardHeader className="pb-3">
-          <div className="flex items-center justify-between">
-            <CardTitle className="text-lg text-white">Create Artist</CardTitle>
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              onClick={() => setShowCreateArtist(false)}
-              className="text-white hover:bg-white/10"
-            >
-              <X className="h-4 w-4" />
-            </Button>
-          </div>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div>
-            <label className="text-sm text-white/90 block mb-2">Artist Name</label>
-            <Input placeholder="Enter artist name" className="bg-white/10 border-white/20 text-white" />
-          </div>
-          <div>
-            <label className="text-sm text-white/90 block mb-2">Genre</label>
-            <Select>
-              <SelectTrigger className="bg-white/10 border-white/20 text-white">
-                <SelectValue placeholder="Select genre" />
-              </SelectTrigger>
-              <SelectContent>
-                {musicGenres.map(genre => (
-                  <SelectItem key={genre} value={genre.toLowerCase()}>{genre}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div>
-            <label className="text-sm text-white/90 block mb-2">Band Members (1-7)</label>
-            <Input type="number" min="1" max="7" defaultValue="1" className="bg-white/10 border-white/20 text-white" />
-          </div>
-          <Button 
-            className="w-full bg-green-500 hover:bg-green-600 text-white"
-            onClick={() => {
-              onCareerAction('create_artist');
-              setShowCreateArtist(false);
-            }}
-          >
-            Create Artist
-          </Button>
-        </CardContent>
-      </Card>
-    </div>
-  );
-
-  const CreateRecordModal = () => (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <Card className="w-full max-w-md glass border-white/20">
-        <CardHeader className="pb-3">
-          <div className="flex items-center justify-between">
-            <CardTitle className="text-lg text-white">Create Record</CardTitle>
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              onClick={() => setShowCreateRecord(false)}
-              className="text-white hover:bg-white/10"
-            >
-              <X className="h-4 w-4" />
-            </Button>
-          </div>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div>
-            <label className="text-sm text-white/90 block mb-2">Record Name</label>
-            <Input placeholder="Enter record name" className="bg-white/10 border-white/20 text-white" />
-          </div>
-          <div>
-            <label className="text-sm text-white/90 block mb-2">Number of Tracks (1-16)</label>
-            <Input type="number" min="1" max="16" defaultValue="8" className="bg-white/10 border-white/20 text-white" />
-          </div>
-          <div>
-            <label className="text-sm text-white/90 block mb-2">Production Time (1-5 years)</label>
-            <Input type="number" min="1" max="5" defaultValue="1" className="bg-white/10 border-white/20 text-white" />
-          </div>
-          <Button 
-            className="w-full bg-purple-500 hover:bg-purple-600 text-white"
-            onClick={() => {
-              onCareerAction('create_record');
-              setShowCreateRecord(false);
-            }}
-          >
-            Start Production
-          </Button>
-        </CardContent>
-      </Card>
-    </div>
-  );
-
-  if (showArtistStats && selectedArtist) {
+  // Age restriction check
+  if (character.age < 10) {
     return (
-      <div className="space-y-4">
-        <Button 
-          variant="ghost" 
-          onClick={() => setShowArtistStats(false)}
-          className="mb-4 text-white"
-        >
-          ← Back to Dashboard
-        </Button>
-        
-        <Card className="glass border-white/20">
-          <CardHeader>
-            <CardTitle className="text-white flex items-center gap-2">
-              <BarChart3 className="h-5 w-5" />
-              {selectedArtist.name} - Artist Stats
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div className="bg-white/10 rounded-lg p-3">
-                <div className="text-2xl font-bold text-green-400">{selectedArtist.fans.toLocaleString()}</div>
-                <div className="text-sm text-white/70">Total Fans</div>
-              </div>
-              <div className="bg-white/10 rounded-lg p-3">
-                <div className="text-2xl font-bold text-blue-400">{selectedArtist.records.length}</div>
-                <div className="text-sm text-white/70">Records Released</div>
-              </div>
-              <div className="bg-white/10 rounded-lg p-3">
-                <div className="text-2xl font-bold text-purple-400">{selectedArtist.totalRecordsSold.toLocaleString()}</div>
-                <div className="text-sm text-white/70">Records Sold</div>
-              </div>
-              <div className="bg-white/10 rounded-lg p-3">
-                <div className="text-2xl font-bold text-yellow-400">${selectedArtist.totalEarnings.toLocaleString()}</div>
-                <div className="text-sm text-white/70">Total Earnings</div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+      <div className="bg-white/70 backdrop-blur-xl rounded-3xl p-8 border border-white/20 shadow-xl text-center">
+        <h2 className="text-2xl font-bold text-gray-800 mb-4">Music Career Locked</h2>
+        <p className="text-gray-600 mb-4">
+          You need to be at least 10 years old to start your music career.
+        </p>
+        <p className="text-gray-500">
+          Current age: {character.age} years old
+        </p>
       </div>
     );
   }
 
+  const musicCareer: MusicCareer = character.musicCareer || {
+    level: 0,
+    fans: 0,
+    albums: 0,
+    singles: 0,
+    reputation: 0,
+    currentProject: null,
+    lastRelease: null,
+    earnings: 0,
+    artists: [],
+    studioSlots: 2,
+    hasMoreStudioTime: false
+  };
+
+  const artists: MusicArtist[] = musicCareer.artists || [];
+  const selectedArtistData = artists.find(a => a.id === selectedArtist);
+
+  const getActiveProductions = () => {
+    return artists.reduce((count, artist) => 
+      count + artist.records.filter(r => r.inProduction).length, 0
+    );
+  };
+
+  const canCreateRecord = () => {
+    return getActiveProductions() < musicCareer.studioSlots;
+  };
+
+  const handleCreateArtist = (artistData: Omit<MusicArtist, 'id' | 'fans' | 'records' | 'tours' | 'disbanded'>) => {
+    const artist: MusicArtist = {
+      id: Date.now().toString(),
+      name: artistData.name,
+      genre: artistData.genre,
+      members: artistData.members,
+      fans: 0,
+      records: [],
+      tours: [],
+      disbanded: false
+    };
+
+    onCareerAction('music_create_artist', { artist });
+  };
+
+  const handleCreateRecord = (artistId: string, recordData: Omit<MusicRecord, 'id' | 'releaseDate' | 'sales' | 'certified' | 'inProduction' | 'earnings'>) => {
+    const record: MusicRecord = {
+      id: Date.now().toString(),
+      name: recordData.name,
+      tracks: recordData.tracks,
+      productionTime: recordData.productionTime,
+      releaseDate: new Date(Date.now() + recordData.productionTime * 365 * 24 * 60 * 60 * 1000),
+      sales: 0,
+      certified: false,
+      inProduction: true,
+      earnings: 0
+    };
+
+    onCareerAction('music_create_record', { artistId, record });
+  };
+
+  // Check for completed records and trigger life story events
+  useEffect(() => {
+    const currentDate = new Date();
+    artists.forEach(artist => {
+      artist.records.forEach(record => {
+        if (record.inProduction && new Date(record.releaseDate) <= currentDate) {
+          // Record should be released
+          onCareerAction('music_complete_record', { 
+            artistId: artist.id, 
+            recordId: record.id,
+            characterAge: character.age
+          });
+        }
+      });
+    });
+  }, [character.age, artists, onCareerAction]);
+
   return (
-    <div className="space-y-4">
-      {/* Artist Selection */}
-      {artists.length > 0 && (
-        <Card className="glass border-white/20">
-          <CardHeader className="pb-3">
-            <div className="flex items-center justify-between">
-              <span className="text-white/90 text-sm">The artist to interact with</span>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="bg-white/10 rounded-lg p-3 mb-3">
-              <div className="flex items-center justify-between">
-                <span className="text-white font-medium">{selectedArtist?.name || 'Me'}</span>
-                <Badge variant="secondary" className="bg-white/20 text-white">
-                  {selectedArtist?.genre || 'Solo'}
-                </Badge>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Main Actions */}
-      <div className="space-y-3">
-        <Button
-          className="w-full h-12 bg-white/10 hover:bg-white/20 border border-white/20 text-white justify-start"
-          onClick={() => setShowCreateArtist(true)}
-        >
-          <Music className="h-5 w-5 mr-3 text-blue-400" />
-          Create Artist
-        </Button>
-
-        <Button
-          className="w-full h-12 bg-white/10 hover:bg-white/20 border border-white/20 text-white justify-start"
-          onClick={() => setShowCreateRecord(true)}
-          disabled={artists.length === 0}
-        >
-          <Disc3 className="h-5 w-5 mr-3 text-green-400" />
-          Create Record
-        </Button>
-
-        <Button
-          className="w-full h-12 bg-gray-600 hover:bg-gray-700 border border-gray-500 text-white justify-start"
-          disabled={!selectedArtist || selectedArtist.records.length === 0}
-          onClick={() => setShowTourPlanning(true)}
-        >
-          <MapPin className="h-5 w-5 mr-3 text-orange-400" />
-          Go On Tour
-        </Button>
-
-        <Button
-          className="w-full h-12 bg-white/10 hover:bg-white/20 border border-white/20 text-white justify-start"
-          onClick={() => setShowArtistStats(true)}
-          disabled={!selectedArtist}
-        >
-          <BarChart3 className="h-5 w-5 mr-3 text-purple-400" />
-          View Artist Stats
-        </Button>
-
-        <Button
-          className="w-full h-12 bg-red-600/80 hover:bg-red-700 border border-red-500 text-white justify-start"
-          disabled={!selectedArtist || !selectedArtist.isActive}
-        >
-          <Users className="h-5 w-5 mr-3 text-red-300" />
-          Disband
-        </Button>
-
-        <Button
-          className="w-full h-12 bg-blue-600/80 hover:bg-blue-700 border border-blue-500 text-white justify-start"
-          disabled={!selectedArtist || selectedArtist.isActive}
-        >
-          <Music className="h-5 w-5 mr-3 text-blue-300" />
-          Reunion
-        </Button>
+    <div className="space-y-6">
+      {/* Music Dashboard */}
+      <div className="bg-white/70 backdrop-blur-xl rounded-3xl p-6 border border-white/20 shadow-xl">
+        <h2 className="text-xl font-bold text-gray-800 mb-4">Music Dashboard</h2>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="text-center">
+            <div className="text-2xl font-bold text-blue-600">{musicCareer.fans}</div>
+            <div className="text-sm text-gray-600">Total Fans</div>
+          </div>
+          <div className="text-center">
+            <div className="text-2xl font-bold text-green-600">{artists.length}</div>
+            <div className="text-sm text-gray-600">Artists</div>
+          </div>
+          <div className="text-center">
+            <div className="text-2xl font-bold text-purple-600">{musicCareer.albums}</div>
+            <div className="text-sm text-gray-600">Albums</div>
+          </div>
+          <div className="text-center">
+            <div className="text-2xl font-bold text-red-600">${musicCareer.earnings}</div>
+            <div className="text-sm text-gray-600">Earnings</div>
+          </div>
+        </div>
       </div>
 
-      <Button
-        className="w-full mt-6 bg-red-500/20 hover:bg-red-500/30 border border-red-500/50 text-red-300"
-        onClick={() => onCareerAction('close_music_dashboard')}
-      >
-        <X className="h-4 w-4 mr-2" />
-        Close Music Dashboard
-      </Button>
+      {/* Studio Status */}
+      <div className="bg-white/70 backdrop-blur-xl rounded-3xl p-6 border border-white/20 shadow-xl">
+        <h2 className="text-xl font-bold text-gray-800 mb-4">Studio Status</h2>
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-2">
+            <Clock className="h-5 w-5 text-blue-600" />
+            <span className="text-gray-700">
+              Production Slots: {getActiveProductions()}/{musicCareer.studioSlots}
+            </span>
+          </div>
+          {!musicCareer.hasMoreStudioTime && (
+            <Button
+              onClick={() => onCareerAction('music_get_studio_time')}
+              disabled={(character.wealth || 0) < 50}
+              className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-xl"
+            >
+              Get More Studio Time ($50k)
+            </Button>
+          )}
+        </div>
+      </div>
 
-      {/* Modals */}
-      {showCreateArtist && <CreateArtistModal />}
-      {showCreateRecord && <CreateRecordModal />}
+      {/* Artist Management */}
+      <div className="bg-white/70 backdrop-blur-xl rounded-3xl p-6 border border-white/20 shadow-xl">
+        <h2 className="text-xl font-bold text-gray-800 mb-4">Artist Management</h2>
+        
+        {artists.length === 0 ? (
+          <div className="text-center py-8">
+            <p className="text-gray-600 mb-4">No artists created yet</p>
+            <Button
+              onClick={() => handleCreateArtist({
+                name: `Artist ${Date.now()}`,
+                genre: 'Pop',
+                members: 1
+              })}
+              className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white rounded-xl"
+            >
+              Create Your First Artist
+            </Button>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {artists.map((artist) => (
+              <div key={artist.id} className="p-4 border rounded-lg bg-gray-50">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="font-semibold">{artist.name}</h3>
+                    <p className="text-sm text-gray-600">{artist.genre} • {artist.members} members</p>
+                    <p className="text-sm text-blue-600">{artist.fans} fans</p>
+                  </div>
+                  <div className="space-x-2">
+                    <Button
+                      size="sm"
+                      variant={selectedArtist === artist.id ? "default" : "outline"}
+                      onClick={() => setSelectedArtist(artist.id)}
+                    >
+                      Select
+                    </Button>
+                    {artist.disbanded ? (
+                      <Button
+                        size="sm"
+                        onClick={() => onCareerAction('music_reunion', { artistId: artist.id })}
+                        className="bg-green-600 hover:bg-green-700 text-white"
+                      >
+                        Reunion
+                      </Button>
+                    ) : (
+                      <Button
+                        size="sm"
+                        variant="destructive"
+                        onClick={() => onCareerAction('music_disband', { artistId: artist.id })}
+                      >
+                        Disband
+                      </Button>
+                    )}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Record Production */}
+      {selectedArtistData && !selectedArtistData.disbanded && (
+        <div className="bg-white/70 backdrop-blur-xl rounded-3xl p-6 border border-white/20 shadow-xl">
+          <h2 className="text-xl font-bold text-gray-800 mb-4">Record Production</h2>
+          
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <span>Selected Artist: {selectedArtistData.name}</span>
+              <Button
+                onClick={() => handleCreateRecord(selectedArtistData.id, {
+                  name: `Album ${Date.now()}`,
+                  tracks: 12,
+                  productionTime: 1
+                })}
+                disabled={!canCreateRecord()}
+                className="bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white rounded-xl"
+              >
+                Create Record
+              </Button>
+            </div>
+
+            {selectedArtistData.records.length > 0 && (
+              <div className="space-y-2">
+                <h3 className="font-semibold">Records:</h3>
+                {selectedArtistData.records.map((record) => (
+                  <div key={record.id} className="p-3 border rounded bg-gray-50">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <span className="font-medium">{record.name}</span>
+                        <span className="text-sm text-gray-600 ml-2">
+                          {record.tracks} tracks
+                        </span>
+                      </div>
+                      <div className="text-sm">
+                        {record.inProduction ? (
+                          <span className="text-orange-600">In Production</span>
+                        ) : (
+                          <span className="text-green-600">{record.sales} sales</span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 };

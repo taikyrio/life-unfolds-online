@@ -1,4 +1,3 @@
-
 import { Character, Asset, AssetTransaction, AssetMarketEvent } from '../types/game';
 import { ASSET_CATALOG, ASSET_MARKET_EVENTS } from '../data/assetData';
 
@@ -304,7 +303,15 @@ const degradeCondition = (condition: string, lastMaintenance?: number, currentYe
   return conditions[Math.min(currentIndex + degradeAmount, conditions.length - 1)];
 };
 
-export const getAssetConditionColor = (condition: string): string => {
+export const getAssetConditionColor = (condition: string | number): string => {
+  if (typeof condition === 'number') {
+    if (condition >= 90) return 'text-green-600';
+    if (condition >= 70) return 'text-blue-600';
+    if (condition >= 50) return 'text-yellow-600';
+    if (condition >= 30) return 'text-orange-600';
+    return 'text-red-600';
+  }
+  
   switch (condition) {
     case 'excellent': return 'text-green-600';
     case 'good': return 'text-blue-600';
