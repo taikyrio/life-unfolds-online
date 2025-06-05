@@ -4,8 +4,8 @@ import { initializeEducationData } from '../utils/educationHelpers';
 
 export const autoEnrollEducation = (
   character: Character,
-  ageHistory?: { age: number; events: string[] }[],
-  setAgeHistory?: (history: { age: number; events: string[] }[]) => void
+  ageHistory?: Record<number, string[]>,
+  setAgeHistory?: (history: Record<number, string[]>) => void
 ): Character => {
   let updatedCharacter = initializeEducationData(character);
 
@@ -13,22 +13,23 @@ export const autoEnrollEducation = (
   if (updatedCharacter.education.currentStage) {
     const currentStageData = educationStages.find(s => s.id === updatedCharacter.education.currentStage);
     if (currentStageData) {
-      updatedCharacter.education.currentYear += 1;
+      // Only advance year if character is enrolled in current stage
+      if (updatedCharacter.education.currentStage) {
+        updatedCharacter.education.currentYear += 1;
 
-      // Random GPA fluctuation based on smarts
-      const gpaChange = (Math.random() - 0.5) * 0.3 + (updatedCharacter.smarts / 200);
-      updatedCharacter.education.gpa = Math.max(0, Math.min(4.0, updatedCharacter.education.gpa + gpaChange));
+        // Random GPA fluctuation based on smarts
+        const gpaChange = (Math.random() - 0.5) * 0.3 + (updatedCharacter.smarts / 200);
+        updatedCharacter.education.gpa = Math.max(0, Math.min(4.0, updatedCharacter.education.gpa + gpaChange));
 
-      // Add to age history
-      if (ageHistory && setAgeHistory) {
-        const existingEntry = ageHistory.find(entry => entry.age === updatedCharacter.age);
-        const message = `Advanced to year ${updatedCharacter.education.currentYear} of ${currentStageData.name}`;
-        
-        if (existingEntry) {
-          existingEntry.events.push(message);
-          setAgeHistory([...ageHistory]);
-        } else {
-          setAgeHistory([...ageHistory, { age: updatedCharacter.age, events: [message] }]);
+        // Add to age history
+        if (ageHistory && setAgeHistory) {
+          const currentEvents = ageHistory[updatedCharacter.age] || [];
+          const message = `Advanced to year ${updatedCharacter.education.currentYear} of ${currentStageData.name}`;
+          
+          setAgeHistory({
+            ...ageHistory,
+            [updatedCharacter.age]: [...currentEvents, message]
+          });
         }
       }
 

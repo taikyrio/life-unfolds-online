@@ -200,7 +200,7 @@ select:focus {
 }
 
 .apple-activity-card {
-  @apply relative p-6 rounded-3xl border backdrop-blur-sm transition-all duration-300 ease-out text-left w-full group overflow-hidden shadow-sm hover:shadow-xl;
+  @apply relative p-6 rounded-3xl border backdrop-blur-sm transition-all duration-300 ease-out text-left w-full overflow-hidden shadow-sm hover:shadow-xl;
 }
 
 .apple-activity-icon {

@@ -1,11 +1,13 @@
 
 import React, { useState } from 'react';
 import { GameBoard } from '@/components/GameBoard';
+import SplashScreen from '@/components/SplashScreen';
 import { GameState, Character } from '@/types/game';
 import { createCharacter } from '@/utils/characterUtils';
 import { generateRandomName } from '@/utils/characterUtils';
 
 const Index = () => {
+  const [showSplash, setShowSplash] = useState(true);
   const [gameState, setGameState] = useState<GameState>(() => {
     // Generate random birth details
     const birthMonth = Math.floor(Math.random() * 12) + 1;
@@ -27,6 +29,10 @@ const Index = () => {
       }
     };
   });
+
+  if (showSplash) {
+    return <SplashScreen onComplete={() => setShowSplash(false)} />;
+  }
 
   return <GameBoard gameState={gameState} onGameStateChange={setGameState} />;
 };
