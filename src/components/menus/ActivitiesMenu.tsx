@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { X } from 'lucide-react';
 import { Character } from '../../types/game';
@@ -9,17 +8,18 @@ import { getActivityCategories } from '../../data/activityCategories';
 import { crimeOperations, cybercrimes } from '../../data/criminalOperations';
 
 interface ActivitiesMenuProps {
-  isOpen: boolean;
-  onClose: () => void;
   character: Character;
   onActivity: (activityType: string, activityId: string | object) => void;
+  onClose: () => void;
+  onActivityComplete?: () => void;
 }
 
 export const ActivitiesMenu: React.FC<ActivitiesMenuProps> = ({
   isOpen,
   onClose,
   character,
-  onActivity
+  onActivity,
+  onActivityComplete
 }) => {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
@@ -96,7 +96,7 @@ export const ActivitiesMenu: React.FC<ActivitiesMenuProps> = ({
                 ?.activities.map((activity) => {
                   const canUse = canUseActivity(activity, character, hasPartner);
                   const requirementText = getRequirementText(activity, character, hasPartner);
-                  
+
                   return (
                     <ActivityCard
                       key={activity.id}

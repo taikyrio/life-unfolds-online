@@ -19,10 +19,11 @@ interface GameModalsProps {
   onCloseAssetsMenu: () => void;
   onCloseActivityModal: () => void;
   onCloseEventOverlay: () => void;
-  onActivity: (activityId: string, activityData?: any) => void;
+  onActivity: (action: string, data?: any) => void;
   onRelationshipAction: (action: string, data?: any) => void;
   onChoice: (choiceId: string) => void;
   onGameStateChange: (newState: GameState) => void;
+  onActivityComplete?: () => void;
 }
 
 export const GameModals: React.FC<GameModalsProps> = ({
@@ -41,16 +42,17 @@ export const GameModals: React.FC<GameModalsProps> = ({
   onActivity,
   onRelationshipAction,
   onChoice,
-  onGameStateChange
+  onGameStateChange,
+  onActivityComplete
 }) => {
   return (
     <>
       {showActivitiesMenu && (
         <ActivitiesMenu
-          isOpen={showActivitiesMenu}
           character={gameState.character}
-          onClose={onCloseActivitiesMenu}
           onActivity={onActivity}
+          onClose={onCloseActivitiesMenu}
+          onActivityComplete={onActivityComplete}
         />
       )}
 
