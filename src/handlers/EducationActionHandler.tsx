@@ -1,7 +1,7 @@
-import { Character } from '../../types/game';
-import { educationStages, educationEvents, getAvailableSchools, calculateGPA, universityMajors } from '../../data/educationData';
-import { autoEnrollEducation } from '../../handlers/educationProgression';
-import { initializeEducationData, isMandatoryEducationAge } from '../../utils/educationHelpers';
+import { Character } from '../types/game';
+import { educationStages, educationEvents, getAvailableSchools, calculateGPA, universityMajors } from '../data/educationData';
+import { autoEnrollEducation } from './educationProgression';
+import { initializeEducationData, isMandatoryEducationAge } from '../utils/educationHelpers';
 
 export const handleEducationAction = (
   character: Character,

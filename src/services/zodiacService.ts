@@ -1,94 +1,107 @@
 
-import { ZodiacSign } from '../types/game';
+import { ZodiacSign } from '../types/core';
 
 export const zodiacSigns: ZodiacSign[] = [
   {
+    sign: 'Aries',
     name: 'Aries',
     emoji: '♈',
-    traits: ['Energetic', 'Confident', 'Impulsive'],
+    traits: ['energetic', 'competitive', 'impulsive'],
     luckyNumbers: [1, 8, 17],
     element: 'fire'
   },
   {
+    sign: 'Taurus',
     name: 'Taurus',
     emoji: '♉',
-    traits: ['Reliable', 'Patient', 'Stubborn'],
+    traits: ['reliable', 'patient', 'stubborn'],
     luckyNumbers: [2, 6, 9],
     element: 'earth'
   },
   {
+    sign: 'Gemini',
     name: 'Gemini',
     emoji: '♊',
-    traits: ['Adaptable', 'Curious', 'Inconsistent'],
+    traits: ['adaptable', 'curious', 'inconsistent'],
     luckyNumbers: [5, 7, 14],
     element: 'air'
   },
   {
+    sign: 'Cancer',
     name: 'Cancer',
     emoji: '♋',
-    traits: ['Emotional', 'Protective', 'Moody'],
+    traits: ['nurturing', 'emotional', 'protective'],
     luckyNumbers: [2, 7, 11],
     element: 'water'
   },
   {
+    sign: 'Leo',
     name: 'Leo',
     emoji: '♌',
-    traits: ['Generous', 'Warm-hearted', 'Arrogant'],
+    traits: ['confident', 'generous', 'dramatic'],
     luckyNumbers: [1, 3, 10],
     element: 'fire'
   },
   {
+    sign: 'Virgo',
     name: 'Virgo',
     emoji: '♍',
-    traits: ['Analytical', 'Practical', 'Worrying'],
-    luckyNumbers: [3, 15, 20],
+    traits: ['analytical', 'practical', 'perfectionist'],
+    luckyNumbers: [6, 14, 18],
     element: 'earth'
   },
   {
+    sign: 'Libra',
     name: 'Libra',
     emoji: '♎',
-    traits: ['Diplomatic', 'Fair-minded', 'Indecisive'],
-    luckyNumbers: [4, 6, 13],
+    traits: ['diplomatic', 'charming', 'indecisive'],
+    luckyNumbers: [6, 15, 24],
     element: 'air'
   },
   {
+    sign: 'Scorpio',
     name: 'Scorpio',
     emoji: '♏',
-    traits: ['Brave', 'Passionate', 'Jealous'],
-    luckyNumbers: [8, 11, 18],
+    traits: ['intense', 'mysterious', 'passionate'],
+    luckyNumbers: [4, 13, 27],
     element: 'water'
   },
   {
+    sign: 'Sagittarius',
     name: 'Sagittarius',
     emoji: '♐',
-    traits: ['Optimistic', 'Freedom-loving', 'Impatient'],
+    traits: ['adventurous', 'optimistic', 'restless'],
     luckyNumbers: [3, 9, 22],
     element: 'fire'
   },
   {
+    sign: 'Capricorn',
     name: 'Capricorn',
     emoji: '♑',
-    traits: ['Responsible', 'Disciplined', 'Pessimistic'],
-    luckyNumbers: [6, 8, 26],
+    traits: ['ambitious', 'disciplined', 'pessimistic'],
+    luckyNumbers: [8, 10, 26],
     element: 'earth'
   },
   {
+    sign: 'Aquarius',
     name: 'Aquarius',
     emoji: '♒',
-    traits: ['Progressive', 'Independent', 'Aloof'],
+    traits: ['innovative', 'independent', 'detached'],
     luckyNumbers: [4, 7, 11],
     element: 'air'
   },
   {
+    sign: 'Pisces',
     name: 'Pisces',
     emoji: '♓',
-    traits: ['Compassionate', 'Artistic', 'Overly trusting'],
-    luckyNumbers: [3, 9, 12],
+    traits: ['intuitive', 'compassionate', 'escapist'],
+    luckyNumbers: [7, 12, 29],
     element: 'water'
   }
 ];
 
 export const getZodiacSign = (month: number, day: number): ZodiacSign => {
+  // Simplified zodiac calculation
   if ((month === 3 && day >= 21) || (month === 4 && day <= 19)) return zodiacSigns[0]; // Aries
   if ((month === 4 && day >= 20) || (month === 5 && day <= 20)) return zodiacSigns[1]; // Taurus
   if ((month === 5 && day >= 21) || (month === 6 && day <= 20)) return zodiacSigns[2]; // Gemini
@@ -101,29 +114,4 @@ export const getZodiacSign = (month: number, day: number): ZodiacSign => {
   if ((month === 12 && day >= 22) || (month === 1 && day <= 19)) return zodiacSigns[9]; // Capricorn
   if ((month === 1 && day >= 20) || (month === 2 && day <= 18)) return zodiacSigns[10]; // Aquarius
   return zodiacSigns[11]; // Pisces
-};
-
-export const getZodiacEffects = (zodiacSign: ZodiacSign): any => {
-  const effects: any = {};
-  
-  switch (zodiacSign.element) {
-    case 'fire':
-      effects.happiness = 5;
-      effects.relationships = 3;
-      break;
-    case 'earth':
-      effects.smarts = 5;
-      effects.wealth = 50;
-      break;
-    case 'air':
-      effects.smarts = 3;
-      effects.relationships = 5;
-      break;
-    case 'water':
-      effects.health = 3;
-      effects.happiness = 3;
-      break;
-  }
-  
-  return effects;
 };

@@ -1,6 +1,6 @@
-import { Character } from '../../types/game';
-import { executeRelationshipAction, relationshipManager } from '../../systems/relationshipSystem';
-import { generatePersonality, initializeRelationshipStats } from '../../systems/relationship/relationshipUtils';
+import { Character } from '../types/game';
+import { executeRelationshipAction, relationshipManager } from '../systems/relationshipSystem';
+import { generatePersonality, initializeRelationshipStats } from '../systems/relationship/relationshipUtils';
 
 export const handleRelationshipAction = (
   character: Character,
