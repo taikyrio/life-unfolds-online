@@ -12,9 +12,10 @@ import { useGameLogic } from '../hooks/useGameLogic';
 interface GameBoardProps {
   gameState: GameState;
   onGameStateChange: (newState: GameState) => void;
+  onOpenSettings?: () => void;
 }
 
-export const GameBoard: React.FC<GameBoardProps> = ({ gameState, onGameStateChange }) => {
+export const GameBoard: React.FC<GameBoardProps> = ({ gameState, onGameStateChange, onOpenSettings }) => {
   const [activeTab, setActiveTab] = useState<'life' | 'activities' | 'careers' | 'relationships' | 'assets' | 'education' | 'health' | 'lifestyle' | 'money'>('life');
   const [showActivitiesMenu, setShowActivitiesMenu] = useState(false);
   const [showRelationshipsMenu, setShowRelationshipsMenu] = useState(false);
@@ -80,7 +81,7 @@ export const GameBoard: React.FC<GameBoardProps> = ({ gameState, onGameStateChan
 
   return (
     <div className="game-container h-screen flex flex-col bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 overflow-hidden">
-      <GameHeader character={gameState.character} />
+      <GameHeader character={gameState.character} onOpenSettings={onOpenSettings} />
       <StatsBar character={gameState.character} />
       <TabNavigation activeTab={activeTab} onTabChange={(tab) => setActiveTab(tab)} />
 

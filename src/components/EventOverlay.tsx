@@ -33,6 +33,31 @@ export const EventOverlay: React.FC<EventOverlayProps> = ({
     return "Senior";
   };
 
+  // Validate if event is appropriate for current age
+  const isEventAppropriate = (event: LifeEvent, age: number) => {
+    const lifeStage = getLifeStage(age);
+    
+    // Check for age-inappropriate content
+    if (age < 13 && (event.title.toLowerCase().includes('job') || 
+                     event.title.toLowerCase().includes('career') || 
+                     event.title.toLowerCase().includes('marriage'))) {
+      return false;
+    }
+    
+    if (age > 18 && (event.title.toLowerCase().includes('playground') || 
+                     event.title.toLowerCase().includes('school assignment'))) {
+      return false;
+    }
+    
+    return true;
+  };
+
+  // Don't render if event is inappropriate
+  if (!isEventAppropriate(event, characterAge)) {
+    onClose();
+    return null;
+  }
+
   return (
     <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 backdrop-blur-sm">
       <div className="w-full h-full bg-white flex flex-col relative">
