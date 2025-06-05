@@ -78,7 +78,7 @@ export const handleEducationAction = (
       updatedCharacter.education.currentStage = stageId;
       updatedCharacter.education.currentSchool = schoolId;
       updatedCharacter.education.currentYear = 1;
-      updatedCharacter.education.gpa = 2.0 + (updatedCharacter.smarts / 50); // Base GPA
+      updatedCharacter.education.gpa = calculateDynamicGPA(updatedCharacter, 1);
       updatedCharacter.wealth = Math.max(0, updatedCharacter.wealth - (school.cost * 10));
 
       message = `Enrolled in ${school.name} for ${stage.name}!`;
@@ -225,9 +225,49 @@ export const handleEducationAction = (
       break;
 
     case 'progress_year':
-      // Use the new auto-progression system
-      updatedCharacter = autoEnrollEducation(updatedCharacter, ageHistory, setAgeHistory);
-      message = 'Education year progressed successfully.';
+      // Handle year progression and graduation
+      if (currentEducation?.currentStage && currentEducation?.currentSchool) {
+        const stage = educationStages.find(s => s.id === currentEducation.currentStage);
+        if (stage) {
+          const newYear = currentEducation.currentYear + 1;
+
+          if (newYear > stage.duration) {
+            // Graduate from current stage
+            updatedCharacter.education = {
+              ...currentEducation,
+              currentStage: null,
+              currentSchool: null,
+              currentYear: 0,
+              completedStages: [...(currentEducation.completedStages || []), currentEducation.currentStage],
+              achievements: [...(currentEducation.achievements || []), `Graduated from ${stage.name}`]
+            };
+            message = `You graduated from ${stage.name}!`;
+
+            // Auto-enroll in next stage if age appropriate
+            const nextStageEnrollment = getNextEducationStage(updatedCharacter);
+            if (nextStageEnrollment) {
+              updatedCharacter.education.currentStage = nextStageEnrollment.stageId;
+              updatedCharacter.education.currentSchool = nextStageEnrollment.schoolId;
+              updatedCharacter.education.currentYear = 1;
+              updatedCharacter.education.gpa = calculateDynamicGPA(updatedCharacter, 1);
+              message += ` Automatically enrolled in ${nextStageEnrollment.stageName}!`;
+            }
+          } else {
+            // Advance to next year and update GPA
+            const newGPA = calculateDynamicGPA(updatedCharacter, newYear);
+            updatedCharacter.education = {
+              ...currentEducation,
+              currentYear: newYear,
+              gpa: newGPA
+            };
+            message = `You advanced to year ${newYear} of ${stage.name}. GPA: ${newGPA.toFixed(2)}`;
+          }
+        }
+      } else {
+        // Not enrolled, try auto-enrollment
+        updatedCharacter = autoEnrollEducation(updatedCharacter, ageHistory, setAgeHistory);
+        message = 'Education year progressed successfully.';
+      }
       break;
 
     case 'random_event':
@@ -269,6 +309,59 @@ export const handleEducationAction = (
 
 
 
+
+// Calculate dynamic GPA based on character stats and year progression
+const calculateDynamicGPA = (character: Character, year: number): number => {
+  // Base GPA from smarts (0-100 maps to 0-4.0)
+  const baseGPA = (character.smarts / 100) * 4.0;
+  
+  // Year progression bonus/penalty (earlier years slightly easier)
+  const yearModifier = year <= 2 ? 0.1 : year >= 5 ? -0.1 : 0;
+  
+  // Happiness affects performance
+  const happinessModifier = (character.happiness - 50) / 100; // -0.5 to +0.5
+  
+  // Random variation for realism
+  const randomVariation = (Math.random() - 0.5) * 0.3; // -0.15 to +0.15
+  
+  // Calculate final GPA
+  let finalGPA = baseGPA + yearModifier + happinessModifier + randomVariation;
+  
+  // Ensure GPA stays within realistic bounds
+  finalGPA = Math.max(0.0, Math.min(4.0, finalGPA));
+  
+  return Math.round(finalGPA * 100) / 100; // Round to 2 decimal places
+};
+
+// Get next education stage for auto-enrollment
+const getNextEducationStage = (character: Character) => {
+  const age = character.age;
+  const completedStages = character.education?.completedStages || [];
+
+  // Elementary to Middle School
+  if (age >= 12 && age <= 14 && 
+      completedStages.includes('elementary') && 
+      !completedStages.includes('middle_school')) {
+    return {
+      stageId: 'middle_school',
+      schoolId: 'public_middle_school',
+      stageName: 'Middle School'
+    };
+  }
+
+  // Middle School to High School
+  if (age >= 15 && age <= 17 && 
+      completedStages.includes('middle_school') && 
+      !completedStages.includes('high_school')) {
+    return {
+      stageId: 'high_school',
+      schoolId: 'public_high_school',
+      stageName: 'High School'
+    };
+  }
+
+  return null;
+};
 
 // Check if character needs to be in school
 export const shouldBeInSchool = (character: Character) => {

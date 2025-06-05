@@ -37,7 +37,7 @@ export const ActivityActionHandler: React.FC<ActivityActionHandlerProps> = ({
     }
   };
 
-  const isCrime = activity.consequences?.arrestChance;
+  const isCrime = Boolean(activity.consequences?.arrestChance);
   const isUnderage = isCrime && character.age < 18;
 
   return (
@@ -61,8 +61,6 @@ export const ActivityActionHandler: React.FC<ActivityActionHandlerProps> = ({
     </button>
   );
 };
-
-import { Character } from '../types/game';
 
 const getActivityEvent = (action: string, character: Character) => {
   // Simple activity event check - can be expanded later
