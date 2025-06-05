@@ -8,6 +8,7 @@ import { Briefcase, TrendingUp, DollarSign, Star, Skull, Trophy, Music2, Chevron
 import { CriminalDLC } from './dlc/CriminalDLC';
 import { FameDLC } from './dlc/FameDLC';
 import { MusicianDLC } from './dlc/MusicianDLC';
+import { formatMoney } from '../../utils/money/formatting';
 
 interface CareerSystemProps {
   character: Character;
@@ -21,31 +22,31 @@ export const CareerSystem: React.FC<CareerSystemProps> = ({
   const [activeDLC, setActiveDLC] = useState<string | null>(null);
 
   const careerTracks = [
-    // Entry Level
-    { id: 'retail', name: 'Retail Worker', baseSalary: 25, maxLevel: 3, education: 'None', smarts: 0 },
-    { id: 'food_service', name: 'Food Service', baseSalary: 22, maxLevel: 3, education: 'None', smarts: 0 },
+    // Entry Level - Annual salaries
+    { id: 'retail', name: 'Retail Worker', baseSalary: 25000, maxLevel: 3, education: 'None', smarts: 0 },
+    { id: 'food_service', name: 'Food Service', baseSalary: 22000, maxLevel: 3, education: 'None', smarts: 0 },
     
     // Skilled Labor
-    { id: 'mechanic', name: 'Mechanic', baseSalary: 45, maxLevel: 5, education: 'High School', smarts: 40 },
-    { id: 'electrician', name: 'Electrician', baseSalary: 55, maxLevel: 5, education: 'High School', smarts: 50 },
+    { id: 'mechanic', name: 'Mechanic', baseSalary: 45000, maxLevel: 5, education: 'High School', smarts: 40 },
+    { id: 'electrician', name: 'Electrician', baseSalary: 55000, maxLevel: 5, education: 'High School', smarts: 50 },
     
     // Professional
-    { id: 'teacher', name: 'Teacher', baseSalary: 48, maxLevel: 4, education: 'University', smarts: 70 },
-    { id: 'nurse', name: 'Nurse', baseSalary: 65, maxLevel: 5, education: 'University', smarts: 75 },
-    { id: 'engineer', name: 'Engineer', baseSalary: 75, maxLevel: 6, education: 'University', smarts: 80 },
+    { id: 'teacher', name: 'Teacher', baseSalary: 48000, maxLevel: 4, education: 'University', smarts: 70 },
+    { id: 'nurse', name: 'Nurse', baseSalary: 65000, maxLevel: 5, education: 'University', smarts: 75 },
+    { id: 'engineer', name: 'Engineer', baseSalary: 75000, maxLevel: 6, education: 'University', smarts: 80 },
     
     // Executive
-    { id: 'manager', name: 'Manager', baseSalary: 85, maxLevel: 7, education: 'University', smarts: 75 },
-    { id: 'executive', name: 'Executive', baseSalary: 120, maxLevel: 8, education: 'Graduate', smarts: 85 },
+    { id: 'manager', name: 'Manager', baseSalary: 85000, maxLevel: 7, education: 'University', smarts: 75 },
+    { id: 'executive', name: 'Executive', baseSalary: 120000, maxLevel: 8, education: 'Graduate', smarts: 85 },
     
     // Specialized
-    { id: 'doctor', name: 'Doctor', baseSalary: 185, maxLevel: 6, education: 'Medical', smarts: 90 },
-    { id: 'lawyer', name: 'Lawyer', baseSalary: 125, maxLevel: 6, education: 'Law', smarts: 85 }
+    { id: 'doctor', name: 'Doctor', baseSalary: 185000, maxLevel: 6, education: 'Medical', smarts: 90 },
+    { id: 'lawyer', name: 'Lawyer', baseSalary: 125000, maxLevel: 6, education: 'Law', smarts: 85 }
   ];
 
   const isEligible = (career: typeof careerTracks[0]) => {
     const meetsEducation = career.education === 'None' || 
-      character.education.completedStages.includes(career.education.toLowerCase());
+      (character.educationLevel && character.educationLevel.toLowerCase().includes(career.education.toLowerCase()));
     const meetsSmarts = character.smarts >= career.smarts;
     const meetsAge = character.age >= 16;
     return meetsEducation && meetsSmarts && meetsAge;
@@ -54,16 +55,18 @@ export const CareerSystem: React.FC<CareerSystemProps> = ({
   const getCurrentSalary = () => {
     if (!character.job) return 0;
     const career = careerTracks.find(c => c.name === character.job);
-    if (!career) return character.salary;
-    return career.baseSalary + (character.jobLevel * 15);
+    if (!career) return character.salary || 0;
+    const jobLevel = character.jobLevel || 1;
+    return career.baseSalary + (jobLevel * 5000); // $5k raise per level
   };
 
   const getPromotionRequirements = () => {
     if (!character.job) return null;
     const career = careerTracks.find(c => c.name === character.job);
-    if (!career || character.jobLevel >= career.maxLevel) return null;
+    const jobLevel = character.jobLevel || 1;
+    if (!career || jobLevel >= career.maxLevel) return null;
     
-    const nextLevel = character.jobLevel + 1;
+    const nextLevel = jobLevel + 1;
     const smartsRequired = career.smarts + (nextLevel * 10);
     const yearsRequired = nextLevel * 2;
     
@@ -193,7 +196,7 @@ export const CareerSystem: React.FC<CareerSystemProps> = ({
                 <Badge variant="secondary" className="bg-white/20 text-white">Level {character.jobLevel}</Badge>
               </div>
               <div className="text-sm text-white/70">
-                <div>💰 Salary: ${getCurrentSalary()}k/year</div>
+                <div>💰 Salary: {formatMoney(getCurrentSalary())}/year</div>
               </div>
             </div>
 
@@ -251,7 +254,7 @@ export const CareerSystem: React.FC<CareerSystemProps> = ({
                   <div className="flex items-center gap-4 text-xs text-white/60 mt-1">
                     <span className="flex items-center gap-1">
                       <DollarSign className="h-3 w-3" />
-                      ${career.baseSalary}k starting
+                      {formatMoney(career.baseSalary)} starting
                     </span>
                     <span className="flex items-center gap-1">
                       <Star className="h-3 w-3" />

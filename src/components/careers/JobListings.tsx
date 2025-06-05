@@ -1,18 +1,9 @@
-
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { DollarSign, Star, GraduationCap, Brain } from 'lucide-react';
 import { Character } from '../../types/game';
-
-interface Career {
-  id: string;
-  name: string;
-  baseSalary: number;
-  maxLevel: number;
-  education: string;
-  smarts: number;
-}
+import { Career } from '../../data/careers/types';
 
 interface JobListingsProps {
   character: Character;
@@ -39,31 +30,31 @@ export const JobListings: React.FC<JobListingsProps> = ({
       <div className="flex justify-between items-start mb-3">
         <div className="flex-1">
           <h3 className="font-bold text-lg text-gray-800 mb-2">{career.name}</h3>
-          
+
           <div className="grid grid-cols-2 gap-2 mb-3">
             <div className="flex items-center gap-1.5 text-sm">
               <div className="w-6 h-6 bg-green-100 rounded-lg flex items-center justify-center">
                 <DollarSign className="h-3 w-3 text-green-600" />
               </div>
-              <span className="text-gray-600">${career.baseSalary}k</span>
+              <span className="text-gray-600">${Math.floor(career.levels[0]?.salary / 1000)}k</span>
             </div>
             <div className="flex items-center gap-1.5 text-sm">
               <div className="w-6 h-6 bg-yellow-100 rounded-lg flex items-center justify-center">
                 <Star className="h-3 w-3 text-yellow-600" />
               </div>
-              <span className="text-gray-600">Level {career.maxLevel}</span>
+              <span className="text-gray-600">Level {career.levels.length}</span>
             </div>
             <div className="flex items-center gap-1.5 text-sm">
               <div className="w-6 h-6 bg-blue-100 rounded-lg flex items-center justify-center">
                 <GraduationCap className="h-3 w-3 text-blue-600" />
               </div>
-              <span className="text-gray-600 truncate">{career.education}</span>
+              <span className="text-gray-600">{career.requirements.education || 'None'}</span>
             </div>
             <div className="flex items-center gap-1.5 text-sm">
               <div className="w-6 h-6 bg-purple-100 rounded-lg flex items-center justify-center">
                 <Brain className="h-3 w-3 text-purple-600" />
               </div>
-              <span className="text-gray-600">{career.smarts} IQ</span>
+              <span className="text-gray-600">{career.requirements.stats?.smarts || career.levels[0]?.requirements?.stats?.smarts || 0}+</span>
             </div>
           </div>
         </div>
@@ -97,7 +88,7 @@ export const JobListings: React.FC<JobListingsProps> = ({
             </div>
             <h2 className="text-xl font-bold text-gray-800">Available Opportunities</h2>
           </div>
-          
+
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {eligibleCareers.map(career => (
               <CareerCard key={career.id} career={career} eligible={true} />
@@ -114,7 +105,7 @@ export const JobListings: React.FC<JobListingsProps> = ({
             </div>
             <h2 className="text-xl font-bold text-gray-600">Future Opportunities</h2>
           </div>
-          
+
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {ineligibleCareers.map(career => (
               <CareerCard key={career.id} career={career} eligible={false} />
