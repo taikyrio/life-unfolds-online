@@ -7,6 +7,8 @@ import { handleCareerAction } from '../components/handlers/CareerActionHandler';
 import { handleRelationshipAction } from '../components/handlers/RelationshipActionHandler';
 import { handleEducationAction } from '../components/handlers/EducationActionHandler';
 import { handleHealthAction, handleLifestyleAction, handleMoneyAction } from '../components/handlers/GameStateActionHandlers';
+import { processYearlyFinances } from '../systems/moneySystem';
+import { processYearlyAssetUpdates, initializeAssetSystem } from '../systems/assetSystem';
 
 interface UseGameLogicProps {
   gameState: GameState;
@@ -88,7 +90,16 @@ export const useGameLogic = ({ gameState, onGameStateChange }: UseGameLogicProps
     autoEnrollAge(gameState.character.age);
   }, [gameState.character.age, gameState.character.education?.currentStage, gameState.character.education?.completedStages]);
 
-  const ageUp = useCallback(() => {
+  const handleAgeUp = useCallback(() => {
+    // Ensure ageHistory is always an object and prevent multiple rapid calls
+    if (Array.isArray(ageHistory)) {
+      setAgeHistory({});
+      return;
+    }
+
+    // Prevent age skipping by checking if we're already processing
+    if (gameState.gameOver) return;
+
     processAgeUp(gameState, ageHistory || {}, setAgeHistory, onGameStateChange, toast);
   }, [gameState, ageHistory, onGameStateChange, toast]);
 
@@ -180,17 +191,11 @@ export const useGameLogic = ({ gameState, onGameStateChange }: UseGameLogicProps
     handleRelationshipAction(gameState.character, action, data, ageHistory, setAgeHistory, onGameStateChange, gameState, toast);
   }, [gameState, ageHistory, onGameStateChange, toast]);
 
-  // Convert ageHistory Record to array format for LifeTab component
-  const ageHistoryArray = Object.entries(ageHistory).map(([age, events]) => ({
-    age: parseInt(age),
-    events
-  })).sort((a, b) => a.age - b.age);
-
   return {
-    ageHistory: ageHistoryArray,
+    ageHistory: ageHistory,
     showEventOverlay,
     setShowEventOverlay,
-    ageUp,
+    ageUp: handleAgeUp,
     handleChoice,
     handleCharacterUpdate,
     handleEvent,
