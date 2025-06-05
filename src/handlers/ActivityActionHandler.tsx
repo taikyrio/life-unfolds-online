@@ -61,9 +61,7 @@ export const ActivityActionHandler: React.FC<ActivityActionHandlerProps> = ({
     </button>
   );
 };
-```
 
-```typescript
 import { Character } from '../types/game';
 
 const getActivityEvent = (action: string, character: Character) => {

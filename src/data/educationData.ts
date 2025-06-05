@@ -77,7 +77,7 @@ export const educationStages: EducationStage[] = [
     ]
   },
   {
-    id: 'middle',
+    id: 'middle_school',
     name: 'Middle School',
     minAge: 12,
     maxAge: 14,
@@ -86,7 +86,7 @@ export const educationStages: EducationStage[] = [
     autoEnroll: true,
     schools: [
       { 
-        id: 'public_middle', 
+        id: 'public_middle_school', 
         name: 'Public Middle School', 
         type: 'public', 
         cost: 0,
@@ -94,7 +94,7 @@ export const educationStages: EducationStage[] = [
         reputation: 'Average'
       },
       { 
-        id: 'private_middle', 
+        id: 'private_middle_school', 
         name: 'Private Middle School', 
         type: 'private', 
         cost: 75,
@@ -104,16 +104,16 @@ export const educationStages: EducationStage[] = [
     ]
   },
   {
-    id: 'high',
+    id: 'high_school',
     name: 'High School',
     minAge: 15,
     maxAge: 18,
     duration: 4,
-    prerequisites: ['middle'],
+    prerequisites: ['middle_school'],
     autoEnroll: true,
     schools: [
       { 
-        id: 'public_high', 
+        id: 'public_high_school', 
         name: 'Public High School', 
         type: 'public', 
         cost: 0,
@@ -121,7 +121,7 @@ export const educationStages: EducationStage[] = [
         reputation: 'Average'
       },
       { 
-        id: 'private_high', 
+        id: 'private_high_school', 
         name: 'Private High School', 
         type: 'private', 
         cost: 100,
@@ -136,7 +136,7 @@ export const educationStages: EducationStage[] = [
     minAge: 18,
     maxAge: 25,
     duration: 4,
-    prerequisites: ['high'],
+    prerequisites: ['high_school'],
     schools: [
       { 
         id: 'state_university', 

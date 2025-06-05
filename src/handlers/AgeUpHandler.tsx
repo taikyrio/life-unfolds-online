@@ -3,7 +3,7 @@ import { Character } from '../types/game';
 import { isGameOver } from '../utils/gameStateUtils';
 import { ageFamilyMembers, generateNewRelationships } from '../utils/familyUtils';
 
-export const handleAgeUp = (
+export const handleAgeUp = async (
   character: Character,
   ageHistory: Record<number, string[]>,
   setAgeHistory: (history: Record<number, string[]>) => void,
@@ -26,7 +26,8 @@ export const handleAgeUp = (
 
   // Handle education progression
   if (updatedCharacter.education?.currentStage && updatedCharacter.education?.currentSchool) {
-    const stage = require('../data/educationData').educationStages.find((s: any) => s.id === updatedCharacter.education?.currentStage);
+    const { educationStages } = await import('../data/educationData');
+    const stage = educationStages.find((s: any) => s.id === updatedCharacter.education?.currentStage);
     if (stage) {
       const newYear = updatedCharacter.education.currentYear + 1;
       
@@ -54,7 +55,7 @@ export const handleAgeUp = (
 
   // Auto-enroll mandatory education
   if (updatedCharacter.age === 6 && !updatedCharacter.education?.currentStage) {
-    const { educationStages } = require('../data/educationData');
+    const { educationStages } = await import('../data/educationData');
     const primaryStage = educationStages.find((s: any) => s.id === 'primary');
     if (primaryStage) {
       const publicSchool = primaryStage.schools.find((s: any) => s.type === 'Public');
@@ -92,6 +93,18 @@ export const handleAgeUp = (
   if (isYoungAdult && updatedCharacter.health < 30 && Math.random() < 0.3) {
     updatedCharacter.health = Math.min(100, updatedCharacter.health + 15);
     ageEvents.push("Your young body shows remarkable recovery!");
+  }
+
+  // Prevent aging beyond current year if birth year is set
+  const currentYear = new Date().getFullYear();
+  if (updatedCharacter.birthYear && (updatedCharacter.birthYear + updatedCharacter.age) > currentYear) {
+    ageEvents.push("⏰ You've reached the present day! Time travel isn't available yet.");
+    toast({
+      title: "Present Day Reached",
+      description: "You can't age beyond the current year!",
+      variant: "default",
+    });
+    return;
   }
 
   // Check for game over

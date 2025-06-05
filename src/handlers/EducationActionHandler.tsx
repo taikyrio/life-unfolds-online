@@ -281,11 +281,11 @@ export const shouldBeInSchool = (character: Character) => {
   }
   if (character.age >= 12 && character.age <= 14) {
     return character.education?.completedStages?.includes('elementary') && 
-           !character.education?.completedStages?.includes('middle');
+           !character.education?.completedStages?.includes('middle_school');
   }
   if (character.age >= 15 && character.age <= 16) {
-    return character.education?.completedStages?.includes('middle') && 
-           !character.education?.completedStages?.includes('high');
+    return character.education?.completedStages?.includes('middle_school') && 
+           !character.education?.completedStages?.includes('high_school');
   }
 
   return false;

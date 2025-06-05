@@ -1,10 +1,10 @@
 import { useCallback } from 'react';
 import { Character, GameState } from '../types/game';
 import { processAgeUp, processChoice } from '../components/game/GameLogic';
-import { handleActivityAction } from '../components/handlers/ActivityActionHandler';
-import { handleCareerAction } from '../components/handlers/CareerActionHandler';
-import { handleRelationshipAction } from '../components/handlers/RelationshipActionHandler';
-import { handleEducationAction } from '../components/handlers/EducationActionHandler';
+import { handleActivityAction } from '../handlers/ActivityActionHandler';
+import { handleCareerAction } from '../handlers/CareerActionHandler';
+import { handleRelationshipAction } from '../handlers/RelationshipActionHandler';
+import { handleEducationAction } from '../handlers/EducationActionHandler';
 import { handleHealthAction, handleLifestyleAction } from '../handlers/GameStateActionHandlers';
 
 interface UseGameActionsProps {
@@ -22,12 +22,7 @@ export function useGameActions({
   setAgeHistory,
   toast
 }: UseGameActionsProps) {
-  const handleAgeUp = useCallback(() => {
-    if (Array.isArray(ageHistory)) {
-      setAgeHistory({});
-      return;
-    }
-
+  const handleAgeUp = useCallback(async () => {
     if (gameState.gameOver) return;
 
     processAgeUp(gameState, ageHistory || {}, setAgeHistory, onGameStateChange, toast);
