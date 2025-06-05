@@ -7,6 +7,7 @@ import { teenageEvents } from './teenageEvents';
 import { adultEvents } from './adultEvents';
 import { seniorEvents } from './seniorEvents';
 import { expandedLifeEvents } from './expandedLifeEvents';
+import { allEnhancedLifeStageEvents } from './enhancedLifeStageEvents';
 
 export const createDynamicEventSystem = () => {
   const events: DynamicEvent[] = [
@@ -14,6 +15,8 @@ export const createDynamicEventSystem = () => {
     ...teenageEvents,
     ...adultEvents,
     ...seniorEvents,
+    // Add enhanced life stage events
+    ...allEnhancedLifeStageEvents,
     // Convert expanded life events to dynamic events
     ...expandedLifeEvents.map(event => ({
       ...event,
@@ -33,43 +36,80 @@ export const createDynamicEventSystem = () => {
     return events.filter(event => {
       const conditions = event.conditions;
       
-      // Check age range
-      if (conditions.minAge && character.age < conditions.minAge) return false;
-      if (conditions.maxAge && character.age > conditions.maxAge) return false;
+      // Strict age range checking
+      if (conditions.minAge !== undefined && character.age < conditions.minAge) return false;
+      if (conditions.maxAge !== undefined && character.age > conditions.maxAge) return false;
       
-      // Check life stage
+      // Life stage validation - must match exactly if specified
       if (conditions.lifeStage && lifeStage !== conditions.lifeStage) return false;
       
-      // Check stat requirements
+      // Stat requirements validation
       if (conditions.minStat) {
         const statValue = character[conditions.minStat.stat as keyof Character] as number;
-        if (statValue < conditions.minStat.value) return false;
+        if (typeof statValue !== 'number' || statValue < conditions.minStat.value) return false;
       }
       
       if (conditions.maxStat) {
         const statValue = character[conditions.maxStat.stat as keyof Character] as number;
-        if (statValue > conditions.maxStat.value) return false;
+        if (typeof statValue !== 'number' || statValue > conditions.maxStat.value) return false;
       }
       
-      // Check job requirement
+      // Job requirement validation
       if (conditions.hasJob !== undefined) {
         if (conditions.hasJob && !character.job) return false;
         if (!conditions.hasJob && character.job) return false;
       }
       
-      // Check education requirement
-      if (conditions.hasEducation && !character.education.completedStages.includes(conditions.hasEducation)) return false;
+      // Education requirement validation
+      if (conditions.hasEducation && !character.education?.completedStages?.includes(conditions.hasEducation)) return false;
       
-      // Check probability
-      if (conditions.probability && Math.random() > conditions.probability) return false;
+      // Probability check
+      if (conditions.probability !== undefined && Math.random() > conditions.probability) return false;
       
-      // Check if event was already triggered recently
-      if (eventTracker.triggeredEvents.has(event.id)) return false;
+      // Prevent duplicate events
+      if (eventTracker.triggeredEvents && eventTracker.triggeredEvents.has(event.id)) return false;
       
-      // Check cooldown
+      // Cooldown check - ensure events don't repeat too frequently
       const cooldownKey = `${event.id}_cooldown`;
-      const lastTriggered = eventTracker.eventCooldowns.get(cooldownKey);
-      if (lastTriggered && (character.age - lastTriggered) < 2) return false;
+      const lastTriggered = eventTracker.eventCooldowns?.get(cooldownKey);
+      if (lastTriggered && (character.age - lastTriggered) < 3) return false;
+      
+      // Enhanced life stage validation
+      const characterLifeStage = lifeStage.toLowerCase();
+      
+      // Don't show baby events to non-babies
+      if (character.age > 2 && event.id.includes('baby')) return false;
+      
+      // Don't show adult events to children/teens
+      if (character.age < 18 && (
+        event.id.includes('job_promotion') || 
+        event.id.includes('marriage') || 
+        event.id.includes('apartment_hunting') ||
+        event.category === 'career'
+      )) return false;
+      
+      // Don't show childhood events to adults
+      if (character.age > 18 && (
+        event.id.includes('playground') || 
+        event.id.includes('school_talent') ||
+        event.id.includes('lost_tooth') ||
+        event.category === 'childhood'
+      )) return false;
+      
+      // Don't show teen events to adults/children
+      if ((character.age < 13 || character.age > 19) && (
+        event.id.includes('prom') || 
+        event.id.includes('first_crush') ||
+        event.id.includes('driving_test') ||
+        event.category === 'teenage'
+      )) return false;
+      
+      // Don't show senior events to younger people
+      if (character.age < 50 && (
+        event.id.includes('retirement') || 
+        event.id.includes('grandchildren') ||
+        event.id.includes('health_checkup')
+      )) return false;
       
       return true;
     });

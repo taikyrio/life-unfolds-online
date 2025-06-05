@@ -1,12 +1,13 @@
 
 import { createDynamicEventSystem } from './events/eventSystem';
 import { allRandomEvents } from './events/expandedRandomEvents';
+import { allEnhancedLifeStageEvents } from './events/enhancedLifeStageEvents';
 
 // Enhanced dynamic event system that includes all event types
 export const enhancedDynamicEventSystem = createDynamicEventSystem();
 
-// Add all random events to the system
-enhancedDynamicEventSystem.events.push(...allRandomEvents);
+// Add all random events and enhanced life stage events to the system
+enhancedDynamicEventSystem.events.push(...allRandomEvents, ...allEnhancedLifeStageEvents);
 
 // Enhanced event selection with better probability weighting
 const originalSelectEvent = enhancedDynamicEventSystem.selectEvent;

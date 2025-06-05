@@ -1,4 +1,3 @@
-
 import { useCallback } from 'react';
 import { Character, GameState } from '../types/game';
 import { processAgeUp, processChoice } from '../components/game/GameLogic';
