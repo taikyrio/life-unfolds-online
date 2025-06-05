@@ -1,4 +1,3 @@
-
 export interface ActivityOption {
   id: string;
   title: string;
@@ -65,7 +64,8 @@ export interface Activity {
   id: string;
   name: string;
   description: string;
-  category: string;
+  cost: number;
+  duration: number; // in hours
   effects: {
     health?: number;
     happiness?: number;
@@ -74,6 +74,25 @@ export interface Activity {
     wealth?: number;
     relationships?: number;
     fame?: number;
-    notoriety?: number;
+  };
+  requirements?: {
+    minAge?: number;
+    maxAge?: number;
+    wealth?: number;
+    health?: number;
+    smarts?: number;
+    looks?: number;
+    job?: string;
+    education?: string;
+  };
+  unlockConditions?: string[];
+  riskFactors?: {
+    injury?: number;
+    arrest?: number;
+    death?: number;
+  };
+  consequences?: {
+    arrestChance?: number;
+    crimeType?: string;
   };
 }

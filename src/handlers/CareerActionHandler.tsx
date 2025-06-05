@@ -94,6 +94,30 @@ export const handleCareerAction = (
       }
       break;
 
+    case 'update_character':
+      if (data) {
+        updatedCharacter = { ...data };
+      }
+      break;
+
+    case 'add_event':
+      if (data && typeof data === 'string') {
+        const currentAge = updatedCharacter.age;
+        if (ageHistory && setAgeHistory) {
+          setAgeHistory(prev => ({
+            ...prev,
+            [currentAge]: [...(prev[currentAge] || []), data]
+          }));
+        }
+        if (toast) {
+          toast({
+            title: "Event",
+            description: data,
+          });
+        }
+      }
+      break;
+
     case 'music_create_record':
       if (data?.artistId && data?.record && updatedCharacter.musicCareer) {
         const artistIndex = updatedCharacter.musicCareer.artists.findIndex(a => a.id === data.artistId);

@@ -19,7 +19,38 @@ export const handleEducationAction = (
   // Initialize education data if not present
   updatedCharacter = initializeEducationData(updatedCharacter);
 
+  const currentEducation = character.education;
+
   switch (action) {
+    case 'advance_year':
+      if (currentEducation?.currentStage && currentEducation?.currentSchool) {
+        const stage = educationStages.find(s => s.id === currentEducation.currentStage);
+        if (stage) {
+          const newYear = currentEducation.currentYear + 1;
+
+          if (newYear > stage.duration) {
+            // Graduate from current stage
+            updatedCharacter.education = {
+              ...currentEducation,
+              currentStage: null,
+              currentSchool: null,
+              currentYear: 0,
+              completedStages: [...(currentEducation.completedStages || []), currentEducation.currentStage],
+              achievements: [...(currentEducation.achievements || []), `Graduated from ${stage.name}`]
+            };
+            message = `You graduated from ${stage.name}!`;
+          } else {
+            // Advance to next year
+            updatedCharacter.education = {
+              ...currentEducation,
+              currentYear: newYear
+            };
+            message = `You advanced to year ${newYear} of ${stage.name}.`;
+          }
+        }
+      }
+      break;
+
     case 'enroll':
       const { stageId, schoolId } = data;
       const stage = educationStages.find(s => s.id === stageId);

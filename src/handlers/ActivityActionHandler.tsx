@@ -1,3 +1,69 @@
+import React from 'react';
+import { Character } from '../types/character';
+import { Activity } from '../types/activities';
+import { processActivityAction } from './activityActions';
+
+interface ActivityActionHandlerProps {
+  character: Character;
+  activity: Activity;
+  onCharacterUpdate: (character: Character) => void;
+  onEvent: (message: string) => void;
+  onReturnToLife?: () => void;
+  onGoToPrison?: () => void;
+}
+
+export const ActivityActionHandler: React.FC<ActivityActionHandlerProps> = ({
+  character,
+  activity,
+  onCharacterUpdate,
+  onEvent,
+  onReturnToLife,
+  onGoToPrison
+}) => {
+  const handleActivityAction = () => {
+    const result = processActivityAction(character, activity);
+
+    onCharacterUpdate(result.character);
+    onEvent(result.message);
+
+    if (result.shouldGoToPrison && onGoToPrison) {
+      setTimeout(() => {
+        onGoToPrison();
+      }, 2000);
+    } else if (result.shouldReturnToLife && onReturnToLife) {
+      setTimeout(() => {
+        onReturnToLife();
+      }, 2000);
+    }
+  };
+
+  const isCrime = activity.consequences?.arrestChance;
+  const isUnderage = isCrime && character.age < 18;
+
+  return (
+    <button
+      onClick={handleActivityAction}
+      disabled={isUnderage}
+      className={`w-full px-4 py-2 rounded-lg transition-colors ${
+        isUnderage 
+          ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+          : isCrime 
+            ? 'bg-red-500 hover:bg-red-600 text-white'
+            : 'bg-blue-500 hover:bg-blue-600 text-white'
+      }`}
+    >
+      {isUnderage ? `${activity.name} (Age 18+ Required)` : activity.name}
+      {isCrime && !isUnderage && (
+        <span className="block text-xs opacity-80">
+          {activity.consequences?.arrestChance}% arrest chance
+        </span>
+      )}
+    </button>
+  );
+};
+```
+
+```typescript
 import { Character } from '../types/game';
 
 const getActivityEvent = (action: string, character: Character) => {
@@ -21,7 +87,7 @@ export const handleActivityAction = (
 
   // Check if this activity has a special event
   const activityEvent = getActivityEvent(action, character);
-  
+
   if (activityEvent) {
     // Set the event in game state to show the event overlay
     onGameStateChange({
