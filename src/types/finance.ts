@@ -18,6 +18,15 @@ export interface AssetMarketEvent {
   endDate?: string;
 }
 
+export interface Transaction {
+  id: string;
+  type: 'income' | 'expense' | 'investment';
+  amount: number;
+  description: string;
+  date: string;
+  category: string;
+}
+
 export interface FinancialRecord {
   totalIncome: number;
   totalExpenses: number;
@@ -31,13 +40,4 @@ export interface FinancialRecord {
   transactionHistory: Transaction[];
   assetTransactions: AssetTransaction[];
   assetMarketEvents: AssetMarketEvent[];
-}
-
-export interface Transaction {
-  id: string;
-  type: 'income' | 'expense' | 'investment';
-  amount: number;
-  description: string;
-  date: string;
-  category: string;
 }

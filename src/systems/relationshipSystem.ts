@@ -1,5 +1,5 @@
 
-import { Character } from '../types/game';
+import { Character, RelationshipAction } from '../types/game';
 
 export const executeRelationshipAction = (
   character: Character,
@@ -32,6 +32,47 @@ export const executeRelationshipAction = (
   }
 };
 
+const relationshipActions: RelationshipAction[] = [
+  {
+    id: 'compliment',
+    name: 'Compliment',
+    description: 'Say something nice',
+    emoji: '😊',
+    category: 'positive',
+    availableFor: ['father', 'mother', 'sibling', 'child', 'friend', 'lover', 'spouse'],
+    riskLevel: 'low'
+  },
+  {
+    id: 'spend_time',
+    name: 'Spend Time',
+    description: 'Hang out together',
+    emoji: '⏰',
+    category: 'positive',
+    availableFor: ['father', 'mother', 'sibling', 'child', 'friend', 'lover', 'spouse'],
+    riskLevel: 'low'
+  },
+  {
+    id: 'argue',
+    name: 'Argue',
+    description: 'Start an argument',
+    emoji: '😠',
+    category: 'negative',
+    availableFor: ['father', 'mother', 'sibling', 'friend', 'lover', 'spouse'],
+    riskLevel: 'medium'
+  },
+  {
+    id: 'propose',
+    name: 'Propose',
+    description: 'Ask to marry',
+    emoji: '💍',
+    category: 'romantic',
+    cost: 500,
+    availableFor: ['lover'],
+    riskLevel: 'high',
+    minAge: 18
+  }
+];
+
 export const relationshipManager = {
   updateRelationshipsOverTime: (character: Character) => {
     character.familyMembers.forEach(member => {
@@ -47,19 +88,9 @@ export const relationshipManager = {
     return null;
   },
 
-  getAvailableActions: (relationship: string) => {
-    const baseActions = ['spend_time', 'give_gift', 'have_conversation'];
-    
-    if (relationship === 'lover') {
-      return [...baseActions, 'propose', 'break_up'];
-    }
-    if (relationship === 'spouse') {
-      return [...baseActions, 'plan_date', 'discuss_future'];
-    }
-    if (relationship === 'friend') {
-      return [...baseActions, 'hang_out', 'ask_for_help'];
-    }
-    
-    return baseActions;
+  getAvailableActions: (relationship: string): RelationshipAction[] => {
+    return relationshipActions.filter(action => 
+      action.availableFor.includes(relationship as any)
+    );
   }
 };
