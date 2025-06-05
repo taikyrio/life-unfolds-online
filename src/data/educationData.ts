@@ -6,6 +6,8 @@ export interface EducationStage {
   maxAge: number;
   duration: number;
   prerequisites?: string[];
+  autoEnroll?: boolean;
+  schools?: School[];
 }
 
 export interface School {
@@ -13,6 +15,8 @@ export interface School {
   name: string;
   type: 'public' | 'private' | 'university';
   cost: number;
+  quality: number;
+  reputation: string;
   requirements?: {
     minGPA?: number;
     minWealth?: number;
@@ -32,13 +36,45 @@ export interface EducationEvent {
   };
 }
 
+export const getGradeFromGPA = (gpa: number): string => {
+  if (gpa >= 3.7) return 'A';
+  if (gpa >= 3.3) return 'A-';
+  if (gpa >= 3.0) return 'B+';
+  if (gpa >= 2.7) return 'B';
+  if (gpa >= 2.3) return 'B-';
+  if (gpa >= 2.0) return 'C+';
+  if (gpa >= 1.7) return 'C';
+  if (gpa >= 1.3) return 'C-';
+  if (gpa >= 1.0) return 'D';
+  return 'F';
+};
+
 export const educationStages: EducationStage[] = [
   {
     id: 'elementary',
     name: 'Elementary School',
     minAge: 6,
     maxAge: 11,
-    duration: 6
+    duration: 6,
+    autoEnroll: true,
+    schools: [
+      { 
+        id: 'public_elementary', 
+        name: 'Public Elementary', 
+        type: 'public', 
+        cost: 0, 
+        quality: 6,
+        reputation: 'Average'
+      },
+      { 
+        id: 'private_elementary', 
+        name: 'Private Elementary', 
+        type: 'private', 
+        cost: 50,
+        quality: 8,
+        reputation: 'Good'
+      }
+    ]
   },
   {
     id: 'middle',
@@ -46,7 +82,26 @@ export const educationStages: EducationStage[] = [
     minAge: 12,
     maxAge: 14,
     duration: 3,
-    prerequisites: ['elementary']
+    prerequisites: ['elementary'],
+    autoEnroll: true,
+    schools: [
+      { 
+        id: 'public_middle', 
+        name: 'Public Middle School', 
+        type: 'public', 
+        cost: 0,
+        quality: 6,
+        reputation: 'Average'
+      },
+      { 
+        id: 'private_middle', 
+        name: 'Private Middle School', 
+        type: 'private', 
+        cost: 75,
+        quality: 8,
+        reputation: 'Good'
+      }
+    ]
   },
   {
     id: 'high',
@@ -54,7 +109,26 @@ export const educationStages: EducationStage[] = [
     minAge: 15,
     maxAge: 18,
     duration: 4,
-    prerequisites: ['middle']
+    prerequisites: ['middle'],
+    autoEnroll: true,
+    schools: [
+      { 
+        id: 'public_high', 
+        name: 'Public High School', 
+        type: 'public', 
+        cost: 0,
+        quality: 6,
+        reputation: 'Average'
+      },
+      { 
+        id: 'private_high', 
+        name: 'Private High School', 
+        type: 'private', 
+        cost: 100,
+        quality: 9,
+        reputation: 'Excellent'
+      }
+    ]
   },
   {
     id: 'university',
@@ -62,7 +136,25 @@ export const educationStages: EducationStage[] = [
     minAge: 18,
     maxAge: 25,
     duration: 4,
-    prerequisites: ['high']
+    prerequisites: ['high'],
+    schools: [
+      { 
+        id: 'state_university', 
+        name: 'State University', 
+        type: 'university', 
+        cost: 200,
+        quality: 7,
+        reputation: 'Good'
+      },
+      { 
+        id: 'private_university', 
+        name: 'Private University', 
+        type: 'university', 
+        cost: 500,
+        quality: 9,
+        reputation: 'Prestigious'
+      }
+    ]
   },
   {
     id: 'graduate',
@@ -70,34 +162,23 @@ export const educationStages: EducationStage[] = [
     minAge: 22,
     maxAge: 30,
     duration: 2,
-    prerequisites: ['university']
+    prerequisites: ['university'],
+    schools: [
+      { 
+        id: 'graduate_school', 
+        name: 'Graduate School', 
+        type: 'university', 
+        cost: 300,
+        quality: 8,
+        reputation: 'Excellent'
+      }
+    ]
   }
 ];
 
 export const getAvailableSchools = (stageId: string, character: any): School[] => {
-  const schools: Record<string, School[]> = {
-    elementary: [
-      { id: 'public_elementary', name: 'Public Elementary', type: 'public', cost: 0 },
-      { id: 'private_elementary', name: 'Private Elementary', type: 'private', cost: 50 }
-    ],
-    middle: [
-      { id: 'public_middle', name: 'Public Middle School', type: 'public', cost: 0 },
-      { id: 'private_middle', name: 'Private Middle School', type: 'private', cost: 75 }
-    ],
-    high: [
-      { id: 'public_high', name: 'Public High School', type: 'public', cost: 0 },
-      { id: 'private_high', name: 'Private High School', type: 'private', cost: 100 }
-    ],
-    university: [
-      { id: 'state_university', name: 'State University', type: 'university', cost: 200 },
-      { id: 'private_university', name: 'Private University', type: 'university', cost: 500 }
-    ],
-    graduate: [
-      { id: 'graduate_school', name: 'Graduate School', type: 'university', cost: 300 }
-    ]
-  };
-  
-  return schools[stageId] || [];
+  const stage = educationStages.find(s => s.id === stageId);
+  return stage?.schools || [];
 };
 
 export const calculateGPA = (character: any): number => {

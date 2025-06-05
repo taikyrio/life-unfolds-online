@@ -25,6 +25,10 @@ export interface FinancialRecord {
   debts: number;
   creditScore: number;
   bankAccount: number;
+  bankBalance: number;
+  monthlyIncome: number;
+  monthlyExpenses: number;
+  transactionHistory: Transaction[];
   assetTransactions: AssetTransaction[];
   assetMarketEvents: AssetMarketEvent[];
 }

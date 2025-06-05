@@ -34,7 +34,6 @@ export const executeRelationshipAction = (
 
 export const relationshipManager = {
   updateRelationshipsOverTime: (character: Character) => {
-    // Update relationship quality over time
     character.familyMembers.forEach(member => {
       if (member.relationshipStats) {
         member.relationshipStats.relationshipLevel = Math.max(0, 
@@ -45,7 +44,22 @@ export const relationshipManager = {
   },
   
   generateRandomEvent: (character: Character) => {
-    // Return null for now - can be expanded later
     return null;
+  },
+
+  getAvailableActions: (relationship: string) => {
+    const baseActions = ['spend_time', 'give_gift', 'have_conversation'];
+    
+    if (relationship === 'lover') {
+      return [...baseActions, 'propose', 'break_up'];
+    }
+    if (relationship === 'spouse') {
+      return [...baseActions, 'plan_date', 'discuss_future'];
+    }
+    if (relationship === 'friend') {
+      return [...baseActions, 'hang_out', 'ask_for_help'];
+    }
+    
+    return baseActions;
   }
 };

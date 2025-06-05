@@ -159,13 +159,13 @@ export const useGameLogic = ({ gameState, onGameStateChange }: UseGameLogicProps
       }
     }
 
-    // Fix the function call - pass the function, not the object
+    // Fix: Pass setAgeHistory function directly, not the state object
     handleActivityAction(
       gameState.character,
       activityId,
       activityData,
       ageHistory,
-      setAgeHistory, // Pass the function directly
+      setAgeHistory,
       onGameStateChange,
       gameState,
       toast

@@ -23,6 +23,7 @@ export const initializeRelationshipStats = (relationship: string, baseLevel: num
     sharedInterests: Math.floor(Math.random() * 100),
     timeSpentTogether: 0,
     lastInteraction: new Date().toISOString(),
-    interactionHistory: []
+    interactionHistory: [],
+    respect: baseLevel // Added missing respect property
   };
 };

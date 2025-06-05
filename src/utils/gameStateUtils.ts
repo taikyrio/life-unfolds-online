@@ -12,3 +12,12 @@ export const isGameOver = (character: Character): { gameOver: boolean; reason?: 
   
   return { gameOver: false };
 };
+
+export const getLifeStage = (age: number): string => {
+  if (age <= 2) return 'baby';
+  if (age <= 5) return 'toddler';
+  if (age <= 12) return 'child';
+  if (age <= 17) return 'teenager';
+  if (age <= 64) return 'adult';
+  return 'senior';
+};
