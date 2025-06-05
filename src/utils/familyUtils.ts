@@ -1,18 +1,40 @@
-
 import { FamilyMember } from '../types/relationships';
 
-export const generateInitialFamily = (): FamilyMember[] => {
+export const generateInitialFamily = (playerLastName?: string): FamilyMember[] => {
+  const family: FamilyMember[] = [];
+
+  // Generate last name for the family
+  const lastNames = [
+    'Smith', 'Johnson', 'Williams', 'Brown', 'Jones', 'Garcia', 'Miller', 'Davis',
+    'Rodriguez', 'Martinez', 'Hernandez', 'Lopez', 'Gonzalez', 'Wilson', 'Anderson', 'Thomas'
+  ];
+
+  const familyLastName = playerLastName || lastNames[Math.floor(Math.random() * lastNames.length)];
+
+  // Generate mother
+  const motherNames = [
+    'Sarah', 'Jennifer', 'Lisa', 'Michelle', 'Angela', 'Melissa', 'Brenda', 'Amy',
+    'Anna', 'Rebecca', 'Virginia', 'Kathleen', 'Pamela', 'Martha', 'Debra', 'Rachel'
+  ];
+
+  // Generate father
+  const fatherNames = [
+    'Michael', 'Christopher', 'Matthew', 'Joshua', 'David', 'James', 'Daniel', 'Robert',
+    'John', 'Joseph', 'Andrew', 'Ryan', 'Brandon', 'Jason', 'Justin', 'William'
+  ];
+    // Generate sibling
+  const siblingNames = [
+    'Alex', 'Jordan', 'Taylor', 'Morgan', 'Casey', 'Riley'
+  ];
+
   const generateRandomName = () => {
     const names = ['Alex', 'Jordan', 'Taylor', 'Morgan', 'Casey', 'Riley', 'Emma', 'Liam', 'Olivia', 'Noah'];
     return names[Math.floor(Math.random() * names.length)];
   };
 
-  const family: FamilyMember[] = [];
-  
-  // Generate parents
   const mother: FamilyMember = {
     id: 'mother',
-    name: generateRandomName(),
+    name: `${motherNames[Math.floor(Math.random() * motherNames.length)]} ${familyLastName}`,
     relationship: 'mother',
     age: Math.floor(Math.random() * 20) + 30,
     alive: true,
@@ -44,7 +66,7 @@ export const generateInitialFamily = (): FamilyMember[] => {
 
   const father: FamilyMember = {
     id: 'father',
-    name: generateRandomName(),
+    name: `${fatherNames[Math.floor(Math.random() * fatherNames.length)]} ${familyLastName}`,
     relationship: 'father',
     age: Math.floor(Math.random() * 20) + 32,
     alive: true,
@@ -81,7 +103,7 @@ export const generateInitialFamily = (): FamilyMember[] => {
   for (let i = 0; i < siblingCount; i++) {
     const sibling: FamilyMember = {
       id: `sibling_${i}`,
-      name: generateRandomName(),
+      name: `${siblingNames[Math.floor(Math.random() * siblingNames.length)]} ${familyLastName}`,
       relationship: 'sibling',
       age: Math.floor(Math.random() * 20) + 5,
       alive: true,

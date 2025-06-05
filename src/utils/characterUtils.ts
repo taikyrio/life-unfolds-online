@@ -1,7 +1,7 @@
 import { Character, EducationRecord, Asset } from '../types/game';
 import { getZodiacSign } from './zodiacUtils';
 import { generateInitialFamily } from './familyUtils';
-import { initializeMoneyState, formatMoney } from './moneySystem';
+import { initializeMoneyState } from './moneySystem';
 
 export const generateRandomName = (): string => {
   const firstNames = [
@@ -39,15 +39,18 @@ const randomizeInitialStats = () => {
 export const createCharacter = (
   name: string,
   birthMonth: number,
-  birthDay: number
+  birthDay: number,
+  gender: 'male' | 'female' = 'male'
 ): Character => {
   const zodiacSign = getZodiacSign(birthMonth, birthDay);
   const initialStats = randomizeInitialStats();
-  const initialFamily = generateInitialFamily();
+  const playerLastName = name.split(' ')[1] || 'Smith';
+  const initialFamily = generateInitialFamily(playerLastName);
 
   const baseCharacter: Character = {
     id: `char_${Date.now()}`,
     name,
+    gender,
     birthMonth,
     birthDay,
     birthplace: 'United States',
@@ -161,6 +164,15 @@ export const ageCharacter = (character: Character): Character => {
   };
 };
 
+const getRandomizedNewCharacter = (): Character => {
+  const birthMonth = Math.floor(Math.random() * 12) + 1;
+  const birthDay = Math.floor(Math.random() * 28) + 1;
+  const randomName = generateRandomName();
+  const gender = Math.random() > 0.5 ? 'male' : 'female';
+
+  return createCharacter(randomName, birthMonth, birthDay, gender);
+};
+
 export const applyStatEffects = (character: Character, effects: any): Character => {
   const updatedCharacter = { ...character };
 
@@ -199,3 +211,6 @@ export const applyStatEffects = (character: Character, effects: any): Character 
 
   return updatedCharacter;
 };
+
+export { getRandomizedNewCharacter };
+
