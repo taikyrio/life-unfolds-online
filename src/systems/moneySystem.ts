@@ -51,7 +51,7 @@ export const processYearlyFinances = (character: Character): Character => {
 
   // Calculate yearly income from job
   if (character.salary) {
-    const yearlyIncome = character.salary * 1000; // Convert from thousands
+    const yearlyIncome = character.salary; // Salary is already in dollars
     updatedCharacter.financialRecord.bankBalance += yearlyIncome;
     
     const transaction: Transaction = {
@@ -83,7 +83,7 @@ export const modifyBankBalance = (
   }
 
   updatedCharacter.financialRecord.bankBalance += amount;
-  updatedCharacter.wealth = Math.max(0, updatedCharacter.wealth + (amount / 1000)); // Convert to thousands
+  updatedCharacter.wealth = Math.max(0, updatedCharacter.wealth + amount); // Keep amount as-is
 
   const transaction: Transaction = {
     id: Date.now().toString(),

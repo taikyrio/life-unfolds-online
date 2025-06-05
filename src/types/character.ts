@@ -77,6 +77,7 @@ export interface Character {
   pregnancyMonths?: number;
   flags?: string[];
   birthplace?: string;
+  birthYear?: number;
   birthMonth?: number;
   birthDay?: number;
   zodiacSign?: ZodiacSign;

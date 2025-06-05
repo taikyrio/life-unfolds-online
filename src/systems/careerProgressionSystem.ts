@@ -1,6 +1,6 @@
-
 import { Character } from '../types/game';
-import { careerPaths, getCareerById } from '../data/careers/careerPaths';
+import { careerPaths, getCareerById } from '../data/careers/index';
+import { Career } from '../data/careers/types';
 
 export interface CareerProgressionResult {
   promoted: boolean;
@@ -21,7 +21,7 @@ export const processCareerProgression = (character: Character): CareerProgressio
 
   const currentLevel = character.jobLevel || 0;
   const nextLevel = career.levels[currentLevel + 1];
-  
+
   if (!nextLevel) {
     return { promoted: false, message: 'You\'ve reached the top of your career ladder!' };
   }
@@ -43,7 +43,7 @@ export const processCareerProgression = (character: Character): CareerProgressio
   // Random promotion chance
   const promotionRoll = Math.random();
   const promotionChance = nextLevel.promotionChance * getPromotionModifier(character);
-  
+
   if (promotionRoll <= promotionChance) {
     const salaryIncrease = nextLevel.salary - career.levels[currentLevel].salary;
     return {
@@ -59,17 +59,17 @@ export const processCareerProgression = (character: Character): CareerProgressio
 
 const getPromotionModifier = (character: Character): number => {
   let modifier = 1.0;
-  
+
   // Performance-based modifiers
   if (character.smarts > 80) modifier += 0.2;
   if (character.relationships > 70) modifier += 0.15;
   if (character.health > 80) modifier += 0.1;
   if (character.happiness > 70) modifier += 0.1;
-  
+
   // Negative modifiers
   if (character.health < 50) modifier -= 0.2;
   if (character.happiness < 40) modifier -= 0.15;
-  
+
   return Math.max(0.1, modifier);
 };
 
@@ -85,12 +85,12 @@ export const calculateYearlySalary = (character: Character): number => {
 
   const currentLevel = character.jobLevel || 0;
   const baseSalary = career.levels[currentLevel]?.salary || 0;
-  
+
   // Add performance bonuses
   let performanceMultiplier = 1.0;
   if (character.smarts > 80) performanceMultiplier += 0.1;
   if (character.relationships > 70) performanceMultiplier += 0.05;
-  
+
   return Math.floor(baseSalary * performanceMultiplier);
 };
 
