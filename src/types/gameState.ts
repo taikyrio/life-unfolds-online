@@ -6,8 +6,12 @@ export interface LifeEvent {
   id: string;
   title: string;
   description: string;
-  emoji: string;
-  choices: Choice[];
+  emoji?: string;
+  effects?: StatEffects;
+  flags?: string[];
+  consequences?: string[];
+  oneTime?: boolean;
+  choices?: Choice[];
   category?: 'career' | 'education' | 'relationship' | 'random' | 'crime' | 'health' | 'family' | 'social';
   ageRequirement?: { min?: number; max?: number };
   requirements?: {

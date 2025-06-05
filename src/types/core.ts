@@ -15,6 +15,7 @@ export interface ZodiacSign {
   traits: string[];
   emoji: string;
   name: string;
+  luckyNumbers?: number[];
 }
 
 export interface Asset {
