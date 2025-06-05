@@ -12,7 +12,7 @@ import { Heart, Brain, DollarSign, Users, Calendar, MapPin } from 'lucide-react'
 interface LifeTabProps {
   character: Character;
   eventHistory: string[];
-  ageHistory: { age: number; events: string[] }[];
+  ageHistory: Record<number, string[]>;
   onAgeUp: () => void;
   onChoice?: (choiceId: string) => void;
 }
@@ -20,7 +20,7 @@ interface LifeTabProps {
 export const LifeTab: React.FC<LifeTabProps> = ({
   character,
   eventHistory,
-  ageHistory = [],
+  ageHistory = {},
   onAgeUp,
   onChoice
 }) => {
@@ -152,14 +152,14 @@ export const LifeTab: React.FC<LifeTabProps> = ({
               <CardTitle className="text-xl flex items-center gap-2">
                 📚 Life Story
                 <Badge variant="secondary" className="ml-auto">
-                  {ageHistory.length} years lived
+                  {Object.keys(ageHistory).length} years lived
                 </Badge>
               </CardTitle>
             </CardHeader>
             <CardContent className="pt-0 h-[calc(100%-80px)]">
               <ScrollArea className="h-full pr-4">
                 <div className="space-y-3">
-                  {ageHistory.length === 0 ? (
+                  {!ageHistory || Object.keys(ageHistory).length === 0 ? (
                     <div className="text-center py-8">
                       <div className="text-6xl mb-4">🌟</div>
                       <h3 className="text-xl font-semibold mb-2">Your life story begins!</h3>
@@ -172,20 +172,22 @@ export const LifeTab: React.FC<LifeTabProps> = ({
                     </div>
                   ) : (
                     <>
-                      {ageHistory.slice().reverse().map((yearData, index) => (
-                        <div key={`${yearData.age}-${index}`} className="border-l-2 border-blue-200 dark:border-blue-700 pl-4 pb-4 relative">
+                      {Object.entries(ageHistory || {})
+                        .sort(([ageA], [ageB]) => Number(ageB) - Number(ageA))
+                        .map(([age, events]) => (
+                        <div key={age} className="border-l-2 border-blue-200 dark:border-blue-700 pl-4 pb-4 relative">
                           <div className="absolute -left-2 top-0 w-4 h-4 bg-blue-500 rounded-full"></div>
                           <div className="flex items-center gap-2 mb-2">
                             <Badge variant="outline" className="font-semibold">
-                              Age {yearData.age}
+                              Age {age}
                             </Badge>
                             <span className="text-xs text-gray-500">
-                              {getLifeStage(yearData.age).stage}
+                              {getLifeStage(Number(age)).stage}
                             </span>
                           </div>
                           <div className="space-y-1">
-                            {yearData.events.length > 0 ? (
-                              yearData.events.map((event, eventIndex) => (
+                            {events.length > 0 ? (
+                              events.map((event: string, eventIndex: number) => (
                                 <div key={eventIndex} className="text-sm text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 p-2 rounded-md shadow-sm">
                                   {event}
                                 </div>
