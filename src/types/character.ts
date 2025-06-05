@@ -1,4 +1,3 @@
-
 import { PersonalityTraits, ZodiacSign, Asset, CriminalRecord, JobPerformance } from './core';
 import { FamilyMember } from './relationships';
 import { EducationRecord, CurrentEducation } from './education';
@@ -56,6 +55,7 @@ export interface MusicCareer {
 export interface Character {
   id: string;
   name: string;
+  gender: 'male' | 'female';
   age: number;
   health: number;
   happiness: number;
@@ -68,13 +68,7 @@ export interface Character {
   jobLevel?: number;
   jobPerformance?: JobPerformance;
   financialRecord?: FinancialRecord;
-  moneyState?: any;
-  education: EducationRecord;
-  currentEducation?: CurrentEducation;
-  relationshipStatus: 'single' | 'dating' | 'engaged' | 'married' | 'divorced' | 'widowed';
-  partnerName?: string;
-  familyMembers: FamilyMember[];
-  lifeEvents: string[];
+  moneyState?: import('../utils/money/types').MoneyState;
   achievements: string[];
   assets: Asset[];
   criminalRecord?: CriminalRecord;

@@ -37,25 +37,6 @@ export const checkAchievements = (
   eventHistory: string[], 
   currentAchievements: string[]
 ): Achievement[] => {
-  const newAchievements: Achievement[] = [];
-  
-  achievements.forEach(achievement => {
-    if (currentAchievements.includes(achievement.id)) return;
-    
-    let qualifies = true;
-    
-    if (achievement.requirements.wealth && character.wealth < achievement.requirements.wealth) {
-      qualifies = false;
-    }
-    
-    if (achievement.requirements.age && character.age < achievement.requirements.age) {
-      qualifies = false;
-    }
-    
-    if (qualifies) {
-      newAchievements.push(achievement);
-    }
-  });
-  
-  return newAchievements;
+  // Achievements disabled - always return empty array
+  return [];
 };
