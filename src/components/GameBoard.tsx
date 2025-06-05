@@ -83,7 +83,7 @@ export const GameBoard: React.FC<GameBoardProps> = ({ gameState, onGameStateChan
       <GameHeader character={gameState.character} />
       <StatsBar character={gameState.character} />
       <TabNavigation activeTab={activeTab} onTabChange={(tab) => setActiveTab(tab)} />
-      
+
       <div className="game-content flex-1 overflow-y-auto">
         <TabContent
           activeTab={activeTab}
@@ -103,9 +103,9 @@ export const GameBoard: React.FC<GameBoardProps> = ({ gameState, onGameStateChan
           onLifestyleAction={handleLifestyleAction}
         />
       </div>
-      
+
       <AgeUpButton onAgeUp={ageUp} />
-      
+
       <GameModals
         gameState={gameState}
         showActivitiesMenu={showActivitiesMenu}
@@ -115,6 +115,10 @@ export const GameBoard: React.FC<GameBoardProps> = ({ gameState, onGameStateChan
         showEventOverlay={showEventOverlay}
         selectedActivity={selectedActivity}
         onCloseActivitiesMenu={() => setShowActivitiesMenu(false)}
+        onActivityComplete={() => {
+          setShowActivitiesMenu(false);
+          setActiveTab('life');
+        }}
         onCloseRelationshipsMenu={() => setShowRelationshipsMenu(false)}
         onCloseAssetsMenu={() => setShowAssetsMenu(false)}
         onCloseActivityModal={() => {

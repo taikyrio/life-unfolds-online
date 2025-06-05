@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { LifeEvent } from '../types/game';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -68,35 +67,47 @@ export const EventOverlay: React.FC<EventOverlayProps> = ({
                 {event.description}
               </p>
             </CardHeader>
-            
+
             <CardContent className="space-y-3 p-4">
               <p className="text-center text-gray-700 font-medium text-sm mb-4">
                 What will you do?
               </p>
-              
-              {event.choices.map((choice, index) => (
+
+              {event.choices && event.choices.length > 0 ? (
+                <>
+                  {event.choices.map((choice, index) => (
+                    <Button
+                      key={choice.id}
+                      onClick={() => handleChoice(choice.id)}
+                      className="w-full justify-center text-center h-auto py-3 px-4 bg-blue-500 hover:bg-blue-600 text-white transition-all duration-200 rounded-md font-medium"
+                    >
+                      <span className="mr-2 text-lg">{choice.emoji}</span>
+                      <span className="text-sm">{choice.text}</span>
+                    </Button>
+                  ))}
+
+                  {/* Optional "Surprise me!" button */}
+                  <Button
+                    onClick={() => {
+                      const randomChoice = event.choices[Math.floor(Math.random() * event.choices.length)];
+                      handleChoice(randomChoice.id);
+                    }}
+                    variant="ghost"
+                    className="w-full text-blue-500 hover:text-blue-600 text-sm py-2"
+                  >
+                    <span className="mr-1">🎲</span>
+                    Surprise me!
+                  </Button>
+                </>
+              ) : (
                 <Button
-                  key={choice.id}
-                  onClick={() => handleChoice(choice.id)}
+                  onClick={onClose}
                   className="w-full justify-center text-center h-auto py-3 px-4 bg-blue-500 hover:bg-blue-600 text-white transition-all duration-200 rounded-md font-medium"
                 >
-                  <span className="mr-2 text-lg">{choice.emoji}</span>
-                  <span className="text-sm">{choice.text}</span>
+                  <span className="mr-2 text-lg">✓</span>
+                  <span className="text-sm">Continue</span>
                 </Button>
-              ))}
-              
-              {/* Optional "Surprise me!" button */}
-              <Button
-                onClick={() => {
-                  const randomChoice = event.choices[Math.floor(Math.random() * event.choices.length)];
-                  handleChoice(randomChoice.id);
-                }}
-                variant="ghost"
-                className="w-full text-blue-500 hover:text-blue-600 text-sm py-2"
-              >
-                <span className="mr-1">🎲</span>
-                Surprise me!
-              </Button>
+              )}
             </CardContent>
           </Card>
         </div>
