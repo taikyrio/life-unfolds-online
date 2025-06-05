@@ -16,6 +16,7 @@ export interface ActivityOption {
     wealth?: number;
     relationships?: number;
     fame?: number;
+    notoriety?: number;
   };
   category: string;
 }
@@ -32,6 +33,8 @@ export interface CrimeOperation {
   reward: number;
   arrestChance: number;
   notorietyGain: number;
+  minReward: number;
+  maxReward: number;
 }
 
 export interface CybercrimeOperation {
@@ -54,5 +57,23 @@ export interface ActivityResult {
     wealth?: number;
     relationships?: number;
     fame?: number;
+    notoriety?: number;
+  };
+}
+
+export interface Activity {
+  id: string;
+  name: string;
+  description: string;
+  category: string;
+  effects: {
+    health?: number;
+    happiness?: number;
+    smarts?: number;
+    looks?: number;
+    wealth?: number;
+    relationships?: number;
+    fame?: number;
+    notoriety?: number;
   };
 }

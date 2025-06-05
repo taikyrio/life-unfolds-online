@@ -159,12 +159,16 @@ export const useGameLogic = ({ gameState, onGameStateChange }: UseGameLogicProps
       }
     }
 
+    // Update age history properly
+    const newAgeHistory = { ...ageHistory };
+    setAgeHistory(newAgeHistory);
+
     handleActivityAction(
       gameState.character,
       activityId,
       activityData,
       ageHistory,
-      setAgeHistory,
+      (history: Record<number, string[]>) => setAgeHistory(history),
       onGameStateChange,
       gameState,
       toast

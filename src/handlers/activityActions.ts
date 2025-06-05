@@ -1,49 +1,40 @@
 
-import { Character } from '../types/character';
+import { Character } from '../types/game';
 import { Activity } from '../types/activities';
 
-export const handleActivityAction = (
+export const handleActivityActions = (
   character: Character,
-  activity: Activity
-): { character: Character; message: string; success: boolean } => {
-  const updatedCharacter = { ...character };
-  let message = '';
-  let success = true;
-
-  // Check requirements
-  if (activity.requirements) {
-    if (activity.requirements.minAge && character.age < activity.requirements.minAge) {
-      return { 
-        character, 
-        message: `You must be at least ${activity.requirements.minAge} years old.`, 
-        success: false 
-      };
-    }
-    
-    if (activity.requirements.minWealth && character.wealth < activity.requirements.minWealth) {
-      return { 
-        character, 
-        message: `You need at least $${activity.requirements.minWealth}k.`, 
-        success: false 
-      };
-    }
+  activity: Activity,
+  onCharacterUpdate: (character: Character) => void,
+  onEvent: (message: string) => void
+) => {
+  let updatedCharacter = { ...character };
+  
+  // Apply activity effects
+  if (activity.effects.health) {
+    updatedCharacter.health = Math.max(0, Math.min(100, updatedCharacter.health + activity.effects.health));
+  }
+  if (activity.effects.happiness) {
+    updatedCharacter.happiness = Math.max(0, Math.min(100, updatedCharacter.happiness + activity.effects.happiness));
+  }
+  if (activity.effects.smarts) {
+    updatedCharacter.smarts = Math.max(0, Math.min(100, updatedCharacter.smarts + activity.effects.smarts));
+  }
+  if (activity.effects.looks) {
+    updatedCharacter.looks = Math.max(0, Math.min(100, updatedCharacter.looks + activity.effects.looks));
+  }
+  if (activity.effects.wealth) {
+    updatedCharacter.wealth = Math.max(0, updatedCharacter.wealth + activity.effects.wealth);
+  }
+  if (activity.effects.relationships) {
+    updatedCharacter.relationships = Math.max(0, Math.min(100, updatedCharacter.relationships + activity.effects.relationships));
+  }
+  if (activity.effects.fame) {
+    updatedCharacter.fame = Math.max(0, Math.min(100, updatedCharacter.fame + activity.effects.fame));
   }
 
-  // Apply effects
-  if (activity.effects) {
-    Object.entries(activity.effects).forEach(([stat, value]) => {
-      if (stat in updatedCharacter && typeof value === 'number') {
-        (updatedCharacter as any)[stat] = Math.max(0, Math.min(100, (updatedCharacter as any)[stat] + value));
-      }
-    });
-  }
-
-  // Apply costs
-  if (activity.cost) {
-    updatedCharacter.wealth = Math.max(0, updatedCharacter.wealth - activity.cost);
-  }
-
-  message = activity.resultText || `You completed ${activity.name}`;
-
-  return { character: updatedCharacter, message, success };
+  onCharacterUpdate(updatedCharacter);
+  onEvent(`You completed: ${activity.name}`);
 };
+
+export default handleActivityActions;

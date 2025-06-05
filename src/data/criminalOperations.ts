@@ -2,10 +2,38 @@
 import { CrimeOperation, CybercrimeOperation } from '../types/activities';
 
 export const crimeOperations: Record<string, CrimeOperation> = {
-  pickpocket: { name: 'Pickpocket', reward: 3, arrestChance: 15, notorietyGain: 2 },
-  burglary: { name: 'Burglary', reward: 30, arrestChance: 25, notorietyGain: 5 },
-  bank_robbery: { name: 'Bank Robbery', reward: 300, arrestChance: 60, notorietyGain: 20 },
-  extortion: { name: 'Extortion', reward: 60, arrestChance: 30, notorietyGain: 8 }
+  pickpocket: { 
+    name: 'Pickpocket', 
+    reward: 3, 
+    arrestChance: 15, 
+    notorietyGain: 2,
+    minReward: 25,
+    maxReward: 100
+  },
+  burglary: { 
+    name: 'Burglary', 
+    reward: 30, 
+    arrestChance: 25, 
+    notorietyGain: 5,
+    minReward: 100,
+    maxReward: 500
+  },
+  bank_robbery: { 
+    name: 'Bank Robbery', 
+    reward: 300, 
+    arrestChance: 60, 
+    notorietyGain: 20,
+    minReward: 500,
+    maxReward: 2000
+  },
+  extortion: { 
+    name: 'Extortion', 
+    reward: 60, 
+    arrestChance: 30, 
+    notorietyGain: 8,
+    minReward: 75,
+    maxReward: 300
+  }
 };
 
 export const cybercrimes: Record<string, CybercrimeOperation> = {

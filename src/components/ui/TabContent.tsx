@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Character, GameState } from '../../types/game';
 import { LifeTab } from '../LifeTab';
