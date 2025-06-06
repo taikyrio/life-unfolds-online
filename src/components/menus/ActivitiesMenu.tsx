@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { X } from 'lucide-react';
 import { Character } from '../../types/game';
@@ -12,6 +13,7 @@ interface ActivitiesMenuProps {
   onActivity: (activityType: string, activityId: string | object) => void;
   onClose: () => void;
   onActivityComplete?: () => void;
+  isOpen: boolean;
 }
 
 export const ActivitiesMenu: React.FC<ActivitiesMenuProps> = ({
@@ -23,9 +25,9 @@ export const ActivitiesMenu: React.FC<ActivitiesMenuProps> = ({
 }) => {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
-  const hasPartner = character.familyMembers.some(member => 
+  const hasPartner = character.familyMembers?.some(member => 
     (member.relationship === 'lover' || member.relationship === 'spouse') && member.alive
-  );
+  ) || false;
 
   const codingSkill = getCodingSkill(character);
   const notoriety = getNotoriety(character);

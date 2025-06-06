@@ -1,113 +1,78 @@
 
 export interface PersonalityTraits {
-  kindness: number;
-  loyalty: number;
-  intelligence: number;
-  humor: number;
-  ambition: number;
-  stability: number;
-  generosity: number;
+  openness: number;
+  conscientiousness: number;
+  extraversion: number;
+  agreeableness: number;
+  neuroticism: number;
 }
 
-export interface ZodiacSign {
-  sign: string;
-  element: string;
-  traits: string[];
-  emoji: string;
-  name: string;
-  luckyNumbers?: number[];
-}
+export type ZodiacSign = 
+  | 'Aries' | 'Taurus' | 'Gemini' | 'Cancer' 
+  | 'Leo' | 'Virgo' | 'Libra' | 'Scorpio' 
+  | 'Sagittarius' | 'Capricorn' | 'Aquarius' | 'Pisces';
 
 export interface Asset {
   id: string;
   name: string;
+  type: 'house' | 'car' | 'investment' | 'other';
   value: number;
-  category: 'vehicle' | 'property' | 'investment' | 'luxury' | 'other' | 'real_estate' | 'vehicles' | 'technology';
-  type: string;
-  condition?: number | 'excellent' | 'good' | 'fair' | 'poor' | 'damaged';
-  purchaseDate?: string;
-  // Extended asset properties
-  purchasePrice: number;
-  currentValue: number;
-  maintenanceCost: number;
-  yearPurchased: number;
-  depreciationRate?: number;
-  appreciationRate?: number;
-  rentalIncome?: number;
-  insuranceCost?: number;
-  isInsured?: boolean;
-  description: string;
-  emoji: string;
-  requirements?: {
-    minAge?: number;
-    minWealth?: number;
-    minIncome?: number;
-    license?: string;
-    creditScore?: number;
-  };
-  benefits?: {
-    prestigePoints?: number;
-    happinessBonus?: number;
-    healthBonus?: number;
-    incomeMultiplier?: number;
-    socialStatus?: number;
-  };
-  lastMaintenanceYear?: number;
+  purchaseDate: number;
+  description?: string;
 }
 
 export interface CriminalRecord {
   arrests: number;
   convictions: number;
-  prisonTime: number;
-  crimes: string[];
-  notoriety: number;
-  totalSentence: number;
-  currentlyIncarcerated: boolean;
+  charges: string[];
+  timeServed: number;
+  currentSentence?: number;
+  isIncarcerated: boolean;
 }
 
 export interface JobPerformance {
-  currentLevel: number;
-  yearsAtLevel: number;
-  totalExperience: number;
-  performanceRating: number;
-  promotionEligible: boolean;
+  rating: number;
+  yearsAtJob: number;
+  promotions: number;
+  disciplinaryActions: number;
+  achievements: string[];
 }
 
-export interface StatEffects {
-  health?: number;
-  happiness?: number;
-  smarts?: number;
-  looks?: number;
-  wealth?: number;
-  relationships?: number;
-  fame?: number;
-  education?: string;
-  job?: string;
-  relationshipStatus?: string;
-  criminalRecord?: Partial<CriminalRecord>;
-  // Additional properties that were missing
-  notoriety?: number;
-  partnerName?: string;
-  salary?: number;
-  jobLevel?: number;
+export type EventCategory = 
+  | 'social' | 'family' | 'health' | 'education' | 'career' 
+  | 'relationship' | 'random' | 'crime' | 'childhood' 
+  | 'teenage' | 'lifestyle' | 'relationships';
+
+export interface LifeEvent {
+  id: string;
+  title: string;
+  description: string;
+  category: EventCategory;
+  minAge?: number;
+  maxAge?: number;
+  choices?: EventChoice[];
+  effects?: {
+    health?: number;
+    happiness?: number;
+    smarts?: number;
+    looks?: number;
+    wealth?: number;
+    relationships?: number;
+    fame?: number;
+  };
 }
 
-export interface Choice {
+export interface EventChoice {
   id: string;
   text: string;
-  emoji?: string;
-  effects: StatEffects;
-  probability?: number;
-  requirements?: {
-    minAge?: number;
-    maxAge?: number;
-    minWealth?: number;
-    education?: string;
-    job?: string;
-    relationshipStatus?: string;
+  effects?: {
+    health?: number;
+    happiness?: number;
+    smarts?: number;
+    looks?: number;
+    wealth?: number;
+    relationships?: number;
+    fame?: number;
   };
-  unlocks?: string[];
-  oneTime?: boolean;
-  flags?: string[];
   consequences?: string[];
 }

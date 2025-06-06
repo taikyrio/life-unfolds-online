@@ -1,28 +1,6 @@
 
 import { Character } from '../../types/game';
-
-export interface Activity {
-  id: string;
-  name: string;
-  description: string;
-  category: string;
-  minAge: number;
-  maxAge?: number;
-  cost?: number;
-  duration: number;
-  effects: {
-    happiness?: number;
-    health?: number;
-    smarts?: number;
-    looks?: number;
-    wealth?: number;
-  };
-  requirements?: {
-    wealth?: number;
-    health?: number;
-    smarts?: number;
-  };
-}
+import { Activity } from './ActivityData';
 
 export const isActivityAvailable = (activity: Activity, character: Character): boolean => {
   // Check age requirements
@@ -30,17 +8,10 @@ export const isActivityAvailable = (activity: Activity, character: Character): b
   if (activity.maxAge && character.age > activity.maxAge) return false;
   
   // Check wealth requirements
-  if (activity.cost && character.wealth < activity.cost) return false;
+  if (activity.minWealth && character.wealth < activity.minWealth) return false;
   
-  // Check other requirements
-  if (activity.requirements) {
-    if (activity.requirements.wealth && character.wealth < activity.requirements.wealth) return false;
-    if (activity.requirements.health && character.health < activity.requirements.health) return false;
-    if (activity.requirements.smarts && character.smarts < activity.requirements.smarts) return false;
-  }
-  
-  // Check family members requirement (if any activities require family)
-  if (activity.id.includes('family') && (!character.familyMembers || character.familyMembers.length === 0)) {
+  // Check partner requirements
+  if (activity.requiresPartner && (!character.familyMembers || character.familyMembers.length === 0)) {
     return false;
   }
   
@@ -58,24 +29,12 @@ export const getRequirementText = (activity: Activity, character: Character): st
     requirements.push(`Too old (max age ${activity.maxAge})`);
   }
   
-  if (activity.cost && character.wealth < activity.cost) {
-    requirements.push(`Requires $${activity.cost.toLocaleString()}`);
+  if (activity.minWealth && character.wealth < activity.minWealth) {
+    requirements.push(`Requires $${activity.minWealth.toLocaleString()}`);
   }
   
-  if (activity.requirements) {
-    if (activity.requirements.wealth && character.wealth < activity.requirements.wealth) {
-      requirements.push(`Requires $${activity.requirements.wealth.toLocaleString()}`);
-    }
-    if (activity.requirements.health && character.health < activity.requirements.health) {
-      requirements.push(`Requires ${activity.requirements.health} health`);
-    }
-    if (activity.requirements.smarts && character.smarts < activity.requirements.smarts) {
-      requirements.push(`Requires ${activity.requirements.smarts} smarts`);
-    }
-  }
-  
-  if (activity.id.includes('family') && (!character.familyMembers || character.familyMembers.length === 0)) {
-    requirements.push('Requires family members');
+  if (activity.requiresPartner && (!character.familyMembers || character.familyMembers.length === 0)) {
+    requirements.push('Requires a partner');
   }
   
   return requirements.join(', ');
@@ -86,31 +45,25 @@ export const getAvailableActivities = (character: Character): Activity[] => {
     {
       id: 'gym',
       name: 'Go to Gym',
+      emoji: '🏋️',
       description: 'Work out and improve your fitness',
-      category: 'health',
       minAge: 12,
-      cost: 10,
-      duration: 2,
-      effects: { health: 10, looks: 5 }
+      minWealth: 30
     },
     {
       id: 'library',
       name: 'Visit Library',
+      emoji: '📚',
       description: 'Study and increase your knowledge',
-      category: 'education',
-      minAge: 5,
-      duration: 2,
-      effects: { smarts: 10 }
+      minAge: 5
     },
     {
       id: 'movie',
       name: 'Watch Movie',
+      emoji: '🎬',
       description: 'Relax and enjoy entertainment',
-      category: 'entertainment',
       minAge: 3,
-      cost: 15,
-      duration: 3,
-      effects: { happiness: 15 }
+      minWealth: 15
     }
   ];
   

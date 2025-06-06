@@ -1,3 +1,4 @@
+
 export interface ActivityOption {
   id: string;
   title: string;
@@ -18,6 +19,10 @@ export interface ActivityOption {
     notoriety?: number;
   };
   category: string;
+  consequences?: {
+    arrestChance?: number;
+    crimeType?: string;
+  };
 }
 
 export interface ActivityCategory {
@@ -34,6 +39,7 @@ export interface CrimeOperation {
   notorietyGain: number;
   minReward: number;
   maxReward: number;
+  failureChance?: number;
 }
 
 export interface CybercrimeOperation {
@@ -95,4 +101,6 @@ export interface Activity {
     arrestChance?: number;
     crimeType?: string;
   };
+  category?: string;
+  arrestChance?: number;
 }
