@@ -1,4 +1,5 @@
 
+
 export interface PersonalityTraits {
   openness: number;
   conscientiousness: number;
@@ -132,3 +133,24 @@ export interface Choice {
   emoji?: string;
   effects?: StatEffects;
 }
+
+// Investment and Loan types for money system
+export interface Investment {
+  id: string;
+  name: string;
+  type: 'stocks' | 'bonds' | 'crypto' | 'real_estate';
+  amount: number;
+  value: number;
+  purchaseDate: string;
+}
+
+export interface Loan {
+  id: string;
+  type: 'personal' | 'mortgage' | 'student' | 'car';
+  amount: number;
+  remaining: number;
+  interestRate: number;
+  monthlyPayment: number;
+  startDate: string;
+}
+

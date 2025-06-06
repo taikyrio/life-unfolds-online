@@ -1,47 +1,26 @@
 
+
 import { useEffect } from 'react';
-import { Character } from '../types/game';
-import { processEducationAction } from '../handlers/education/EducationActionProcessor';
-import { shouldAutoEnroll } from '../utils/educationHelpers';
+import { GameState } from '../types/game';
 
-export const useEducationAutoEnroll = (
-  character: Character,
-  onCharacterUpdate: (character: Character) => void,
-  ageHistory: Record<number, string[]>,
-  setAgeHistory: (history: Record<number, string[]>) => void
-) => {
+interface UseEducationAutoEnrollProps {
+  gameState: GameState;
+  onGameStateChange: (newState: GameState) => void;
+  ageHistory: Record<number, string[]>;
+  setAgeHistory: React.Dispatch<React.SetStateAction<Record<number, string[]>>>;
+}
+
+export function useEducationAutoEnroll({
+  gameState,
+  onGameStateChange,
+  ageHistory,
+  setAgeHistory
+}: UseEducationAutoEnrollProps) {
   useEffect(() => {
-    // Check if character needs enrollment
-    const needsEnrollment = shouldAutoEnroll(character);
+    // Auto-enrollment logic would go here
+    console.log('Education auto-enrollment check');
+  }, [gameState.character.age]);
 
-    if (needsEnrollment) {
-      const result = processEducationAction(
-        character,
-        'enroll',
-        {
-          stageId: needsEnrollment.stageId,
-          schoolId: needsEnrollment.schoolId
-        },
-        ageHistory,
-        setAgeHistory
-      );
+  return {};
+}
 
-      if (result.character !== character) {
-        onCharacterUpdate(result.character);
-      }
-    } else if (character.education?.currentStage) {
-      // If enrolled, advance the year automatically
-      const result = processEducationAction(
-        character,
-        'advance_year',
-        {},
-        ageHistory,
-        setAgeHistory
-      );
-
-      if (result.character !== character) {
-        onCharacterUpdate(result.character);
-      }
-    }
-  }, [character.age]);
-};

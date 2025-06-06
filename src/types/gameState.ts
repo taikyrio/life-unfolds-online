@@ -1,36 +1,7 @@
 
+
 import { Character } from './character';
-import { StatEffects, Choice } from './core';
-
-export interface LifeEvent {
-  id: string;
-  title: string;
-  description: string;
-  emoji?: string;
-  effects?: StatEffects;
-  flags?: string[];
-  consequences?: string[];
-  oneTime?: boolean;
-  choices?: Choice[];
-  category?: 'career' | 'education' | 'relationship' | 'random' | 'crime' | 'health' | 'family' | 'social';
-  ageRequirement?: { min?: number; max?: number };
-  requirements?: {
-    education?: string;
-    job?: string;
-    relationshipStatus?: string;
-    wealth?: number;
-    familyMember?: string;
-    zodiacSign?: string;
-    socialCircle?: string;
-  };
-}
-
-export interface EventTracker {
-  triggeredEvents: Set<string>;
-  lastEventAge: number;
-  eventCooldowns: Map<string, number>;
-  choiceHistory?: any[];
-}
+import { LifeEvent } from './core';
 
 export interface GameState {
   character: Character;
@@ -38,10 +9,13 @@ export interface GameState {
   gameStarted: boolean;
   gameOver: boolean;
   gameOverReason?: string;
-  eventHistory: string[];
+  eventHistory: any[];
   achievements: string[];
-  eventTracker: EventTracker;
+  eventTracker: {
+    triggeredEvents: Set<string>;
+    lastEventAge: number;
+    eventCooldowns: Map<string, number>;
+    choiceHistory: any[];
+  };
 }
 
-// Re-export for backward compatibility
-export { StatEffects, Choice };

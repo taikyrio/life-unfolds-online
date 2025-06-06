@@ -1,4 +1,5 @@
 
+
 export interface RelationshipAction {
   id: string;
   name: string;
@@ -22,7 +23,8 @@ export type RelationshipType =
   | 'enemy' | 'rival'
   | 'coworker' | 'boss' | 'employee'
   | 'classmate' | 'teacher'
-  | 'neighbor' | 'stranger';
+  | 'neighbor' | 'stranger'
+  | 'aunt' | 'uncle' | 'cousin';
 
 export interface RelationshipStats {
   relationshipLevel: number;
@@ -51,7 +53,7 @@ export interface FamilyMember {
   isEstranged?: boolean;
   currentMood?: string;
   relationshipStats?: RelationshipStats;
-  relationshipQuality?: number; // Added missing property
+  relationshipQuality?: number;
   personality?: {
     kindness: number;
     loyalty: number;
@@ -62,3 +64,4 @@ export interface FamilyMember {
     generosity: number;
   };
 }
+

@@ -1,4 +1,5 @@
 
+
 import { PersonalityTraits, ZodiacSign, Asset, CriminalRecord, JobPerformance } from './core';
 import { FamilyMember } from './relationships';
 import { EducationRecord, CurrentEducation } from './education';
@@ -65,6 +66,7 @@ export interface Character {
   wealth: number;
   relationships: number;
   job?: string;
+  jobId?: string;
   salary?: number;
   jobLevel?: number;
   jobPerformance?: JobPerformance;
@@ -74,6 +76,7 @@ export interface Character {
   assets: Asset[];
   criminalRecord?: CriminalRecord;
   reputation?: number;
+  notoriety?: number;
   isPregnant?: boolean;
   pregnancyMonths?: number;
   flags?: string[];
@@ -110,6 +113,13 @@ export interface Character {
   musicArtists?: MusicArtist[];
   money?: number; // For compatibility with money system
   
+  // Legacy system properties
+  businesses?: any[];
+  properties?: any[];
+  debts?: any[];
+  inheritedWealth?: number;
+  familyLegacy?: any;
+  
   // Missing properties causing TypeScript errors
   education?: EducationRecord;
   currentEducation?: CurrentEducation;
@@ -118,3 +128,4 @@ export interface Character {
   partnerName?: string;
   lifeEvents: string[];
 }
+

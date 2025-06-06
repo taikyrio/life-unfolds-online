@@ -1,9 +1,9 @@
 
+
 export interface HealthInsurance {
   provider: string;
-  monthlyPremium: number;
+  coverage: number;
+  monthlyCost: number;
   deductible: number;
-  coveragePercentage: number;
-  maxCoverage: number;
-  active: boolean;
 }
+

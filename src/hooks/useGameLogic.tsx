@@ -1,4 +1,5 @@
 
+
 import { useToast } from '@/hooks/use-toast';
 import { GameState } from '../types/game';
 import { useGameState } from './useGameState';
@@ -20,6 +21,7 @@ export function useGameLogic({ gameState, onGameStateChange }: UseGameLogicProps
     setShowEventOverlay
   } = useGameState({ gameState, onGameStateChange });
 
+  // Pass the required arguments to useEducationAutoEnroll
   useEducationAutoEnroll({
     gameState,
     onGameStateChange,
@@ -44,3 +46,4 @@ export function useGameLogic({ gameState, onGameStateChange }: UseGameLogicProps
 }
 
 export default useGameLogic;
+

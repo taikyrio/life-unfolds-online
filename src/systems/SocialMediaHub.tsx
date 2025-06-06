@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Character } from '../types/game';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
@@ -112,3 +113,4 @@ export const SocialMediaHub: React.FC<SocialMediaHubProps> = ({
     </div>
   );
 };
+
