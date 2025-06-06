@@ -3,100 +3,124 @@ import { ZodiacSign, ZodiacSignData } from '../types/core';
 
 const zodiacData: ZodiacSignData[] = [
   {
-    sign: 'Aries',
     name: 'Aries',
     emoji: '♈',
+    element: 'Fire',
+    dates: 'Mar 21 - Apr 19',
     traits: ['Bold', 'Energetic', 'Competitive'],
+    compatibility: ['Leo', 'Sagittarius'],
     luckyNumbers: [1, 8, 17],
-    element: 'Fire'
+    luckyColors: ['Red', 'Orange']
   },
   {
-    sign: 'Taurus',
     name: 'Taurus',
     emoji: '♉',
+    element: 'Earth',
+    dates: 'Apr 20 - May 20',
     traits: ['Reliable', 'Patient', 'Practical'],
+    compatibility: ['Virgo', 'Capricorn'],
     luckyNumbers: [2, 6, 9],
-    element: 'Earth'
+    luckyColors: ['Green', 'Pink']
   },
   {
-    sign: 'Gemini',
     name: 'Gemini',
     emoji: '♊',
+    element: 'Air',
+    dates: 'May 21 - Jun 20',
     traits: ['Curious', 'Adaptable', 'Witty'],
+    compatibility: ['Libra', 'Aquarius'],
     luckyNumbers: [5, 7, 14],
-    element: 'Air'
+    luckyColors: ['Yellow', 'Silver']
   },
   {
-    sign: 'Cancer',
     name: 'Cancer',
     emoji: '♋',
+    element: 'Water',
+    dates: 'Jun 21 - Jul 22',
     traits: ['Emotional', 'Nurturing', 'Intuitive'],
+    compatibility: ['Scorpio', 'Pisces'],
     luckyNumbers: [2, 7, 11],
-    element: 'Water'
+    luckyColors: ['White', 'Silver']
   },
   {
-    sign: 'Leo',
     name: 'Leo',
     emoji: '♌',
+    element: 'Fire',
+    dates: 'Jul 23 - Aug 22',
     traits: ['Confident', 'Generous', 'Creative'],
+    compatibility: ['Aries', 'Sagittarius'],
     luckyNumbers: [1, 3, 10],
-    element: 'Fire'
+    luckyColors: ['Gold', 'Orange']
   },
   {
-    sign: 'Virgo',
     name: 'Virgo',
     emoji: '♍',
+    element: 'Earth',
+    dates: 'Aug 23 - Sep 22',
     traits: ['Analytical', 'Practical', 'Organized'],
+    compatibility: ['Taurus', 'Capricorn'],
     luckyNumbers: [3, 6, 27],
-    element: 'Earth'
+    luckyColors: ['Navy', 'Gray']
   },
   {
-    sign: 'Libra',
     name: 'Libra',
     emoji: '♎',
+    element: 'Air',
+    dates: 'Sep 23 - Oct 22',
     traits: ['Diplomatic', 'Fair', 'Social'],
+    compatibility: ['Gemini', 'Aquarius'],
     luckyNumbers: [4, 6, 13],
-    element: 'Air'
+    luckyColors: ['Blue', 'Pastel']
   },
   {
-    sign: 'Scorpio',
     name: 'Scorpio',
     emoji: '♏',
+    element: 'Water',
+    dates: 'Oct 23 - Nov 21',
     traits: ['Intense', 'Passionate', 'Mysterious'],
+    compatibility: ['Cancer', 'Pisces'],
     luckyNumbers: [8, 11, 18],
-    element: 'Water'
+    luckyColors: ['Deep Red', 'Black']
   },
   {
-    sign: 'Sagittarius',
     name: 'Sagittarius',
     emoji: '♐',
+    element: 'Fire',
+    dates: 'Nov 22 - Dec 21',
     traits: ['Adventurous', 'Optimistic', 'Philosophical'],
+    compatibility: ['Aries', 'Leo'],
     luckyNumbers: [3, 9, 22],
-    element: 'Fire'
+    luckyColors: ['Purple', 'Turquoise']
   },
   {
-    sign: 'Capricorn',
     name: 'Capricorn',
     emoji: '♑',
+    element: 'Earth',
+    dates: 'Dec 22 - Jan 19',
     traits: ['Ambitious', 'Disciplined', 'Practical'],
+    compatibility: ['Taurus', 'Virgo'],
     luckyNumbers: [6, 8, 26],
-    element: 'Earth'
+    luckyColors: ['Brown', 'Black']
   },
   {
-    sign: 'Aquarius',
     name: 'Aquarius',
     emoji: '♒',
+    element: 'Air',
+    dates: 'Jan 20 - Feb 18',
     traits: ['Independent', 'Innovative', 'Humanitarian'],
+    compatibility: ['Gemini', 'Libra'],
     luckyNumbers: [4, 7, 11],
-    element: 'Air'
+    luckyColors: ['Blue', 'Silver']
   },
   {
-    sign: 'Pisces',
     name: 'Pisces',
     emoji: '♓',
+    element: 'Water',
+    dates: 'Feb 19 - Mar 20',
     traits: ['Compassionate', 'Artistic', 'Intuitive'],
+    compatibility: ['Cancer', 'Scorpio'],
     luckyNumbers: [3, 9, 12],
-    element: 'Water'
+    luckyColors: ['Sea Green', 'Lavender']
   }
 ];
 
@@ -117,7 +141,7 @@ export const getZodiacSign = (month: number, day: number): ZodiacSign => {
 };
 
 export const getZodiacData = (sign: ZodiacSign): ZodiacSignData => {
-  return zodiacData.find(data => data.sign === sign) || zodiacData[0];
+  return zodiacData.find(data => data.name === sign) || zodiacData[0];
 };
 
 export const getAllZodiacSigns = (): ZodiacSignData[] => {

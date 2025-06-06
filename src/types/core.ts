@@ -112,16 +112,41 @@ export interface CrimeOperation {
   arrestChance: number;
 }
 
-export interface ZodiacSign {
+export type ZodiacSign = 'Aries' | 'Taurus' | 'Gemini' | 'Cancer' | 'Leo' | 'Virgo' | 'Libra' | 'Scorpio' | 'Sagittarius' | 'Capricorn' | 'Aquarius' | 'Pisces';
+
+export interface ZodiacSignData {
   name: string;
-  symbol: string;
+  emoji: string;
   element: string;
   dates: string;
-}
-
-export interface ZodiacSignData extends ZodiacSign {
   traits: string[];
   compatibility: string[];
   luckyNumbers: number[];
   luckyColors: string[];
+}
+
+export interface Asset {
+  id: string;
+  name: string;
+  type: string;
+  value: number;
+  purchaseDate?: string;
+  appreciationRate?: number;
+}
+
+export interface PersonalityTraits {
+  openness: number;
+  kindness: number;
+  intelligence: number;
+  humor: number;
+  ambition: number;
+  stability: number;
+  generosity: number;
+}
+
+export interface JobPerformance {
+  rating: number;
+  lastReview: string;
+  promotions: number;
+  warnings: number;
 }
