@@ -1,37 +1,81 @@
 
 import React from 'react';
 import { Character } from '../../types/game';
-import { Card, CardContent } from '@/components/ui/card';
-import { Calendar } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
+import { Badge } from '../ui/badge';
+import { Calendar, MapPin, Heart, Star } from 'lucide-react';
+import { getZodiacData } from '../../services/zodiacService';
 
 interface PersonalInfoProps {
   character: Character;
 }
 
 export const PersonalInfo: React.FC<PersonalInfoProps> = ({ character }) => {
-  const zodiacSigns = ['Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo', 'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces'];
-  const characterZodiac = character.zodiacSign || zodiacSigns[Math.floor(Math.random() * zodiacSigns.length)];
+  const zodiacData = character.zodiacSign ? getZodiacData(character.zodiacSign) : null;
 
   return (
-    <Card className="glass-card border-0">
-      <CardContent className="p-6">
-        {/* Personal Info */}
-        <div className="space-y-3">
-          <div className="flex items-center gap-2 p-2 bg-orange-50 dark:bg-orange-900/20 rounded-lg">
-            <Calendar className="w-4 h-4 text-orange-500" />
+    <Card className="glass border-white/20">
+      <CardHeader className="pb-3">
+        <CardTitle className="text-sm flex items-center gap-2">
+          <Star className="h-4 w-4" />
+          Personal Information
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-3">
+        <div className="grid grid-cols-2 gap-3">
+          <div className="flex items-center gap-2">
+            <Calendar className="h-4 w-4 text-gray-400" />
             <div>
-              <div className="text-xs text-gray-600 dark:text-gray-400">Birthday</div>
-              <div className="font-semibold">Oct 9</div>
+              <div className="text-xs text-gray-500">Age</div>
+              <div className="text-sm font-medium">{character.age} years old</div>
             </div>
           </div>
-          <div className="flex items-center gap-2 p-2 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
-            <div className="text-lg">♎</div>
+          
+          <div className="flex items-center gap-2">
+            <Heart className="h-4 w-4 text-gray-400" />
             <div>
-              <div className="text-xs text-gray-600 dark:text-gray-400">Zodiac Sign</div>
-              <div className="font-semibold">{characterZodiac}</div>
+              <div className="text-xs text-gray-500">Status</div>
+              <div className="text-sm font-medium capitalize">{character.relationshipStatus}</div>
             </div>
           </div>
         </div>
+
+        {character.birthplace && (
+          <div className="flex items-center gap-2">
+            <MapPin className="h-4 w-4 text-gray-400" />
+            <div>
+              <div className="text-xs text-gray-500">Born in</div>
+              <div className="text-sm font-medium">{character.birthplace}</div>
+            </div>
+          </div>
+        )}
+
+        {zodiacData && (
+          <div className="flex items-center justify-between">
+            <div>
+              <div className="text-xs text-gray-500">Zodiac Sign</div>
+              <div className="text-sm font-medium flex items-center gap-1">
+                <span>{zodiacData.emoji}</span>
+                <span>{zodiacData.name}</span>
+              </div>
+            </div>
+            <Badge variant="secondary" className="text-xs">
+              {zodiacData.element}
+            </Badge>
+          </div>
+        )}
+
+        {character.personalityTraits && (
+          <div>
+            <div className="text-xs text-gray-500 mb-2">Personality Traits</div>
+            <div className="grid grid-cols-2 gap-1 text-xs">
+              <div>Openness: {character.personalityTraits.openness}</div>
+              <div>Kindness: {character.personalityTraits.kindness}</div>
+              <div>Intelligence: {character.personalityTraits.intelligence}</div>
+              <div>Humor: {character.personalityTraits.humor}</div>
+            </div>
+          </div>
+        )}
       </CardContent>
     </Card>
   );

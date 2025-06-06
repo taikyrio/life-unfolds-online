@@ -1,3 +1,4 @@
+
 import { useCallback } from 'react';
 import { Character, GameState } from '../types/game';
 import { processAgeUp, processChoice } from '../components/game/GameLogic';
@@ -25,12 +26,12 @@ export function useGameActions({
   const handleAgeUp = useCallback(async () => {
     if (gameState.gameOver) return;
 
-    processAgeUp(gameState, ageHistory || {}, setAgeHistory, onGameStateChange, toast);
-  }, [gameState, ageHistory, onGameStateChange, toast]);
+    processAgeUp(gameState);
+  }, [gameState]);
 
   const handleChoice = useCallback((choiceId: string) => {
-    processChoice(gameState, choiceId, ageHistory, setAgeHistory, onGameStateChange);
-  }, [gameState, ageHistory, onGameStateChange]);
+    processChoice(gameState, choiceId);
+  }, [gameState]);
 
   const handleCharacterUpdate = useCallback((updatedCharacter: Character) => {
     onGameStateChange({
@@ -88,33 +89,32 @@ export function useGameActions({
       gameState.character,
       activityId,
       activityData,
-      ageHistory,
-      setAgeHistory,
+      (newHistory) => setAgeHistory(newHistory),
       onGameStateChange,
       gameState,
       toast
     );
-  }, [gameState, ageHistory, onGameStateChange, toast, handleCriminalOperation, handleCybercrime, handleMurder]);
+  }, [gameState, setAgeHistory, onGameStateChange, toast, handleCriminalOperation, handleCybercrime, handleMurder]);
 
   const handleCareerActionWrapper = useCallback((action: string, data?: any) => {
     handleCareerAction(gameState.character, action, data, ageHistory, setAgeHistory, onGameStateChange, gameState, toast);
-  }, [gameState, ageHistory, onGameStateChange, toast]);
+  }, [gameState, ageHistory, setAgeHistory, onGameStateChange, toast]);
 
   const handleEducationActionWrapper = useCallback((action: string, data?: any) => {
     handleEducationAction(gameState.character, action, data, ageHistory, setAgeHistory, onGameStateChange, gameState, toast);
-  }, [gameState, ageHistory, onGameStateChange, toast]);
+  }, [gameState, ageHistory, setAgeHistory, onGameStateChange, toast]);
 
   const handleHealthActionWrapper = useCallback((action: string, data?: any) => {
     handleHealthAction(gameState.character, action, data, ageHistory, setAgeHistory, onGameStateChange, gameState, toast);
-  }, [gameState, ageHistory, onGameStateChange, toast]);
+  }, [gameState, ageHistory, setAgeHistory, onGameStateChange, toast]);
 
   const handleLifestyleActionWrapper = useCallback((action: string, data?: any) => {
     handleLifestyleAction(gameState.character, action, data, ageHistory, setAgeHistory, onGameStateChange, gameState, toast);
-  }, [gameState, ageHistory, onGameStateChange, toast]);
+  }, [gameState, ageHistory, setAgeHistory, onGameStateChange, toast]);
 
   const handleRelationshipActionWrapper = useCallback((action: string, data?: any) => {
     handleRelationshipAction(gameState.character, action, data, ageHistory, setAgeHistory, onGameStateChange, gameState, toast);
-  }, [gameState, ageHistory, onGameStateChange, toast]);
+  }, [gameState, ageHistory, setAgeHistory, onGameStateChange, toast]);
 
   return {
     ageUp: handleAgeUp,

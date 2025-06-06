@@ -1,5 +1,5 @@
 
-import { Character } from '../../types/game';
+import { Character, GameState } from '../../types/game';
 
 export const processGameLogic = (character: Character): Character => {
   let updatedCharacter = { ...character };
@@ -85,14 +85,17 @@ export const initializeCharacterDefaults = (character: Partial<Character>): Char
   };
 };
 
-export const processAgeUp = (character: Character): Character => {
+export const processAgeUp = (gameState: GameState): GameState => {
   return {
-    ...character,
-    age: character.age + 1
+    ...gameState,
+    character: {
+      ...gameState.character,
+      age: gameState.character.age + 1
+    }
   };
 };
 
-export const processChoice = (character: Character, choiceId: string): Character => {
+export const processChoice = (gameState: GameState, choiceId: string): GameState => {
   // Basic choice processing
-  return character;
+  return gameState;
 };

@@ -1,3 +1,4 @@
+
 import { useToast } from '@/hooks/use-toast';
 import { GameState } from '../types/game';
 import { useGameState } from './useGameState';
@@ -23,8 +24,7 @@ export function useGameLogic({ gameState, onGameStateChange }: UseGameLogicProps
     gameState,
     onGameStateChange,
     ageHistory,
-    setAgeHistory,
-    toast
+    setAgeHistory
   });
 
   const gameActions = useGameActions({

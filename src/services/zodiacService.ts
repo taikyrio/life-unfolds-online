@@ -1,117 +1,125 @@
 
-import { ZodiacSign } from '../types/core';
+import { ZodiacSign, ZodiacSignData } from '../types/core';
 
-export const zodiacSigns: ZodiacSign[] = [
+const zodiacData: ZodiacSignData[] = [
   {
     sign: 'Aries',
     name: 'Aries',
     emoji: '♈',
-    traits: ['energetic', 'competitive', 'impulsive'],
+    traits: ['Bold', 'Energetic', 'Competitive'],
     luckyNumbers: [1, 8, 17],
-    element: 'fire'
+    element: 'Fire'
   },
   {
     sign: 'Taurus',
     name: 'Taurus',
     emoji: '♉',
-    traits: ['reliable', 'patient', 'stubborn'],
+    traits: ['Reliable', 'Patient', 'Practical'],
     luckyNumbers: [2, 6, 9],
-    element: 'earth'
+    element: 'Earth'
   },
   {
     sign: 'Gemini',
     name: 'Gemini',
     emoji: '♊',
-    traits: ['adaptable', 'curious', 'inconsistent'],
+    traits: ['Curious', 'Adaptable', 'Witty'],
     luckyNumbers: [5, 7, 14],
-    element: 'air'
+    element: 'Air'
   },
   {
     sign: 'Cancer',
     name: 'Cancer',
     emoji: '♋',
-    traits: ['nurturing', 'emotional', 'protective'],
+    traits: ['Emotional', 'Nurturing', 'Intuitive'],
     luckyNumbers: [2, 7, 11],
-    element: 'water'
+    element: 'Water'
   },
   {
     sign: 'Leo',
     name: 'Leo',
     emoji: '♌',
-    traits: ['confident', 'generous', 'dramatic'],
+    traits: ['Confident', 'Generous', 'Creative'],
     luckyNumbers: [1, 3, 10],
-    element: 'fire'
+    element: 'Fire'
   },
   {
     sign: 'Virgo',
     name: 'Virgo',
     emoji: '♍',
-    traits: ['analytical', 'practical', 'perfectionist'],
-    luckyNumbers: [6, 14, 18],
-    element: 'earth'
+    traits: ['Analytical', 'Practical', 'Organized'],
+    luckyNumbers: [3, 6, 27],
+    element: 'Earth'
   },
   {
     sign: 'Libra',
     name: 'Libra',
     emoji: '♎',
-    traits: ['diplomatic', 'charming', 'indecisive'],
-    luckyNumbers: [6, 15, 24],
-    element: 'air'
+    traits: ['Diplomatic', 'Fair', 'Social'],
+    luckyNumbers: [4, 6, 13],
+    element: 'Air'
   },
   {
     sign: 'Scorpio',
     name: 'Scorpio',
     emoji: '♏',
-    traits: ['intense', 'mysterious', 'passionate'],
-    luckyNumbers: [4, 13, 27],
-    element: 'water'
+    traits: ['Intense', 'Passionate', 'Mysterious'],
+    luckyNumbers: [8, 11, 18],
+    element: 'Water'
   },
   {
     sign: 'Sagittarius',
     name: 'Sagittarius',
     emoji: '♐',
-    traits: ['adventurous', 'optimistic', 'restless'],
+    traits: ['Adventurous', 'Optimistic', 'Philosophical'],
     luckyNumbers: [3, 9, 22],
-    element: 'fire'
+    element: 'Fire'
   },
   {
     sign: 'Capricorn',
     name: 'Capricorn',
     emoji: '♑',
-    traits: ['ambitious', 'disciplined', 'pessimistic'],
-    luckyNumbers: [8, 10, 26],
-    element: 'earth'
+    traits: ['Ambitious', 'Disciplined', 'Practical'],
+    luckyNumbers: [6, 8, 26],
+    element: 'Earth'
   },
   {
     sign: 'Aquarius',
     name: 'Aquarius',
     emoji: '♒',
-    traits: ['innovative', 'independent', 'detached'],
+    traits: ['Independent', 'Innovative', 'Humanitarian'],
     luckyNumbers: [4, 7, 11],
-    element: 'air'
+    element: 'Air'
   },
   {
     sign: 'Pisces',
     name: 'Pisces',
     emoji: '♓',
-    traits: ['intuitive', 'compassionate', 'escapist'],
-    luckyNumbers: [7, 12, 29],
-    element: 'water'
+    traits: ['Compassionate', 'Artistic', 'Intuitive'],
+    luckyNumbers: [3, 9, 12],
+    element: 'Water'
   }
 ];
 
 export const getZodiacSign = (month: number, day: number): ZodiacSign => {
   // Simplified zodiac calculation
-  if ((month === 3 && day >= 21) || (month === 4 && day <= 19)) return zodiacSigns[0]; // Aries
-  if ((month === 4 && day >= 20) || (month === 5 && day <= 20)) return zodiacSigns[1]; // Taurus
-  if ((month === 5 && day >= 21) || (month === 6 && day <= 20)) return zodiacSigns[2]; // Gemini
-  if ((month === 6 && day >= 21) || (month === 7 && day <= 22)) return zodiacSigns[3]; // Cancer
-  if ((month === 7 && day >= 23) || (month === 8 && day <= 22)) return zodiacSigns[4]; // Leo
-  if ((month === 8 && day >= 23) || (month === 9 && day <= 22)) return zodiacSigns[5]; // Virgo
-  if ((month === 9 && day >= 23) || (month === 10 && day <= 22)) return zodiacSigns[6]; // Libra
-  if ((month === 10 && day >= 23) || (month === 11 && day <= 21)) return zodiacSigns[7]; // Scorpio
-  if ((month === 11 && day >= 22) || (month === 12 && day <= 21)) return zodiacSigns[8]; // Sagittarius
-  if ((month === 12 && day >= 22) || (month === 1 && day <= 19)) return zodiacSigns[9]; // Capricorn
-  if ((month === 1 && day >= 20) || (month === 2 && day <= 18)) return zodiacSigns[10]; // Aquarius
-  return zodiacSigns[11]; // Pisces
+  if ((month === 3 && day >= 21) || (month === 4 && day <= 19)) return 'Aries';
+  if ((month === 4 && day >= 20) || (month === 5 && day <= 20)) return 'Taurus';
+  if ((month === 5 && day >= 21) || (month === 6 && day <= 20)) return 'Gemini';
+  if ((month === 6 && day >= 21) || (month === 7 && day <= 22)) return 'Cancer';
+  if ((month === 7 && day >= 23) || (month === 8 && day <= 22)) return 'Leo';
+  if ((month === 8 && day >= 23) || (month === 9 && day <= 22)) return 'Virgo';
+  if ((month === 9 && day >= 23) || (month === 10 && day <= 22)) return 'Libra';
+  if ((month === 10 && day >= 23) || (month === 11 && day <= 21)) return 'Scorpio';
+  if ((month === 11 && day >= 22) || (month === 12 && day <= 21)) return 'Sagittarius';
+  if ((month === 12 && day >= 22) || (month === 1 && day <= 19)) return 'Capricorn';
+  if ((month === 1 && day >= 20) || (month === 2 && day <= 18)) return 'Aquarius';
+  return 'Pisces';
+};
+
+export const getZodiacData = (sign: ZodiacSign): ZodiacSignData => {
+  return zodiacData.find(data => data.sign === sign) || zodiacData[0];
+};
+
+export const getAllZodiacSigns = (): ZodiacSignData[] => {
+  return zodiacData;
 };

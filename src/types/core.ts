@@ -19,6 +19,15 @@ export type ZodiacSign =
   | 'Leo' | 'Virgo' | 'Libra' | 'Scorpio' 
   | 'Sagittarius' | 'Capricorn' | 'Aquarius' | 'Pisces';
 
+export interface ZodiacSignData {
+  sign: ZodiacSign;
+  name: string;
+  emoji: string;
+  traits: string[];
+  luckyNumbers: number[];
+  element: string;
+}
+
 export interface Asset {
   id: string;
   name: string;
@@ -68,7 +77,7 @@ export interface LifeEvent {
   id: string;
   title: string;
   description: string;
-  category: EventCategory;
+  category?: EventCategory;
   emoji?: string;
   minAge?: number;
   maxAge?: number;
@@ -85,6 +94,8 @@ export interface LifeEvent {
     socialCircle?: string;
   };
   flags?: string[];
+  consequences?: string[];
+  oneTime?: boolean;
 }
 
 export interface EventChoice {
@@ -107,6 +118,7 @@ export interface StatEffects {
   notoriety?: number;
   salary?: number;
   jobLevel?: number;
+  criminalRecord?: CriminalRecord;
 }
 
 export interface Choice {
