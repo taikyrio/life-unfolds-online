@@ -22,8 +22,18 @@ export function useGameActions({
   const handleAgeUp = useCallback(async () => {
     if (gameState.gameOver) return;
     const newState = processAgeUp(gameState);
+    
+    // Update ageHistory with events for the current age
+    const currentAge = newState.character.age;
+    const newEvents = newState.eventHistory.slice(gameState.eventHistory.length);
+    
+    setAgeHistory(prev => ({
+      ...prev,
+      [currentAge]: newEvents
+    }));
+    
     onGameStateChange(newState);
-  }, [gameState, onGameStateChange]);
+  }, [gameState, onGameStateChange, setAgeHistory]);
 
   const handleChoice = useCallback((choiceId: string) => {
     const newState = processChoice(gameState, choiceId);
