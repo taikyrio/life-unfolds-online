@@ -1,5 +1,3 @@
-
-
 import { PersonalityTraits, ZodiacSign, Asset, CriminalRecord, JobPerformance } from './core';
 import { FamilyMember } from './relationships';
 import { EducationRecord, CurrentEducation } from './education';
@@ -52,6 +50,13 @@ export interface MusicCareer {
   artists: MusicArtist[];
   studioSlots: number;
   hasMoreStudioTime: boolean;
+}
+
+export interface EventTracker {
+  triggeredEvents: Set<string>;
+  lastEventAge: number;
+  eventCooldowns: Map<string, number>;
+  choiceHistory: any[];
 }
 
 export interface Character {
@@ -128,4 +133,3 @@ export interface Character {
   partnerName?: string;
   lifeEvents: string[];
 }
-

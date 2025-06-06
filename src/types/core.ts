@@ -19,6 +19,7 @@ export interface EventChoice {
   text: string;
   emoji?: string;
   effects?: EventEffect[];
+  consequences?: string[];
   probability?: number;
   requirements?: {
     minSmarts?: number;

@@ -1,5 +1,6 @@
 
-import { Character, EventTracker } from '../../types/character';
+import { Character } from '../../types/character';
+import { EventTracker } from '../../types/character';
 import { getLifeStage } from '../../utils/gameUtils';
 import { DynamicEvent } from './eventTypes';
 import { childhoodEvents } from './childhoodEvents';
@@ -30,11 +31,11 @@ export const createDynamicEventSystem = () => {
       choices: event.choices?.map(choice => ({
         id: choice.id,
         text: choice.text,
-        emoji: choice.emoji,
+        emoji: choice.emoji || '🔘',
         effects: choice.effects ? Object.fromEntries(
-          Object.entries(choice.effects).map(([key, value]) => [key, value])
+          Object.entries(choice.effects).map(([key, value]) => [key, typeof value === 'number' ? value : 0])
         ) : {},
-        consequences: choice.consequences
+        consequences: choice.consequences || []
       })) || [],
       weight: 1,
       flags: []
