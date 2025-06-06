@@ -28,6 +28,10 @@ export const processGameLogic = (character: Character): Character => {
   if (!updatedCharacter.relationshipStatus) {
     updatedCharacter.relationshipStatus = 'single';
   }
+
+  if (!updatedCharacter.lifeEvents) {
+    updatedCharacter.lifeEvents = [];
+  }
   
   return updatedCharacter;
 };
@@ -62,6 +66,7 @@ export const initializeCharacterDefaults = (character: Partial<Character>): Char
     children: character.children || [],
     fame: character.fame || 0,
     familyMembers: character.familyMembers || [],
+    lifeEvents: character.lifeEvents || [],
     education: character.education || {
       currentStage: null,
       currentSchool: null,
@@ -78,4 +83,16 @@ export const initializeCharacterDefaults = (character: Partial<Character>): Char
     relationshipStatus: character.relationshipStatus || 'single',
     ...character
   };
+};
+
+export const processAgeUp = (character: Character): Character => {
+  return {
+    ...character,
+    age: character.age + 1
+  };
+};
+
+export const processChoice = (character: Character, choiceId: string): Character => {
+  // Basic choice processing
+  return character;
 };

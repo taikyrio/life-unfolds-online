@@ -115,4 +115,6 @@ export interface Character {
   currentEducation?: CurrentEducation;
   familyMembers: FamilyMember[];
   relationshipStatus?: string;
+  partnerName?: string;
+  lifeEvents: string[];
 }

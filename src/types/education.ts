@@ -38,6 +38,7 @@ export interface CurrentEducation {
   level: string;
   institution?: string;
   year?: number;
+  currentYear?: number;
   gpa?: number;
 }
 

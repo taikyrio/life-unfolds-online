@@ -43,10 +43,10 @@ export const CareerSelectionModal: React.FC<CareerSelectionModalProps> = ({
     title: career.name,
     salary: career.levels[0]?.salary || 25,
     requirements: {
-      age: career.requirements.age || 18, // Ensure age is always provided
+      age: career.requirements.age || 18,
       education: career.requirements.education,
-      smarts: career.requirements.smarts,
-      looks: career.requirements.looks
+      smarts: career.requirements.stats?.smarts,
+      looks: career.requirements.stats?.looks
     },
     description: career.description,
     emoji: career.category === 'technology' ? '💻' : 

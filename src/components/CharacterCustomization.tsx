@@ -101,7 +101,9 @@ export const CharacterCustomization: React.FC<CharacterCustomizationProps> = ({
       achievements: [],
       assets: [],
       children: [],
-      fame: 0
+      fame: 0,
+      familyMembers: [], // Initialize with empty family members
+      lifeEvents: [] // Initialize with empty life events
     };
 
     onCreateCharacter(newCharacter);
@@ -210,7 +212,7 @@ export const CharacterCustomization: React.FC<CharacterCustomizationProps> = ({
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <Label className="text-sm text-gray-700 dark:text-gray-300">
-                    😊 Happiness: <span className={`font-bold ${getStatColor(happiness[0])}`}>{happiness[0]}%</span>
+                    😊 Happiness: <span className="font-bold text-green-600">{happiness[0]}%</span>
                   </Label>
                 </div>
                 <Slider
@@ -225,7 +227,7 @@ export const CharacterCustomization: React.FC<CharacterCustomizationProps> = ({
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <Label className="text-sm text-gray-700 dark:text-gray-300">
-                    ❤️ Health: <span className={`font-bold ${getStatColor(health[0])}`}>{health[0]}%</span>
+                    ❤️ Health: <span className="font-bold text-green-600">{health[0]}%</span>
                   </Label>
                 </div>
                 <Slider
@@ -240,7 +242,7 @@ export const CharacterCustomization: React.FC<CharacterCustomizationProps> = ({
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <Label className="text-sm text-gray-700 dark:text-gray-300">
-                    🧠 Smarts: <span className={`font-bold ${getStatColor(smarts[0])}`}>{smarts[0]}%</span>
+                    🧠 Smarts: <span className="font-bold text-green-600">{smarts[0]}%</span>
                   </Label>
                 </div>
                 <Slider
@@ -255,7 +257,7 @@ export const CharacterCustomization: React.FC<CharacterCustomizationProps> = ({
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <Label className="text-sm text-gray-700 dark:text-gray-300">
-                    💎 Looks: <span className={`font-bold ${getStatColor(looks[0])}`}>{looks[0]}%</span>
+                    💎 Looks: <span className="font-bold text-green-600">{looks[0]}%</span>
                   </Label>
                 </div>
                 <Slider
