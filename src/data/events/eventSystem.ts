@@ -1,6 +1,6 @@
 
-import { Character, EventTracker } from '../../types/game';
-import { getLifeStage } from '../../utils/gameStateUtils';
+import { Character, EventTracker } from '../../types/character';
+import { getLifeStage } from '../../utils/gameUtils';
 import { DynamicEvent } from './eventTypes';
 import { childhoodEvents } from './childhoodEvents';
 import { teenageEvents } from './teenageEvents';
@@ -20,11 +20,22 @@ export const createDynamicEventSystem = () => {
     // Convert expanded life events to dynamic events
     ...expandedLifeEvents.map(event => ({
       ...event,
+      emoji: event.emoji || '📝',
+      category: event.category || 'general',
       conditions: {
-        minAge: event.ageRequirement?.min,
-        maxAge: event.ageRequirement?.max,
+        minAge: event.minAge,
+        maxAge: event.maxAge,
         probability: 0.3
       },
+      choices: event.choices?.map(choice => ({
+        id: choice.id,
+        text: choice.text,
+        emoji: choice.emoji,
+        effects: choice.effects ? Object.fromEntries(
+          Object.entries(choice.effects).map(([key, value]) => [key, value])
+        ) : {},
+        consequences: choice.consequences
+      })) || [],
       weight: 1,
       flags: []
     }))

@@ -42,7 +42,7 @@ export const getStatColor = (value: number): string => {
   return 'text-red-600';
 };
 
-export const getStatEmoji = (value: number): string => {
+export const getStatEmoji = (statName: string, value: number): string => {
   if (value >= 80) return '😊';
   if (value >= 60) return '🙂';
   if (value >= 40) return '😐';

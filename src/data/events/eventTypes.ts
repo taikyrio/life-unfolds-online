@@ -21,7 +21,7 @@ export interface DynamicEventChoice {
   consequences?: string[];
 }
 
-export interface DynamicEvent extends Omit<LifeEvent, 'choices'> {
+export interface DynamicEvent extends Omit<LifeEvent, 'choices' | 'conditions'> {
   emoji: string;
   category: string;
   conditions: EventCondition;
