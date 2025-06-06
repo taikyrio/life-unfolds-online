@@ -20,14 +20,14 @@ export const autoEnrollEducation = (
     if (stage?.autoEnroll) {
       // Auto-enroll in public school (first available school)
       const publicSchool = stage.schools?.[0];
-      if (publicSchool) {
+      if (publicSchool && updatedCharacter.education) {
         updatedCharacter.education.currentStage = stageToEnroll;
         updatedCharacter.education.currentSchool = publicSchool.id;
         updatedCharacter.education.currentYear = 1;
 
         // Calculate dynamic GPA based on character stats
         const baseGPA = (updatedCharacter.smarts / 100) * 4.0;
-        const happinessModifier = (updatedCharacter.happiness - 50) / 200; // Smaller effect for initial enrollment
+        const happinessModifier = (updatedCharacter.happiness - 50) / 200;
         updatedCharacter.education.gpa = Math.max(0.0, Math.min(4.0, baseGPA + happinessModifier));
 
         // Add to age history
@@ -60,15 +60,15 @@ const shouldAutoEnrollInSchool = (character: Character): string | null => {
   // Middle School (ages 12-14)
   if (age >= 12 && age <= 14 && 
       completedStages.includes('elementary') && 
-      !completedStages.includes('middle_school')) {
-    return 'middle_school';
+      !completedStages.includes('middle')) {
+    return 'middle';
   }
 
   // High School (ages 15-17)
   if (age >= 15 && age <= 17 && 
-      completedStages.includes('middle_school') && 
-      !completedStages.includes('high_school')) {
-    return 'high_school';
+      completedStages.includes('middle') && 
+      !completedStages.includes('high')) {
+    return 'high';
   }
 
   return null;
