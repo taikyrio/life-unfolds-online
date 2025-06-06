@@ -1,3 +1,4 @@
+
 import { Character } from '../../types/game';
 import { executeRelationshipAction, relationshipManager } from '../../systems/relationshipSystem';
 import { generatePersonality, initializeRelationshipStats } from '../../systems/relationship/relationshipUtils';
@@ -34,7 +35,15 @@ export const handleRelationshipAction = (
         health: 80 + Math.floor(Math.random() * 20),
         relationshipStats: initializeRelationshipStats('lover', 60),
         relationshipQuality: 60,
-        personality: generatePersonality(),
+        personality: {
+          kindness: Math.floor(Math.random() * 100),
+          loyalty: Math.floor(Math.random() * 100),
+          intelligence: Math.floor(Math.random() * 100),
+          humor: Math.floor(Math.random() * 100),
+          ambition: Math.floor(Math.random() * 100),
+          stability: Math.floor(Math.random() * 100),
+          generosity: Math.floor(Math.random() * 100)
+        },
         currentMood: 'happy' as const
       };
 
@@ -106,7 +115,15 @@ export const handleRelationshipAction = (
           health: 80 + Math.floor(Math.random() * 20),
           relationshipStats: initializeRelationshipStats('friend', 40),
           relationshipQuality: 40,
-          personality: generatePersonality(),
+          personality: {
+            kindness: Math.floor(Math.random() * 100),
+            loyalty: Math.floor(Math.random() * 100),
+            intelligence: Math.floor(Math.random() * 100),
+            humor: Math.floor(Math.random() * 100),
+            ambition: Math.floor(Math.random() * 100),
+            stability: Math.floor(Math.random() * 100),
+            generosity: Math.floor(Math.random() * 100)
+          },
           currentMood: 'neutral' as const
         };
         updatedCharacter.familyMembers.push(newFriend);

@@ -5,6 +5,13 @@ export interface PersonalityTraits {
   extraversion: number;
   agreeableness: number;
   neuroticism: number;
+  kindness: number;
+  loyalty: number;
+  intelligence: number;
+  humor: number;
+  ambition: number;
+  stability: number;
+  generosity: number;
 }
 
 export type ZodiacSign = 
@@ -19,6 +26,15 @@ export interface Asset {
   value: number;
   purchaseDate: number;
   description?: string;
+  purchasePrice: number;
+  currentValue: number;
+  condition: 'excellent' | 'good' | 'fair' | 'poor';
+  yearPurchased: number;
+  rentalIncome?: number;
+  maintenanceCost: number;
+  isInsured: boolean;
+  insuranceCost?: number;
+  emoji: string;
 }
 
 export interface CriminalRecord {
@@ -48,6 +64,7 @@ export interface LifeEvent {
   title: string;
   description: string;
   category: EventCategory;
+  emoji?: string;
   minAge?: number;
   maxAge?: number;
   choices?: EventChoice[];
@@ -65,6 +82,7 @@ export interface LifeEvent {
 export interface EventChoice {
   id: string;
   text: string;
+  emoji?: string;
   effects?: {
     health?: number;
     happiness?: number;
@@ -75,4 +93,21 @@ export interface EventChoice {
     fame?: number;
   };
   consequences?: string[];
+}
+
+export interface StatEffects {
+  health?: number;
+  happiness?: number;
+  smarts?: number;
+  looks?: number;
+  wealth?: number;
+  relationships?: number;
+  fame?: number;
+}
+
+export interface Choice {
+  id: string;
+  text: string;
+  emoji?: string;
+  effects?: StatEffects;
 }

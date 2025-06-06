@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Character, GameState } from '../../types/game';
 import { ActivitiesMenu } from '../menus/ActivitiesMenu';
@@ -49,6 +50,7 @@ export const GameModals: React.FC<GameModalsProps> = ({
     <>
       {showActivitiesMenu && (
         <ActivitiesMenu
+          isOpen={showActivitiesMenu}
           character={gameState.character}
           onActivity={onActivity}
           onClose={onCloseActivitiesMenu}
@@ -86,7 +88,10 @@ export const GameModals: React.FC<GameModalsProps> = ({
 
       {showEventOverlay && gameState.currentEvent && (
         <EventOverlay
-          event={gameState.currentEvent}
+          event={{
+            ...gameState.currentEvent,
+            category: gameState.currentEvent.category || 'random'
+          }}
           onChoice={onChoice}
           onClose={() => {
             onCloseEventOverlay();

@@ -10,7 +10,7 @@ interface PersonalInfoProps {
 
 export const PersonalInfo: React.FC<PersonalInfoProps> = ({ character }) => {
   const zodiacSigns = ['Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo', 'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces'];
-  const characterZodiac = character.zodiacSign?.name || zodiacSigns[Math.floor(Math.random() * zodiacSigns.length)];
+  const characterZodiac = character.zodiacSign || zodiacSigns[Math.floor(Math.random() * zodiacSigns.length)];
 
   return (
     <Card className="glass-card border-0">
