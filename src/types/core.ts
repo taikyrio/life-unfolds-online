@@ -59,6 +59,10 @@ export interface CriminalRecord {
   prisonTime: number;
   currentSentence?: number;
   isIncarcerated: boolean;
+  crimes: string[];
+  notoriety: number;
+  totalSentence: number;
+  currentlyIncarcerated: boolean;
 }
 
 export interface JobPerformance {

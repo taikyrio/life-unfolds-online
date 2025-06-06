@@ -7,7 +7,11 @@ import { Progress } from '../components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
 import { Input } from '../components/ui/input';
 import { Textarea } from '../components/ui/textarea';
-import { generateRandomName } from '../../systems/reputationSystem';
+
+const generateRandomName = () => {
+  const names = ['Alex', 'Jordan', 'Taylor', 'Casey', 'Morgan', 'Riley', 'Avery', 'Quinn'];
+  return names[Math.floor(Math.random() * names.length)];
+};
 
 interface SocialMediaHubProps {
   character: Character;
