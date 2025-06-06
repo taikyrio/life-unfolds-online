@@ -1,73 +1,36 @@
-
-import React, { useState } from 'react';
-import { Card, CardContent } from '../ui/card';
-import { Calendar } from 'lucide-react';
-import { Character } from '../../types/game';
+import React from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Character } from '../../types/character';
 
 interface TransactionHistoryProps {
   character: Character;
 }
 
 export const TransactionHistory: React.FC<TransactionHistoryProps> = ({ character }) => {
-  const [sortBy, setSortBy] = useState<'date' | 'amount'>('date');
-  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
-
-  const toggleSort = (newSortBy: typeof sortBy) => {
-    if (sortBy === newSortBy) {
-      setSortOrder(sortOrder === 'desc' ? 'asc' : 'desc');
-    } else {
-      setSortBy(newSortBy);
-      setSortOrder('desc');
-    }
-  };
+  // Mock transaction history for display
+  const transactions = [
+    { id: 1, type: 'income', description: 'Salary Payment', amount: character.salary || 0, date: 'Today' },
+    { id: 2, type: 'expense', description: 'Living Expenses', amount: -500, date: 'Yesterday' },
+  ];
 
   return (
-    <Card className="glass border-white/20">
-      <CardContent className="p-3">
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center gap-2">
-            <Calendar className="h-4 w-4 text-gray-500" />
-            <h2 className="text-sm font-semibold text-gray-700 dark:text-gray-200">
-              Transaction History
-            </h2>
-          </div>
-          <div className="space-x-2">
-            <button
-              onClick={() => toggleSort('date')}
-              className="text-xs text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
-            >
-              Date {sortBy === 'date' && (sortOrder === 'desc' ? '↓' : '↑')}
-            </button>
-            <button
-              onClick={() => toggleSort('amount')}
-              className="text-xs text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
-            >
-              Amount {sortBy === 'amount' && (sortOrder === 'desc' ? '↓' : '↑')}
-            </button>
-          </div>
-        </div>
-        <div className="max-h-48 overflow-y-auto">
-          {character.financialRecord?.transactions && character.financialRecord.transactions.length > 0 ? (
-            character.financialRecord.transactions.map((transaction) => (
-              <div key={transaction.id} className="flex items-center justify-between py-2 border-b border-gray-200 dark:border-gray-700">
-                <div>
-                  <div className="text-xs font-medium text-gray-700 dark:text-gray-200">
-                    {transaction.description}
-                  </div>
-                  <div className="text-xs text-gray-500 dark:text-gray-400">
-                    {transaction.date}
-                  </div>
-                </div>
-                <div className={`text-sm font-bold ${transaction.type === 'income' ? 'text-green-600' : 'text-red-600'}`}>
-                  ${transaction.amount.toLocaleString()}k
-                </div>
+    <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-lg mb-6">
+      <CardHeader>
+        <CardTitle className="text-lg">Recent Transactions</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-3">
+          {transactions.map((transaction) => (
+            <div key={transaction.id} className="flex justify-between items-center py-2 border-b border-gray-100 last:border-b-0">
+              <div>
+                <p className="font-medium text-gray-800">{transaction.description}</p>
+                <p className="text-sm text-gray-500">{transaction.date}</p>
               </div>
-            ))
-          ) : (
-            <div className="flex items-center justify-center py-8 text-gray-400">
-              <span className="text-sm">No transaction history available</span>
+              <span className={`font-semibold ${transaction.amount >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                {transaction.amount >= 0 ? '+' : ''}${Math.abs(transaction.amount)}
+              </span>
             </div>
-          )}
+          ))}
         </div>
       </CardContent>
     </Card>

@@ -1,32 +1,29 @@
 import React from 'react';
-import { Card, CardContent } from '../ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { formatMoney } from '../../utils/gameUtils';
 
 interface BalanceCardsProps {
   currentMoney: number;
   bankBalance: number;
 }
 
-export const BalanceCards: React.FC<BalanceCardsProps> = ({ 
-  currentMoney, 
-  bankBalance 
-}) => {
+export const BalanceCards: React.FC<BalanceCardsProps> = ({ currentMoney, bankBalance }) => {
   return (
-    <div className="grid grid-cols-2 gap-3">
-      <Card className="glass border-white/20">
-        <CardContent className="p-3 text-center">
-          <div className="text-lg font-bold text-green-600 dark:text-green-400">
-            ${currentMoney.toLocaleString()}k
-          </div>
-          <div className="text-xs text-gray-600 dark:text-gray-300">Total Wealth</div>
+    <div className="grid grid-cols-2 gap-4 mb-6">
+      <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-lg">
+        <CardHeader className="pb-3">
+          <CardTitle className="text-sm text-gray-600">Cash</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-2xl font-bold text-green-600">{formatMoney(currentMoney)}</p>
         </CardContent>
       </Card>
-      
-      <Card className="glass border-white/20">
-        <CardContent className="p-3 text-center">
-          <div className="text-lg font-bold text-blue-600 dark:text-blue-400">
-            ${bankBalance.toLocaleString()}k
-          </div>
-          <div className="text-xs text-gray-600 dark:text-gray-300">Bank Balance</div>
+      <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-lg">
+        <CardHeader className="pb-3">
+          <CardTitle className="text-sm text-gray-600">Bank Balance</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-2xl font-bold text-blue-600">{formatMoney(bankBalance)}</p>
         </CardContent>
       </Card>
     </div>

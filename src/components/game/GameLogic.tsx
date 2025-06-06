@@ -87,16 +87,59 @@ export const initializeCharacterDefaults = (character: Partial<Character>): Char
 
 export const processAgeUp = (gameState: GameState): GameState => {
   const updatedCharacter = { ...gameState.character };
+  const previousAge = updatedCharacter.age;
   updatedCharacter.age += 1;
+  
+  // Generate age-appropriate events
+  const ageEvents: string[] = [];
+  
+  // Birthday event
+  ageEvents.push(`🎂 You turned ${updatedCharacter.age} years old!`);
+  
+  // Age-specific events
+  if (updatedCharacter.age === 1) {
+    ageEvents.push(`👶 You learned to walk and say your first words!`);
+  } else if (updatedCharacter.age === 5) {
+    ageEvents.push(`🎒 You started kindergarten and made new friends!`);
+  } else if (updatedCharacter.age === 13) {
+    ageEvents.push(`🧑‍🎓 You became a teenager and entered middle school!`);
+  } else if (updatedCharacter.age === 18) {
+    ageEvents.push(`🎓 You graduated from high school and became an adult!`);
+  } else if (updatedCharacter.age === 21) {
+    ageEvents.push(`🍾 You can now legally drink alcohol!`);
+  } else if (updatedCharacter.age === 30) {
+    ageEvents.push(`💼 You're entering your thirties - time to get serious about life!`);
+  } else if (updatedCharacter.age === 50) {
+    ageEvents.push(`🏠 You've reached middle age - time to reflect on your accomplishments.`);
+  } else if (updatedCharacter.age === 65) {
+    ageEvents.push(`👴 You've reached retirement age! Time to enjoy your golden years.`);
+  }
+  
+  // Random life events based on age
+  if (updatedCharacter.age > 5 && Math.random() < 0.3) {
+    const randomEvents = [
+      `📚 You learned something new and gained knowledge.`,
+      `😊 You had a great day that improved your mood.`,
+      `💪 You felt particularly healthy today.`,
+      `👥 You had meaningful interactions with others.`
+    ];
+    ageEvents.push(randomEvents[Math.floor(Math.random() * randomEvents.length)]);
+  }
   
   // Age-related stat changes
   if (updatedCharacter.age > 30) {
     updatedCharacter.health = Math.max(0, updatedCharacter.health - 1);
+    if (updatedCharacter.health < 80) {
+      ageEvents.push(`🏥 You're starting to feel the effects of aging on your health.`);
+    }
   }
   
   if (updatedCharacter.age > 50) {
     updatedCharacter.health = Math.max(0, updatedCharacter.health - 2);
     updatedCharacter.looks = Math.max(0, updatedCharacter.looks - 1);
+    if (updatedCharacter.looks < 60) {
+      ageEvents.push(`👴 You notice some gray hairs and wrinkles appearing.`);
+    }
   }
   
   // Death check
@@ -109,9 +152,13 @@ export const processAgeUp = (gameState: GameState): GameState => {
     };
   }
   
+  // Update event history
+  const updatedEventHistory = [...gameState.eventHistory, ...ageEvents];
+  
   return {
     ...gameState,
-    character: updatedCharacter
+    character: updatedCharacter,
+    eventHistory: updatedEventHistory
   };
 };
 

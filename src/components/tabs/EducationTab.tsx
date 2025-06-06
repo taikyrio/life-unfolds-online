@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Character } from '../../types/game';
-import { ComprehensiveEducationSystem } from '../systems/ComprehensiveEducationSystem';
+import { ComprehensiveEducationSystem } from '../../systems/ComprehensiveEducationSystem';
 
 interface EducationTabProps {
   character: Character;

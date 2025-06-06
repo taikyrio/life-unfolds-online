@@ -1,37 +1,29 @@
 import React from 'react';
-import { Card, CardContent } from '../ui/card';
-import { PieChart } from 'lucide-react';
-import { Character } from '../../types/game';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Character } from '../../types/character';
 
 interface InvestmentPortfolioProps {
   character: Character;
 }
 
 export const InvestmentPortfolio: React.FC<InvestmentPortfolioProps> = ({ character }) => {
-  const totalInvestmentValue = typeof character.financialRecord?.investments === 'number' 
-    ? character.financialRecord.investments 
-    : 0;
+  const totalInvestments = character.assets
+    .filter(asset => asset.type === 'investment')
+    .reduce((total, asset) => total + asset.value, 0);
 
   return (
-    <Card className="glass border-white/20">
-      <CardContent className="p-3">
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center gap-2">
-            <PieChart className="h-4 w-4 text-gray-500" />
-            <h2 className="text-sm font-semibold text-gray-700 dark:text-gray-200">
-              Investment Portfolio
-            </h2>
-          </div>
-          <div className="text-right">
-            <span className="text-xs text-blue-600 dark:text-blue-400">
-              Total Value: ${totalInvestmentValue.toLocaleString()}k
-            </span>
-          </div>
-        </div>
-        <div className="max-h-48 overflow-y-auto">
-          <div className="flex items-center justify-center py-8 text-gray-400">
-            <span className="text-sm">Investment details not available</span>
-          </div>
+    <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-lg">
+      <CardHeader>
+        <CardTitle className="text-lg">Investment Portfolio</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="text-center py-6">
+          <p className="text-3xl font-bold text-blue-600 mb-2">${totalInvestments}</p>
+          <p className="text-gray-600 mb-4">Total Portfolio Value</p>
+          <Button variant="outline" className="w-full">
+            Manage Investments
+          </Button>
         </div>
       </CardContent>
     </Card>
