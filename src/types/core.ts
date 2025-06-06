@@ -12,6 +12,12 @@ export interface LifeEvent {
   minAge?: number;
   maxAge?: number;
   category?: string;
+  requirements?: {
+    education?: string;
+    minSmarts?: number;
+    minWealth?: number;
+    minHealth?: number;
+  };
 }
 
 export interface EventChoice {
@@ -104,4 +110,18 @@ export interface CrimeOperation {
   category: string;
   failureChance: number;
   arrestChance: number;
+}
+
+export interface ZodiacSign {
+  name: string;
+  symbol: string;
+  element: string;
+  dates: string;
+}
+
+export interface ZodiacSignData extends ZodiacSign {
+  traits: string[];
+  compatibility: string[];
+  luckyNumbers: number[];
+  luckyColors: string[];
 }
