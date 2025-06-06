@@ -1,3 +1,4 @@
+
 import { PersonalityTraits, ZodiacSign, Asset, CriminalRecord, JobPerformance } from './core';
 import { FamilyMember } from './relationships';
 import { EducationRecord, CurrentEducation } from './education';
@@ -108,4 +109,10 @@ export interface Character {
   musicCareer?: MusicCareer;
   musicArtists?: MusicArtist[];
   money?: number; // For compatibility with money system
+  
+  // Missing properties causing TypeScript errors
+  education?: EducationRecord;
+  currentEducation?: CurrentEducation;
+  familyMembers: FamilyMember[];
+  relationshipStatus?: string;
 }

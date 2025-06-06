@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -41,7 +42,12 @@ export const CareerSelectionModal: React.FC<CareerSelectionModalProps> = ({
     id: career.id,
     title: career.name,
     salary: career.levels[0]?.salary || 25,
-    requirements: career.requirements,
+    requirements: {
+      age: career.requirements.age || 18, // Ensure age is always provided
+      education: career.requirements.education,
+      smarts: career.requirements.smarts,
+      looks: career.requirements.looks
+    },
     description: career.description,
     emoji: career.category === 'technology' ? '💻' : 
           career.category === 'healthcare' ? '⚕️' : 
@@ -55,7 +61,7 @@ export const CareerSelectionModal: React.FC<CareerSelectionModalProps> = ({
     return careerOptions.filter(career => {
       const meetsAge = character.age >= career.requirements.age;
       const meetsEducation = !career.requirements.education || 
-        character.education.completedStages.includes(career.requirements.education);
+        character.education?.completedStages?.includes(career.requirements.education);
       const meetsSmarts = !career.requirements.smarts || character.smarts >= career.requirements.smarts;
       const meetsLooks = !career.requirements.looks || character.looks >= career.requirements.looks;
 

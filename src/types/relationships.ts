@@ -51,6 +51,7 @@ export interface FamilyMember {
   isEstranged?: boolean;
   currentMood?: string;
   relationshipStats?: RelationshipStats;
+  relationshipQuality?: number; // Added missing property
   personality?: {
     kindness: number;
     loyalty: number;

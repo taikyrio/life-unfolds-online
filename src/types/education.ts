@@ -34,6 +34,13 @@ export interface EducationRecord {
   schoolName?: string;
 }
 
+export interface CurrentEducation {
+  level: string;
+  institution?: string;
+  year?: number;
+  gpa?: number;
+}
+
 export interface ClassmateInteraction {
   id: string;
   name: string;
