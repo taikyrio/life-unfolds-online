@@ -8,6 +8,7 @@ export const childhoodEvents: DynamicEvent[] = [
     title: 'First Word',
     description: 'You spoke your first word! Your parents are overjoyed.',
     emoji: '👶',
+    category: 'childhood',
     choices: [
       {
         id: 'mama',
@@ -30,6 +31,7 @@ export const childhoodEvents: DynamicEvent[] = [
     title: 'Potty Training',
     description: 'Your parents are trying to potty train you.',
     emoji: '🚽',
+    category: 'childhood',
     choices: [
       {
         id: 'cooperate',
@@ -54,6 +56,7 @@ export const childhoodEvents: DynamicEvent[] = [
     title: 'School Bully',
     description: 'A bigger kid at school is picking on you and demanding your lunch money.',
     emoji: '👊',
+    category: 'childhood',
     choices: [
       {
         id: 'stand_up',
@@ -86,6 +89,7 @@ export const childhoodEvents: DynamicEvent[] = [
     title: 'School Talent Show',
     description: 'Your school is hosting a talent show. Do you want to participate?',
     emoji: '🎤',
+    category: 'childhood',
     choices: [
       {
         id: 'sing',

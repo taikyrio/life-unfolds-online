@@ -76,6 +76,18 @@ export interface LifeEvent {
     wealth?: number;
     relationships?: number;
     fame?: number;
+    notoriety?: number;
+    salary?: number;
+  };
+  ageRequirement?: { min?: number; max?: number };
+  requirements?: {
+    education?: string;
+    job?: string;
+    relationshipStatus?: string;
+    wealth?: number;
+    familyMember?: string;
+    zodiacSign?: string;
+    socialCircle?: string;
   };
 }
 
@@ -91,6 +103,8 @@ export interface EventChoice {
     wealth?: number;
     relationships?: number;
     fame?: number;
+    notoriety?: number;
+    salary?: number;
   };
   consequences?: string[];
 }
@@ -103,6 +117,8 @@ export interface StatEffects {
   wealth?: number;
   relationships?: number;
   fame?: number;
+  notoriety?: number;
+  salary?: number;
 }
 
 export interface Choice {

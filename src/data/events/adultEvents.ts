@@ -8,6 +8,7 @@ export const adultEvents: DynamicEvent[] = [
     title: 'College Application Results',
     description: 'You received responses from the colleges you applied to.',
     emoji: '🎓',
+    category: 'education',
     choices: [
       {
         id: 'prestigious_college',
@@ -36,6 +37,7 @@ export const adultEvents: DynamicEvent[] = [
     title: 'Moving Out',
     description: 'It\'s time to get your own place. What type of housing do you choose?',
     emoji: '🏠',
+    category: 'lifestyle',
     choices: [
       {
         id: 'luxury_apartment',
@@ -72,6 +74,7 @@ export const adultEvents: DynamicEvent[] = [
     title: 'Career Opportunity',
     description: 'You\'ve been offered a new job with better pay but in a different city.',
     emoji: '✈️',
+    category: 'career',
     choices: [
       {
         id: 'take_job',
@@ -100,6 +103,7 @@ export const adultEvents: DynamicEvent[] = [
     title: 'Midlife Reflection',
     description: 'You\'re feeling unsatisfied with your life direction. What do you do?',
     emoji: '🔄',
+    category: 'lifestyle',
     choices: [
       {
         id: 'career_change',

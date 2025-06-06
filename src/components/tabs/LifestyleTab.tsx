@@ -15,8 +15,8 @@ export const LifestyleTab: React.FC<LifestyleTabProps> = ({
   character, 
   onLifestyleAction 
 }) => {
-  const hasHouse = character.assets.some(asset => asset.type === 'property');
-  const hasCar = character.assets.some(asset => asset.type === 'vehicle');
+  const hasHouse = character.assets.some(asset => asset.type === 'house');
+  const hasCar = character.assets.some(asset => asset.type === 'car');
 
   const lifestyleItems = [
     {
