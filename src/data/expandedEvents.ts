@@ -7,6 +7,7 @@ export const expandedLifeEvents: DynamicEvent[] = [
     title: 'Lucky Day',
     description: 'You found a lottery ticket on the ground. Do you want to claim it?',
     emoji: '🎰',
+    category: 'random',
     choices: [
       {
         id: 'claim_ticket',
@@ -29,6 +30,7 @@ export const expandedLifeEvents: DynamicEvent[] = [
     title: 'Unexpected Meeting',
     description: 'You bump into an old friend on the street.',
     emoji: '👋',
+    category: 'social',
     choices: [
       {
         id: 'catch_up',

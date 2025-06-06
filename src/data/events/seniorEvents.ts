@@ -7,6 +7,7 @@ export const seniorEvents: DynamicEvent[] = [
     title: 'Retirement Decision',
     description: 'You\'re eligible for retirement. What\'s your plan?',
     emoji: '🏖️',
+    category: 'career',
     choices: [
       {
         id: 'full_retirement',

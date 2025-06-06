@@ -35,6 +35,11 @@ export interface Asset {
   isInsured: boolean;
   insuranceCost?: number;
   emoji: string;
+  requirements?: {
+    minAge?: number;
+    minWealth?: number;
+    minIncome?: number;
+  };
 }
 
 export interface CriminalRecord {
@@ -68,17 +73,7 @@ export interface LifeEvent {
   minAge?: number;
   maxAge?: number;
   choices?: EventChoice[];
-  effects?: {
-    health?: number;
-    happiness?: number;
-    smarts?: number;
-    looks?: number;
-    wealth?: number;
-    relationships?: number;
-    fame?: number;
-    notoriety?: number;
-    salary?: number;
-  };
+  effects?: StatEffects;
   ageRequirement?: { min?: number; max?: number };
   requirements?: {
     education?: string;
@@ -89,24 +84,16 @@ export interface LifeEvent {
     zodiacSign?: string;
     socialCircle?: string;
   };
+  flags?: string[];
 }
 
 export interface EventChoice {
   id: string;
   text: string;
   emoji?: string;
-  effects?: {
-    health?: number;
-    happiness?: number;
-    smarts?: number;
-    looks?: number;
-    wealth?: number;
-    relationships?: number;
-    fame?: number;
-    notoriety?: number;
-    salary?: number;
-  };
+  effects?: StatEffects;
   consequences?: string[];
+  flags?: string[];
 }
 
 export interface StatEffects {
@@ -119,6 +106,7 @@ export interface StatEffects {
   fame?: number;
   notoriety?: number;
   salary?: number;
+  jobLevel?: number;
 }
 
 export interface Choice {

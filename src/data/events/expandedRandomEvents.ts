@@ -7,6 +7,7 @@ export const schoolWorkEvents: DynamicEvent[] = [
     title: 'Group Project Drama',
     description: 'You\'re assigned to work on a group project, but your teammates aren\'t pulling their weight.',
     emoji: '📚',
+    category: 'education',
     choices: [
       {
         id: 'do_all_work',
@@ -45,6 +46,7 @@ export const schoolWorkEvents: DynamicEvent[] = [
     title: 'Promotion Opportunity',
     description: 'Your boss is considering you for a promotion, but it means more responsibility and longer hours.',
     emoji: '📈',
+    category: 'career',
     choices: [
       {
         id: 'accept_promotion',
@@ -79,6 +81,7 @@ export const relationshipEvents: DynamicEvent[] = [
     title: 'First Date',
     description: 'Someone you like has asked you out on a date. Where do you want to go?',
     emoji: '💕',
+    category: 'relationship',
     choices: [
       {
         id: 'fancy_restaurant',
@@ -117,6 +120,7 @@ export const relationshipEvents: DynamicEvent[] = [
     title: 'Relationship Problems',
     description: 'Your relationship is going through a rough patch. What do you do?',
     emoji: '💔',
+    category: 'relationship',
     choices: [
       {
         id: 'couples_therapy',
@@ -155,6 +159,7 @@ export const relationshipEvents: DynamicEvent[] = [
     title: 'Marriage Proposal',
     description: 'Your long-term partner has proposed marriage!',
     emoji: '💍',
+    category: 'relationship',
     choices: [
       {
         id: 'accept_proposal',
@@ -189,6 +194,7 @@ export const healthEvents: DynamicEvent[] = [
     title: 'Flu Season',
     description: 'There\'s a flu outbreak going around. You\'re starting to feel sick.',
     emoji: '🤒',
+    category: 'health',
     choices: [
       {
         id: 'rest_at_home',
@@ -220,6 +226,7 @@ export const healthEvents: DynamicEvent[] = [
     title: 'Workout Injury',
     description: 'You injured yourself while exercising. Your back is in serious pain.',
     emoji: '🏋️‍♂️',
+    category: 'health',
     choices: [
       {
         id: 'physical_therapy',
@@ -254,6 +261,7 @@ export const financialEvents: DynamicEvent[] = [
     title: 'Surprise Inheritance',
     description: 'A distant relative you barely knew has left you money in their will.',
     emoji: '💰',
+    category: 'random',
     choices: [
       {
         id: 'invest_wisely',
@@ -292,6 +300,7 @@ export const financialEvents: DynamicEvent[] = [
     title: 'Car Trouble',
     description: 'Your car has broken down and needs expensive repairs.',
     emoji: '🚗',
+    category: 'random',
     choices: [
       {
         id: 'repair_car',
@@ -330,6 +339,7 @@ export const financialEvents: DynamicEvent[] = [
     title: 'Lottery Ticket',
     description: 'You bought a lottery ticket on impulse while getting gas.',
     emoji: '🎟️',
+    category: 'random',
     choices: [
       {
         id: 'win_jackpot',
@@ -371,6 +381,7 @@ export const familyEvents: DynamicEvent[] = [
     title: 'New Family Member',
     description: 'A baby has been born in your family!',
     emoji: '👶',
+    category: 'family',
     choices: [
       {
         id: 'enthusiastic_uncle',
@@ -402,6 +413,7 @@ export const familyEvents: DynamicEvent[] = [
     title: 'Family Loss',
     description: 'A close family member has passed away unexpectedly.',
     emoji: '😢',
+    category: 'family',
     choices: [
       {
         id: 'take_time_grieve',
@@ -436,6 +448,7 @@ export const legalEvents: DynamicEvent[] = [
     title: 'Traffic Stop',
     description: 'You were pulled over for speeding on your way to work.',
     emoji: '🚔',
+    category: 'crime',
     choices: [
       {
         id: 'accept_ticket',
@@ -467,6 +480,7 @@ export const legalEvents: DynamicEvent[] = [
     title: 'Jury Duty',
     description: 'You\'ve been called for jury duty on an important case.',
     emoji: '⚖️',
+    category: 'social',
     choices: [
       {
         id: 'serve_faithfully',
@@ -494,6 +508,7 @@ export const travelEvents: DynamicEvent[] = [
     title: 'Vacation Opportunity',
     description: 'A friend invited you on a last-minute trip to Europe.',
     emoji: '✈️',
+    category: 'social',
     choices: [
       {
         id: 'luxury_trip',

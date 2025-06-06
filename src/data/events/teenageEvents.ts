@@ -7,6 +7,7 @@ export const teenageEvents: DynamicEvent[] = [
     title: 'First Crush',
     description: 'You have developed feelings for someone at school. What do you do?',
     emoji: '💕',
+    category: 'relationship',
     choices: [
       {
         id: 'confess',
@@ -37,13 +38,13 @@ export const teenageEvents: DynamicEvent[] = [
     title: 'Party Invitation',
     description: 'Your friends invite you to a party where there will be drinking and smoking.',
     emoji: '🎉',
+    category: 'social',
     choices: [
       {
         id: 'go_party',
         text: 'Go to the party',
         effects: { happiness: 20, relationships: 15, health: -10 },
         emoji: '🎉',
-        flags: ['party_experience'],
         consequences: ['You had fun but feel sick the next day.']
       },
       {

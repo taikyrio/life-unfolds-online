@@ -1,4 +1,3 @@
-
 import React, { useState, useMemo } from 'react';
 import { Character } from '../../types/game';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
@@ -109,7 +108,7 @@ export const AssetsTab: React.FC<AssetsTabProps> = ({
   const availableAssets = getAvailableAssets(character, selectedCategory);
 
   const handlePurchase = (assetId: string) => {
-    const result = purchaseAsset(character, assetId, selectedCategory);
+    const result = purchaseAsset(character, assetId);
     if (result.success && result.character) {
       onCharacterUpdate(result.character);
       onEvent(result.message);
