@@ -4,7 +4,7 @@ import { Character, GameState } from '../../types/game';
 import { ActivitiesMenu } from '../menus/ActivitiesMenu';
 import { RelationshipsMenu } from '../menus/RelationshipsMenu';
 import { AssetsMenu } from '../menus/AssetsMenu';
-import ActivityModal from '../modals/ActivityModal';
+import { ActivityModal } from '../modals/ActivityModal';
 import { EventOverlay } from '../EventOverlay';
 
 interface GameModalsProps {
@@ -60,10 +60,18 @@ export const GameModals: React.FC<GameModalsProps> = ({
 
       {showRelationshipsMenu && (
         <RelationshipsMenu
-          isOpen={showRelationshipsMenu}
           character={gameState.character}
-          onClose={onCloseRelationshipsMenu}
-          onActivity={(action, data) => onRelationshipAction(action, data)}
+          onCharacterUpdate={(updatedCharacter) => {
+            onGameStateChange({
+              ...gameState,
+              character: updatedCharacter
+            });
+            onCloseRelationshipsMenu();
+          }}
+          onEvent={(message) => {
+            // Handle relationship events
+            console.log('Relationship event:', message);
+          }}
         />
       )}
 
@@ -77,9 +85,11 @@ export const GameModals: React.FC<GameModalsProps> = ({
 
       {showActivityModal && selectedActivity && (
         <ActivityModal
+          isOpen={showActivityModal}
           character={gameState.character}
+          activity={selectedActivity}
           onClose={onCloseActivityModal}
-          onSelectActivity={(activity) => {
+          onStartActivity={(activity) => {
             onActivity(activity.id, activity);
             onCloseActivityModal();
           }}
