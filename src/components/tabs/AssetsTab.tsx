@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { Character } from '../../types/game';
+import { Asset } from '../../types/assets';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
@@ -50,14 +51,14 @@ export const AssetsTab: React.FC<AssetsTabProps> = ({
   // Portfolio analytics
   const portfolioAnalytics = useMemo(() => {
     const assets = character.assets || [];
-    const totalPurchasePrice = assets.reduce((sum, asset) => sum + asset.purchasePrice, 0);
-    const totalCurrentValue = assets.reduce((sum, asset) => sum + asset.currentValue, 0);
+    const totalPurchasePrice = assets.reduce((sum, asset) => sum + (asset.purchasePrice || 0), 0);
+    const totalCurrentValue = assets.reduce((sum, asset) => sum + (asset.currentValue || asset.value), 0);
     const totalReturn = totalCurrentValue - totalPurchasePrice;
     const returnPercentage = totalPurchasePrice > 0 ? (totalReturn / totalPurchasePrice) * 100 : 0;
     
     const categoryBreakdown = categories.map(category => {
       const categoryAssets = getAssetsByCategory(character, category.id);
-      const value = categoryAssets.reduce((sum, asset) => sum + asset.currentValue, 0);
+      const value = categoryAssets.reduce((sum, asset) => sum + (asset.currentValue || asset.value), 0);
       const percentage = totalCurrentValue > 0 ? (value / totalCurrentValue) * 100 : 0;
       return { ...category, value, percentage, count: categoryAssets.length };
     });
@@ -76,7 +77,7 @@ export const AssetsTab: React.FC<AssetsTabProps> = ({
     if (searchTerm) {
       assets = assets.filter(asset => 
         asset.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        asset.description.toLowerCase().includes(searchTerm.toLowerCase())
+        (asset as any).description?.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
     
@@ -85,18 +86,18 @@ export const AssetsTab: React.FC<AssetsTabProps> = ({
       let comparison = 0;
       switch (sortBy) {
         case 'value':
-          comparison = a.currentValue - b.currentValue;
+          comparison = ((a as any).currentValue || a.value) - ((b as any).currentValue || b.value);
           break;
         case 'name':
           comparison = a.name.localeCompare(b.name);
           break;
         case 'condition':
           const conditionOrder = { excellent: 5, good: 4, fair: 3, poor: 2, damaged: 1 };
-          comparison = (conditionOrder[a.condition as keyof typeof conditionOrder] || 0) - 
-                      (conditionOrder[b.condition as keyof typeof conditionOrder] || 0);
+          comparison = (conditionOrder[(a as any).condition as keyof typeof conditionOrder] || 0) - 
+                      (conditionOrder[(b as any).condition as keyof typeof conditionOrder] || 0);
           break;
         case 'age':
-          comparison = a.yearPurchased - b.yearPurchased;
+          comparison = ((a as any).yearPurchased || 0) - ((b as any).yearPurchased || 0);
           break;
       }
       return sortOrder === 'desc' ? -comparison : comparison;
@@ -288,85 +289,88 @@ export const AssetsTab: React.FC<AssetsTabProps> = ({
 
             {ownedAssets.length > 0 ? (
               <div className="space-y-3">
-                {ownedAssets.map((asset) => (
-                  <Card key={asset.id} className="glass border-white/20">
-                    <CardContent className="p-3">
-                      <div className="flex items-start justify-between mb-2">
-                        <div className="flex items-center gap-2">
-                          <div className="text-xl">{asset.emoji}</div>
-                          <div className="flex-1">
-                            <h3 className="text-sm font-semibold text-gray-800 dark:text-white">
-                              {asset.name}
-                            </h3>
-                            <p className="text-xs text-gray-600 dark:text-gray-300">
-                              {asset.description}
-                            </p>
+                {ownedAssets.map((asset) => {
+                  const extendedAsset = asset as any;
+                  return (
+                    <Card key={asset.id} className="glass border-white/20">
+                      <CardContent className="p-3">
+                        <div className="flex items-start justify-between mb-2">
+                          <div className="flex items-center gap-2">
+                            <div className="text-xl">{extendedAsset.emoji || '📦'}</div>
+                            <div className="flex-1">
+                              <h3 className="text-sm font-semibold text-gray-800 dark:text-white">
+                                {asset.name}
+                              </h3>
+                              <p className="text-xs text-gray-600 dark:text-gray-300">
+                                {extendedAsset.description || 'Asset description'}
+                              </p>
+                            </div>
+                          </div>
+                          <div className="text-right">
+                            <Badge variant="secondary" className="text-xs">${(extendedAsset.currentValue || asset.value)}k</Badge>
+                            <div className="text-xs text-gray-500 mt-1">
+                              Bought: ${extendedAsset.purchasePrice || asset.value}k
+                            </div>
                           </div>
                         </div>
-                        <div className="text-right">
-                          <Badge variant="secondary" className="text-xs">${asset.currentValue}k</Badge>
-                          <div className="text-xs text-gray-500 mt-1">
-                            Bought: ${asset.purchasePrice}k
-                          </div>
-                        </div>
-                      </div>
 
-                      <div className="grid grid-cols-3 gap-1 mb-2 text-xs">
-                        <div className="flex items-center gap-1">
-                          <span className="text-gray-500">Condition:</span>
-                          <span className={`capitalize ${getAssetConditionColor(asset.condition)}`}>
-                            {asset.condition}
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <Calendar className="h-3 w-3 text-gray-400" />
-                          <span>{character.age - asset.yearPurchased}y old</span>
-                        </div>
-                        {asset.rentalIncome && (
+                        <div className="grid grid-cols-3 gap-1 mb-2 text-xs">
                           <div className="flex items-center gap-1">
-                            <TrendingUp className="h-3 w-3 text-green-500" />
-                            <span>+${asset.rentalIncome}k/y</span>
+                            <span className="text-gray-500">Condition:</span>
+                            <span className={`capitalize ${getAssetConditionColor(extendedAsset.condition || 'good')}`}>
+                              {extendedAsset.condition || 'good'}
+                            </span>
                           </div>
-                        )}
-                      </div>
+                          <div className="flex items-center gap-1">
+                            <Calendar className="h-3 w-3 text-gray-400" />
+                            <span>{character.age - (extendedAsset.yearPurchased || character.age)}y old</span>
+                          </div>
+                          {extendedAsset.rentalIncome && (
+                            <div className="flex items-center gap-1">
+                              <TrendingUp className="h-3 w-3 text-green-500" />
+                              <span>+${extendedAsset.rentalIncome}k/y</span>
+                            </div>
+                          )}
+                        </div>
 
-                      <div className="flex gap-1">
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => handleMaintain(asset.id)}
-                          disabled={character.wealth < asset.maintenanceCost}
-                          className="flex-1 text-xs py-1"
-                        >
-                          <Wrench className="h-3 w-3 mr-1" />
-                          ${asset.maintenanceCost}k
-                        </Button>
-                        
-                        {!asset.isInsured && asset.insuranceCost && (
+                        <div className="flex gap-1">
                           <Button
                             size="sm"
                             variant="outline"
-                            onClick={() => handleInsure(asset.id)}
-                            disabled={character.wealth < asset.insuranceCost}
+                            onClick={() => handleMaintain(asset.id)}
+                            disabled={character.wealth < (extendedAsset.maintenanceCost || 1)}
                             className="flex-1 text-xs py-1"
                           >
-                            <Shield className="h-3 w-3 mr-1" />
-                            ${asset.insuranceCost}k
+                            <Wrench className="h-3 w-3 mr-1" />
+                            ${extendedAsset.maintenanceCost || 1}k
                           </Button>
-                        )}
-                        
-                        <Button
-                          size="sm"
-                          variant="destructive"
-                          onClick={() => handleSell(asset.id)}
-                          className="flex-1 text-xs py-1"
-                        >
-                          Sell
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
+                          
+                          {!extendedAsset.isInsured && extendedAsset.insuranceCost && (
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => handleInsure(asset.id)}
+                              disabled={character.wealth < extendedAsset.insuranceCost}
+                              className="flex-1 text-xs py-1"
+                            >
+                              <Shield className="h-3 w-3 mr-1" />
+                              ${extendedAsset.insuranceCost}k
+                            </Button>
+                          )}
+                          
+                          <Button
+                            size="sm"
+                            variant="destructive"
+                            onClick={() => handleSell(asset.id)}
+                            className="flex-1 text-xs py-1"
+                          >
+                            Sell
+                          </Button>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  );
+                })}
               </div>
             ) : (
               <Card className="glass border-white/20">

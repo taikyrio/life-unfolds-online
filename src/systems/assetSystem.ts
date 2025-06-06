@@ -1,5 +1,6 @@
 
-import { Character, Asset } from '../types/game';
+import { Character } from '../types/game';
+import { Asset as DetailedAsset } from '../types/assets';
 
 export interface AssetPortfolioAnalytics {
   totalValue: number;
@@ -7,7 +8,7 @@ export interface AssetPortfolioAnalytics {
   returnPercentage: number;
 }
 
-export const getAssetsByCategory = (character: Character, category: string): Asset[] => {
+export const getAssetsByCategory = (character: Character, category: string): any[] => {
   return character.assets?.filter(asset => {
     switch (category) {
       case 'real_estate':
@@ -24,7 +25,7 @@ export const getAssetsByCategory = (character: Character, category: string): Ass
   }) || [];
 };
 
-export const getAvailableAssets = (character: Character, category: string): any[] => {
+export const getAvailableAssets = (character: Character, category: string): DetailedAsset[] => {
   // Return empty array for now - would contain purchasable assets
   return [];
 };
@@ -58,7 +59,7 @@ export const insureAsset = (character: Character, assetId: string): { success: b
 };
 
 export const getAssetPortfolioValue = (character: Character): number => {
-  return character.assets?.reduce((total, asset) => total + (asset.currentValue || asset.value), 0) || 0;
+  return character.assets?.reduce((total, asset) => total + (asset.value || 0), 0) || 0;
 };
 
 export const getAssetConditionColor = (condition: string): string => {
