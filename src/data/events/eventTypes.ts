@@ -1,5 +1,5 @@
 
-import { LifeEvent } from '../../types/game';
+import { LifeEvent } from '../../types/core';
 
 export interface EventCondition {
   minAge?: number;
@@ -13,8 +13,19 @@ export interface EventCondition {
   probability?: number;
 }
 
-export interface DynamicEvent extends LifeEvent {
+export interface DynamicEventChoice {
+  id: string;
+  text: string;
+  emoji?: string;
+  effects: { [key: string]: number };
+  consequences?: string[];
+}
+
+export interface DynamicEvent extends Omit<LifeEvent, 'choices'> {
+  emoji: string;
+  category: string;
   conditions: EventCondition;
+  choices: DynamicEventChoice[];
   flags?: string[];
   consequences?: string[];
   weight: number;

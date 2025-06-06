@@ -1,4 +1,27 @@
 
+export interface Artist {
+  id: string;
+  name: string;
+  genre: string;
+  members: string[];
+  fans: number;
+  records: Record[];
+  tours: any[];
+  disbanded: boolean;
+}
+
+export interface Record {
+  id: string;
+  name: string;
+  tracks: string[];
+  productionTime: number;
+  releaseDate: Date;
+  sales: number;
+  certified: boolean;
+  inProduction: boolean;
+  earnings: number;
+}
+
 export interface MusicCareer {
   artistName: string;
   genre: string;
@@ -9,8 +32,17 @@ export interface MusicCareer {
   currentAlbum: string | null;
   totalEarnings: number;
   awards: string[];
-  lastRelease: Date;
+  lastRelease: string | null;
   isActive: boolean;
+  level?: number;
+  fans?: number;
+  albums?: number;
+  singles?: number;
+  currentProject?: any;
+  earnings?: number;
+  artists?: Artist[];
+  studioSlots?: number;
+  hasMoreStudioTime?: boolean;
 }
 
 export interface Album {

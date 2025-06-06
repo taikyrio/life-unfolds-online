@@ -3,6 +3,7 @@ export interface LifeEvent {
   id: string;
   title: string;
   description: string;
+  emoji?: string;
   choices?: EventChoice[];
   effects?: EventEffect[];
   probability?: number;
@@ -16,6 +17,7 @@ export interface LifeEvent {
 export interface EventChoice {
   id: string;
   text: string;
+  emoji?: string;
   effects?: EventEffect[];
   probability?: number;
   requirements?: {

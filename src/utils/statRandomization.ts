@@ -1,10 +1,12 @@
 
 import { Character } from '../types/character';
 
+export type RandomizationMode = 'realistic' | 'balanced' | 'extreme' | 'high';
+
 export const randomizeStats = (
   character: Character,
   options: {
-    mode: string;
+    mode: RandomizationMode;
     preserveAge?: boolean;
     preserveEducation?: boolean;
     preserveWealth?: boolean;
@@ -24,17 +26,23 @@ export const randomizeStats = (
       randomizedCharacter.smarts = Math.floor(Math.random() * 60) + 20; // 20-80
       randomizedCharacter.looks = Math.floor(Math.random() * 60) + 20; // 20-80
       break;
-    case 'random':
+    case 'balanced':
+      randomizedCharacter.happiness = Math.floor(Math.random() * 40) + 30; // 30-70
+      randomizedCharacter.health = Math.floor(Math.random() * 40) + 30; // 30-70
+      randomizedCharacter.smarts = Math.floor(Math.random() * 40) + 30; // 30-70
+      randomizedCharacter.looks = Math.floor(Math.random() * 40) + 30; // 30-70
+      break;
+    case 'extreme':
       randomizedCharacter.happiness = Math.floor(Math.random() * 100);
       randomizedCharacter.health = Math.floor(Math.random() * 100);
       randomizedCharacter.smarts = Math.floor(Math.random() * 100);
       randomizedCharacter.looks = Math.floor(Math.random() * 100);
       break;
-    case 'blessed':
-      randomizedCharacter.happiness = Math.floor(Math.random() * 20) + 80; // 80-100
-      randomizedCharacter.health = Math.floor(Math.random() * 10) + 90; // 90-100
-      randomizedCharacter.smarts = Math.floor(Math.random() * 20) + 80; // 80-100
-      randomizedCharacter.looks = Math.floor(Math.random() * 20) + 80; // 80-100
+    case 'high':
+      randomizedCharacter.happiness = Math.floor(Math.random() * 40) + 60; // 60-100
+      randomizedCharacter.health = Math.floor(Math.random() * 40) + 60; // 60-100
+      randomizedCharacter.smarts = Math.floor(Math.random() * 40) + 60; // 60-100
+      randomizedCharacter.looks = Math.floor(Math.random() * 40) + 60; // 60-100
       break;
   }
   

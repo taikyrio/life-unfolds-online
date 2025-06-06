@@ -34,3 +34,28 @@ export const getLifeStage = (age: number): string => {
 export const calculateStatInfluence = (stat: number): number => {
   return (stat - 50) / 100; // -0.5 to +0.5 influence
 };
+
+export const getStatColor = (value: number): string => {
+  if (value >= 80) return 'text-green-600';
+  if (value >= 60) return 'text-yellow-600';
+  if (value >= 40) return 'text-orange-600';
+  return 'text-red-600';
+};
+
+export const getStatEmoji = (value: number): string => {
+  if (value >= 80) return '😊';
+  if (value >= 60) return '🙂';
+  if (value >= 40) return '😐';
+  if (value >= 20) return '😟';
+  return '😢';
+};
+
+export const formatMoney = (amount: number): string => {
+  if (amount >= 1000000) {
+    return `$${(amount / 1000000).toFixed(1)}M`;
+  } else if (amount >= 1000) {
+    return `$${(amount / 1000).toFixed(1)}K`;
+  } else {
+    return `$${amount}`;
+  }
+};
