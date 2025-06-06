@@ -86,12 +86,32 @@ export const initializeCharacterDefaults = (character: Partial<Character>): Char
 };
 
 export const processAgeUp = (gameState: GameState): GameState => {
+  const updatedCharacter = { ...gameState.character };
+  updatedCharacter.age += 1;
+  
+  // Age-related stat changes
+  if (updatedCharacter.age > 30) {
+    updatedCharacter.health = Math.max(0, updatedCharacter.health - 1);
+  }
+  
+  if (updatedCharacter.age > 50) {
+    updatedCharacter.health = Math.max(0, updatedCharacter.health - 2);
+    updatedCharacter.looks = Math.max(0, updatedCharacter.looks - 1);
+  }
+  
+  // Death check
+  if (updatedCharacter.health <= 0 || updatedCharacter.age >= 120) {
+    return {
+      ...gameState,
+      character: updatedCharacter,
+      gameOver: true,
+      gameOverReason: updatedCharacter.health <= 0 ? 'Death by poor health' : 'Death by old age'
+    };
+  }
+  
   return {
     ...gameState,
-    character: {
-      ...gameState.character,
-      age: gameState.character.age + 1
-    }
+    character: updatedCharacter
   };
 };
 
