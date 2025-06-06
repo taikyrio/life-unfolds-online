@@ -47,6 +47,40 @@ export const isActivityAvailable = (activity: Activity, character: Character): b
   return true;
 };
 
+export const getRequirementText = (activity: Activity, character: Character): string => {
+  const requirements = [];
+  
+  if (character.age < activity.minAge) {
+    requirements.push(`Requires age ${activity.minAge}+`);
+  }
+  
+  if (activity.maxAge && character.age > activity.maxAge) {
+    requirements.push(`Too old (max age ${activity.maxAge})`);
+  }
+  
+  if (activity.cost && character.wealth < activity.cost) {
+    requirements.push(`Requires $${activity.cost.toLocaleString()}`);
+  }
+  
+  if (activity.requirements) {
+    if (activity.requirements.wealth && character.wealth < activity.requirements.wealth) {
+      requirements.push(`Requires $${activity.requirements.wealth.toLocaleString()}`);
+    }
+    if (activity.requirements.health && character.health < activity.requirements.health) {
+      requirements.push(`Requires ${activity.requirements.health} health`);
+    }
+    if (activity.requirements.smarts && character.smarts < activity.requirements.smarts) {
+      requirements.push(`Requires ${activity.requirements.smarts} smarts`);
+    }
+  }
+  
+  if (activity.id.includes('family') && (!character.familyMembers || character.familyMembers.length === 0)) {
+    requirements.push('Requires family members');
+  }
+  
+  return requirements.join(', ');
+};
+
 export const getAvailableActivities = (character: Character): Activity[] => {
   const allActivities: Activity[] = [
     {
