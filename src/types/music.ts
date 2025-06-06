@@ -1,45 +1,38 @@
 
-export interface Artist {
-  id: string;
-  name: string;
-  genre: string;
-  members: number;
-  fans: number;
-  records: Record[];
-  tours: Tour[];
-  disbanded: boolean;
-}
-
-export interface Record {
-  id: string;
-  name: string;
-  tracks: number;
-  productionTime: number;
-  releaseDate: Date;
-  sales: number;
-  certified: boolean;
-  inProduction: boolean;
-  earnings: number;
-}
-
-export interface Tour {
-  id: string;
-  name: string;
-  year: number;
-  earnings: number;
-  fansGained: number;
-}
-
 export interface MusicCareer {
-  level: number;
-  fans: number;
-  albums: number;
-  singles: number;
+  artistName: string;
+  genre: string;
+  recordLabel: string | null;
+  albumsSold: number;
+  fanBase: number;
   reputation: number;
-  currentProject: string | null;
-  lastRelease: Date | null;
+  currentAlbum: string | null;
+  totalEarnings: number;
+  awards: string[];
+  lastRelease: Date;
+  isActive: boolean;
+}
+
+export interface Album {
+  title: string;
+  genre: string;
+  releaseDate: Date;
+  salesTarget: number;
+  actualSales: number;
+  criticalRating: number;
+  publicRating: number;
+  cost: number;
   earnings: number;
-  artists: Artist[];
-  studioSlots: number;
-  hasMoreStudioTime: boolean;
+}
+
+export interface RecordLabel {
+  name: string;
+  prestige: number;
+  royaltyRate: number;
+  advanceAmount: number;
+  marketingBudget: number;
+  requirements: {
+    minFanBase: number;
+    minReputation: number;
+  };
 }

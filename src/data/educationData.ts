@@ -14,6 +14,9 @@ export interface School {
   id: string;
   name: string;
   cost: number;
+  type: string;
+  quality: number;
+  reputation: string;
   requirements?: {
     minGPA?: number;
     minSmarts?: number;
@@ -43,8 +46,8 @@ export const educationStages: EducationStage[] = [
     cost: 0,
     autoEnroll: true,
     schools: [
-      { id: 'public_elementary', name: 'Public Elementary', cost: 0 },
-      { id: 'private_elementary', name: 'Private Elementary', cost: 5 }
+      { id: 'public_elementary', name: 'Public Elementary', cost: 0, type: 'Public', quality: 6, reputation: 'Average' },
+      { id: 'private_elementary', name: 'Private Elementary', cost: 5, type: 'Private', quality: 8, reputation: 'Good' }
     ]
   },
   {
@@ -56,8 +59,8 @@ export const educationStages: EducationStage[] = [
     cost: 0,
     autoEnroll: true,
     schools: [
-      { id: 'public_middle', name: 'Public Middle School', cost: 0 },
-      { id: 'private_middle', name: 'Private Middle School', cost: 8 }
+      { id: 'public_middle', name: 'Public Middle School', cost: 0, type: 'Public', quality: 6, reputation: 'Average' },
+      { id: 'private_middle', name: 'Private Middle School', cost: 8, type: 'Private', quality: 8, reputation: 'Good' }
     ]
   },
   {
@@ -69,8 +72,8 @@ export const educationStages: EducationStage[] = [
     cost: 0,
     autoEnroll: true,
     schools: [
-      { id: 'public_high', name: 'Public High School', cost: 0 },
-      { id: 'private_high', name: 'Private High School', cost: 12 }
+      { id: 'public_high', name: 'Public High School', cost: 0, type: 'Public', quality: 6, reputation: 'Average' },
+      { id: 'private_high', name: 'Private High School', cost: 12, type: 'Private', quality: 8, reputation: 'Good' }
     ]
   },
   {
@@ -81,9 +84,9 @@ export const educationStages: EducationStage[] = [
     duration: 4,
     cost: 50000,
     schools: [
-      { id: 'community_college', name: 'Community College', cost: 20 },
-      { id: 'state_university', name: 'State University', cost: 40 },
-      { id: 'private_university', name: 'Private University', cost: 80 }
+      { id: 'community_college', name: 'Community College', cost: 20, type: 'Public', quality: 5, reputation: 'Below Average' },
+      { id: 'state_university', name: 'State University', cost: 40, type: 'Public', quality: 7, reputation: 'Good' },
+      { id: 'private_university', name: 'Private University', cost: 80, type: 'Private', quality: 9, reputation: 'Excellent' }
     ]
   }
 ];

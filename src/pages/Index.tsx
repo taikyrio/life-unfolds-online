@@ -1,9 +1,11 @@
+
 import React, { useState, useEffect } from 'react';
 import { GameBoard } from '@/components/GameBoard';
 import SplashScreen from '@/components/SplashScreen';
 import { GameSettings } from '@/components/GameSettings';
 import { CharacterCustomization } from '@/components/CharacterCustomization';
 import { GameState } from '@/types/gameState';
+import { Character } from '@/types/character';
 import { generateRandomName, createCharacter, getRandomizedNewCharacter } from '@/utils/characterUtils';
 import { randomizeStats } from '@/utils/statRandomization';
 import { Button } from '@/components/ui/button';
@@ -40,7 +42,8 @@ const Index = () => {
       eventTracker: {
         triggeredEvents: new Set(),
         lastEventAge: 0,
-        eventCooldowns: new Map()
+        eventCooldowns: new Map(),
+        choiceHistory: []
       }
     };
   });
@@ -81,7 +84,8 @@ const Index = () => {
       eventTracker: {
         triggeredEvents: new Set(),
         lastEventAge: 0,
-        eventCooldowns: new Map()
+        eventCooldowns: new Map(),
+        choiceHistory: []
       }
     });
   };
@@ -101,7 +105,8 @@ const Index = () => {
       eventTracker: {
         triggeredEvents: new Set(),
         lastEventAge: 0,
-        eventCooldowns: new Map()
+        eventCooldowns: new Map(),
+        choiceHistory: []
       }
     });
     setShowCharacterCustomization(false);

@@ -1,156 +1,104 @@
 
-
-export interface PersonalityTraits {
-  openness: number;
-  conscientiousness: number;
-  extraversion: number;
-  agreeableness: number;
-  neuroticism: number;
-  kindness: number;
-  loyalty: number;
-  intelligence: number;
-  humor: number;
-  ambition: number;
-  stability: number;
-  generosity: number;
-}
-
-export type ZodiacSign = 
-  | 'Aries' | 'Taurus' | 'Gemini' | 'Cancer' 
-  | 'Leo' | 'Virgo' | 'Libra' | 'Scorpio' 
-  | 'Sagittarius' | 'Capricorn' | 'Aquarius' | 'Pisces';
-
-export interface ZodiacSignData {
-  sign: ZodiacSign;
-  name: string;
-  emoji: string;
-  traits: string[];
-  luckyNumbers: number[];
-  element: string;
-}
-
-export interface Asset {
-  id: string;
-  name: string;
-  type: 'house' | 'car' | 'investment' | 'other';
-  value: number;
-  purchaseDate: number;
-  description?: string;
-  purchasePrice: number;
-  currentValue: number;
-  condition: 'excellent' | 'good' | 'fair' | 'poor';
-  yearPurchased: number;
-  rentalIncome?: number;
-  maintenanceCost: number;
-  isInsured: boolean;
-  insuranceCost?: number;
-  emoji: string;
-  requirements?: {
-    minAge?: number;
-    minWealth?: number;
-    minIncome?: number;
-  };
-}
-
-export interface CriminalRecord {
-  arrests: number;
-  convictions: number;
-  charges: string[];
-  timeServed: number;
-  prisonTime: number;
-  currentSentence?: number;
-  isIncarcerated: boolean;
-  crimes: string[];
-  notoriety: number;
-  totalSentence: number;
-  currentlyIncarcerated: boolean;
-}
-
-export interface JobPerformance {
-  rating: number;
-  yearsAtJob: number;
-  promotions: number;
-  disciplinaryActions: number;
-  achievements: string[];
-}
-
-export type EventCategory = 
-  | 'social' | 'family' | 'health' | 'education' | 'career' 
-  | 'relationship' | 'random' | 'crime' | 'childhood' 
-  | 'teenage' | 'lifestyle' | 'relationships';
-
 export interface LifeEvent {
   id: string;
   title: string;
   description: string;
-  category?: EventCategory;
-  emoji?: string;
+  choices?: EventChoice[];
+  effects?: EventEffect[];
+  probability?: number;
+  conditions?: EventCondition[];
+  type?: 'positive' | 'negative' | 'neutral';
   minAge?: number;
   maxAge?: number;
-  choices?: EventChoice[];
-  effects?: StatEffects;
-  ageRequirement?: { min?: number; max?: number };
-  requirements?: {
-    education?: string;
-    job?: string;
-    relationshipStatus?: string;
-    wealth?: number;
-    familyMember?: string;
-    zodiacSign?: string;
-    socialCircle?: string;
-  };
-  flags?: string[];
-  consequences?: string[];
-  oneTime?: boolean;
+  category?: string;
 }
 
 export interface EventChoice {
   id: string;
   text: string;
-  emoji?: string;
-  effects?: StatEffects;
-  consequences?: string[];
-  flags?: string[];
+  effects?: EventEffect[];
+  probability?: number;
+  requirements?: {
+    minSmarts?: number;
+    minWealth?: number;
+    minHealth?: number;
+  };
 }
 
-export interface StatEffects {
-  health?: number;
-  happiness?: number;
-  smarts?: number;
-  looks?: number;
-  wealth?: number;
-  relationships?: number;
-  fame?: number;
-  notoriety?: number;
-  salary?: number;
-  jobLevel?: number;
-  criminalRecord?: CriminalRecord;
+export interface EventEffect {
+  type: 'stat' | 'money' | 'relationship' | 'career' | 'education' | 'health' | 'legal' | 'achievement';
+  target?: string;
+  value?: number;
+  text?: string;
 }
 
-export interface Choice {
-  id: string;
-  text: string;
-  emoji?: string;
-  effects?: StatEffects;
+export interface EventCondition {
+  type: 'age' | 'stat' | 'money' | 'relationship' | 'career' | 'education';
+  operator: 'equals' | 'greater' | 'less' | 'greaterEqual' | 'lessEqual';
+  value: number | string;
+  target?: string;
 }
 
-// Investment and Loan types for money system
 export interface Investment {
   id: string;
   name: string;
-  type: 'stocks' | 'bonds' | 'crypto' | 'real_estate';
+  type: 'stocks' | 'bonds' | 'real_estate' | 'crypto' | 'mutual_fund';
   amount: number;
   value: number;
+  purchasePrice: number;
   purchaseDate: string;
+  dividendYield?: number;
+  riskLevel: 'low' | 'medium' | 'high';
 }
 
 export interface Loan {
   id: string;
-  type: 'personal' | 'mortgage' | 'student' | 'car';
-  amount: number;
-  remaining: number;
+  type: 'mortgage' | 'student' | 'personal' | 'auto' | 'credit_card';
+  principal: number;
+  remainingBalance: number;
   interestRate: number;
   monthlyPayment: number;
+  termMonths: number;
+  remainingMonths: number;
   startDate: string;
 }
 
+export interface CriminalRecord {
+  arrests: number;
+  convictions: number;
+  prisonTime: number;
+  crimes: string[];
+  notoriety: number;
+  totalSentence: number;
+  currentlyIncarcerated: boolean;
+  charges: string[];
+  timeServed: number;
+  isIncarcerated: boolean;
+}
+
+export interface LegalCase {
+  id: string;
+  type: 'criminal' | 'civil' | 'family' | 'bankruptcy';
+  status: 'pending' | 'resolved' | 'appealed';
+  severity: 'minor' | 'moderate' | 'severe';
+  description: string;
+  fines?: number;
+  outcome?: string;
+  dateStarted: string;
+  dateResolved?: string;
+}
+
+export interface CrimeOperation {
+  id: string;
+  name: string;
+  description: string;
+  riskLevel: 'low' | 'medium' | 'high' | 'extreme';
+  minNotoriety: number;
+  maxPayout: number;
+  minPayout: number;
+  skillRequired: number;
+  timeRequired: number;
+  category: string;
+  failureChance: number;
+  arrestChance: number;
+}
