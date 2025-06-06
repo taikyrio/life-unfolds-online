@@ -1,7 +1,13 @@
 
-
 import { Character } from './character';
 import { LifeEvent } from './core';
+
+export interface EventTracker {
+  triggeredEvents: Set<string>;
+  lastEventAge: number;
+  eventCooldowns: Map<string, number>;
+  choiceHistory: any[];
+}
 
 export interface GameState {
   character: Character;
@@ -11,11 +17,5 @@ export interface GameState {
   gameOverReason?: string;
   eventHistory: any[];
   achievements: string[];
-  eventTracker: {
-    triggeredEvents: Set<string>;
-    lastEventAge: number;
-    eventCooldowns: Map<string, number>;
-    choiceHistory: any[];
-  };
+  eventTracker: EventTracker;
 }
-

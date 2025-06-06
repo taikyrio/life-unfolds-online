@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent } from '../ui/card';
 import { Calendar } from 'lucide-react';
@@ -46,8 +47,8 @@ export const TransactionHistory: React.FC<TransactionHistoryProps> = ({ characte
           </div>
         </div>
         <div className="max-h-48 overflow-y-auto">
-          {character.financialRecord?.transactionHistory && character.financialRecord.transactionHistory.length > 0 ? (
-            character.financialRecord.transactionHistory.map((transaction) => (
+          {character.financialRecord?.transactions && character.financialRecord.transactions.length > 0 ? (
+            character.financialRecord.transactions.map((transaction) => (
               <div key={transaction.id} className="flex items-center justify-between py-2 border-b border-gray-200 dark:border-gray-700">
                 <div>
                   <div className="text-xs font-medium text-gray-700 dark:text-gray-200">

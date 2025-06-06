@@ -45,7 +45,7 @@ export const BottomNavigation: React.FC<BottomNavigationProps> = ({
     const stage = getLifeStage(character.age);
     // Show current education or job status
     if (character.currentEducation) {
-      return character.currentEducation.level;
+      return character.currentEducation.stage || character.currentEducation.level || stage;
     } else if (character.job) {
       return 'Career';
     }

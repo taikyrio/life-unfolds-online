@@ -1,4 +1,15 @@
 
+export interface Activity {
+  id: string;
+  name: string;
+  description: string;
+  category: string;
+  requirements?: {
+    minAge?: number;
+    maxAge?: number;
+    minWealth?: number;
+  };
+}
 
 export interface ActivityOption {
   id: string;
@@ -17,4 +28,3 @@ export interface ActivityCategory {
   emoji: string;
   activities: ActivityOption[];
 }
-

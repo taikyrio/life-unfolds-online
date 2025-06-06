@@ -1,5 +1,4 @@
 
-
 import { Investment, Loan } from './core';
 
 export interface FinancialRecord {
@@ -13,6 +12,7 @@ export interface FinancialRecord {
   creditScore: number;
   bankBalance: number;
   transactions: Transaction[];
+  transactionHistory: Transaction[];
 }
 
 export interface Transaction {
@@ -23,4 +23,3 @@ export interface Transaction {
   description: string;
   date: string;
 }
-

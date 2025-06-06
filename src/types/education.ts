@@ -1,5 +1,4 @@
 
-
 export interface EducationRecord {
   currentStage: string | null;
   currentSchool: string | null;
@@ -13,6 +12,9 @@ export interface EducationRecord {
   levels: string[];
   grades: number[];
   major?: string;
+  clubs?: string[];
+  clique?: string;
+  popularity?: number;
 }
 
 export interface CurrentEducation {
@@ -20,5 +22,7 @@ export interface CurrentEducation {
   school: string;
   year: number;
   gpa: number;
+  level: string;
+  currentYear: number;
+  institution: string;
 }
-
