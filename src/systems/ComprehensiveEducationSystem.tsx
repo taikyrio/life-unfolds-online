@@ -5,8 +5,8 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Character } from '../../types/game';
-import { educationStages, getAvailableSchools, getGradeFromGPA, universityMajors } from '../../data/educationData';
+import { Character } from '../types/game';
+import { educationStages, getAvailableSchools, getGradeFromGPA, universityMajors } from '../data/educationData';
 import { GraduationCap, School, Trophy, Target, DollarSign, Star } from 'lucide-react';
 
 interface ComprehensiveEducationSystemProps {
@@ -21,11 +21,11 @@ export const ComprehensiveEducationSystem: React.FC<ComprehensiveEducationSystem
   const [selectedMajor, setSelectedMajor] = useState('');
   
   const currentStageData = character.education?.currentStage 
-    ? educationStages.find(s => s.id === character.education.currentStage)
+    ? educationStages.find(s => s.id === character.education?.currentStage)
     : null;
 
-  const currentSchoolData = currentStageData && character.education?.currentSchool
-    ? currentStageData.schools.find(s => s.id === character.education.currentSchool)
+  const currentSchoolData = currentStageData && currentStageData.schools && character.education?.currentSchool
+    ? currentStageData.schools.find(s => s.id === character.education?.currentSchool)
     : null;
 
   const getAvailableStagesForAge = () => {
@@ -188,7 +188,7 @@ export const ComprehensiveEducationSystem: React.FC<ComprehensiveEducationSystem
           </CardHeader>
           <CardContent>
             <div className="space-y-2">
-              {character.education.completedStages.map((stageId, index) => {
+              {character.education?.completedStages?.map((stageId: string, index: number) => {
                 const stage = educationStages.find(s => s.id === stageId);
                 return (
                   <Badge key={index} variant="secondary" className="bg-green-100 text-green-800 mr-2 mb-2">
@@ -212,7 +212,7 @@ export const ComprehensiveEducationSystem: React.FC<ComprehensiveEducationSystem
           </CardHeader>
           <CardContent>
             <div className="space-y-2">
-              {character.education.achievements.map((achievement, index) => (
+              {character.education?.achievements?.map((achievement: string, index: number) => (
                 <Badge key={index} variant="secondary" className="bg-yellow-100 text-yellow-800 mr-2 mb-2">
                   🏆 {achievement}
                 </Badge>
@@ -230,14 +230,14 @@ export const ComprehensiveEducationSystem: React.FC<ComprehensiveEducationSystem
           </CardHeader>
           <CardContent>
             <div className="flex flex-wrap gap-2">
-              {character.education.testScores.map((score, index) => (
+              {character.education?.testScores?.map((score: number, index: number) => (
                 <Badge key={index} variant="outline" className="text-blue-600">
                   📊 {score}
                 </Badge>
               ))}
             </div>
             <div className="mt-2 text-sm text-gray-600">
-              Highest Score: {Math.max(...character.education.testScores)}
+              Highest Score: {character.education?.testScores?.length ? Math.max(...character.education.testScores) : 'N/A'}
             </div>
           </CardContent>
         </Card>
