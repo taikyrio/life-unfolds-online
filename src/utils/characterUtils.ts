@@ -15,14 +15,14 @@ export const createCharacter = (name: string, birthMonth: number, birthDay: numb
     looks: 50,
     wealth: 10,
     relationships: 50,
-    lifeStage: 'Baby',
     birthMonth,
     birthDay,
     birthYear: new Date().getFullYear(),
     gender: Math.random() > 0.5 ? 'male' : 'female',
-    country: 'United States',
-    city: 'New York',
-    job: null,
+    job: undefined,
+    jobId: undefined,
+    salary: undefined,
+    jobLevel: undefined,
     education: {
       currentStage: null,
       currentSchool: null,
@@ -36,7 +36,6 @@ export const createCharacter = (name: string, birthMonth: number, birthDay: numb
       levels: [],
       grades: []
     },
-    currentEducation: null,
     familyMembers: [],
     criminalRecord: {
       arrests: 0,
@@ -50,10 +49,11 @@ export const createCharacter = (name: string, birthMonth: number, birthDay: numb
       timeServed: 0,
       isIncarcerated: false
     },
-    legalCases: [],
     assets: [],
-    flags: [],
-    achievements: []
+    achievements: [],
+    children: [],
+    fame: 0,
+    lifeEvents: []
   };
 };
 
