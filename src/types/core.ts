@@ -56,6 +56,7 @@ export interface CriminalRecord {
   convictions: number;
   charges: string[];
   timeServed: number;
+  prisonTime: number;
   currentSentence?: number;
   isIncarcerated: boolean;
 }
