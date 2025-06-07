@@ -54,16 +54,20 @@ export interface Investment {
   type: 'stocks' | 'bonds' | 'real_estate' | 'crypto' | 'mutual_fund';
   amount: number;
   value: number;
+  currentValue: number;
   purchasePrice: number;
   purchaseDate: string;
   dividendYield?: number;
   riskLevel: 'low' | 'medium' | 'high';
+  annualReturn: number;
 }
 
 export interface Loan {
   id: string;
   type: 'mortgage' | 'student' | 'personal' | 'auto' | 'credit_card';
   principal: number;
+  amount: number;
+  remaining: number;
   remainingBalance: number;
   interestRate: number;
   monthlyPayment: number;
@@ -130,13 +134,15 @@ export interface Asset {
   name: string;
   type: string;
   value: number;
+  currentValue: number;
+  purchasePrice: number;
   purchaseDate?: string;
   appreciationRate?: number;
 }
 
 export interface PersonalityTraits {
-  openness: number;
   kindness: number;
+  loyalty: number;
   intelligence: number;
   humor: number;
   ambition: number;

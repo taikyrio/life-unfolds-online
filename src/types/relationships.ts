@@ -1,5 +1,4 @@
 
-
 export interface RelationshipAction {
   id: string;
   name: string;
@@ -20,6 +19,27 @@ export interface InteractionRecord {
   impact: number;
   timestamp: string;
   description: string;
+}
+
+export interface RelationshipEvent {
+  id: string;
+  title: string;
+  description: string;
+  emoji: string;
+  trigger: 'random' | 'condition';
+  probability: number;
+  targetRelationships: RelationshipType[];
+  effects: RelationshipEventEffect[];
+}
+
+export interface RelationshipEventEffect {
+  target: 'self' | 'other' | 'both';
+  stats: Partial<RelationshipStats>;
+  characterEffects?: {
+    happiness?: number;
+    stress?: number;
+    health?: number;
+  };
 }
 
 export type RelationshipType = 

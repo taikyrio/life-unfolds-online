@@ -7,8 +7,10 @@ export interface FinancialRecord {
   netWorth: number;
   monthlyIncome: number;
   monthlyExpenses: number;
+  totalIncome: number;
   investments: Investment[];
   currentLoans: Loan[];
+  loans: Loan[];
   creditScore: number;
   bankBalance: number;
   transactions: Transaction[];

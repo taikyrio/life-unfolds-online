@@ -1,3 +1,4 @@
+
 import { PersonalityTraits, ZodiacSign, Asset, CriminalRecord, JobPerformance } from './core';
 import { FamilyMember } from './relationships';
 import { EducationRecord, CurrentEducation } from './education';
@@ -50,9 +51,14 @@ export interface MusicCareer {
   artists: MusicArtist[];
   studioSlots: number;
   hasMoreStudioTime: boolean;
+  artistName: string;
+  genre: string;
+  recordLabel: string;
+  albumsSold: number;
+  tourRevenue: number;
 }
 
-export interface EventTracker {
+export interface CharacterEventTracker {
   triggeredEvents: Set<string>;
   lastEventAge: number;
   eventCooldowns: Map<string, number>;
@@ -93,12 +99,10 @@ export interface Character {
   children: string[];
   customStats?: Record<string, any>;
   fame: number;
-  // Phase 2 additions
   legalStatus?: LegalStatus;
   healthInsurance?: HealthInsurance;
   socialMediaAccounts?: SocialMediaAccount[];
   realEstate?: RealEstateProperty[];
-  // Phase 3 additions
   currentCountry?: string;
   citizenship?: string[];
   personalityType?: string;
@@ -107,25 +111,19 @@ export interface Character {
   environmentalAwareness?: number;
   politicalInfluence?: number;
   personalityTraits?: PersonalityTraits;
-  // Additional properties needed by the system
   educationLevel?: string;
   delayedEvents?: any[];
   majorDecisions?: any[];
   disasterHistory?: any[];
   workExperience?: number;
-  // Music career properties
   musicCareer?: MusicCareer;
   musicArtists?: MusicArtist[];
-  money?: number; // For compatibility with money system
-  
-  // Legacy system properties
+  money?: number;
   businesses?: any[];
   properties?: any[];
-  debts?: any[];
+  debts?: number;
   inheritedWealth?: number;
   familyLegacy?: any;
-  
-  // Missing properties causing TypeScript errors
   education?: EducationRecord;
   currentEducation?: CurrentEducation;
   familyMembers: FamilyMember[];

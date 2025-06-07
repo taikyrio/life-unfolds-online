@@ -1,20 +1,34 @@
 
 export interface SocialMediaAccount {
-  platform: string;
+  platform: 'instagram' | 'twitter' | 'facebook' | 'tiktok' | 'youtube';
+  username: string;
   followers: number;
   verified: boolean;
-  username: string;
-  posts: any[];
-  monthlyIncome: number;
-  monetized: boolean;
+  posts: SocialMediaPost[];
+}
+
+export interface SocialMediaPost {
+  id: string;
+  platform: string;
+  content: string;
+  likes: number;
+  shares: number;
+  comments: number;
+  timestamp: string;
+  type: 'text' | 'image' | 'video';
 }
 
 export interface RealEstateProperty {
   id: string;
-  type: string;
-  value: number;
-  location: string;
+  type: 'house' | 'apartment' | 'condo' | 'mansion' | 'commercial';
   address: string;
+  purchasePrice: number;
   currentValue: number;
+  monthlyPayment: number;
   owned: boolean;
+  mortgage?: {
+    remaining: number;
+    monthlyPayment: number;
+    interestRate: number;
+  };
 }
