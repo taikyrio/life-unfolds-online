@@ -2,10 +2,9 @@
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { Character } from '../../../types/game';
-import { Trophy, Star, Camera, Mic, Tv, Heart, TrendingUp } from 'lucide-react';
+import { Star, Camera, Trophy } from 'lucide-react';
+import { Character } from '../../types/character';
 
 interface FameDLCProps {
   character: Character;
@@ -16,318 +15,120 @@ export const FameDLC: React.FC<FameDLCProps> = ({
   character, 
   onCareerAction 
 }) => {
-  // Fame careers
-  const fameCareers = [
-    {
-      id: 'social_media_influencer',
-      name: 'Social Media Influencer',
-      description: 'Build your online presence',
-      requirements: { age: 13, looks: 40, fame: 0 },
-      baseSalary: 20,
-      fameMultiplier: 2,
-      category: 'Digital'
-    },
-    {
-      id: 'youtuber',
-      name: 'YouTuber',
-      description: 'Create viral content',
-      requirements: { age: 13, looks: 30, fame: 10 },
-      baseSalary: 35,
-      fameMultiplier: 3,
-      category: 'Digital'
-    },
-    {
-      id: 'model',
-      name: 'Model',
-      description: 'Fashion and beauty modeling',
-      requirements: { age: 16, looks: 70, fame: 20 },
-      baseSalary: 65,
-      fameMultiplier: 4,
-      category: 'Fashion'
-    },
-    {
-      id: 'actor',
-      name: 'Actor',
-      description: 'Perform in movies and TV',
-      requirements: { age: 18, looks: 60, fame: 30 },
-      baseSalary: 85,
-      fameMultiplier: 5,
-      category: 'Entertainment'
-    },
-    {
-      id: 'musician',
-      name: 'Musician',
-      description: 'Create and perform music',
-      requirements: { age: 16, looks: 50, fame: 25 },
-      baseSalary: 75,
-      fameMultiplier: 4,
-      category: 'Music'
-    },
-    {
-      id: 'tv_host',
-      name: 'TV Host',
-      description: 'Host television shows',
-      requirements: { age: 21, looks: 75, fame: 50 },
-      baseSalary: 120,
-      fameMultiplier: 6,
-      category: 'Television'
-    },
-    {
-      id: 'movie_star',
-      name: 'Movie Star',
-      description: 'A-list Hollywood celebrity',
-      requirements: { age: 25, looks: 80, fame: 80 },
-      baseSalary: 500,
-      fameMultiplier: 10,
-      category: 'Hollywood'
-    }
-  ];
+  const [selectedActivity, setSelectedActivity] = useState<string | null>(null);
 
-  // Fame activities
+  const fameLevel = character.fame || 0;
+  const getFameTitle = () => {
+    if (fameLevel >= 90) return '🌟 Global Superstar';
+    if (fameLevel >= 75) return '⭐ A-List Celebrity';
+    if (fameLevel >= 50) return '🎭 Famous Personality';
+    if (fameLevel >= 25) return '📺 Local Celebrity';
+    if (fameLevel >= 10) return '🎪 Minor Celebrity';
+    return '👤 Unknown';
+  };
+
   const fameActivities = [
     {
-      id: 'photoshoot',
-      name: 'Photoshoot',
-      description: 'Professional photo session',
+      id: 'photo_shoot',
+      name: 'Photo Shoot',
+      description: 'Participate in a professional photo shoot',
+      fame: 5,
       cost: 10,
-      fameGain: 5,
-      looksBoost: 2,
-      requirements: { fame: 0 }
+      emoji: '📸'
     },
     {
-      id: 'interview',
-      name: 'Media Interview',
-      description: 'Talk show appearance',
-      cost: 0,
-      fameGain: 15,
-      looksBoost: 0,
-      requirements: { fame: 20 }
-    },
-    {
-      id: 'red_carpet',
-      name: 'Red Carpet Event',
-      description: 'Attend high-profile events',
-      cost: 50,
-      fameGain: 25,
-      looksBoost: 5,
-      requirements: { fame: 40 }
-    },
-    {
-      id: 'scandal',
-      name: 'Create Controversy',
-      description: 'Generate buzz (risky)',
-      cost: 0,
-      fameGain: 30,
-      looksBoost: -5,
-      requirements: { fame: 10 }
+      id: 'tv_interview',
+      name: 'TV Interview',
+      description: 'Appear on a television talk show',
+      fame: 10,
+      cost: 5,
+      emoji: '📺'
     },
     {
       id: 'charity_event',
       name: 'Charity Event',
-      description: 'Improve your image',
+      description: 'Host or attend a high-profile charity event',
+      fame: 8,
       cost: 25,
-      fameGain: 10,
-      looksBoost: 3,
-      requirements: { fame: 30 }
+      emoji: '🎗️'
+    },
+    {
+      id: 'awards_show',
+      name: 'Awards Show',
+      description: 'Attend a prestigious awards ceremony',
+      fame: 15,
+      cost: 50,
+      emoji: '🏆'
     }
   ];
 
-  const getFame = () => {
-    return character.fame || 0;
-  };
-
-  const isCareerEligible = (career: typeof fameCareers[0]) => {
-    return character.age >= career.requirements.age &&
-           character.looks >= career.requirements.looks &&
-           getFame() >= career.requirements.fame;
-  };
-
-  const getCalculatedSalary = (career: typeof fameCareers[0]) => {
-    const fameBonus = Math.floor(getFame() * career.fameMultiplier);
-    return career.baseSalary + fameBonus;
-  };
-
-  const getCategoryColor = (category: string) => {
-    switch (category) {
-      case 'Digital': return 'text-blue-600 bg-blue-50';
-      case 'Fashion': return 'text-pink-600 bg-pink-50';
-      case 'Entertainment': return 'text-purple-600 bg-purple-50';
-      case 'Music': return 'text-green-600 bg-green-50';
-      case 'Television': return 'text-orange-600 bg-orange-50';
-      case 'Hollywood': return 'text-red-600 bg-red-50';
-      default: return 'text-gray-600 bg-gray-50';
+  const handleFameActivity = (activity: any) => {
+    if (character.wealth < activity.cost) {
+      onCareerAction('fame_insufficient_funds', { activity });
+      return;
     }
+
+    onCareerAction('fame_activity', { 
+      activity,
+      fameGain: activity.fame,
+      cost: activity.cost
+    });
   };
 
   return (
-    <div className="space-y-4">
-      {/* Fame Status */}
+    <div className="space-y-6">
       <Card className="border-yellow-200 bg-gradient-to-r from-yellow-50 to-orange-50">
-        <CardHeader className="pb-3">
-          <CardTitle className="text-lg flex items-center gap-2">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
             <Star className="h-5 w-5 text-yellow-600" />
-            Fame Status
+            Fame Level
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-3">
-          <div className="grid grid-cols-2 gap-4">
-            <div className="text-center p-3 bg-white rounded-lg">
-              <div className="font-semibold text-yellow-600">Fame Level</div>
-              <div className="text-lg">{getFame()}/100</div>
-              <Progress value={getFame()} className="h-2 mt-1" />
+        <CardContent>
+          <div className="space-y-4">
+            <div className="text-center">
+              <div className="text-2xl font-bold text-yellow-700">{getFameTitle()}</div>
+              <div className="text-lg text-gray-600">{fameLevel}/100</div>
+              <Progress value={fameLevel} className="h-3 mt-2" />
             </div>
-            <div className="text-center p-3 bg-white rounded-lg">
-              <div className="font-semibold text-pink-600">Looks</div>
-              <div className="text-lg">{character.looks}/100</div>
-              <Progress value={character.looks} className="h-2 mt-1" />
-            </div>
-          </div>
-          
-          <div className="text-center">
-            {getFame() >= 80 && (
-              <Badge className="bg-red-100 text-red-800">🌟 Mega Celebrity</Badge>
-            )}
-            {getFame() >= 60 && getFame() < 80 && (
-              <Badge className="bg-orange-100 text-orange-800">⭐ A-List Celebrity</Badge>
-            )}
-            {getFame() >= 40 && getFame() < 60 && (
-              <Badge className="bg-yellow-100 text-yellow-800">🎭 Well-Known</Badge>
-            )}
-            {getFame() >= 20 && getFame() < 40 && (
-              <Badge className="bg-blue-100 text-blue-800">📱 Rising Star</Badge>
-            )}
-            {getFame() < 20 && (
-              <Badge className="bg-gray-100 text-gray-800">👤 Unknown</Badge>
-            )}
           </div>
         </CardContent>
       </Card>
 
-      {/* Fame Activities */}
       <Card>
-        <CardHeader className="pb-3">
-          <CardTitle className="text-lg flex items-center gap-2">
-            <Camera className="h-5 w-5 text-purple-600" />
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Camera className="h-5 w-5" />
             Fame Activities
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-3">
-          {fameActivities.map(activity => {
-            const canAfford = character.wealth >= activity.cost;
-            const meetsRequirements = getFame() >= activity.requirements.fame;
-            const eligible = canAfford && meetsRequirements;
-            
-            return (
-              <div key={activity.id} className={`border rounded-lg p-3 ${!eligible ? 'opacity-60' : 'hover:bg-gray-50'}`}>
-                <div className="flex justify-between items-start mb-2">
-                  <div>
-                    <h3 className="font-medium">{activity.name}</h3>
-                    <p className="text-sm text-gray-600">{activity.description}</p>
-                  </div>
-                  <Button
-                    size="sm"
-                    onClick={() => onCareerAction('fame_activity', activity)}
-                    disabled={!eligible}
-                    variant={eligible ? "default" : "secondary"}
-                  >
-                    {activity.cost > 0 ? `$${activity.cost}k` : 'Free'}
-                  </Button>
-                </div>
-                <div className="flex gap-4 text-xs text-gray-500">
-                  <span>⭐ +{activity.fameGain} fame</span>
-                  {activity.looksBoost !== 0 && (
-                    <span>👑 {activity.looksBoost > 0 ? '+' : ''}{activity.looksBoost} looks</span>
-                  )}
-                  <span>📋 {activity.requirements.fame} fame required</span>
-                </div>
-              </div>
-            );
-          })}
-        </CardContent>
-      </Card>
-
-      {/* Fame Careers */}
-      <Card>
-        <CardHeader className="pb-3">
-          <CardTitle className="text-lg flex items-center gap-2">
-            <Trophy className="h-5 w-5 text-gold-600" />
-            Fame Career Paths
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          {fameCareers.map(career => {
-            const eligible = isCareerEligible(career);
-            const potentialSalary = getCalculatedSalary(career);
-            
-            return (
-              <div key={career.id} className={`border rounded-lg p-3 ${!eligible ? 'opacity-60' : 'hover:bg-gray-50'}`}>
+        <CardContent>
+          <div className="grid gap-3">
+            {fameActivities.map((activity) => (
+              <div key={activity.id} className="p-4 border rounded-lg hover:bg-gray-50">
                 <div className="flex justify-between items-start">
                   <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-1">
-                      <h3 className="font-medium">{career.name}</h3>
-                      <Badge className={getCategoryColor(career.category)}>
-                        {career.category}
-                      </Badge>
+                    <div className="flex items-center gap-2">
+                      <span className="text-2xl">{activity.emoji}</span>
+                      <h3 className="font-semibold">{activity.name}</h3>
                     </div>
-                    <p className="text-sm text-gray-600 mb-2">{career.description}</p>
-                    <div className="flex gap-4 text-xs text-gray-500">
-                      <span>💰 ${potentialSalary}k/year</span>
-                      <span>🎂 Age {career.requirements.age}+</span>
-                      <span>👑 {career.requirements.looks} looks</span>
-                      <span>⭐ {career.requirements.fame} fame</span>
+                    <p className="text-gray-600 text-sm mt-1">{activity.description}</p>
+                    <div className="flex gap-4 mt-2 text-xs">
+                      <span className="text-yellow-600">+{activity.fame} Fame</span>
+                      <span className="text-red-600">${activity.cost}k Cost</span>
                     </div>
                   </div>
                   <Button
                     size="sm"
-                    onClick={() => onCareerAction('join_fame_career', career)}
-                    disabled={!eligible || character.job === career.name}
-                    variant={eligible ? "default" : "secondary"}
+                    onClick={() => handleFameActivity(activity)}
+                    disabled={character.wealth < activity.cost}
                   >
-                    {character.job === career.name ? 'Current' : eligible ? 'Pursue' : 'Locked'}
+                    {character.wealth < activity.cost ? 'Too Expensive' : 'Do Activity'}
                   </Button>
                 </div>
               </div>
-            );
-          })}
-        </CardContent>
-      </Card>
-
-      {/* Social Media */}
-      <Card>
-        <CardHeader className="pb-3">
-          <CardTitle className="text-lg flex items-center gap-2">
-            <Tv className="h-5 w-5 text-blue-600" />
-            Social Media Management
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          <Button
-            className="w-full"
-            variant="outline"
-            onClick={() => onCareerAction('post_content', { platform: 'instagram' })}
-          >
-            <Camera className="h-4 w-4 mr-2" />
-            Post on Instagram
-          </Button>
-          
-          <Button
-            className="w-full"
-            variant="outline"
-            onClick={() => onCareerAction('post_content', { platform: 'tiktok' })}
-          >
-            <Mic className="h-4 w-4 mr-2" />
-            Create TikTok Video
-          </Button>
-          
-          <Button
-            className="w-full"
-            variant="outline"
-            onClick={() => onCareerAction('collaborate', {})}
-            disabled={getFame() < 30}
-          >
-            <Heart className="h-4 w-4 mr-2" />
-            Celebrity Collaboration (30 Fame Required)
-          </Button>
+            ))}
+          </div>
         </CardContent>
       </Card>
     </div>

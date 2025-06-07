@@ -1,3 +1,4 @@
+
 import { Character } from './character';
 
 export interface CrimeSyndicate {
@@ -89,6 +90,8 @@ export interface CrimeOperation {
   riskLevel: number;
   notorietyGain: number;
   successRate: number;
+  failureChance: number;
+  arrestChance: number;
   timeRequired: number; // hours
 }
 

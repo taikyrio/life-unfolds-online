@@ -28,7 +28,7 @@ export interface CharacterEventTracker {
 export type MusicArtist = Artist;
 export type MusicRecord = Record;
 export type MusicAlbum = Album;
-export { MusicCareer };
+export type { MusicCareer };
 
 export interface Character {
   id: string;
@@ -97,4 +97,4 @@ export interface Character {
   lifeEvents: string[];
 }
 
-export { CharacterEventTracker as EventTracker };
+export type { CharacterEventTracker as EventTracker };

@@ -89,8 +89,8 @@ export const OrganizedCrimeSystem: React.FC<OrganizedCrimeSystemProps> = ({
     const crimeOperation = availableCrimes.find(c => c.id === crimeId);
     if (!crimeOperation) return;
 
-    const success = Math.random() > crimeOperation.failureChance;
-    const arrested = Math.random() < crimeOperation.arrestChance;
+    const success = Math.random() > (crimeOperation.failureChance / 100);
+    const arrested = Math.random() < (crimeOperation.arrestChance / 100);
 
     let message = '';
     let earnings = 0;
@@ -509,7 +509,7 @@ export const OrganizedCrimeSystem: React.FC<OrganizedCrimeSystemProps> = ({
               {availableCrimes.map((crime) => (
                 <button
                   key={crime.id}
-                  onClick={() => commitCrime(crime)}
+                  onClick={() => commitCrime(crime.id)}
                   className="p-4 bg-red-50 hover:bg-red-100 dark:bg-red-900/20 dark:hover:bg-red-900/40 rounded-lg text-left transition-colors border border-red-200 dark:border-red-800"
                 >
                   <div className="flex justify-between items-start">

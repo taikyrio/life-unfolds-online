@@ -4,7 +4,7 @@ import { Asset } from '../types/assets';
 
 export const getAssetsByCategory = (character: Character, category: string): Asset[] => {
   if (!character.assets) return [];
-  return character.assets.filter((asset: any) => asset.category === category);
+  return character.assets.filter((asset: Asset) => asset.category === category);
 };
 
 export const getAvailableAssets = (character: Character, category: string): Asset[] => {
@@ -14,10 +14,11 @@ export const getAvailableAssets = (character: Character, category: string): Asse
       id: 'basic_car',
       name: 'Basic Car',
       type: 'car',
-      category: 'vehicles' as any,
+      category: 'vehicles',
       purchasePrice: 15,
       currentValue: 15,
-      condition: 'good' as any,
+      value: 15,
+      condition: 'good',
       maintenanceCost: 2,
       yearPurchased: character.age,
       depreciationRate: 0.15,
@@ -28,7 +29,7 @@ export const getAvailableAssets = (character: Character, category: string): Asse
     }
   ];
   
-  return mockAssets.filter((asset: any) => asset.category === category);
+  return mockAssets.filter((asset: Asset) => asset.category === category);
 };
 
 export const purchaseAsset = (character: Character, assetId: string): {
@@ -43,13 +44,13 @@ export const purchaseAsset = (character: Character, assetId: string): {
     return { success: false, message: 'Asset not found' };
   }
   
-  if (character.wealth < (asset as any).purchasePrice) {
+  if (character.wealth < asset.purchasePrice) {
     return { success: false, message: 'Not enough money' };
   }
   
   const updatedCharacter = {
     ...character,
-    wealth: character.wealth - (asset as any).purchasePrice,
+    wealth: character.wealth - asset.purchasePrice,
     assets: [...(character.assets || []), asset]
   };
   
@@ -70,7 +71,7 @@ export const sellAsset = (character: Character, assetId: string): {
     return { success: false, message: 'Asset not found' };
   }
   
-  const sellPrice = (asset as any).currentValue || asset.value;
+  const sellPrice = asset.currentValue || asset.value;
   const updatedCharacter = {
     ...character,
     wealth: character.wealth + sellPrice,
@@ -94,7 +95,7 @@ export const maintainAsset = (character: Character, assetId: string): {
     return { success: false, message: 'Asset not found' };
   }
   
-  const maintenanceCost = (asset as any).maintenanceCost || 1;
+  const maintenanceCost = asset.maintenanceCost || 1;
   if (character.wealth < maintenanceCost) {
     return { success: false, message: 'Not enough money for maintenance' };
   }
@@ -121,7 +122,7 @@ export const insureAsset = (character: Character, assetId: string): {
     return { success: false, message: 'Asset not found' };
   }
   
-  const insuranceCost = (asset as any).insuranceCost || 2;
+  const insuranceCost = asset.insuranceCost || 2;
   if (character.wealth < insuranceCost) {
     return { success: false, message: 'Not enough money for insurance' };
   }
@@ -141,7 +142,7 @@ export const insureAsset = (character: Character, assetId: string): {
 export const getAssetPortfolioValue = (character: Character): number => {
   if (!character.assets) return 0;
   return character.assets.reduce((total, asset) => {
-    return total + ((asset as any).currentValue || asset.value);
+    return total + (asset.currentValue || asset.value);
   }, 0);
 };
 

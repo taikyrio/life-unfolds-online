@@ -1,8 +1,9 @@
+
 import React, { useState } from 'react';
-import { Character } from '../../../types/game';
-import { CriminalProfile } from './criminal/CriminalProfile';
-import { CriminalPathSelector } from './criminal/CriminalPathSelector';
-import { CriminalCareerList } from './criminal/CriminalCareerList';
+import { Character } from '../../types/character';
+import { CriminalProfile } from '../../components/systems/dlc/criminal/CriminalProfile';
+import { CriminalPathSelector } from '../../components/systems/dlc/criminal/CriminalPathSelector';
+import { CriminalCareerList } from '../../components/systems/dlc/criminal/CriminalCareerList';
 
 interface CriminalCareerSystemProps {
   character: Character;

@@ -3,7 +3,7 @@ import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Character } from '../../../../types/game';
+import { Character } from '../../../../types/character';
 import { criminalPaths } from './criminalPathsData';
 
 interface CriminalCareerListProps {
