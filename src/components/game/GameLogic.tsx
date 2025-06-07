@@ -1,5 +1,6 @@
 
 import { Character, GameState } from '../../types/game';
+import { generateInitialFamily } from '../../utils/familyUtils';
 
 export const processGameLogic = (character: Character): Character => {
   let updatedCharacter = { ...character };
@@ -21,8 +22,9 @@ export const processGameLogic = (character: Character): Character => {
     };
   }
   
-  if (!updatedCharacter.familyMembers) {
-    updatedCharacter.familyMembers = [];
+  // Initialize family members if they don't exist
+  if (!updatedCharacter.familyMembers || updatedCharacter.familyMembers.length === 0) {
+    updatedCharacter.familyMembers = generateInitialFamily();
   }
   
   if (!updatedCharacter.relationshipStatus) {

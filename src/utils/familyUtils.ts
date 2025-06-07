@@ -27,11 +27,6 @@ export const generateInitialFamily = (playerLastName?: string): FamilyMember[] =
     'Alex', 'Jordan', 'Taylor', 'Morgan', 'Casey', 'Riley'
   ];
 
-  const generateRandomName = () => {
-    const names = ['Alex', 'Jordan', 'Taylor', 'Morgan', 'Casey', 'Riley', 'Emma', 'Liam', 'Olivia', 'Noah'];
-    return names[Math.floor(Math.random() * names.length)];
-  };
-
   const mother: FamilyMember = {
     id: 'mother',
     name: `${motherNames[Math.floor(Math.random() * motherNames.length)]} ${familyLastName}`,
@@ -120,7 +115,7 @@ export const generateInitialFamily = (playerLastName?: string): FamilyMember[] =
         interactionHistory: [],
         respect: Math.floor(Math.random() * 40) + 40
       },
-
+      relationshipQuality: Math.floor(Math.random() * 40) + 40,
       personality: {
         kindness: Math.floor(Math.random() * 60) + 20,
         loyalty: Math.floor(Math.random() * 60) + 20,
