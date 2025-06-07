@@ -1,13 +1,12 @@
 
 import React, { useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
-import { Clock } from 'lucide-react';
-import { Character } from '../../types/game';
+import { Character } from '../../types/character';
 import { Artist, Record, MusicCareer } from '../../types/music';
 import { MusicDashboard } from '../../components/music/MusicDashboard';
 import { ArtistManagement } from '../../components/music/ArtistManagement';
 import { RecordProduction } from '../../components/music/RecordProduction';
 import { ArtistActions } from '../../components/music/ArtistActions';
+import { StudioStatus } from '../../components/music/StudioStatus';
 
 interface MusicianDLCProps {
   character: Character;
@@ -124,27 +123,13 @@ export const MusicianDLC: React.FC<MusicianDLCProps> = ({
     <div className="space-y-6">
       <MusicDashboard artists={artists} />
 
-      {/* Studio Status */}
-      <div className="bg-white/70 backdrop-blur-xl rounded-3xl p-6 border border-white/20 shadow-xl">
-        <h2 className="text-xl font-bold text-gray-800 mb-4">Studio Status</h2>
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-2">
-            <Clock className="h-5 w-5 text-blue-600" />
-            <span className="text-gray-700">
-              Production Slots: {getActiveProductions()}/{musicCareer.studioSlots}
-            </span>
-          </div>
-          {!musicCareer.hasMoreStudioTime && (
-            <Button
-              onClick={() => onCareerAction('music_get_studio_time')}
-              disabled={character.money < 50000}
-              className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-xl"
-            >
-              Get More Studio Time ($50k)
-            </Button>
-          )}
-        </div>
-      </div>
+      <StudioStatus
+        studioSlots={musicCareer.studioSlots}
+        activeProductions={getActiveProductions()}
+        hasMoreStudioTime={musicCareer.hasMoreStudioTime}
+        characterMoney={character.money || 0}
+        onGetStudioTime={() => onCareerAction('music_get_studio_time')}
+      />
 
       <ArtistManagement
         artists={artists}
@@ -165,7 +150,7 @@ export const MusicianDLC: React.FC<MusicianDLCProps> = ({
 
       <ArtistActions
         selectedArtist={selectedArtistData}
-        characterMoney={character.money}
+        characterMoney={character.money || 0}
         onTour={(artistId) => onCareerAction('music_go_on_tour', { artistId })}
         onDisband={(artistId) => onCareerAction('music_disband', { artistId })}
         onReunion={(artistId) => onCareerAction('music_reunion', { artistId })}

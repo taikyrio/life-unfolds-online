@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -24,7 +25,7 @@ export const ArtistManagement: React.FC<ArtistManagementProps> = ({
   const [newArtist, setNewArtist] = useState({
     name: '',
     genre: '',
-    members: ['Lead Singer'] // Changed to string array instead of number
+    members: 1
   });
 
   const genres = [
@@ -36,21 +37,13 @@ export const ArtistManagement: React.FC<ArtistManagementProps> = ({
     if (!newArtist.name || !newArtist.genre) return;
     
     onCreateArtist(newArtist);
-    setNewArtist({ name: '', genre: '', members: ['Lead Singer'] });
+    setNewArtist({ name: '', genre: '', members: 1 });
     setShowCreateArtist(false);
   };
 
   const handleMembersChange = (value: string) => {
     const memberCount = parseInt(value) || 1;
-    const memberNames = [];
-    for (let i = 0; i < memberCount; i++) {
-      if (i === 0) memberNames.push('Lead Singer');
-      else if (i === 1) memberNames.push('Guitarist');
-      else if (i === 2) memberNames.push('Bassist');
-      else if (i === 3) memberNames.push('Drummer');
-      else memberNames.push(`Member ${i + 1}`);
-    }
-    setNewArtist({ ...newArtist, members: memberNames });
+    setNewArtist({ ...newArtist, members: memberCount });
   };
 
   return (
@@ -83,7 +76,7 @@ export const ArtistManagement: React.FC<ArtistManagementProps> = ({
                   <span className="text-lg">{artist.name}</span>
                   {artist.disbanded && <Badge variant="secondary">Disbanded</Badge>}
                 </CardTitle>
-                <p className="text-sm text-gray-600">{artist.genre} • {artist.members.length} members</p>
+                <p className="text-sm text-gray-600">{artist.genre} • {artist.members} members</p>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-3 gap-2 text-sm">
@@ -139,7 +132,7 @@ export const ArtistManagement: React.FC<ArtistManagementProps> = ({
                   type="number"
                   min="1"
                   max="7"
-                  value={newArtist.members.length}
+                  value={newArtist.members}
                   onChange={(e) => handleMembersChange(e.target.value)}
                 />
               </div>

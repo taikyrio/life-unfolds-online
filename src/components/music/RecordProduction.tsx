@@ -23,7 +23,7 @@ export const RecordProduction: React.FC<RecordProductionProps> = ({
   const [showCreateRecord, setShowCreateRecord] = useState(false);
   const [newRecord, setNewRecord] = useState({
     name: '',
-    tracks: ['Track 1'], // Changed to string array instead of number
+    tracks: 1,
     productionTime: 1
   });
 
@@ -31,17 +31,13 @@ export const RecordProduction: React.FC<RecordProductionProps> = ({
     if (!newRecord.name || !selectedArtist) return;
     
     onCreateRecord(selectedArtist.id, newRecord);
-    setNewRecord({ name: '', tracks: ['Track 1'], productionTime: 1 });
+    setNewRecord({ name: '', tracks: 1, productionTime: 1 });
     setShowCreateRecord(false);
   };
 
   const handleTracksChange = (value: string) => {
     const trackCount = parseInt(value) || 1;
-    const trackNames = [];
-    for (let i = 0; i < trackCount; i++) {
-      trackNames.push(`Track ${i + 1}`);
-    }
-    setNewRecord({ ...newRecord, tracks: trackNames });
+    setNewRecord({ ...newRecord, tracks: trackCount });
   };
 
   if (!selectedArtist) return null;
@@ -92,7 +88,7 @@ export const RecordProduction: React.FC<RecordProductionProps> = ({
                   type="number"
                   min="1"
                   max="16"
-                  value={newRecord.tracks.length}
+                  value={newRecord.tracks}
                   onChange={(e) => handleTracksChange(e.target.value)}
                 />
               </div>
