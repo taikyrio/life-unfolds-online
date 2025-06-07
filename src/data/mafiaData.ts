@@ -101,6 +101,8 @@ export const CRIME_OPERATIONS: Record<string, CrimeOperation> = {
     riskLevel: 95,
     notorietyGain: 40,
     successRate: 25,
+    failureChance: 75,
+    arrestChance: 15,
     timeRequired: 8
   },
   burglary: {
@@ -115,6 +117,8 @@ export const CRIME_OPERATIONS: Record<string, CrimeOperation> = {
     riskLevel: 30,
     notorietyGain: 5,
     successRate: 70,
+    failureChance: 30,
+    arrestChance: 10,
     timeRequired: 2
   },
   extortion: {
@@ -129,6 +133,8 @@ export const CRIME_OPERATIONS: Record<string, CrimeOperation> = {
     riskLevel: 40,
     notorietyGain: 15,
     successRate: 60,
+    failureChance: 40,
+    arrestChance: 5,
     timeRequired: 4
   },
   grand_theft_auto: {
@@ -143,6 +149,8 @@ export const CRIME_OPERATIONS: Record<string, CrimeOperation> = {
     riskLevel: 50,
     notorietyGain: 20,
     successRate: 55,
+    failureChance: 45,
+    arrestChance: 15,
     timeRequired: 3
   },
   train_robbery: {
@@ -157,6 +165,8 @@ export const CRIME_OPERATIONS: Record<string, CrimeOperation> = {
     riskLevel: 80,
     notorietyGain: 35,
     successRate: 35,
+    failureChance: 65,
+    arrestChance: 25,
     timeRequired: 6
   },
   pickpocket: {
@@ -171,6 +181,8 @@ export const CRIME_OPERATIONS: Record<string, CrimeOperation> = {
     riskLevel: 20,
     notorietyGain: 2,
     successRate: 80,
+    failureChance: 20,
+    arrestChance: 5,
     timeRequired: 1
   },
   porch_pirate: {
@@ -185,6 +197,8 @@ export const CRIME_OPERATIONS: Record<string, CrimeOperation> = {
     riskLevel: 15,
     notorietyGain: 3,
     successRate: 85,
+    failureChance: 15,
+    arrestChance: 3,
     timeRequired: 1
   },
   shoplift: {
@@ -199,6 +213,8 @@ export const CRIME_OPERATIONS: Record<string, CrimeOperation> = {
     riskLevel: 25,
     notorietyGain: 3,
     successRate: 75,
+    failureChance: 25,
+    arrestChance: 8,
     timeRequired: 1
   },
   money_laundering: {
@@ -213,6 +229,8 @@ export const CRIME_OPERATIONS: Record<string, CrimeOperation> = {
     riskLevel: 60,
     notorietyGain: 10,
     successRate: 70,
+    failureChance: 30,
+    arrestChance: 12,
     timeRequired: 24
   },
   racketeering: {
@@ -227,6 +245,8 @@ export const CRIME_OPERATIONS: Record<string, CrimeOperation> = {
     riskLevel: 65,
     notorietyGain: 25,
     successRate: 50,
+    failureChance: 50,
+    arrestChance: 18,
     timeRequired: 168
   }
 };

@@ -1,5 +1,5 @@
 
-import { Character } from '../types/game';
+import { Character } from '../types/character';
 import { Asset } from '../types/assets';
 
 export const getAssetsByCategory = (character: Character, category: string): Asset[] => {
@@ -122,7 +122,7 @@ export const insureAsset = (character: Character, assetId: string): {
     return { success: false, message: 'Asset not found' };
   }
   
-  const insuranceCost = asset.insuranceCost || 2;
+  const insuranceCost = (asset as any).insuranceCost || 2;
   if (character.wealth < insuranceCost) {
     return { success: false, message: 'Not enough money for insurance' };
   }

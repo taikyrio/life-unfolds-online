@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Character } from '../types/character';
 import { CriminalCharacterState, CrimeRank, CrimeOperation, SyndicateEvent, ExtortionTarget } from '../types/organizedCrime';
@@ -6,6 +7,11 @@ import { MAFIA_HIERARCHY, CRIME_OPERATIONS, SYNDICATE_TYPES, getCrimesForRank, g
 import { MAFIA_EVENTS, getRandomMafiaEvent, getExtortionMethods } from '../data/mafiaEvents';
 import { getCrimeToSentenceMapping, PRISON_FACILITIES } from '../data/prisonData';
 import { PrisonSystem } from './PrisonSystem';
+import { CrimeStateDisplay } from '../components/systems/organized-crime/CrimeStateDisplay';
+import { SyndicateSelector } from '../components/systems/organized-crime/SyndicateSelector';
+import { CrimesPanel } from '../components/systems/organized-crime/CrimesPanel';
+import { ExtortionPanel } from '../components/systems/organized-crime/ExtortionPanel';
+import { EventModal } from '../components/systems/organized-crime/EventModal';
 
 interface OrganizedCrimeSystemProps {
   character: Character;
@@ -350,66 +356,6 @@ export const OrganizedCrimeSystem: React.FC<OrganizedCrimeSystemProps> = ({
     onCharacterUpdate({ ...character, ...updates });
   };
 
-  const getRankColor = (rank: CrimeRank) => {
-    const colors = {
-      associate: 'bg-gray-500',
-      soldier: 'bg-blue-500',
-      caporegime: 'bg-purple-500',
-      underboss: 'bg-red-500',
-      godfather: 'bg-gold-500',
-      chairman: 'bg-gold-500',
-      padrino: 'bg-gold-500'
-    };
-    return colors[rank] || 'bg-gray-500';
-  };
-
-  // Event Modal Component
-  const EventModal = () => {
-    if (!currentEvent) return null;
-
-    return (
-      <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-        <div className="bg-white dark:bg-gray-800 rounded-xl max-w-md w-full p-6 shadow-2xl">
-          <h3 className="text-xl font-bold text-gray-800 dark:text-white mb-4">
-            Family Business
-          </h3>
-          <p className="text-gray-600 dark:text-gray-300 mb-6">
-            {currentEvent.description}
-          </p>
-          <div className="space-y-3">
-            {currentEvent.choices.map((choice) => {
-              const canChoose = !choice.requirements || 
-                (choice.requirements.rank ? 
-                  MAFIA_HIERARCHY[crimeState.rank].title >= MAFIA_HIERARCHY[choice.requirements.rank].title : true);
-
-              return (
-                <button
-                  key={choice.id}
-                  onClick={() => handleEventChoice(choice.id)}
-                  disabled={!canChoose}
-                  className={`w-full p-3 rounded-lg text-left transition-colors ${
-                    canChoose 
-                      ? 'bg-red-100 hover:bg-red-200 dark:bg-red-900/30 dark:hover:bg-red-900/50' 
-                      : 'bg-gray-100 dark:bg-gray-700 opacity-50 cursor-not-allowed'
-                  }`}
-                >
-                  <span className="text-gray-800 dark:text-white font-medium">
-                    {choice.text}
-                  </span>
-                  {choice.requirements && (
-                    <div className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                      Requires: {choice.requirements.rank && `${choice.requirements.rank} rank`}
-                    </div>
-                  )}
-                </button>
-              );
-            })}
-          </div>
-        </div>
-      </div>
-    );
-  };
-
   // If in prison, show prison system
   if (isInPrison) {
     return (
@@ -436,171 +382,33 @@ export const OrganizedCrimeSystem: React.FC<OrganizedCrimeSystemProps> = ({
           <p className="text-gray-600 text-lg">Family business and honor</p>
         </div>
 
-        {/* Crime State Display */}
-        {crimeState.syndicateId && (
-          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg mb-6">
-            <h2 className="text-xl font-bold text-gray-800 dark:text-white mb-4">Family Status</h2>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <div className="text-sm text-gray-500 dark:text-gray-400">Rank</div>
-                <div className={`inline-block px-3 py-1 rounded-full text-white text-sm font-medium ${getRankColor(crimeState.rank)}`}>
-                  {MAFIA_HIERARCHY[crimeState.rank].title}
-                </div>
-              </div>
-              <div>
-                <div className="text-sm text-gray-500 dark:text-gray-400">Loyalty</div>
-                <div className="text-lg font-bold text-gray-800 dark:text-white">{crimeState.loyalty}%</div>
-              </div>
-              <div>
-                <div className="text-sm text-gray-500 dark:text-gray-400">Reputation</div>
-                <div className="text-lg font-bold text-gray-800 dark:text-white">{crimeState.reputation}</div>
-              </div>
-              <div>
-                <div className="text-sm text-gray-500 dark:text-gray-400">Crimes</div>
-                <div className="text-lg font-bold text-gray-800 dark:text-white">{crimeState.crimesCommitted}</div>
-              </div>
-            </div>
-            {crimeState.madeStatus && (
-              <div className="mt-4 p-3 bg-gold-100 dark:bg-gold-900/30 rounded-lg">
-                <span className="text-gold-800 dark:text-gold-200 font-medium">⭐ Made Man/Woman</span>
-              </div>
-            )}
-          </div>
-        )}
+        <CrimeStateDisplay crimeState={crimeState} />
 
-        {/* Join Syndicate */}
-        {!crimeState.syndicateId && (
-          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg mb-6">
-            <h2 className="text-xl font-bold text-gray-800 dark:text-white mb-4">Join a Crime Syndicate</h2>
-            {canJoinSyndicate() ? (
-              <div className="grid gap-4">
-                {Object.values(SYNDICATE_TYPES).map((syndicate) => (
-                  <button
-                    key={syndicate.id}
-                    onClick={() => joinSyndicate(syndicate.id)}
-                    className="p-4 bg-red-100 hover:bg-red-200 dark:bg-red-900/30 dark:hover:bg-red-900/50 rounded-lg text-left transition-colors"
-                  >
-                    <div className="font-bold text-gray-800 dark:text-white">{syndicate.name}</div>
-                    <div className="text-sm text-gray-600 dark:text-gray-300">{syndicate.region}</div>
-                    <div className="text-xs text-gray-500 dark:text-gray-400 mt-2">
-                      {syndicate.specialRules.join(' • ')}
-                    </div>
-                  </button>
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-8">
-                <div className="text-gray-500 dark:text-gray-400 mb-4">
-                  You need to commit at least 5 crimes before joining a syndicate.
-                </div>
-                <div className="text-lg font-bold text-red-600">
-                  {crimeState.crimesCommitted}/5 crimes committed
-                </div>
-              </div>
-            )}
-          </div>
-        )}
+        <SyndicateSelector
+          crimeState={crimeState}
+          canJoinSyndicate={canJoinSyndicate()}
+          onJoinSyndicate={joinSyndicate}
+        />
 
-        {/* Available Crimes */}
-        {crimeState.syndicateId && (
-          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg mb-6">
-            <h2 className="text-xl font-bold text-gray-800 dark:text-white mb-4">Family Operations</h2>
-            <div className="grid gap-3">
-              {availableCrimes.map((crime) => (
-                <button
-                  key={crime.id}
-                  onClick={() => commitCrime(crime.id)}
-                  className="p-4 bg-red-50 hover:bg-red-100 dark:bg-red-900/20 dark:hover:bg-red-900/40 rounded-lg text-left transition-colors border border-red-200 dark:border-red-800"
-                >
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <div className="font-bold text-gray-800 dark:text-white">{crime.name}</div>
-                      <div className="text-sm text-gray-600 dark:text-gray-300">{crime.description}</div>
-                      <div className="flex gap-4 mt-2 text-xs">
-                        <span className="text-green-600 dark:text-green-400">
-                          💰 ${crime.basePayout.toLocaleString()}
-                        </span>
-                        <span className="text-yellow-600 dark:text-yellow-400">
-                          ⚠️ {crime.riskLevel}% risk
-                        </span>
-                        <span className="text-blue-600 dark:text-blue-400">
-                          ✅ {crime.successRate}% success
-                        </span>
-                      </div>
-                    </div>
-                    <div className={`px-2 py-1 rounded text-xs font-medium ${
-                      crime.difficulty === 'easy' ? 'bg-green-200 text-green-800' :
-                      crime.difficulty === 'medium' ? 'bg-yellow-200 text-yellow-800' :
-                      crime.difficulty === 'hard' ? 'bg-orange-200 text-orange-800' :
-                      'bg-red-200 text-red-800'
-                    }`}>
-                      {crime.difficulty}
-                    </div>
-                  </div>
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
+        <CrimesPanel
+          availableCrimes={availableCrimes}
+          onCommitCrime={commitCrime}
+          hasSyndicate={!!crimeState.syndicateId}
+        />
 
-        {/* Extortion */}
-        {crimeState.syndicateId && (
-          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg mb-6">
-            <h2 className="text-xl font-bold text-gray-800 dark:text-white mb-4">Extortion</h2>
-            <button
-              onClick={() => setSelectedTarget(getRandomExtortionTarget())}
-              className="w-full p-4 bg-orange-100 hover:bg-orange-200 dark:bg-orange-900/30 dark:hover:bg-orange-900/50 rounded-lg transition-colors"
-            >
-              <span className="text-orange-800 dark:text-orange-200 font-medium">
-                🏪 Find business to extort
-              </span>
-            </button>
-          </div>
-        )}
+        <ExtortionPanel
+          hasSyndicate={!!crimeState.syndicateId}
+          selectedTarget={selectedTarget}
+          onSelectTarget={setSelectedTarget}
+          onPerformExtortion={performExtortion}
+          onCloseTarget={() => setSelectedTarget(null)}
+        />
 
-        {/* Extortion Target Modal */}
-        {selectedTarget && (
-          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white dark:bg-gray-800 rounded-xl max-w-md w-full p-6 shadow-2xl">
-              <h3 className="text-xl font-bold text-gray-800 dark:text-white mb-4">
-                Extortion Target
-              </h3>
-              <div className="mb-6">
-                <div className="font-bold text-lg text-gray-800 dark:text-white">{selectedTarget.name}</div>
-                <div className="text-gray-600 dark:text-gray-300">{selectedTarget.businessType} • {selectedTarget.location}</div>
-                <div className="text-sm text-gray-500 dark:text-gray-400 mt-2">
-                  Estimated wealth: ${selectedTarget.wealth.toLocaleString()}
-                </div>
-                <div className="text-sm text-gray-500 dark:text-gray-400">
-                  Compliance: {selectedTarget.compliance}%
-                </div>
-              </div>
-              <div className="space-y-3">
-                {getExtortionMethods().map((method) => (
-                  <button
-                    key={method.id}
-                    onClick={() => performExtortion(selectedTarget, method.id)}
-                    className="w-full p-3 bg-red-100 hover:bg-red-200 dark:bg-red-900/30 dark:hover:bg-red-900/50 rounded-lg text-left transition-colors"
-                  >
-                    <div className="font-bold text-gray-800 dark:text-white">{method.name}</div>
-                    <div className="text-sm text-gray-600 dark:text-gray-300">{method.description}</div>
-                    <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                      {method.successRate}% success rate • +{method.notoriety} notoriety
-                    </div>
-                  </button>
-                ))}
-                <button
-                  onClick={() => setSelectedTarget(null)}
-                  className="w-full p-3 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 rounded-lg transition-colors"
-                >
-                  <span className="text-gray-600 dark:text-gray-300">Cancel</span>
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-
-        <EventModal />
+        <EventModal
+          currentEvent={currentEvent}
+          crimeState={crimeState}
+          onHandleEventChoice={handleEventChoice}
+        />
       </div>
     </div>
   );
