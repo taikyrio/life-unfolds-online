@@ -6,29 +6,7 @@ import { LegalStatus } from './legal';
 import { HealthInsurance } from './health';
 import { SocialMediaAccount, RealEstateProperty } from './social';
 import { FinancialRecord } from './finance';
-
-export interface MusicArtist {
-  id: string;
-  name: string;
-  genre: string;
-  members: number;
-  fans: number;
-  records: MusicRecord[];
-  tours: MusicTour[];
-  disbanded: boolean;
-}
-
-export interface MusicRecord {
-  id: string;
-  name: string;
-  tracks: number;
-  productionTime: number;
-  releaseDate: Date;
-  sales: number;
-  certified: boolean;
-  inProduction: boolean;
-  earnings: number;
-}
+import { MusicCareer, Artist as MusicArtist, Record as MusicRecord, Album as MusicAlbum } from './music';
 
 export interface MusicTour {
   id: string;
@@ -37,30 +15,6 @@ export interface MusicTour {
   earnings: number;
   fanGain: number;
   year: number;
-}
-
-export interface MusicCareer {
-  level: number;
-  fans: number;
-  albums: number;
-  singles: number;
-  reputation: number;
-  currentProject: string | null;
-  lastRelease: string | null;
-  earnings: number;
-  artists: MusicArtist[];
-  studioSlots: number;
-  hasMoreStudioTime: boolean;
-  artistName: string;
-  genre: string;
-  recordLabel: string;
-  albumsSold: number;
-  tourRevenue: number;
-  fanBase: number;
-  currentAlbum: string | null;
-  totalEarnings: number;
-  awards: string[];
-  isActive: boolean;
 }
 
 export interface CharacterEventTracker {
@@ -136,3 +90,5 @@ export interface Character {
   partnerName?: string;
   lifeEvents: string[];
 }
+
+export { CharacterEventTracker as EventTracker };

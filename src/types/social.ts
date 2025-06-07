@@ -17,6 +17,7 @@ export interface SocialMediaPost {
   shares: number;
   comments: number;
   timestamp: string;
+  datePosted: string;
   type: 'text' | 'image' | 'video';
 }
 

@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Clock } from 'lucide-react';
@@ -45,7 +46,17 @@ export const MusicianDLC: React.FC<MusicianDLCProps> = ({
     earnings: 0,
     artists: [],
     studioSlots: 2,
-    hasMoreStudioTime: false
+    hasMoreStudioTime: false,
+    artistName: '',
+    genre: '',
+    recordLabel: '',
+    albumsSold: 0,
+    tourRevenue: 0,
+    fanBase: 0,
+    currentAlbum: null,
+    totalEarnings: 0,
+    awards: [],
+    isActive: true
   };
 
   const artists: Artist[] = musicCareer.artists || [];

@@ -3,6 +3,7 @@ export interface MoneyState {
   balance: number;
   income: number;
   monthlyIncome: number;
+  monthlyExpenses: number;
   expenses: number;
   investments: any[];
   loans: any[];

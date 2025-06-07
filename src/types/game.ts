@@ -11,11 +11,19 @@ export * from './finance';
 export * from './career';
 
 // Re-export character types with renamed conflicting exports
-export { 
+export type { 
   Character, 
-  MusicArtist, 
-  MusicRecord, 
-  MusicTour, 
-  MusicCareer,
+  MusicTour,
   CharacterEventTracker as EventTracker
 } from './character';
+
+// Re-export music types
+export type {
+  MusicCareer,
+  Artist as MusicArtist,
+  Record as MusicRecord,
+  Album as MusicAlbum
+} from './music';
+
+// Re-export asset types
+export type { Asset } from './assets';

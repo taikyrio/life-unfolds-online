@@ -1,16 +1,12 @@
 
-export interface Asset {
-  id: string;
-  name: string;
-  type: AssetType;
+import { Asset as CoreAsset } from './core';
+
+export interface Asset extends CoreAsset {
   category: AssetCategory;
-  purchasePrice: number;
-  currentValue: number;
   condition: AssetCondition;
   maintenanceCost: number;
   yearPurchased: number;
   depreciationRate: number;
-  appreciationRate: number;
   rentalIncome?: number;
   insuranceCost?: number;
   isInsured: boolean;
