@@ -6,7 +6,7 @@ import { LegalStatus } from './legal';
 import { HealthInsurance } from './health';
 import { SocialMediaAccount, RealEstateProperty } from './social';
 import { FinancialRecord } from './finance';
-import { MusicCareer, Artist as MusicArtist, Record as MusicRecord, Album as MusicAlbum } from './music';
+import { MusicCareer, Artist, Record, Album } from './music';
 
 export interface MusicTour {
   id: string;
@@ -23,6 +23,12 @@ export interface CharacterEventTracker {
   eventCooldowns: Map<string, number>;
   choiceHistory: any[];
 }
+
+// Re-export music types with new names to avoid conflicts
+export type MusicArtist = Artist;
+export type MusicRecord = Record;
+export type MusicAlbum = Album;
+export { MusicCareer };
 
 export interface Character {
   id: string;
@@ -76,7 +82,7 @@ export interface Character {
   disasterHistory?: any[];
   workExperience?: number;
   musicCareer?: MusicCareer;
-  musicArtists?: MusicArtist[];
+  musicArtists?: Artist[];
   money?: number;
   businesses?: any[];
   properties?: any[];

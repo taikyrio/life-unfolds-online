@@ -1,4 +1,3 @@
-
 import { Asset, AssetCategory } from '../types/assets';
 
 export const ASSET_CATALOG: Record<string, Asset[]> = {
@@ -10,6 +9,7 @@ export const ASSET_CATALOG: Record<string, Asset[]> = {
       category: 'real_estate',
       purchasePrice: 150,
       currentValue: 150,
+      value: 150, // Add for compatibility
       condition: 'good',
       maintenanceCost: 5,
       yearPurchased: 0,
@@ -29,6 +29,7 @@ export const ASSET_CATALOG: Record<string, Asset[]> = {
       category: 'real_estate',
       purchasePrice: 400,
       currentValue: 400,
+      value: 400, // Add for compatibility
       condition: 'good',
       maintenanceCost: 15,
       yearPurchased: 0,
@@ -48,6 +49,7 @@ export const ASSET_CATALOG: Record<string, Asset[]> = {
       category: 'real_estate',
       purchasePrice: 2000,
       currentValue: 2000,
+      value: 2000, // Add for compatibility
       condition: 'excellent',
       maintenanceCost: 80,
       yearPurchased: 0,
@@ -70,6 +72,7 @@ export const ASSET_CATALOG: Record<string, Asset[]> = {
       category: 'vehicles',
       purchasePrice: 15,
       currentValue: 15,
+      value: 15, // Add for compatibility
       condition: 'fair',
       maintenanceCost: 3,
       yearPurchased: 0,
@@ -88,6 +91,7 @@ export const ASSET_CATALOG: Record<string, Asset[]> = {
       category: 'vehicles',
       purchasePrice: 80,
       currentValue: 80,
+      value: 80, // Add for compatibility
       condition: 'excellent',
       maintenanceCost: 8,
       yearPurchased: 0,
@@ -107,6 +111,7 @@ export const ASSET_CATALOG: Record<string, Asset[]> = {
       category: 'vehicles',
       purchasePrice: 500,
       currentValue: 500,
+      value: 500, // Add for compatibility
       condition: 'excellent',
       maintenanceCost: 40,
       yearPurchased: 0,
@@ -128,6 +133,7 @@ export const ASSET_CATALOG: Record<string, Asset[]> = {
       category: 'luxury',
       purchasePrice: 25,
       currentValue: 25,
+      value: 25, // Add for compatibility
       condition: 'excellent',
       maintenanceCost: 1,
       yearPurchased: 0,
@@ -147,6 +153,7 @@ export const ASSET_CATALOG: Record<string, Asset[]> = {
       category: 'luxury',
       purchasePrice: 100,
       currentValue: 100,
+      value: 100, // Add for compatibility
       condition: 'excellent',
       maintenanceCost: 5,
       yearPurchased: 0,
@@ -168,6 +175,7 @@ export const ASSET_CATALOG: Record<string, Asset[]> = {
       category: 'technology',
       purchasePrice: 5,
       currentValue: 5,
+      value: 5, // Add for compatibility
       condition: 'good',
       maintenanceCost: 1,
       yearPurchased: 0,
@@ -187,6 +195,7 @@ export const ASSET_CATALOG: Record<string, Asset[]> = {
       category: 'technology',
       purchasePrice: 20,
       currentValue: 20,
+      value: 20, // Add for compatibility
       condition: 'good',
       maintenanceCost: 2,
       yearPurchased: 0,

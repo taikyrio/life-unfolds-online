@@ -15,6 +15,9 @@ export interface Asset extends CoreAsset {
   requirements?: AssetRequirements;
   benefits?: AssetBenefits;
   lastMaintenanceYear?: number;
+  // Include both currentValue and value for compatibility
+  currentValue: number;
+  purchasePrice: number;
 }
 
 export interface AssetRequirements {

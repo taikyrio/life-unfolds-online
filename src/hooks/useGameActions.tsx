@@ -1,5 +1,4 @@
 
-
 import { useCallback } from 'react';
 import { Character, GameState } from '../types/game';
 import { processAgeUp, processChoice } from '../components/game/GameLogic';
@@ -324,7 +323,9 @@ export function useGameActions({
             id: 'house_' + Date.now(),
             name: 'House',
             type: 'house',
-            value: 200
+            value: 200,
+            currentValue: 200,
+            purchasePrice: 200
           });
           message = 'You bought a house!';
         } else {
@@ -338,7 +339,9 @@ export function useGameActions({
             id: 'car_' + Date.now(),
             name: 'Car',
             type: 'car',
-            value: 30
+            value: 30,
+            currentValue: 30,
+            purchasePrice: 30
           });
           message = 'You bought a car!';
         } else {
@@ -418,4 +421,3 @@ export function useGameActions({
     handleRelationshipAction: handleRelationshipActionWrapper
   };
 }
-
