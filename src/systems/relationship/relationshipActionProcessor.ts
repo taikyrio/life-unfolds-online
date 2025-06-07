@@ -1,3 +1,4 @@
+
 import { Character, FamilyMember, RelationshipAction, InteractionRecord } from '../../types/game';
 
 export class RelationshipActionProcessor {
@@ -16,6 +17,11 @@ export class RelationshipActionProcessor {
         relationshipLevel: 50,
         trust: 50,
         respect: 50,
+        communication: 50,
+        intimacy: 0,
+        conflictResolution: 50,
+        sharedInterests: 50,
+        timeSpentTogether: 0,
         lastInteraction: new Date().toISOString(),
         interactionHistory: []
       };
@@ -175,6 +181,11 @@ export class RelationshipActionProcessor {
         relationshipLevel: 50,
         trust: 50,
         respect: 50,
+        communication: 50,
+        intimacy: 0,
+        conflictResolution: 50,
+        sharedInterests: 50,
+        timeSpentTogether: 0,
         lastInteraction: new Date().toISOString(),
         interactionHistory: []
       };
@@ -209,6 +220,11 @@ export class RelationshipActionProcessor {
         relationshipLevel: 50,
         trust: 50,
         respect: 50,
+        communication: 50,
+        intimacy: 0,
+        conflictResolution: 50,
+        sharedInterests: 50,
+        timeSpentTogether: 0,
         lastInteraction: new Date().toISOString(),
         interactionHistory: []
       };

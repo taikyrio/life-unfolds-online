@@ -23,10 +23,13 @@ export const EnhancedRelationshipsMenu: React.FC<EnhancedRelationshipsMenuProps>
 }) => {
   const [selectedTab, setSelectedTab] = useState('family');
 
-  const relationships = character.relationships || [];
-  const familyMembers = relationships.filter(r => r.type === 'family');
-  const friends = relationships.filter(r => r.type === 'friend');
-  const romantic = relationships.filter(r => r.type === 'romantic');
+  // Ensure familyMembers is always an array
+  const familyMembers = Array.isArray(character.familyMembers) ? character.familyMembers : [];
+  
+  // For now, we'll use familyMembers for all categories since the relationships array structure needs to be defined
+  const family = familyMembers.filter(r => ['father', 'mother', 'sibling', 'child', 'spouse'].includes(r.relationship));
+  const friends = familyMembers.filter(r => ['friend', 'bestfriend', 'acquaintance'].includes(r.relationship));
+  const romantic = familyMembers.filter(r => ['spouse', 'lover'].includes(r.relationship));
 
   return (
     <div className="p-4 space-y-4">
@@ -69,8 +72,8 @@ export const EnhancedRelationshipsMenu: React.FC<EnhancedRelationshipsMenuProps>
       <div className="space-y-3">
         {selectedTab === 'family' && (
           <>
-            {familyMembers.length > 0 ? (
-              familyMembers.map((member) => (
+            {family.length > 0 ? (
+              family.map((member) => (
                 <Card key={member.id} className="glass border-white/20">
                   <CardContent className="p-3">
                     <div className="flex items-center justify-between">
@@ -78,11 +81,11 @@ export const EnhancedRelationshipsMenu: React.FC<EnhancedRelationshipsMenuProps>
                         <span className="text-lg">👨‍👩‍👧‍👦</span>
                         <div>
                           <h3 className="font-medium text-sm">{member.name}</h3>
-                          <p className="text-xs text-gray-600 capitalize">{member.type}</p>
+                          <p className="text-xs text-gray-600 capitalize">{member.relationship}</p>
                         </div>
                       </div>
                       <Badge variant="secondary" className="text-xs">
-                        ❤️ {member.relationshipLevel || 50}
+                        ❤️ {member.relationshipQuality || 50}
                       </Badge>
                     </div>
                   </CardContent>
@@ -114,7 +117,7 @@ export const EnhancedRelationshipsMenu: React.FC<EnhancedRelationshipsMenuProps>
                         </div>
                       </div>
                       <Badge variant="secondary" className="text-xs">
-                        🤝 {friend.relationshipLevel || 50}
+                        🤝 {friend.relationshipQuality || 50}
                       </Badge>
                     </div>
                   </CardContent>
@@ -147,7 +150,7 @@ export const EnhancedRelationshipsMenu: React.FC<EnhancedRelationshipsMenuProps>
                         </div>
                       </div>
                       <Badge variant="secondary" className="text-xs">
-                        💖 {partner.relationshipLevel || 50}
+                        💖 {partner.relationshipQuality || 50}
                       </Badge>
                     </div>
                   </CardContent>

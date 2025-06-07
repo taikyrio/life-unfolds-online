@@ -13,6 +13,15 @@ export interface RelationshipAction {
   maxAge?: number;
 }
 
+export interface InteractionRecord {
+  id: string;
+  type: string;
+  outcome: 'positive' | 'negative' | 'neutral';
+  impact: number;
+  timestamp: string;
+  description: string;
+}
+
 export type RelationshipType = 
   | 'father' | 'mother' | 'stepfather' | 'stepmother'
   | 'sibling' | 'stepsibling' | 'halfsibling' 
@@ -35,7 +44,7 @@ export interface RelationshipStats {
   sharedInterests: number;
   timeSpentTogether: number;
   lastInteraction: string;
-  interactionHistory: any[];
+  interactionHistory: InteractionRecord[];
   respect: number;
   love?: number;
   fear?: number;
@@ -64,4 +73,3 @@ export interface FamilyMember {
     generosity: number;
   };
 }
-

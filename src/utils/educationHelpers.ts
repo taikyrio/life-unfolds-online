@@ -1,3 +1,4 @@
+
 import { Character } from '../types/game';
 
 export const initializeEducationData = (character: Character): Character => {
@@ -28,4 +29,8 @@ export const calculateEducationLevel = (completedStages: string[]): string => {
   if (completedStages.includes('middle')) return 'Middle School';
   if (completedStages.includes('elementary')) return 'Elementary';
   return 'None';
+};
+
+export const isMandatoryEducationAge = (age: number): boolean => {
+  return age >= 6 && age <= 16;
 };
