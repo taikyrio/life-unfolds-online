@@ -1,3 +1,4 @@
+
 import { FamilyMember } from '../types/relationships';
 
 export const generateInitialFamily = (playerLastName?: string): FamilyMember[] => {
@@ -22,7 +23,8 @@ export const generateInitialFamily = (playerLastName?: string): FamilyMember[] =
     'Michael', 'Christopher', 'Matthew', 'Joshua', 'David', 'James', 'Daniel', 'Robert',
     'John', 'Joseph', 'Andrew', 'Ryan', 'Brandon', 'Jason', 'Justin', 'William'
   ];
-    // Generate sibling
+    
+  // Generate sibling
   const siblingNames = [
     'Alex', 'Jordan', 'Taylor', 'Morgan', 'Casey', 'Riley'
   ];
@@ -93,7 +95,7 @@ export const generateInitialFamily = (playerLastName?: string): FamilyMember[] =
 
   family.push(mother, father);
 
-  // Randomly add siblings
+  // Randomly add siblings (70% chance of having 0-2 siblings)
   const siblingCount = Math.random() < 0.7 ? Math.floor(Math.random() * 3) : 0;
   for (let i = 0; i < siblingCount; i++) {
     const sibling: FamilyMember = {
@@ -130,6 +132,7 @@ export const generateInitialFamily = (playerLastName?: string): FamilyMember[] =
     family.push(sibling);
   }
 
+  console.log('Generated family members:', family);
   return family;
 };
 
@@ -162,7 +165,7 @@ export const generateNewRelationships = (character: any): FamilyMember[] => {
         interactionHistory: [],
         respect: 50
       },
-
+      relationshipQuality: 50,
       personality: {
         kindness: 50,
         loyalty: 50,

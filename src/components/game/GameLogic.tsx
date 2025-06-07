@@ -1,4 +1,3 @@
-
 import { Character, GameState } from '../../types/game';
 import { generateInitialFamily } from '../../utils/familyUtils';
 
@@ -22,9 +21,11 @@ export const processGameLogic = (character: Character): Character => {
     };
   }
   
-  // Initialize family members if they don't exist
-  if (!updatedCharacter.familyMembers || updatedCharacter.familyMembers.length === 0) {
+  // Initialize family members if they don't exist or is not an array
+  if (!Array.isArray(updatedCharacter.familyMembers) || updatedCharacter.familyMembers.length === 0) {
+    console.log('Initializing family members...');
     updatedCharacter.familyMembers = generateInitialFamily();
+    console.log('Family members initialized:', updatedCharacter.familyMembers);
   }
   
   if (!updatedCharacter.relationshipStatus) {
@@ -52,7 +53,7 @@ export const validateCharacterData = (character: Character): boolean => {
 };
 
 export const initializeCharacterDefaults = (character: Partial<Character>): Character => {
-  return {
+  const defaultCharacter = {
     id: character.id || 'default',
     name: character.name || 'Unknown',
     gender: character.gender || 'female',
@@ -85,6 +86,13 @@ export const initializeCharacterDefaults = (character: Partial<Character>): Char
     relationshipStatus: character.relationshipStatus || 'single',
     ...character
   };
+
+  // Ensure family members are initialized
+  if (!Array.isArray(defaultCharacter.familyMembers) || defaultCharacter.familyMembers.length === 0) {
+    defaultCharacter.familyMembers = generateInitialFamily();
+  }
+
+  return defaultCharacter;
 };
 
 export const processAgeUp = (gameState: GameState): GameState => {

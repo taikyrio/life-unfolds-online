@@ -17,7 +17,8 @@ export const RelationshipsMenu: React.FC<RelationshipsMenuProps> = ({
   onCharacterUpdate,
   onEvent
 }) => {
-  const relationships = character.relationships || [];
+  // Ensure familyMembers is always an array
+  const familyMembers = Array.isArray(character.familyMembers) ? character.familyMembers : [];
 
   return (
     <div className="p-4 space-y-4">
@@ -31,24 +32,26 @@ export const RelationshipsMenu: React.FC<RelationshipsMenuProps> = ({
       </div>
 
       <div className="space-y-3">
-        {relationships.length > 0 ? (
-          relationships.map((relationship) => (
-            <Card key={relationship.id} className="glass border-white/20">
+        {familyMembers.length > 0 ? (
+          familyMembers.map((relationship, index) => (
+            <Card key={relationship.id || index} className="glass border-white/20">
               <CardContent className="p-3">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <span className="text-lg">
-                      {relationship.type === 'family' && '👨‍👩‍👧‍👦'}
-                      {relationship.type === 'friend' && '👥'}
-                      {relationship.type === 'romantic' && '💕'}
+                      {relationship.relationship === 'father' && '👨‍🦳'}
+                      {relationship.relationship === 'mother' && '👩‍🦳'}
+                      {relationship.relationship === 'sibling' && '👫'}
+                      {relationship.relationship === 'spouse' && '💕'}
+                      {!['father', 'mother', 'sibling', 'spouse'].includes(relationship.relationship) && '👤'}
                     </span>
                     <div>
                       <h3 className="font-medium text-sm">{relationship.name}</h3>
-                      <p className="text-xs text-gray-600 capitalize">{relationship.type}</p>
+                      <p className="text-xs text-gray-600 capitalize">{relationship.relationship}</p>
                     </div>
                   </div>
                   <Badge variant="secondary" className="text-xs">
-                    ❤️ {relationship.relationshipLevel || 50}
+                    ❤️ {relationship.relationshipQuality || 50}
                   </Badge>
                 </div>
               </CardContent>
