@@ -60,6 +60,7 @@ export interface Investment {
   dividendYield?: number;
   riskLevel: 'low' | 'medium' | 'high';
   annualReturn: number;
+  yearPurchased?: number;
 }
 
 export interface Loan {
@@ -74,6 +75,7 @@ export interface Loan {
   termMonths: number;
   remainingMonths: number;
   startDate: string;
+  originalAmount?: number;
 }
 
 export interface CriminalRecord {
@@ -148,6 +150,7 @@ export interface PersonalityTraits {
   ambition: number;
   stability: number;
   generosity: number;
+  openness: number;
 }
 
 export interface JobPerformance {

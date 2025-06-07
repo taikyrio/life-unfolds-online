@@ -56,6 +56,11 @@ export interface MusicCareer {
   recordLabel: string;
   albumsSold: number;
   tourRevenue: number;
+  fanBase: number;
+  currentAlbum: string | null;
+  totalEarnings: number;
+  awards: string[];
+  isActive: boolean;
 }
 
 export interface CharacterEventTracker {

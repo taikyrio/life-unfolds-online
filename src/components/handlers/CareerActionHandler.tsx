@@ -51,7 +51,17 @@ export const CareerActionHandler: React.FC<CareerActionHandlerProps> = ({
               earnings: 0,
               artists: [],
               studioSlots: 2,
-              hasMoreStudioTime: false
+              hasMoreStudioTime: false,
+              artistName: '',
+              genre: '',
+              recordLabel: '',
+              albumsSold: 0,
+              tourRevenue: 0,
+              fanBase: 0,
+              currentAlbum: null,
+              totalEarnings: 0,
+              awards: [],
+              isActive: true
             };
           }
           updatedCharacter.musicCareer.artists = [
@@ -196,7 +206,17 @@ export const handleCareerAction = (
             earnings: 0,
             artists: [],
             studioSlots: 2,
-            hasMoreStudioTime: false
+            hasMoreStudioTime: false,
+            artistName: '',
+            genre: '',
+            recordLabel: '',
+            albumsSold: 0,
+            tourRevenue: 0,
+            fanBase: 0,
+            currentAlbum: null,
+            totalEarnings: 0,
+            awards: [],
+            isActive: true
           };
         }
         updatedCharacter.musicCareer.artists = [

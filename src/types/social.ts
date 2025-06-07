@@ -5,6 +5,8 @@ export interface SocialMediaAccount {
   followers: number;
   verified: boolean;
   posts: SocialMediaPost[];
+  monthlyIncome: number;
+  monetized: boolean;
 }
 
 export interface SocialMediaPost {
