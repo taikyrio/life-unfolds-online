@@ -1,120 +1,108 @@
 
-import { Character, FamilyMember } from '../types/game';
-import { generateRandomName } from './characterUtils';
+import { FamilyMember, RelationshipStats } from '../types/relationships';
 
-const generateRelationshipStats = (baseLevel: number = 50) => ({
-  relationshipLevel: Math.floor(Math.random() * 40) + baseLevel,
-  trust: Math.floor(Math.random() * 40) + baseLevel,
-  respect: Math.floor(Math.random() * 40) + baseLevel,
+export const updateRelationshipStats = (
+  member: FamilyMember,
+  interaction: string,
+  impact: number
+): FamilyMember => {
+  if (!member.relationshipStats) {
+    member.relationshipStats = createDefaultRelationshipStats();
+  }
+
+  const stats = { ...member.relationshipStats };
+  
+  // Update stats based on interaction type and impact
+  stats.relationshipLevel = Math.max(0, Math.min(100, stats.relationshipLevel + impact));
+  stats.trust = Math.max(0, Math.min(100, stats.trust + (impact * 0.5)));
+  stats.respect = Math.max(0, Math.min(100, stats.respect + (impact * 0.3)));
+  stats.communication = Math.max(0, Math.min(100, stats.communication + (impact * 0.4)));
+  
+  // Add interaction to history
+  stats.interactionHistory.push({
+    id: `interaction_${Date.now()}`,
+    type: interaction,
+    outcome: impact > 0 ? 'positive' : impact < 0 ? 'negative' : 'neutral',
+    impact,
+    timestamp: new Date().toISOString(),
+    description: `${interaction} (${impact > 0 ? '+' : ''}${impact})`
+  });
+
+  stats.lastInteraction = new Date().toISOString();
+  stats.timeSpentTogether += 1;
+
+  return {
+    ...member,
+    relationshipStats: stats
+  };
+};
+
+const createDefaultRelationshipStats = (): RelationshipStats => ({
+  relationshipLevel: 50,
+  trust: 50,
+  respect: 50,
+  communication: 50,
+  intimacy: 0,
+  conflictResolution: 50,
+  sharedInterests: 30,
+  timeSpentTogether: 0,
   lastInteraction: new Date().toISOString(),
   interactionHistory: []
 });
 
-const generatePersonalityTraits = () => ({
-  kindness: Math.floor(Math.random() * 100),
-  loyalty: Math.floor(Math.random() * 100),
-  intelligence: Math.floor(Math.random() * 100),
-  humor: Math.floor(Math.random() * 100),
-  ambition: Math.floor(Math.random() * 100),
-  stability: Math.floor(Math.random() * 100),
-  generosity: Math.floor(Math.random() * 100)
-});
-
-export const findLove = (character: Character): { success: boolean; partner?: FamilyMember; message: string } => {
-  if (character.age < 16) {
-    return { success: false, message: "You're too young for serious relationships!" };
-  }
-  
-  if (Math.random() < 0.3) {
-    const partner: FamilyMember = {
-      id: Math.random().toString(36).substring(2, 15),
-      name: generateRandomName(),
-      relationship: 'lover',
-      age: character.age + Math.floor(Math.random() * 10) - 5,
-      alive: true,
-      health: Math.floor(Math.random() * 40) + 60,
-      relationshipQuality: Math.floor(Math.random() * 30) + 50,
-      relationshipStats: generateRelationshipStats(50),
-      personality: generatePersonalityTraits(),
-      currentMood: 'neutral' as const
-    };
-    return { success: true, partner, message: `You met ${partner.name} and started dating!` };
-  }
-  
-  return { success: false, message: "You didn't find anyone special this time." };
+export const getRelationshipQuality = (stats: RelationshipStats): string => {
+  const level = stats.relationshipLevel;
+  if (level >= 90) return 'Excellent';
+  if (level >= 75) return 'Very Good';
+  if (level >= 60) return 'Good';
+  if (level >= 40) return 'Fair';
+  if (level >= 25) return 'Poor';
+  return 'Terrible';
 };
 
-export const intimateActivity = (character: Character, isProtected: boolean): { success: boolean; message: string; pregnant?: boolean } => {
-  const partner = character.familyMembers.find(m => m.relationship === 'lover' || m.relationship === 'spouse');
-  if (!partner) {
-    return { success: false, message: "You need to be in a relationship first!" };
-  }
+export const canPerformAction = (member: FamilyMember, actionId: string): boolean => {
+  if (!member.alive) return false;
+  if (member.isBlocked || member.isEstranged) return false;
   
-  let message = `You had an intimate moment with ${partner.name}.`;
-  let pregnant = false;
-  
-  if (!isProtected && Math.random() < 0.15) {
-    pregnant = true;
-    message += " You might be pregnant!";
-  }
-  
-  return { success: true, message, pregnant };
-};
+  const stats = member.relationshipStats;
+  if (!stats) return true;
 
-export const proposeMariage = (character: Character): { success: boolean; accepted?: boolean; message: string } => {
-  const partner = character.familyMembers.find(m => m.relationship === 'lover');
-  if (!partner) {
-    return { success: false, message: "You need to be dating someone first!" };
-  }
-  
-  const acceptanceChance = partner.relationshipQuality / 100;
-  const accepted = Math.random() < acceptanceChance;
-  
-  if (accepted) {
-    return { success: true, accepted: true, message: `${partner.name} said yes! You're now engaged!` };
-  } else {
-    return { success: true, accepted: false, message: `${partner.name} turned down your proposal.` };
+  // Some actions require minimum relationship levels
+  switch (actionId) {
+    case 'deep_conversation':
+      return stats.communication >= 60;
+    case 'ask_for_money':
+      return stats.trust >= 50;
+    case 'romantic_gesture':
+      return stats.intimacy >= 30;
+    default:
+      return true;
   }
 };
 
-export const getMarried = (character: Character): { success: boolean; message: string; weddingCost?: number } => {
-  if (character.relationshipStatus !== 'engaged') {
-    return { success: false, message: "You need to be engaged first!" };
-  }
-  
-  const weddingCost = Math.floor(Math.random() * 100) + 50;
-  if (character.wealth < weddingCost) {
-    return { success: false, message: "You can't afford a wedding right now!" };
-  }
-  
-  return { success: true, message: "You had a beautiful wedding!", weddingCost };
-};
-
-export const giveGift = (character: Character, partnerId: string, giftType: string): { success: boolean; message: string; cost: number; relationshipChange: number } => {
-  const costs = { flowers: 25, jewelry: 150, expensive: 500 };
-  const cost = costs[giftType as keyof typeof costs] || 25;
-  
-  if (character.wealth < cost) {
-    return { success: false, message: "You can't afford this gift!", cost: 0, relationshipChange: 0 };
-  }
-  
-  const relationshipChange = giftType === 'expensive' ? 20 : giftType === 'jewelry' ? 15 : 10;
-  return { success: true, message: `Your partner loved the ${giftType}!`, cost, relationshipChange };
-};
-
-export const haveBaby = (character: Character, babyName: string): { success: boolean; message: string; baby?: FamilyMember } => {
-  const baby: FamilyMember = {
-    id: Math.random().toString(36).substring(2, 15),
-    name: babyName,
-    relationship: 'child',
-    age: 0,
+export const generateNewFamilyMember = (
+  relationship: string,
+  age: number,
+  name: string
+): FamilyMember => {
+  return {
+    id: `member_${Date.now()}`,
+    name,
+    relationship: relationship as any,
+    age,
     alive: true,
-    health: Math.floor(Math.random() * 20) + 80,
-    relationshipQuality: 100,
-    relationshipStats: generateRelationshipStats(100),
-    personality: generatePersonalityTraits(),
-    currentMood: 'neutral' as const
+    health: 80 + Math.floor(Math.random() * 20),
+    relationshipStats: createDefaultRelationshipStats(),
+    relationshipQuality: 50,
+    personality: {
+      kindness: Math.floor(Math.random() * 100),
+      loyalty: Math.floor(Math.random() * 100),
+      intelligence: Math.floor(Math.random() * 100),
+      humor: Math.floor(Math.random() * 100),
+      ambition: Math.floor(Math.random() * 100),
+      stability: Math.floor(Math.random() * 100),
+      generosity: Math.floor(Math.random() * 100)
+    },
+    currentMood: 'neutral'
   };
-  
-  return { success: true, message: `${babyName} was born! Congratulations!`, baby };
 };

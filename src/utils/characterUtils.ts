@@ -1,70 +1,63 @@
 
 import { Character } from '../types/character';
-import { generateRandomName } from './gameUtils';
-import { generateInitialFamily } from './familyUtils';
+import { FamilyMember } from '../types/relationships';
 
-export { generateRandomName };
-
-export const createCharacter = (name: string, birthMonth: number, birthDay: number): Character => {
-  const familyData = generateInitialFamily();
-  const fullName = `${name} ${familyData.familyName}`;
+export const getCharacterDescription = (character: Character): string => {
+  const age = character.age;
+  const name = character.name;
+  const familyName = character.familyMembers?.length > 0 
+    ? character.familyMembers[0].name.split(' ').pop() || 'Unknown'
+    : 'Unknown';
   
-  return {
-    id: 'player',
-    name: fullName,
-    age: 0,
-    happiness: 50,
-    health: 100,
-    smarts: 50,
-    looks: 50,
-    wealth: 10,
-    relationships: 50,
-    birthMonth,
-    birthDay,
-    birthYear: new Date().getFullYear(),
-    gender: Math.random() > 0.5 ? 'male' : 'female',
-    job: undefined,
-    jobId: undefined,
-    salary: undefined,
-    jobLevel: undefined,
-    education: {
-      currentStage: null,
-      currentSchool: null,
-      currentYear: 0,
-      gpa: 0,
-      completedStages: [],
-      achievements: [],
-      testScores: [],
-      disciplinaryActions: 0,
-      dropouts: 0,
-      levels: [],
-      grades: []
-    },
-    familyMembers: familyData.family,
-    criminalRecord: {
-      arrests: 0,
-      convictions: 0,
-      prisonTime: 0,
-      crimes: [],
-      notoriety: 0,
-      totalSentence: 0,
-      currentlyIncarcerated: false,
-      charges: [],
-      timeServed: 0,
-      isIncarcerated: false
-    },
-    assets: [],
-    achievements: [],
-    children: [],
-    fame: 0,
-    lifeEvents: []
-  };
+  return `${name} ${familyName}, age ${age}`;
 };
 
-export const getRandomizedNewCharacter = (
-  options: { name: string; id: string },
-  mode: string
-): Character => {
-  const character = createCharacter(options.name, Math.floor(Math.random() * 12) + 1, Math.floor(Math.random() * 28) + 1);
-  return character;
+export const getLifeStage = (age: number): string => {
+  if (age < 2) return 'Baby';
+  if (age < 6) return 'Toddler';
+  if (age < 13) return 'Child';
+  if (age < 18) return 'Teenager';
+  if (age < 25) return 'Young Adult';
+  if (age < 40) return 'Adult';
+  if (age < 60) return 'Middle-aged';
+  return 'Senior';
+};
+
+export const calculateLifeSatisfaction = (character: Character): number => {
+  const weights = {
+    health: 0.25,
+    happiness: 0.25,
+    wealth: 0.15,
+    relationships: 0.20,
+    smarts: 0.10,
+    looks: 0.05
+  };
+
+  return Math.round(
+    character.health * weights.health +
+    character.happiness * weights.happiness +
+    Math.min(character.wealth, 100) * weights.wealth +
+    character.relationships * weights.relationships +
+    character.smarts * weights.smarts +
+    character.looks * weights.looks
+  );
+};
+
+export const getCharacterSummary = (character: Character): string => {
+  const satisfaction = calculateLifeSatisfaction(character);
+  const stage = getLifeStage(character.age);
+  
+  let summary = `A ${character.age}-year-old ${character.gender} in the ${stage.toLowerCase()} stage of life.`;
+  
+  if (satisfaction >= 80) {
+    summary += ' Living an exceptional life with high satisfaction.';
+  } else if (satisfaction >= 60) {
+    summary += ' Generally content with life.';
+  } else if (satisfaction >= 40) {
+    summary += ' Facing some challenges but managing okay.';
+  } else {
+    summary += ' Struggling with significant life challenges.';
+  }
+  
+  return summary;
 };
