@@ -10,6 +10,7 @@ import { seniorEvents } from './seniorEvents';
 import { expandedLifeEvents } from './expandedLifeEvents';
 import { allEnhancedLifeStageEvents } from './enhancedLifeStageEvents';
 import { applySeasonalEventModifiers, generateSeasonalEvents } from '../../utils/seasonalEventSystem';
+import { consequenceSystem } from '../../systems/consequenceSystem';
 
 export const createDynamicEventSystem = () => {
   const events: DynamicEvent[] = [
@@ -76,8 +77,15 @@ export const createDynamicEventSystem = () => {
       // Education requirement validation
       if (conditions.hasEducation && !character.education?.completedStages?.includes(conditions.hasEducation)) return false;
       
+      // Apply reputation modifiers to probability
+      let modifiedProbability = conditions.probability || 0.3;
+      if (character.reputation) {
+        const reputationBonus = consequenceSystem.getReputationModifier(character.reputation, 'social') / 100;
+        modifiedProbability += reputationBonus;
+      }
+      
       // Probability check
-      if (conditions.probability !== undefined && Math.random() > conditions.probability) return false;
+      if (Math.random() > modifiedProbability) return false;
       
       // Prevent duplicate events
       if (eventTracker.triggeredEvents && eventTracker.triggeredEvents.has(event.id)) return false;
@@ -154,9 +162,29 @@ export const createDynamicEventSystem = () => {
     return availableEvents[0];
   };
 
+  const triggerEvent = (character: Character, event: DynamicEvent, choiceId?: string): void => {
+    // Process consequences when events are triggered
+    consequenceSystem.processConsequences(character, event.id);
+    
+    // Add to relationship memories if the event affects relationships
+    if (event.category === 'relationship' && character.consequenceTracker) {
+      character.familyMembers.forEach(member => {
+        consequenceSystem.addRelationshipMemory(
+          character.consequenceTracker!,
+          member.id,
+          event.id,
+          event.description,
+          Math.random() * 20 - 10, // Random impact between -10 and 10
+          [event.category]
+        );
+      });
+    }
+  };
+
   return {
     getAvailableEvents,
     selectEvent,
+    triggerEvent,
     events
   };
 };

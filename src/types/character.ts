@@ -1,3 +1,4 @@
+
 import { PersonalityTraits, ZodiacSign, Asset, CriminalRecord, JobPerformance } from './core';
 import { FamilyMember } from './relationships';
 import { EducationRecord, CurrentEducation } from './education';
@@ -7,6 +8,7 @@ import { SocialMediaAccount, RealEstateProperty } from './social';
 import { FinancialRecord } from './finance';
 import { MusicCareer, Artist, Record, Album } from './music';
 import { FamilyBackground } from './personality';
+import { ConsequenceTracker, ReputationSystem } from './consequences';
 
 export interface MusicTour {
   id: string;
@@ -51,7 +53,7 @@ export interface Character {
   achievements: string[];
   assets: Asset[];
   criminalRecord?: CriminalRecord;
-  reputation?: number;
+  reputation?: ReputationSystem;
   notoriety?: number;
   isPregnant?: boolean;
   pregnancyMonths?: number;
@@ -62,7 +64,7 @@ export interface Character {
   birthDay?: number;
   zodiacSign?: ZodiacSign;
   children: string[];
-  customStats?: Record<string, any>;
+  customStats?: any;
   fame: number;
   legalStatus?: LegalStatus;
   healthInsurance?: HealthInsurance;
@@ -96,6 +98,7 @@ export interface Character {
   relationshipStatus?: string;
   partnerName?: string;
   lifeEvents: string[];
+  consequenceTracker?: ConsequenceTracker;
 }
 
 export type { CharacterEventTracker as EventTracker };

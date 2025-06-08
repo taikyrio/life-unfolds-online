@@ -35,13 +35,13 @@ export interface FamilyBackground {
 export const BIRTH_SEASON_EFFECTS: Record<string, BirthSeasonEffects> = {
   spring: {
     season: 'spring',
-    traitModifiers: { optimism: 5, creativity: 3, openness: 4 },
+    traitModifiers: { creativity: 3, openness: 4 },
     eventProbabilityModifiers: { 'nature_events': 1.2, 'social_events': 1.1 },
     specialEvents: ['spring_festival', 'easter_celebration', 'nature_walk']
   },
   summer: {
     season: 'summer',
-    traitModifiers: { confidence: 4, humor: 3, energy: 5 },
+    traitModifiers: { confidence: 4, humor: 3 },
     eventProbabilityModifiers: { 'outdoor_events': 1.3, 'travel_events': 1.2 },
     specialEvents: ['summer_vacation', 'beach_trip', 'summer_camp']
   },

@@ -1,5 +1,7 @@
+
 import { Character, GameState } from '../../types/game';
 import { generateInitialFamily } from '../../utils/familyUtils';
+import { consequenceSystem } from '../../systems/consequenceSystem';
 
 export const processGameLogic = (character: Character): Character => {
   let updatedCharacter = { ...character };
@@ -34,6 +36,15 @@ export const processGameLogic = (character: Character): Character => {
 
   if (!updatedCharacter.lifeEvents) {
     updatedCharacter.lifeEvents = [];
+  }
+
+  // Initialize consequence tracking
+  if (!updatedCharacter.consequenceTracker) {
+    updatedCharacter.consequenceTracker = consequenceSystem.initializeConsequenceTracker();
+  }
+
+  if (!updatedCharacter.reputation) {
+    updatedCharacter.reputation = consequenceSystem.initializeReputationSystem();
   }
   
   return updatedCharacter;
@@ -92,6 +103,15 @@ export const initializeCharacterDefaults = (character: Partial<Character>): Char
     defaultCharacter.familyMembers = generateInitialFamily();
   }
 
+  // Initialize consequence tracking
+  if (!defaultCharacter.consequenceTracker) {
+    defaultCharacter.consequenceTracker = consequenceSystem.initializeConsequenceTracker();
+  }
+
+  if (!defaultCharacter.reputation) {
+    defaultCharacter.reputation = consequenceSystem.initializeReputationSystem();
+  }
+
   return defaultCharacter;
 };
 
@@ -99,6 +119,9 @@ export const processAgeUp = (gameState: GameState): GameState => {
   const updatedCharacter = { ...gameState.character };
   const previousAge = updatedCharacter.age;
   updatedCharacter.age += 1;
+  
+  // Process consequences for aging up
+  consequenceSystem.processConsequences(updatedCharacter, 'age_up');
   
   // Generate age-appropriate events
   const ageEvents: string[] = [];
