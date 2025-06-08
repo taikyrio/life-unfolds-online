@@ -18,4 +18,5 @@ export interface GameState {
   eventHistory: any[];
   achievements: string[];
   eventTracker: EventTracker;
+  ageHistory?: Record<number, string[]>;
 }

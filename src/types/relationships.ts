@@ -48,6 +48,7 @@ export type RelationshipType =
   | 'child' | 'stepchild' | 'adoptedchild'
   | 'grandparent' | 'grandchild'
   | 'spouse' | 'lover' | 'ex' | 'affair'
+  | 'girlfriend' | 'boyfriend'
   | 'friend' | 'bestfriend' | 'acquaintance'
   | 'enemy' | 'rival'
   | 'coworker' | 'boss' | 'employee'
