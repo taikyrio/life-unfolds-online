@@ -101,8 +101,8 @@ export const ArtistManagement: React.FC<ArtistManagementProps> = ({
 
       {/* Create Artist Modal */}
       {showCreateArtist && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-3xl p-6 max-w-md w-full mx-4">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[9999] p-4" onClick={(e) => e.target === e.currentTarget && setShowCreateArtist(false)}>
+          <div className="bg-white rounded-3xl p-6 max-w-md w-full mx-4 max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
             <h3 className="text-xl font-bold mb-4">Create New Artist</h3>
             <div className="space-y-4">
               <div>
