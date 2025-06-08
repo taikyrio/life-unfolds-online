@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { X, Dice6, User, Sparkles } from 'lucide-react';
 import { Character } from '@/types/character';
 import { randomizeStats, RandomizationMode } from '@/utils/statRandomization';
+import { generateInitialFamily } from '@/utils/familyUtils';
 
 interface CharacterCustomizationProps {
   isOpen: boolean;
@@ -72,7 +73,9 @@ export const CharacterCustomization: React.FC<CharacterCustomizationProps> = ({
   };
 
   const handleCreateCharacter = () => {
-    const fullName = `${firstName.trim()} ${lastName.trim()}`.trim() || 'Unnamed Character';
+    // Generate family first to get family name
+    const familyData = generateInitialFamily(lastName.trim() || undefined);
+    const fullName = `${firstName.trim()} ${familyData.familyName}`;
 
     // Generate random birth year between 2000-2025
     const currentYear = new Date().getFullYear();
@@ -102,7 +105,7 @@ export const CharacterCustomization: React.FC<CharacterCustomizationProps> = ({
       assets: [],
       children: [],
       fame: 0,
-      familyMembers: [], // Initialize with empty family members
+      familyMembers: familyData.family, // Use the generated family members
       lifeEvents: [] // Initialize with empty life events
     };
 
