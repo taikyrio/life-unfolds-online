@@ -1,13 +1,17 @@
 
 import { Character } from '../types/character';
 import { generateRandomName } from './gameUtils';
+import { generateInitialFamily } from './familyUtils';
 
 export { generateRandomName };
 
 export const createCharacter = (name: string, birthMonth: number, birthDay: number): Character => {
+  const familyData = generateInitialFamily();
+  const fullName = `${name} ${familyData.familyName}`;
+  
   return {
     id: 'player',
-    name,
+    name: fullName,
     age: 0,
     happiness: 50,
     health: 100,
@@ -36,7 +40,7 @@ export const createCharacter = (name: string, birthMonth: number, birthDay: numb
       levels: [],
       grades: []
     },
-    familyMembers: [],
+    familyMembers: familyData.family,
     criminalRecord: {
       arrests: 0,
       convictions: 0,
@@ -61,5 +65,6 @@ export const getRandomizedNewCharacter = (
   options: { name: string; id: string },
   mode: string
 ): Character => {
-  return createCharacter(options.name, Math.floor(Math.random() * 12) + 1, Math.floor(Math.random() * 28) + 1);
+  const character = createCharacter(options.name, Math.floor(Math.random() * 12) + 1, Math.floor(Math.random() * 28) + 1);
+  return character;
 };

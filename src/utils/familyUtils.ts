@@ -1,7 +1,7 @@
 
 import { FamilyMember } from '../types/relationships';
 
-export const generateInitialFamily = (playerLastName?: string): FamilyMember[] => {
+export const generateInitialFamily = (playerLastName?: string): { family: FamilyMember[], familyName: string } => {
   const family: FamilyMember[] = [];
 
   // Generate last name for the family
@@ -133,7 +133,7 @@ export const generateInitialFamily = (playerLastName?: string): FamilyMember[] =
   }
 
   console.log('Generated family members:', family);
-  return family;
+  return { family, familyName: familyLastName };
 };
 
 export const ageFamilyMembers = (familyMembers: FamilyMember[]): FamilyMember[] => {
