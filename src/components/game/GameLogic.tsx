@@ -2,6 +2,7 @@
 import { Character, GameState } from '../../types/game';
 import { generateInitialFamily } from '../../utils/familyUtils';
 import { consequenceSystem } from '../../systems/consequenceSystem';
+import { metaProgressionSystem } from '../../systems/metaProgressionSystem';
 
 export const processGameLogic = (character: Character): Character => {
   let updatedCharacter = { ...character };
@@ -45,6 +46,11 @@ export const processGameLogic = (character: Character): Character => {
 
   if (!updatedCharacter.reputation) {
     updatedCharacter.reputation = consequenceSystem.initializeReputationSystem();
+  }
+
+  // Initialize meta progression
+  if (!updatedCharacter.metaProgression) {
+    updatedCharacter.metaProgression = metaProgressionSystem.initializeMetaProgression();
   }
   
   return updatedCharacter;
@@ -112,6 +118,11 @@ export const initializeCharacterDefaults = (character: Partial<Character>): Char
     defaultCharacter.reputation = consequenceSystem.initializeReputationSystem();
   }
 
+  // Initialize meta progression
+  if (!defaultCharacter.metaProgression) {
+    defaultCharacter.metaProgression = metaProgressionSystem.initializeMetaProgression();
+  }
+
   return defaultCharacter;
 };
 
@@ -122,6 +133,35 @@ export const processAgeUp = (gameState: GameState): GameState => {
   
   // Process consequences for aging up
   consequenceSystem.processConsequences(updatedCharacter, 'age_up');
+  
+  // Check for achievements and add karma
+  if (updatedCharacter.metaProgression) {
+    const newAchievements = metaProgressionSystem.checkAchievements(updatedCharacter, updatedCharacter.metaProgression);
+    
+    // Add karma for aging up
+    metaProgressionSystem.addKarma(
+      updatedCharacter, 
+      updatedCharacter.metaProgression, 
+      'wisdom', 
+      1, 
+      `Aged to ${updatedCharacter.age}`
+    );
+
+    // Add karma for major life milestones
+    if (updatedCharacter.age === 18) {
+      metaProgressionSystem.addKarma(updatedCharacter, updatedCharacter.metaProgression, 'success', 10, 'Became an adult');
+    } else if (updatedCharacter.age === 65) {
+      metaProgressionSystem.addKarma(updatedCharacter, updatedCharacter.metaProgression, 'wisdom', 25, 'Reached retirement age');
+    }
+
+    // Update best stats
+    Object.keys(updatedCharacter.metaProgression.bestStats).forEach(stat => {
+      const currentValue = (updatedCharacter as any)[stat] || 0;
+      if (currentValue > updatedCharacter.metaProgression!.bestStats[stat]) {
+        updatedCharacter.metaProgression!.bestStats[stat] = currentValue;
+      }
+    });
+  }
   
   // Generate age-appropriate events
   const ageEvents: string[] = [];
@@ -177,6 +217,21 @@ export const processAgeUp = (gameState: GameState): GameState => {
   
   // Death check
   if (updatedCharacter.health <= 0 || updatedCharacter.age >= 120) {
+    // End of life - calculate final karma and legacy
+    if (updatedCharacter.metaProgression) {
+      metaProgressionSystem.addKarma(
+        updatedCharacter, 
+        updatedCharacter.metaProgression, 
+        'resilience', 
+        updatedCharacter.age, 
+        `Lived to age ${updatedCharacter.age}`
+      );
+      
+      // Transfer to legacy
+      updatedCharacter.metaProgression.legacy.totalKarma += updatedCharacter.metaProgression.lifeKarma.totalKarma;
+      updatedCharacter.metaProgression.totalLifetimePlays += 1;
+    }
+
     return {
       ...gameState,
       character: updatedCharacter,

@@ -76,6 +76,58 @@ export const generateInitialFamily = (): FamilyMember[] => {
   return family;
 };
 
+export const ageFamilyMembers = (familyMembers: FamilyMember[]): FamilyMember[] => {
+  return familyMembers.map(member => ({
+    ...member,
+    age: member.age + 1,
+    health: Math.max(0, member.health - (member.age > 60 ? 2 : 0))
+  }));
+};
+
+export const generateNewRelationships = (character: any): FamilyMember[] => {
+  const newRelationships: FamilyMember[] = [];
+  
+  // Chance to meet new people based on age and circumstances
+  if (character.age >= 16 && Math.random() < 0.1) {
+    const relationshipTypes = ['friend', 'acquaintance', 'colleague'];
+    const randomType = relationshipTypes[Math.floor(Math.random() * relationshipTypes.length)];
+    
+    newRelationships.push({
+      id: `new_${Date.now()}`,
+      name: generateRandomName(),
+      relationship: randomType,
+      age: character.age + Math.floor(Math.random() * 10 - 5),
+      alive: true,
+      health: 80 + Math.floor(Math.random() * 20),
+      relationshipStats: {
+        relationshipLevel: 30 + Math.floor(Math.random() * 40),
+        trust: 40 + Math.floor(Math.random() * 30),
+        respect: 40 + Math.floor(Math.random() * 30),
+        communication: 30 + Math.floor(Math.random() * 40),
+        intimacy: 0,
+        conflictResolution: 40 + Math.floor(Math.random() * 30),
+        sharedInterests: 20 + Math.floor(Math.random() * 60),
+        timeSpentTogether: 0,
+        lastInteraction: new Date().toISOString(),
+        interactionHistory: []
+      },
+      relationshipQuality: 40 + Math.floor(Math.random() * 30),
+      personality: {
+        kindness: Math.floor(Math.random() * 100),
+        loyalty: Math.floor(Math.random() * 100),
+        intelligence: Math.floor(Math.random() * 100),
+        humor: Math.floor(Math.random() * 100),
+        ambition: Math.floor(Math.random() * 100),
+        stability: Math.floor(Math.random() * 100),
+        generosity: Math.floor(Math.random() * 100)
+      },
+      currentMood: 'neutral'
+    });
+  }
+  
+  return newRelationships;
+};
+
 const generateRandomName = (): string => {
   const firstNames = [
     'Alexander', 'Sophia', 'William', 'Emma', 'James', 'Olivia', 'Benjamin', 'Isabella',

@@ -9,6 +9,7 @@ import { FinancialRecord } from './finance';
 import { MusicCareer, Artist, Record, Album } from './music';
 import { FamilyBackground } from './personality';
 import { ConsequenceTracker, ReputationSystem } from './consequences';
+import { MetaProgressionState } from './metaProgression';
 
 export interface MusicTour {
   id: string;
@@ -99,6 +100,7 @@ export interface Character {
   partnerName?: string;
   lifeEvents: string[];
   consequenceTracker?: ConsequenceTracker;
+  metaProgression?: MetaProgressionState;
 }
 
 export type { CharacterEventTracker as EventTracker };
