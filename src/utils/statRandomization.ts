@@ -52,3 +52,25 @@ export const randomizeStats = (
   
   return randomizedCharacter;
 };
+
+export const generateRandomAppearance = () => {
+  const hairColors = ['Black', 'Brown', 'Blonde', 'Red', 'Gray', 'Auburn'];
+  const eyeColors = ['Brown', 'Blue', 'Green', 'Hazel', 'Gray'];
+  const skinTones = ['Fair', 'Light', 'Medium', 'Olive', 'Dark'];
+  
+  return {
+    hairColor: hairColors[Math.floor(Math.random() * hairColors.length)],
+    eyeColor: eyeColors[Math.floor(Math.random() * eyeColors.length)],
+    skinTone: skinTones[Math.floor(Math.random() * skinTones.length)]
+  };
+};
+
+export const generateRandomPersonality = () => {
+  const traits = ['Outgoing', 'Shy', 'Creative', 'Logical', 'Adventurous', 'Cautious', 'Optimistic', 'Realistic'];
+  const hobbies = ['Reading', 'Sports', 'Music', 'Art', 'Gaming', 'Cooking', 'Travel', 'Photography'];
+  
+  return {
+    trait: traits[Math.floor(Math.random() * traits.length)],
+    hobby: hobbies[Math.floor(Math.random() * hobbies.length)]
+  };
+};
