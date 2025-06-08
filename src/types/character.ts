@@ -1,4 +1,3 @@
-
 import { PersonalityTraits, ZodiacSign, Asset, CriminalRecord, JobPerformance } from './core';
 import { FamilyMember } from './relationships';
 import { EducationRecord, CurrentEducation } from './education';
@@ -7,6 +6,7 @@ import { HealthInsurance } from './health';
 import { SocialMediaAccount, RealEstateProperty } from './social';
 import { FinancialRecord } from './finance';
 import { MusicCareer, Artist, Record, Album } from './music';
+import { FamilyBackground } from './personality';
 
 export interface MusicTour {
   id: string;
@@ -76,6 +76,7 @@ export interface Character {
   environmentalAwareness?: number;
   politicalInfluence?: number;
   personalityTraits?: PersonalityTraits;
+  familyBackground?: FamilyBackground;
   educationLevel?: string;
   delayedEvents?: any[];
   majorDecisions?: any[];

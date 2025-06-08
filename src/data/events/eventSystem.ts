@@ -9,6 +9,7 @@ import { adultEvents } from './adultEvents';
 import { seniorEvents } from './seniorEvents';
 import { expandedLifeEvents } from './expandedLifeEvents';
 import { allEnhancedLifeStageEvents } from './enhancedLifeStageEvents';
+import { applySeasonalEventModifiers, generateSeasonalEvents } from '../../utils/seasonalEventSystem';
 
 export const createDynamicEventSystem = () => {
   const events: DynamicEvent[] = [
@@ -45,7 +46,7 @@ export const createDynamicEventSystem = () => {
   const getAvailableEvents = (character: Character, eventTracker: EventTracker): DynamicEvent[] => {
     const lifeStage = getLifeStage(character.age);
     
-    return events.filter(event => {
+    let availableEvents = events.filter(event => {
       const conditions = event.conditions;
       
       // Strict age range checking
@@ -125,12 +126,23 @@ export const createDynamicEventSystem = () => {
       
       return true;
     });
+
+    // Apply seasonal modifiers to events
+    availableEvents = applySeasonalEventModifiers(availableEvents, character);
+
+    // Add seasonal events for younger characters
+    if (character.age >= 3 && character.age <= 18) {
+      const seasonalEvents = generateSeasonalEvents(character);
+      availableEvents.push(...seasonalEvents);
+    }
+
+    return availableEvents;
   };
 
   const selectEvent = (availableEvents: DynamicEvent[]): DynamicEvent | null => {
     if (availableEvents.length === 0) return null;
     
-    // Weighted random selection
+    // Weighted random selection with personality influence
     const totalWeight = availableEvents.reduce((sum, event) => sum + (event.weight || 1), 0);
     let random = Math.random() * totalWeight;
     
