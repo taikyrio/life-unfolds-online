@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -35,10 +34,22 @@ export const ArtistManagement: React.FC<ArtistManagementProps> = ({
 
   const handleCreateArtist = () => {
     if (!newArtist.name || !newArtist.genre) return;
-    
+
     onCreateArtist(newArtist);
     setNewArtist({ name: '', genre: '', members: 1 });
     setShowCreateArtist(false);
+
+    // Show success toast notification
+    if (typeof window !== 'undefined') {
+      const event = new CustomEvent('show-toast', {
+        detail: {
+          title: "Artist Created!",
+          description: `${newArtist.name} has been successfully created in the ${newArtist.genre} genre.`,
+          type: "success"
+        }
+      });
+      window.dispatchEvent(event);
+    }
   };
 
   const handleMembersChange = (value: string) => {
@@ -99,47 +110,87 @@ export const ArtistManagement: React.FC<ArtistManagementProps> = ({
         </div>
       )}
 
-      {/* Create Artist Modal */}
+      {/* Create Artist Modal - Full Screen */}
       {showCreateArtist && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[9999] p-4" onClick={(e) => e.target === e.currentTarget && setShowCreateArtist(false)}>
-          <div className="bg-white rounded-3xl p-6 max-w-md w-full mx-4 max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
-            <h3 className="text-xl font-bold mb-4">Create New Artist</h3>
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium mb-2">Artist Name</label>
-                <Input
-                  value={newArtist.name}
-                  onChange={(e) => setNewArtist({ ...newArtist, name: e.target.value })}
-                  placeholder="Enter artist name"
-                />
+          <div className="bg-white rounded-3xl w-full max-w-4xl max-h-[90vh] flex flex-col shadow-2xl" onClick={(e) => e.stopPropagation()}>
+            {/* Header - Fixed */}
+            <div className="flex items-center justify-between p-8 pb-6 border-b border-gray-200">
+              <h3 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">Create New Artist</h3>
+              <button 
+                onClick={() => setShowCreateArtist(false)}
+                className="text-gray-500 hover:text-gray-700 text-2xl font-bold"
+              >
+                ×
+              </button>
+            </div>
+            
+            {/* Content - Scrollable */}
+            <div className="flex-1 overflow-y-auto p-8 pt-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                {/* Left Column - Form */}
+                <div className="space-y-6">
+                  <div>
+                    <label className="block text-lg font-medium mb-3 text-gray-700">Artist Name</label>
+                    <Input
+                      value={newArtist.name}
+                      onChange={(e) => setNewArtist({ ...newArtist, name: e.target.value })}
+                      placeholder="Enter artist name"
+                      className="text-lg p-4 h-12"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-lg font-medium mb-3 text-gray-700">Genre</label>
+                    <Select value={newArtist.genre} onValueChange={(value) => setNewArtist({ ...newArtist, genre: value })}>
+                      <SelectTrigger className="text-lg p-4 h-12">
+                        <SelectValue placeholder="Select genre" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {genres.map(genre => (
+                          <SelectItem key={genre} value={genre} className="text-lg">{genre}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <label className="block text-lg font-medium mb-3 text-gray-700">Members (1-7)</label>
+                    <Input
+                      type="number"
+                      min="1"
+                      max="7"
+                      value={newArtist.members}
+                      onChange={(e) => handleMembersChange(e.target.value)}
+                      className="text-lg p-4 h-12"
+                    />
+                  </div>
+                </div>
+
+                {/* Right Column - Create Button */}
+                <div className="flex flex-col items-center justify-center bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl p-6 border-2 border-purple-200">
+                  <div className="text-center mb-6">
+                    <h4 className="text-xl font-bold mb-2 text-purple-800">Ready to Create?</h4>
+                    <p className="text-gray-600">Fill in the details and create your artist</p>
+                  </div>
+                  <Button 
+                    onClick={handleCreateArtist} 
+                    className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white text-xl py-6 h-16 disabled:opacity-50 disabled:cursor-not-allowed rounded-xl shadow-lg"
+                    disabled={!newArtist.name?.trim() || !newArtist.genre}
+                  >
+                    {!newArtist.name?.trim() || !newArtist.genre ? 'Fill in all fields' : 'Create Artist'}
+                  </Button>
+                </div>
               </div>
-              <div>
-                <label className="block text-sm font-medium mb-2">Genre</label>
-                <Select value={newArtist.genre} onValueChange={(value) => setNewArtist({ ...newArtist, genre: value })}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select genre" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {genres.map(genre => (
-                      <SelectItem key={genre} value={genre}>{genre}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-2">Members (1-7)</label>
-                <Input
-                  type="number"
-                  min="1"
-                  max="7"
-                  value={newArtist.members}
-                  onChange={(e) => handleMembersChange(e.target.value)}
-                />
-              </div>
-              <div className="flex gap-2 pt-4">
-                <Button onClick={handleCreateArtist} className="flex-1">Create Artist</Button>
-                <Button variant="outline" onClick={() => setShowCreateArtist(false)} className="flex-1">Cancel</Button>
-              </div>
+            </div>
+
+            {/* Bottom Cancel Button - Fixed */}
+            <div className="p-8 pt-6 border-t border-gray-200">
+              <Button 
+                variant="outline" 
+                onClick={() => setShowCreateArtist(false)} 
+                className="w-full text-lg py-3 h-12 border-2"
+              >
+                Cancel
+              </Button>
             </div>
           </div>
         </div>
