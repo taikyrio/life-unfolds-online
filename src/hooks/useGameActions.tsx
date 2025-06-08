@@ -2,6 +2,7 @@ import { useCallback } from 'react';
 import { Character, GameState } from '../types/game';
 import { processAgeUp, processChoice } from '../components/game/GameLogic';
 import { handleActivityAction } from '../handlers/ActivityActionHandler';
+import { handleMusicCareer } from '../handlers/career/MusicCareerHandler';
 
 interface UseGameActionsProps {
   gameState: GameState;
@@ -21,16 +22,16 @@ export function useGameActions({
   const handleAgeUp = useCallback(async () => {
     if (gameState.gameOver) return;
     const newState = processAgeUp(gameState);
-    
+
     // Update ageHistory with events for the current age
     const currentAge = newState.character.age;
     const newEvents = newState.eventHistory.slice(gameState.eventHistory.length);
-    
+
     setAgeHistory(prev => ({
       ...prev,
       [currentAge]: newEvents
     }));
-    
+
     onGameStateChange(newState);
   }, [gameState, onGameStateChange, setAgeHistory]);
 
@@ -104,6 +105,23 @@ export function useGameActions({
   }, [gameState, onGameStateChange, setAgeHistory, toast, handleCriminalOperation, handleCybercrime, handleMurder]);
 
   const handleCareerAction = useCallback((action: string, data?: any) => {
+    console.log('Career action:', action, data);
+
+    // Check if this is a music career action
+    if (action.startsWith('music_')) {
+      handleMusicCareer(
+        gameState.character,
+        action,
+        data,
+        ageHistory,
+        setAgeHistory,
+        onGameStateChange,
+        gameState,
+        toast
+      );
+      return;
+    }
+
     let updatedCharacter = { ...gameState.character };
     let message = `Career action: ${action}`;
 
@@ -143,6 +161,7 @@ export function useGameActions({
         }
         break;
       default:
+        message = `Career action not implemented: ${action}`;
         break;
     }
 
@@ -155,7 +174,7 @@ export function useGameActions({
       title: "Career Action",
       description: message,
     });
-  }, [gameState, onGameStateChange, toast]);
+  }, [gameState, onGameStateChange, toast, ageHistory, setAgeHistory]);
 
   const handleEducationAction = useCallback((action: string, data?: any) => {
     console.log('Education action:', action, data);

@@ -1,4 +1,3 @@
-
 import { Character, GameState } from '../../types/game';
 
 export const handleMusicCareer = (
@@ -73,20 +72,20 @@ export const handleMusicCareer = (
           if (recordIndex !== -1) {
             const record = updatedCharacter.musicCareer.artists[artistIndex].records[recordIndex];
             record.inProduction = false;
-            
+
             // Calculate sales based on character stats and randomness
             const baseSlales = Math.floor(Math.random() * 100000) + 10000;
             const smartsBonus = (character.smarts / 100) * 50000;
             const fameBonus = (character.fame / 100) * 100000;
-            
+
             record.sales = Math.floor(baseSlales + smartsBonus + fameBonus);
             record.earnings = record.sales * 0.5; // $0.50 per sale
-            
+
             // Update career stats
             updatedCharacter.musicCareer.albums += 1;
             updatedCharacter.musicCareer.earnings += record.earnings;
             updatedCharacter.wealth = (updatedCharacter.wealth || 0) + record.earnings;
-            
+
             toast?.({
               title: "Music Career",
               description: `"${record.name}" was released! Sold ${record.sales.toLocaleString()} copies and earned $${record.earnings.toLocaleString()}`,

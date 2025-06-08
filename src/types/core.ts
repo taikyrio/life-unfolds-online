@@ -3,6 +3,7 @@ export interface LifeEvent {
   id: string;
   title: string;
   description: string;
+  age: number;
   emoji?: string;
   choices?: EventChoice[];
   effects?: EventEffect[];
@@ -14,9 +15,12 @@ export interface LifeEvent {
   category?: string;
   requirements?: {
     education?: string;
+    minEducation?: string;
     minSmarts?: number;
     minWealth?: number;
     minHealth?: number;
+    hasPartner?: boolean;
+    hasChildren?: boolean;
   };
 }
 
@@ -24,7 +28,15 @@ export interface EventChoice {
   id: string;
   text: string;
   emoji?: string;
-  effects?: EventEffect[];
+  effects?: {
+    happiness?: number;
+    health?: number;
+    smarts?: number;
+    looks?: number;
+    wealth?: number;
+    relationships?: number;
+    fame?: number;
+  };
   consequences?: string[];
   probability?: number;
   requirements?: {

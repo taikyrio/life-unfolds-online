@@ -131,18 +131,15 @@ const Index = () => {
         }}
       />
 
-      <CharacterCustomization
-        isOpen={showCharacterCustomization}
-        onClose={() => setShowCharacterCustomization(false)}
-        onCreateCharacter={handleCustomCharacterCreate}
-        initialCharacter={{
-          name: generateRandomName(),
-          happiness: 50,
-          health: 50,
-          smarts: 50,
-          looks: 50
-        }}
-      />
+      {showCharacterCustomization && (
+        <CharacterCustomization
+          onCharacterCreated={(gameState) => {
+            setGameState(gameState);
+            setShowCharacterCustomization(false);
+          }}
+          onBack={() => setShowCharacterCustomization(false)}
+        />
+      )}
     </div>
   );
 };
