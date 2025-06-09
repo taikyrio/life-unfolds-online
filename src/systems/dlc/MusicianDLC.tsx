@@ -18,21 +18,6 @@ export const MusicianDLC: React.FC<MusicianDLCProps> = ({
 }) => {
   const [selectedArtist, setSelectedArtist] = useState<string | null>(null);
 
-  // Age restriction check
-  if (character.age < 10) {
-    return (
-      <div className="bg-white/70 backdrop-blur-xl rounded-3xl p-8 border border-white/20 shadow-xl text-center">
-        <h2 className="text-2xl font-bold text-gray-800 mb-4">Music Career Locked</h2>
-        <p className="text-gray-600 mb-4">
-          You need to be at least 10 years old to start your music career.
-        </p>
-        <p className="text-gray-500">
-          Current age: {character.age} years old
-        </p>
-      </div>
-    );
-  }
-
   const musicCareer: MusicCareer = character.musicCareer || {
     level: 0,
     fans: 0,
@@ -58,7 +43,7 @@ export const MusicianDLC: React.FC<MusicianDLCProps> = ({
   };
 
   const artists: Artist[] = musicCareer.artists || [];
-  const selectedArtistData = artists.find(a => a.id === selectedArtist);
+  const selectedArtistData = artists.find(a => a.id === selectedArtist) || null;
 
   const getActiveProductions = () => {
     return artists.reduce((count, artist) => 
@@ -85,38 +70,65 @@ export const MusicianDLC: React.FC<MusicianDLCProps> = ({
     onCareerAction('music_create_artist', { artist });
   };
 
-  const handleCreateRecord = (artistId: string, recordData: Omit<Record, 'id' | 'releaseDate' | 'sales' | 'certified' | 'inProduction' | 'earnings'>) => {
+  const handleCreateRecord = (artistId: string, recordData: Omit<Record, 'id' | 'releaseDate' | 'sales' | 'certified' | 'inProduction' | 'earnings' | 'createdAtAge'>) => {
     const record: Record = {
       id: Date.now().toString(),
       name: recordData.name,
       tracks: recordData.tracks,
       productionTime: recordData.productionTime,
-      releaseDate: new Date(Date.now() + recordData.productionTime * 365 * 24 * 60 * 60 * 1000),
+      releaseDate: new Date(),
       sales: 0,
       certified: false,
       inProduction: true,
-      earnings: 0
+      earnings: 0,
+      createdAtAge: character.age // Store the age when record was created
     };
 
     onCareerAction('music_create_record', { artistId, record });
   };
 
-  // Check for completed records and trigger life story events
+  // Track previous age to detect age changes
+  const [previousAge, setPreviousAge] = React.useState(character.age);
+
+  // Check for completed records when age changes
   useEffect(() => {
-    const currentDate = new Date();
-    artists.forEach(artist => {
-      artist.records.forEach(record => {
-        if (record.inProduction && new Date(record.releaseDate) <= currentDate) {
-          // Record should be released
-          onCareerAction('music_complete_record', { 
-            artistId: artist.id, 
-            recordId: record.id,
-            characterAge: character.age
-          });
-        }
+    if (character.age > previousAge) {
+      // Age has increased, check for records that should be completed
+      artists.forEach(artist => {
+        artist.records.forEach(record => {
+          if (record.inProduction) {
+            // Calculate if record should be completed based on production time
+            const createdAge = record.createdAtAge || previousAge;
+            const completionAge = createdAge + record.productionTime;
+            
+            if (character.age >= completionAge) {
+              onCareerAction('music_complete_record', { 
+                artistId: artist.id, 
+                recordId: record.id,
+                characterAge: character.age
+              });
+            }
+          }
+        });
       });
-    });
-  }, [character.age, artists, onCareerAction]);
+      setPreviousAge(character.age);
+    }
+  }, [character.age, previousAge, artists, onCareerAction]);
+
+  // Age restriction check
+  if (character.age < 10) {
+    return (
+      <div className="bg-white/70 backdrop-blur-xl rounded-3xl p-8 border border-white/20 shadow-xl text-center">
+        <h2 className="text-2xl font-bold text-gray-800 mb-4">Music Career Locked</h2>
+        <p className="text-gray-600 mb-4">
+          You need to be at least 10 years old to start your music career.
+        </p>
+        <p className="text-gray-500">
+          Current age: {character.age} years old
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -144,6 +156,7 @@ export const MusicianDLC: React.FC<MusicianDLCProps> = ({
           activeProductions={getActiveProductions()}
           canCreateRecord={canCreateRecord()}
           onCreateRecord={handleCreateRecord}
+          character={character}
         />
       )}
 
