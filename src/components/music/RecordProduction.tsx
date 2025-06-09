@@ -12,6 +12,7 @@ interface RecordProductionProps {
   activeProductions: number;
   canCreateRecord: boolean;
   onCreateRecord: (artistId: string, record: Omit<Record, 'id' | 'releaseDate' | 'sales' | 'certified' | 'inProduction' | 'earnings'>) => void;
+  character?: any; // Add character prop to get birth year
 }
 
 export const RecordProduction: React.FC<RecordProductionProps> = ({
@@ -19,7 +20,8 @@ export const RecordProduction: React.FC<RecordProductionProps> = ({
   studioSlots,
   activeProductions,
   canCreateRecord,
-  onCreateRecord
+  onCreateRecord,
+  character
 }) => {
   const [showCreateRecord, setShowCreateRecord] = useState(false);
   const [newRecord, setNewRecord] = useState({
@@ -203,7 +205,10 @@ export const RecordProduction: React.FC<RecordProductionProps> = ({
                       <div className="bg-white rounded-xl p-4 shadow-sm">
                         <div className="text-sm text-gray-500">Estimated Release</div>
                         <div className="text-lg font-bold text-gray-800">
-                          {new Date(Date.now() + newRecord.productionTime * 365 * 24 * 60 * 60 * 1000).getFullYear()}
+                          {character?.birthYear ? 
+                            (character.birthYear + character.age + newRecord.productionTime) : 
+                            (new Date().getFullYear() + newRecord.productionTime)
+                          }
                         </div>
                       </div>
                     </div>
