@@ -1,5 +1,6 @@
 
 import { Character } from '../types/character';
+import { PersonalityTraits } from '../types/personality';
 
 export type RandomizationMode = 'realistic' | 'balanced' | 'extreme' | 'high';
 
@@ -61,16 +62,25 @@ export const generateRandomAppearance = () => {
   return {
     hairColor: hairColors[Math.floor(Math.random() * hairColors.length)],
     eyeColor: eyeColors[Math.floor(Math.random() * eyeColors.length)],
-    skinTone: skinTones[Math.floor(Math.random() * skinTones.length)]
+    skinTone: skinTones[Math.floor(Math.random() * skinTones.length)],
+    health: Math.floor(Math.random() * 40) + 60,
+    happiness: Math.floor(Math.random() * 60) + 20,
+    smarts: Math.floor(Math.random() * 60) + 20,
+    looks: Math.floor(Math.random() * 60) + 20
   };
 };
 
-export const generateRandomPersonality = () => {
-  const traits = ['Outgoing', 'Shy', 'Creative', 'Logical', 'Adventurous', 'Cautious', 'Optimistic', 'Realistic'];
-  const hobbies = ['Reading', 'Sports', 'Music', 'Art', 'Gaming', 'Cooking', 'Travel', 'Photography'];
-  
+export const generateRandomPersonality = (): PersonalityTraits => {
   return {
-    trait: traits[Math.floor(Math.random() * traits.length)],
-    hobby: hobbies[Math.floor(Math.random() * hobbies.length)]
+    openness: Math.floor(Math.random() * 80) + 10,
+    conscientiousness: Math.floor(Math.random() * 80) + 10,
+    extraversion: Math.floor(Math.random() * 80) + 10,
+    agreeableness: Math.floor(Math.random() * 80) + 10,
+    neuroticism: Math.floor(Math.random() * 80) + 10,
+    creativity: Math.floor(Math.random() * 80) + 10,
+    ambition: Math.floor(Math.random() * 80) + 10,
+    empathy: Math.floor(Math.random() * 80) + 10,
+    resilience: Math.floor(Math.random() * 80) + 10,
+    curiosity: Math.floor(Math.random() * 80) + 10
   };
 };
