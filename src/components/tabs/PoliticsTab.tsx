@@ -32,6 +32,19 @@ export const PoliticsTab: React.FC<PoliticsTabProps> = ({ character, onPolitical
     });
   };
 
+  // Get reputation as a number
+  const getReputationValue = (character: Character): number => {
+    if (typeof character.reputation === 'number') {
+      return character.reputation;
+    }
+    if (character.reputation && typeof character.reputation === 'object' && 'overall' in character.reputation) {
+      return character.reputation.overall || 0;
+    }
+    return 0;
+  };
+
+  const reputationValue = getReputationValue(character);
+
   return (
     <div className="p-4 space-y-4 max-h-screen overflow-y-auto">
       <Card>
@@ -56,7 +69,7 @@ export const PoliticsTab: React.FC<PoliticsTabProps> = ({ character, onPolitical
             
             <div>
               <p className="text-sm text-gray-600">Reputation</p>
-              <p className="font-medium">{character.reputation || 0}/100</p>
+              <p className="font-medium">{reputationValue}/100</p>
             </div>
           </div>
         </CardContent>
@@ -96,7 +109,7 @@ export const PoliticsTab: React.FC<PoliticsTabProps> = ({ character, onPolitical
           <div className="space-y-3">
             {politicalPositions.map(position => {
               const meetsAge = !position.requirements.age || character.age >= position.requirements.age.min;
-              const meetsReputation = !position.requirements.reputation || (character.reputation || 0) >= position.requirements.reputation;
+              const meetsReputation = !position.requirements.reputation || reputationValue >= position.requirements.reputation;
               const meetsWealth = !position.requirements.wealth || character.wealth >= position.requirements.wealth;
               const canAfford = character.wealth >= position.campaignCost;
               

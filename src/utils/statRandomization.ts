@@ -81,6 +81,12 @@ export const generateRandomPersonality = (): PersonalityTraits => {
     ambition: Math.floor(Math.random() * 80) + 10,
     empathy: Math.floor(Math.random() * 80) + 10,
     resilience: Math.floor(Math.random() * 80) + 10,
-    curiosity: Math.floor(Math.random() * 80) + 10
+    curiosity: Math.floor(Math.random() * 80) + 10,
+    kindness: Math.floor(Math.random() * 80) + 10,
+    loyalty: Math.floor(Math.random() * 80) + 10,
+    intelligence: Math.floor(Math.random() * 80) + 10,
+    humor: Math.floor(Math.random() * 80) + 10,
+    stability: Math.floor(Math.random() * 80) + 10,
+    generosity: Math.floor(Math.random() * 80) + 10
   };
 };

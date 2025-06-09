@@ -10,6 +10,12 @@ export interface PersonalityTraits {
   empathy: number;
   resilience: number;
   curiosity: number;
+  kindness: number;
+  loyalty: number;
+  intelligence: number;
+  humor: number;
+  stability: number;
+  generosity: number;
 }
 
 export interface FamilyBackground {
