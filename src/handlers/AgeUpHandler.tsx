@@ -2,13 +2,65 @@
 
 import { GameState } from '../types/game';
 
-export const handleAgeUp = (gameState: GameState): GameState => {
+export const handleAgeUp = (gameState: GameState, ageHistory?: Record<number, string[]>, setAgeHistory?: (history: Record<number, string[]>) => void): GameState => {
+  const updatedCharacter = { ...gameState.character };
+  updatedCharacter.age = updatedCharacter.age + 1;
+  
+  const newEvents: string[] = [];
+  
+  // Process music career records during age up
+  if (updatedCharacter.musicCareer?.artists) {
+    updatedCharacter.musicCareer.artists.forEach(artist => {
+      artist.records.forEach(record => {
+        if (record.inProduction && record.createdAtAge) {
+          const completionAge = record.createdAtAge + record.productionTime;
+          
+          if (updatedCharacter.age >= completionAge) {
+            // Release the record
+            record.inProduction = false;
+            
+            // Generate sales and earnings
+            const baseSales = Math.floor(Math.random() * 5000) + 500;
+            const smartsBonus = Math.floor(updatedCharacter.smarts / 10);
+            const fansBonus = Math.floor(artist.fans / 50);
+            
+            record.sales = baseSales * Math.max(1, smartsBonus + fansBonus);
+            record.earnings = record.sales * (Math.random() * 10 + 3);
+            
+            // Add to character money
+            updatedCharacter.money = (updatedCharacter.money || 0) + record.earnings;
+            
+            // Increase artist fans
+            const newFans = Math.floor(record.sales / 5) + Math.floor(Math.random() * 100) + 50;
+            artist.fans += newFans;
+            
+            // Update music career stats
+            updatedCharacter.musicCareer!.albums += 1;
+            updatedCharacter.musicCareer!.totalEarnings += record.earnings;
+            updatedCharacter.musicCareer!.fans = Math.max(updatedCharacter.musicCareer!.fans, artist.fans);
+            
+            // Add to events for life story
+            const eventMessage = `"${record.name}" by ${artist.name} was released! Sold ${record.sales.toLocaleString()} copies, earned $${Math.floor(record.earnings).toLocaleString()}, and gained ${newFans.toLocaleString()} fans!`;
+            newEvents.push(eventMessage);
+          }
+        }
+      });
+    });
+  }
+  
+  // Add new events to age history
+  if (ageHistory && setAgeHistory && newEvents.length > 0) {
+    const currentEvents = ageHistory[updatedCharacter.age] || [];
+    const updatedAgeHistory = {
+      ...ageHistory,
+      [updatedCharacter.age]: [...currentEvents, ...newEvents]
+    };
+    setAgeHistory(updatedAgeHistory);
+  }
+
   return {
     ...gameState,
-    character: {
-      ...gameState.character,
-      age: gameState.character.age + 1
-    }
+    character: updatedCharacter
   };
 };
 

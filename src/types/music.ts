@@ -20,6 +20,7 @@ export interface Record {
   certified: boolean;
   inProduction: boolean;
   earnings: number;
+  createdAtAge?: number;
 }
 
 export interface MusicCareer {
