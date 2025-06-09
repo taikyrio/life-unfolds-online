@@ -42,7 +42,13 @@ export const CharacterCustomization: React.FC<CharacterCustomizationProps> = ({ 
     ambition: 50,
     empathy: 50,
     resilience: 50,
-    curiosity: 50
+    curiosity: 50,
+    kindness: 50,
+    loyalty: 50,
+    intelligence: 50,
+    humor: 50,
+    stability: 50,
+    generosity: 50
   });
 
   const handleRandomize = () => {

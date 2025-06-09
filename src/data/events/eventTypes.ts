@@ -21,7 +21,11 @@ export interface DynamicEventChoice {
   consequences?: string[];
 }
 
-export interface DynamicEvent extends Omit<LifeEvent, 'choices' | 'conditions'> {
+export interface DynamicEvent {
+  id: string;
+  title: string;
+  description: string;
+  age: number;
   emoji: string;
   category: string;
   conditions: EventCondition;
@@ -29,5 +33,4 @@ export interface DynamicEvent extends Omit<LifeEvent, 'choices' | 'conditions'> 
   flags?: string[];
   consequences?: string[];
   weight: number;
-  age?: number; // Make age optional since it's derived from conditions
 }

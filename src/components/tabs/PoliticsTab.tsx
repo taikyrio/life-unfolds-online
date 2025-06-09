@@ -38,7 +38,8 @@ export const PoliticsTab: React.FC<PoliticsTabProps> = ({ character, onPolitical
       return character.reputation;
     }
     if (character.reputation && typeof character.reputation === 'object' && 'overall' in character.reputation) {
-      return character.reputation.overall || 0;
+      const overall = character.reputation.overall;
+      return typeof overall === 'number' ? overall : 0;
     }
     return 0;
   };
