@@ -3,7 +3,7 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Skull } from 'lucide-react';
-import { Character } from '../../../../types/game';
+import { Character } from '../../../types/character';
 
 interface CriminalProfileProps {
   character: Character;

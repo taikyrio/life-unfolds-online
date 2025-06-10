@@ -9,7 +9,8 @@ export const generatePersonality = (): PersonalityTraits => {
     humor: Math.floor(Math.random() * 100),
     ambition: Math.floor(Math.random() * 100),
     stability: Math.floor(Math.random() * 100),
-    generosity: Math.floor(Math.random() * 100)
+    generosity: Math.floor(Math.random() * 100),
+    openness: Math.floor(Math.random() * 100)
   };
 };
 
@@ -24,6 +25,6 @@ export const initializeRelationshipStats = (relationship: string, baseLevel: num
     timeSpentTogether: 0,
     lastInteraction: new Date().toISOString(),
     interactionHistory: [],
-    respect: baseLevel // Added missing respect property
+    respect: baseLevel
   };
 };

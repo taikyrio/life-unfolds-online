@@ -3,12 +3,14 @@
 export * from './core';
 export * from './relationships';
 export * from './education';
-export * from './legal';
 export * from './health';
 export * from './social';
 export * from './gameState';
 export * from './finance';
 export * from './career';
+
+// Re-export legal types without conflicts
+export type { LegalStatus } from './legal';
 
 // Re-export character types with renamed conflicting exports
 export type { 
