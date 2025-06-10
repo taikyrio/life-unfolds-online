@@ -1,3 +1,4 @@
+
 import { useCallback } from 'react';
 import { Character, GameState } from '../types/game';
 import { processAgeUp, processChoice } from '../components/game/GameLogic';
@@ -54,44 +55,7 @@ export function useGameActions({
     });
   }, [toast]);
 
-  const handleCriminalOperation = useCallback((operation: any) => {
-    console.log('Criminal operation:', operation);
-    toast({
-      title: "Criminal Operation",
-      description: "Criminal activities are not yet implemented",
-    });
-  }, [toast]);
-
-  const handleCybercrime = useCallback((crime: any) => {
-    console.log('Cybercrime:', crime);
-    toast({
-      title: "Cybercrime",
-      description: "Cybercrime activities are not yet implemented",
-    });
-  }, [toast]);
-
-  const handleMurder = useCallback((target: any) => {
-    console.log('Murder target:', target);
-    toast({
-      title: "Murder",
-      description: "Murder activities are not yet implemented",
-    });
-  }, [toast]);
-
   const handleActivity = useCallback((activityId: string, activityData?: any) => {
-    if (activityData && activityData.type) {
-      if (activityData.type === 'criminal_operation') {
-        handleCriminalOperation(activityData);
-        return;
-      } else if (activityData.type === 'cybercrime') {
-        handleCybercrime(activityData);
-        return;
-      } else if (activityData.type === 'murder') {
-        handleMurder(activityData);
-        return;
-      }
-    }
-
     // Use the comprehensive activity handler
     handleActivityAction(
       gameState.character,
@@ -102,7 +66,7 @@ export function useGameActions({
       gameState,
       toast
     );
-  }, [gameState, onGameStateChange, setAgeHistory, toast, handleCriminalOperation, handleCybercrime, handleMurder]);
+  }, [gameState, onGameStateChange, setAgeHistory, toast]);
 
   const handleCareerAction = useCallback((action: string, data?: any) => {
     console.log('Career action:', action, data);
