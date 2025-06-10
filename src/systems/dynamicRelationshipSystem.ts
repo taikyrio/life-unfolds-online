@@ -1,3 +1,4 @@
+
 import { Character, FamilyMember, RelationshipType } from '../types/game';
 import { generateRandomName } from '../utils/gameUtils';
 import { PersonalityTraits } from '../types/core';
@@ -346,5 +347,3 @@ export class DynamicRelationshipManager {
 }
 
 export const dynamicRelationshipManager = DynamicRelationshipManager.getInstance();
-
-}
