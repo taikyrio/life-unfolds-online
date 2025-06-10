@@ -1,7 +1,25 @@
-
 import { Character } from '../types/character';
+import { PersonalityTraits } from '../types/character';
 import { FamilyMember } from '../types/relationships';
 import { generateInitialFamily } from './familyUtils';
+
+export const generateRandomPersonality = (): PersonalityTraits => {
+  return {
+    kindness: Math.floor(Math.random() * 100),
+    intelligence: Math.floor(Math.random() * 100),
+    humor: Math.floor(Math.random() * 100),
+    ambition: Math.floor(Math.random() * 100),
+    honesty: Math.floor(Math.random() * 100),
+    empathy: Math.floor(Math.random() * 100),
+    creativity: Math.floor(Math.random() * 100),
+    confidence: Math.floor(Math.random() * 100),
+    patience: Math.floor(Math.random() * 100),
+    loyalty: Math.floor(Math.random() * 100),
+    analytical: Math.floor(Math.random() * 100),
+    adventurous: Math.floor(Math.random() * 100),
+    cautious: Math.floor(Math.random() * 100)
+  };
+};
 
 export const getCharacterDescription = (character: Character): string => {
   const age = character.age;

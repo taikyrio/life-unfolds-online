@@ -1,5 +1,5 @@
 
-import { PersonalityTraits, ZodiacSign, Asset, CriminalRecord, JobPerformance } from './core';
+import { ZodiacSign, Asset, CriminalRecord, JobPerformance } from './core';
 import { FamilyMember } from './relationships';
 import { EducationRecord, CurrentEducation } from './education';
 import { LegalStatus } from './legal';
@@ -10,6 +10,22 @@ import { MusicCareer, Artist, Record, Album } from './music';
 import { FamilyBackground } from './personality';
 import { ConsequenceTracker, ReputationSystem } from './consequences';
 import { MetaProgressionState } from './metaProgression';
+
+export interface PersonalityTraits {
+  kindness: number;
+  intelligence: number;
+  humor: number;
+  ambition: number;
+  honesty: number;
+  empathy: number;
+  creativity: number;
+  confidence: number;
+  patience: number;
+  loyalty: number;
+  analytical: number;
+  adventurous: number;
+  cautious: number;
+}
 
 export interface MusicTour {
   id: string;
@@ -50,7 +66,6 @@ export interface Character {
   jobLevel?: number;
   jobPerformance?: JobPerformance;
   financialRecord?: FinancialRecord;
-  moneyState?: import('../utils/money/types').MoneyState;
   achievements: string[];
   assets: Asset[];
   criminalRecord?: CriminalRecord;
@@ -78,6 +93,7 @@ export interface Character {
   politicalAffiliation?: string;
   environmentalAwareness?: number;
   politicalInfluence?: number;
+  personality?: PersonalityTraits;
   personalityTraits?: PersonalityTraits;
   familyBackground?: FamilyBackground;
   educationLevel?: string;
