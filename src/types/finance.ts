@@ -2,9 +2,9 @@
 import { Investment, Loan } from './core';
 
 export interface FinancialRecord {
-  totalAssets: number;
-  totalLiabilities: number;
-  netWorth: number;
+  totalAssets?: number;
+  totalLiabilities?: number;
+  netWorth?: number;
   monthlyIncome: number;
   monthlyExpenses: number;
   investments: Investment[];
@@ -12,8 +12,10 @@ export interface FinancialRecord {
   loans: Loan[];
   creditScore: number;
   bankBalance: number;
-  transactions: Transaction[];
+  transactions?: Transaction[];
   transactionHistory: Transaction[];
+  bankAccounts?: any[];
+  taxes?: any[];
 }
 
 export interface Transaction {
@@ -23,4 +25,5 @@ export interface Transaction {
   category: string;
   description: string;
   date: string;
+  year?: number;
 }

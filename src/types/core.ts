@@ -1,4 +1,3 @@
-
 export interface LifeEvent {
   id: string;
   title: string;
@@ -163,6 +162,11 @@ export interface PersonalityTraits {
   stability: number;
   generosity: number;
   openness: number;
+  extraversion: number;
+  creativity: number;
+  analytical: number;
+  adventurous: number;
+  cautious: number;
 }
 
 export interface JobPerformance {
@@ -170,4 +174,6 @@ export interface JobPerformance {
   lastReview: string;
   promotions: number;
   warnings: number;
+  experience?: number;
+  performance?: number;
 }
