@@ -1,3 +1,4 @@
+
 export interface LifeEvent {
   id: string;
   title: string;
@@ -167,6 +168,12 @@ export interface PersonalityTraits {
   analytical: number;
   adventurous: number;
   cautious: number;
+  conscientiousness: number;
+  agreeableness: number;
+  neuroticism: number;
+  empathy: number;
+  resilience: number;
+  curiosity: number;
 }
 
 export interface JobPerformance {

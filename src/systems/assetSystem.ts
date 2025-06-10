@@ -95,7 +95,7 @@ export const maintainAsset = (character: Character, assetId: string): {
     return { success: false, message: 'Asset not found' };
   }
   
-  const maintenanceCost = (asset as Asset).maintenanceCost || 1;
+  const maintenanceCost = asset.maintenanceCost || 1;
   if (character.wealth < maintenanceCost) {
     return { success: false, message: 'Not enough money for maintenance' };
   }
@@ -122,7 +122,7 @@ export const insureAsset = (character: Character, assetId: string): {
     return { success: false, message: 'Asset not found' };
   }
   
-  const insuranceCost = (asset as Asset).insuranceCost || 2;
+  const insuranceCost = asset.insuranceCost || 2;
   if (character.wealth < insuranceCost) {
     return { success: false, message: 'Not enough money for insurance' };
   }

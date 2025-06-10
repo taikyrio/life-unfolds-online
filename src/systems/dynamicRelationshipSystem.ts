@@ -1,4 +1,3 @@
-
 import { Character, FamilyMember, RelationshipType } from '../types/game';
 import { generateRandomName } from '../utils/gameUtils';
 import { PersonalityTraits } from '../types/core';
@@ -169,7 +168,6 @@ export class DynamicRelationshipManager {
         alive: Math.random() > 0.1,
         health: 50 + Math.floor(Math.random() * 50),
         job: this.generateRandomJob(),
-        salary: 30 + Math.floor(Math.random() * 150),
         relationshipStats: {
           relationshipLevel: 40 + Math.floor(Math.random() * 40),
           trust: 50 + Math.floor(Math.random() * 40),
