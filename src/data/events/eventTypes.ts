@@ -25,7 +25,7 @@ export interface DynamicEvent {
   id: string;
   title: string;
   description: string;
-  age: number;
+  age?: number; // Make age optional for dynamic events
   emoji: string;
   category: string;
   conditions: EventCondition;
