@@ -118,7 +118,6 @@ export const TabContent: React.FC<TabContentProps> = ({
           <AssetsTab 
             character={character}
             onCharacterUpdate={onCharacterUpdate}
-            onEvent={onEvent}
           />
         );
       default:

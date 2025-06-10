@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { GameBoard } from '@/components/GameBoard';
 import SplashScreen from '@/components/SplashScreen';
@@ -133,10 +132,7 @@ const Index = () => {
 
       {showCharacterCustomization && (
         <CharacterCustomization
-          onCharacterCreated={(gameState) => {
-            setGameState(gameState);
-            setShowCharacterCustomization(false);
-          }}
+          onCharacterCreated={handleCustomCharacterCreate}
           onBack={() => setShowCharacterCustomization(false)}
         />
       )}

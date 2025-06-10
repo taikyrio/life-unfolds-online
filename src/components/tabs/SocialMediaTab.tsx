@@ -66,7 +66,7 @@ export const SocialMediaTab: React.FC<SocialMediaTabProps> = ({ character, onCha
                     </div>
                     <div className="flex items-center gap-1">
                       <MessageCircle className="h-3 w-3" />
-                      {account.posts || 0}
+                      {account.posts?.length || 0}
                     </div>
                   </div>
                 </div>

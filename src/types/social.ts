@@ -1,4 +1,3 @@
-
 export interface SocialMediaAccount {
   platform: 'instagram' | 'twitter' | 'facebook' | 'tiktok' | 'youtube';
   username: string;
@@ -7,6 +6,7 @@ export interface SocialMediaAccount {
   posts: SocialMediaPost[];
   monthlyIncome: number;
   monetized: boolean;
+  engagement?: number;
 }
 
 export interface SocialMediaPost {
