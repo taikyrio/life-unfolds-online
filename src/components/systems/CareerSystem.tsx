@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -8,7 +7,7 @@ import { Briefcase, TrendingUp, DollarSign, Star, Skull, Trophy, Music2, Chevron
 import { CriminalDLC } from './dlc/CriminalDLC';
 import { FameDLC } from './dlc/FameDLC';
 import { MusicianDLC } from './dlc/MusicianDLC';
-import { formatMoney } from '../../utils/money/formatting';
+import { formatMoney } from '../../utils/moneyFormatting';
 
 interface CareerSystemProps {
   character: Character;

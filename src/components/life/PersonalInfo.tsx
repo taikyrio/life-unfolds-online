@@ -65,14 +65,14 @@ export const PersonalInfo: React.FC<PersonalInfoProps> = ({ character }) => {
           </div>
         )}
 
-        {character.personalityTraits && (
+        {(character.personalityTraits || character.personality) && (
           <div>
             <div className="text-xs text-gray-500 mb-2">Personality Traits</div>
             <div className="grid grid-cols-2 gap-1 text-xs">
-              <div>Openness: {character.personalityTraits.openness}</div>
-              <div>Kindness: {character.personalityTraits.kindness}</div>
-              <div>Intelligence: {character.personalityTraits.intelligence}</div>
-              <div>Humor: {character.personalityTraits.humor}</div>
+              <div>Kindness: {(character.personalityTraits || character.personality)?.kindness || 0}</div>
+              <div>Intelligence: {(character.personalityTraits || character.personality)?.intelligence || 0}</div>
+              <div>Humor: {(character.personalityTraits || character.personality)?.humor || 0}</div>
+              <div>Confidence: {(character.personalityTraits || character.personality)?.confidence || 0}</div>
             </div>
           </div>
         )}

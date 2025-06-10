@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Character, PersonalityTraits } from '../types/character';
 import { Button } from './ui/button';
@@ -38,15 +37,13 @@ export const CharacterCustomization: React.FC<CharacterCustomizationProps> = ({
   });
 
   useEffect(() => {
-    setCustomCharacter(prev => ({
-      ...prev,
-      personality
-    }));
-    onUpdate({
+    const updatedCharacter = {
       ...customCharacter,
       personality
-    });
-  }, [personality, customCharacter, onUpdate]);
+    };
+    setCustomCharacter(updatedCharacter);
+    onUpdate(updatedCharacter);
+  }, [personality, onUpdate]);
 
   const handleNameChange = (value: string) => {
     const updated = { ...customCharacter, name: value };

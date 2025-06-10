@@ -1,4 +1,3 @@
-
 import { ZodiacSign, Asset, CriminalRecord, JobPerformance } from './core';
 import { FamilyMember } from './relationships';
 import { EducationRecord, CurrentEducation } from './education';
@@ -25,6 +24,7 @@ export interface PersonalityTraits {
   analytical: number;
   adventurous: number;
   cautious: number;
+  extraversion?: number;
 }
 
 export interface MusicTour {

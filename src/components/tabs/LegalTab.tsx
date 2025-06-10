@@ -1,138 +1,99 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { Character } from '../../types/game';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
-import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
-import { legalEvents, generateRandomLegalEvent, resolveLegalCase } from '../../systems/legalSystem';
-import { useToast } from '@/hooks/use-toast';
+import { Scale, AlertTriangle, Shield } from 'lucide-react';
 
 interface LegalTabProps {
   character: Character;
-  onLegalAction: (action: string, data: any) => void;
+  onCharacterUpdate: (character: Character) => void;
 }
 
-export const LegalTab: React.FC<LegalTabProps> = ({ character, onLegalAction }) => {
-  const [selectedEvent, setSelectedEvent] = useState<any>(null);
-  const { toast } = useToast();
-
-  const handleLegalEventTrigger = () => {
-    const event = generateRandomLegalEvent(character);
-    if (event) {
-      setSelectedEvent(event);
-    } else {
-      toast({
-        title: "No Legal Issues",
-        description: "You're staying out of trouble!",
-      });
-    }
-  };
-
-  const handleDefenseChoice = (defenseOption: any) => {
-    if (selectedEvent) {
-      const result = resolveLegalCase(character, selectedEvent, defenseOption);
-      onLegalAction('resolve_case', { event: selectedEvent, defense: defenseOption, result });
-      setSelectedEvent(null);
-      
-      toast({
-        title: result.success ? "Case Resolved" : "Legal Consequences",
-        description: result.result,
-        variant: result.success ? "default" : "destructive",
-      });
-    }
-  };
+export const LegalTab: React.FC<LegalTabProps> = ({ character, onCharacterUpdate }) => {
+  const hasCleanRecord = !character.criminalRecord || 
+    (character.criminalRecord.arrests === 0 && character.criminalRecord.convictions === 0);
 
   return (
-    <div className="p-4 space-y-4 max-h-screen overflow-y-auto">
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            ⚖️ Legal Status
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <p className="text-sm text-gray-600">Criminal Record</p>
-              <p className="font-medium">
-                {character.criminalRecord ? 
-                  `${character.criminalRecord.arrests} arrests, ${character.criminalRecord.convictions} convictions` : 
-                  'Clean record'}
-              </p>
-            </div>
-            <div>
-              <p className="text-sm text-gray-600">Legal Status</p>
-              <Badge variant={character.legalStatus?.onProbation ? "destructive" : "default"}>
-                {character.legalStatus?.onProbation ? 'On Probation' : 'Free'}
-              </Badge>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-700 pb-20">
+      <div className="px-3 py-4 space-y-4">
+        <div className="text-center mb-6">
+          <h1 className="text-3xl font-bold text-gray-800 mb-2">⚖️ Legal Status</h1>
+          <p className="text-gray-600">Your legal standing and criminal record</p>
+        </div>
 
-      {selectedEvent && (
-        <Card className="border-red-200 bg-red-50">
+        <Card>
           <CardHeader>
-            <CardTitle className="text-red-700">⚠️ {selectedEvent.name}</CardTitle>
+            <CardTitle className="flex items-center gap-2">
+              <Scale className="h-5 w-5" />
+              Legal Standing
+            </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="mb-4">{selectedEvent.description}</p>
-            <div className="space-y-2">
-              <h4 className="font-medium">Choose your defense:</h4>
-              {selectedEvent.defenseOptions.map((option: any) => (
-                <Button
-                  key={option.id}
-                  onClick={() => handleDefenseChoice(option)}
-                  variant="outline"
-                  className="w-full justify-start text-left"
-                  disabled={option.cost > character.wealth}
-                >
+            <div className="flex items-center gap-3 p-4 rounded-lg bg-gray-50">
+              {hasCleanRecord ? (
+                <>
+                  <Shield className="h-8 w-8 text-green-500" />
                   <div>
-                    <div className="font-medium">{option.name}</div>
-                    <div className="text-sm text-gray-600">
-                      Cost: ${option.cost}k | Success Rate: {option.successRate}%
-                    </div>
-                    <div className="text-xs text-gray-500">{option.description}</div>
+                    <div className="font-bold text-green-700">Clean Record</div>
+                    <div className="text-sm text-gray-600">No criminal history</div>
                   </div>
-                </Button>
-              ))}
+                </>
+              ) : (
+                <>
+                  <AlertTriangle className="h-8 w-8 text-red-500" />
+                  <div>
+                    <div className="font-bold text-red-700">Criminal Record</div>
+                    <div className="text-sm text-gray-600">Has legal issues</div>
+                  </div>
+                </>
+              )}
             </div>
           </CardContent>
         </Card>
-      )}
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Legal Actions</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-2">
-          <Button 
-            onClick={handleLegalEventTrigger}
-            className="w-full"
-            variant="outline"
-          >
-            🎲 Random Legal Event
-          </Button>
-          
-          <Button 
-            onClick={() => onLegalAction('hire_lawyer', {})}
-            className="w-full"
-            variant="outline"
-            disabled={character.wealth < 100}
-          >
-            🧑‍💼 Hire Lawyer ($100k)
-          </Button>
-          
-          <Button 
-            onClick={() => onLegalAction('legal_consultation', {})}
-            className="w-full"
-            variant="outline"
-            disabled={character.wealth < 20}
-          >
-            📋 Legal Consultation ($20k)
-          </Button>
-        </CardContent>
-      </Card>
+        {character.criminalRecord && (
+          <Card>
+            <CardHeader>
+              <CardTitle>Criminal Record</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="text-center p-4 bg-red-50 rounded-lg">
+                  <div className="text-2xl font-bold text-red-600">{character.criminalRecord.arrests || 0}</div>
+                  <div className="text-sm text-gray-600">Arrests</div>
+                </div>
+                <div className="text-center p-4 bg-orange-50 rounded-lg">
+                  <div className="text-2xl font-bold text-orange-600">{character.criminalRecord.convictions || 0}</div>
+                  <div className="text-sm text-gray-600">Convictions</div>
+                </div>
+              </div>
+
+              {character.criminalRecord.crimes && character.criminalRecord.crimes.length > 0 && (
+                <div>
+                  <h4 className="font-medium mb-2">Past Crimes</h4>
+                  <div className="space-y-1">
+                    {character.criminalRecord.crimes.map((crime, index) => (
+                      <Badge key={index} variant="destructive" className="mr-2">
+                        {crime}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {character.criminalRecord.currentlyIncarcerated && (
+                <div className="p-3 bg-red-100 border border-red-200 rounded-lg">
+                  <div className="font-medium text-red-800">Currently Incarcerated</div>
+                  <div className="text-sm text-red-600">
+                    Time served: {character.criminalRecord.timeServed || 0} years
+                  </div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        )}
+      </div>
     </div>
   );
 };

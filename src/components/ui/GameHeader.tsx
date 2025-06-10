@@ -1,8 +1,9 @@
+
 import React from 'react';
 import { Character } from '../../types/game';
-import { Button } from '../ui/button';
-import { Settings, Menu } from 'lucide-react';
-import { formatMoney } from '../../utils/money/formatting';
+import { Button } from './button';
+import { Settings } from 'lucide-react';
+import { formatMoney } from '../../utils/moneyFormatting';
 
 interface GameHeaderProps {
   character: Character;
@@ -10,54 +11,47 @@ interface GameHeaderProps {
 }
 
 export const GameHeader: React.FC<GameHeaderProps> = ({ character, onOpenSettings }) => {
-  // Calculate current year based on birth year and age
-  const getCurrentYear = () => {
-    if (character.birthYear) {
-      return character.birthYear + character.age;
-    }
-    // Fallback for existing characters without birth year
-    return new Date().getFullYear();
+  const getLifeStage = (age: number): string => {
+    if (age === 0) return 'Infant';
+    if (age < 5) return 'Toddler';
+    if (age < 13) return 'Child';
+    if (age < 18) return 'Teenager';
+    return 'Adult';
   };
 
-  const currentYear = getCurrentYear();
-
   return (
-    <div className="flex-shrink-0 bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl border-b border-white/20 px-3 py-2 safe-area-pt">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-2">
-          <div className="w-8 h-8 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center text-sm">
+    <div className="glass border-b border-white/20 backdrop-blur-sm">
+      <div className="flex items-center justify-between p-4">
+        <div className="flex items-center space-x-3 min-w-0 flex-1">
+          <div className="w-12 h-12 bg-gradient-to-br from-blue-400 to-purple-600 rounded-full flex items-center justify-center text-2xl flex-shrink-0">
             👤
           </div>
-          <div>
-            <h1 className="text-sm font-bold text-gray-900 dark:text-white truncate max-w-[120px]">
-              {character.name}
-            </h1>
-            <p className="text-xs text-gray-500">
-              Age {character.age} • {currentYear}
-              {character.birthYear && (
-                <span className="text-xs text-gray-400 ml-1">
-                  (Born {character.birthYear})
-                </span>
-              )}
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center space-x-2">
+              <h2 className="text-lg font-bold text-white truncate">{character.name}</h2>
+            </div>
+            <p className="text-sm text-white/70 capitalize">
+              {getLifeStage(character.age)} • Age {character.age}
+              {character.isPregnant && ` • 🤰 Pregnant (${character.pregnancyMonths || 0}/9)`}
             </p>
           </div>
         </div>
-        
-        <div className="flex items-center space-x-2">
-          <div className="bg-white/70 dark:bg-slate-800/70 backdrop-blur px-2 py-1 rounded-lg">
-            <div className="text-sm font-bold text-green-600 dark:text-green-400">
-              {formatMoney(character.wealth || 0)}
-            </div>
+        <div className="flex items-center gap-3">
+          <div className="text-right flex-shrink-0">
+            <div className="text-xl font-bold text-green-400">{formatMoney(character.wealth * 1000)}</div>
+            <div className="text-xs text-white/60">Net Worth</div>
+            {character.job && (
+              <div className="text-xs text-white/60">{formatMoney((character.salary || 0) * 1000)}/year</div>
+            )}
           </div>
-          
           {onOpenSettings && (
             <Button
               variant="ghost"
               size="sm"
               onClick={onOpenSettings}
-              className="h-8 w-8 p-0 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
+              className="text-white/70 hover:text-white hover:bg-white/10"
             >
-              <Menu className="h-4 w-4" />
+              <Settings className="h-4 w-4" />
             </Button>
           )}
         </div>
