@@ -1,5 +1,6 @@
 import { Character, FamilyMember, RelationshipType } from '../types/game';
 import { generateRandomName } from '../utils/gameUtils';
+import { PersonalityTraits } from '../types/core';
 
 export interface ExtendedFamily {
   grandparents: FamilyMember[];
@@ -143,8 +144,14 @@ export class DynamicRelationshipManager {
           creativity: Math.floor(Math.random() * 100),
           analytical: Math.floor(Math.random() * 100),
           adventurous: Math.floor(Math.random() * 100),
-          cautious: Math.floor(Math.random() * 100)
-        },
+          cautious: Math.floor(Math.random() * 100),
+          conscientiousness: Math.floor(Math.random() * 100),
+          agreeableness: Math.floor(Math.random() * 100),
+          neuroticism: Math.floor(Math.random() * 100),
+          empathy: Math.floor(Math.random() * 100),
+          resilience: Math.floor(Math.random() * 100),
+          curiosity: Math.floor(Math.random() * 100)
+        } as PersonalityTraits,
         currentMood: 'neutral'
       };
       extendedFamily.grandparents.push(grandparent);
@@ -188,8 +195,14 @@ export class DynamicRelationshipManager {
           creativity: Math.floor(Math.random() * 100),
           analytical: Math.floor(Math.random() * 100),
           adventurous: Math.floor(Math.random() * 100),
-          cautious: Math.floor(Math.random() * 100)
-        },
+          cautious: Math.floor(Math.random() * 100),
+          conscientiousness: Math.floor(Math.random() * 100),
+          agreeableness: Math.floor(Math.random() * 100),
+          neuroticism: Math.floor(Math.random() * 100),
+          empathy: Math.floor(Math.random() * 100),
+          resilience: Math.floor(Math.random() * 100),
+          curiosity: Math.floor(Math.random() * 100)
+        } as PersonalityTraits,
         currentMood: 'neutral'
       };
       extendedFamily.auntsUncles.push(auntUncle);
@@ -231,8 +244,14 @@ export class DynamicRelationshipManager {
           creativity: Math.floor(Math.random() * 100),
           analytical: Math.floor(Math.random() * 100),
           adventurous: Math.floor(Math.random() * 100),
-          cautious: Math.floor(Math.random() * 100)
-        },
+          cautious: Math.floor(Math.random() * 100),
+          conscientiousness: Math.floor(Math.random() * 100),
+          agreeableness: Math.floor(Math.random() * 100),
+          neuroticism: Math.floor(Math.random() * 100),
+          empathy: Math.floor(Math.random() * 100),
+          resilience: Math.floor(Math.random() * 100),
+          curiosity: Math.floor(Math.random() * 100)
+        } as PersonalityTraits,
         currentMood: 'neutral'
       };
       extendedFamily.cousins.push(cousin);
@@ -327,3 +346,5 @@ export class DynamicRelationshipManager {
 }
 
 export const dynamicRelationshipManager = DynamicRelationshipManager.getInstance();
+
+}

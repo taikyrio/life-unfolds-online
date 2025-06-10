@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Character, GameState } from '../types/game';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
@@ -10,6 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { generateRandomAppearance, generateRandomPersonality } from '../utils/statRandomization';
 import { generateFamilyBackground, applyFamilyBackground, generateFamilyName } from '../utils/familyBackgroundGenerator';
 import { processGameLogic } from './game/GameLogic';
+import { PersonalityTraits } from '../types/core';
 
 interface CharacterCustomizationProps {
   onCharacterCreated: (gameState: GameState) => void;
@@ -31,7 +33,7 @@ export const CharacterCustomization: React.FC<CharacterCustomizationProps> = ({ 
 
   // Background and traits
   const [familyBackground, setFamilyBackground] = useState(generateFamilyBackground());
-  const [personalityTraits, setPersonalityTraits] = useState({
+  const [personalityTraits, setPersonalityTraits] = useState<PersonalityTraits>({
     openness: 50,
     conscientiousness: 50,
     extraversion: 50,
