@@ -1,5 +1,6 @@
 import { Character } from '../types/character';
 import { Investment, Loan } from '../types/core';
+import { Asset } from '../types/assets';
 
 interface MarketConditions {
   stockMarket: number; // -100 to 100 (crash to boom)
@@ -169,9 +170,9 @@ export class FinancialRealismEngine {
     // Add investment income
     if (character.assets) {
       for (const asset of character.assets) {
-        if (asset.type === 'investment') {
+        if (asset.category === 'investments') {
           income += asset.value * 0.05; // 5% dividend yield
-        } else if (asset.type === 'real_estate') {
+        } else if (asset.category === 'real_estate') {
           income += asset.value * 0.08; // 8% rental yield
         }
       }
@@ -209,11 +210,12 @@ export class FinancialRealismEngine {
     if (!character.assets) return { totalGains, events };
 
     for (const asset of character.assets) {
-      if (asset.type === 'investment') {
-        const marketPerformance = this.getMarketPerformance(asset.subtype || 'stocks');
+      if (asset.category === 'investments') {
+        const assetType = asset.type as string;
+        const marketPerformance = this.getMarketPerformance(assetType);
         const gain = asset.value * marketPerformance;
         
-        asset.value += gain;
+        asset.currentValue = (asset.currentValue || asset.value) + gain;
         totalGains += gain;
 
         if (Math.abs(gain) > asset.value * 0.1) { // Significant change
@@ -320,7 +322,7 @@ export class FinancialRealismEngine {
 
     // Add asset values
     if (character.assets) {
-      netWorth += character.assets.reduce((sum, asset) => sum + asset.value, 0);
+      netWorth += character.assets.reduce((sum, asset) => sum + (asset.currentValue || asset.value), 0);
     }
 
     // Subtract debts
@@ -364,14 +366,22 @@ export class FinancialRealismEngine {
     updatedCharacter.wealth -= amount;
 
     // Create new asset
-    const newAsset = {
+    const newAsset: Asset = {
       id: `${opportunityId}_${Date.now()}`,
       name: opportunity.title,
       type: opportunity.type as any,
-      subtype: opportunityId,
+      category: 'investments',
+      currentValue: amount,
       value: amount,
-      purchaseDate: new Date().toISOString(),
-      riskLevel: opportunity.risk
+      purchasePrice: amount,
+      condition: 'excellent',
+      maintenanceCost: 0,
+      yearPurchased: character.age,
+      depreciationRate: 0,
+      appreciationRate: opportunity.potentialReturn,
+      isInsured: false,
+      description: opportunity.description,
+      emoji: '📈'
     };
 
     if (!updatedCharacter.assets) {

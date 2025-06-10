@@ -1,5 +1,4 @@
 
-
 import { Character } from '../types/character';
 import { Asset } from '../types/assets';
 
@@ -157,4 +156,3 @@ export const getAssetConditionColor = (condition: string): string => {
     default: return 'text-gray-600';
   }
 };
-
