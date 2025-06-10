@@ -1,4 +1,7 @@
 
+import { Character } from '../types/character';
+import { DynamicEvent } from '../data/events/eventTypes';
+
 export interface SeasonalEvent {
   id: string;
   title: string;
@@ -11,7 +14,20 @@ export interface SeasonalEvent {
   };
 }
 
-export const generateSeasonalEvents = (season: string): SeasonalEvent[] => {
+export const generateSeasonalEvents = (character: Character): DynamicEvent[] => {
+  const currentMonth = new Date().getMonth() + 1;
+  let season: string;
+  
+  if (currentMonth >= 3 && currentMonth <= 5) {
+    season = 'spring';
+  } else if (currentMonth >= 6 && currentMonth <= 8) {
+    season = 'summer';
+  } else if (currentMonth >= 9 && currentMonth <= 11) {
+    season = 'fall';
+  } else {
+    season = 'winter';
+  }
+
   const events: SeasonalEvent[] = [];
   
   switch (season) {
@@ -53,5 +69,52 @@ export const generateSeasonalEvents = (season: string): SeasonalEvent[] => {
       break;
   }
   
-  return events;
+  // Convert SeasonalEvent to DynamicEvent format
+  return events.map(event => ({
+    id: event.id,
+    title: event.title,
+    description: event.description,
+    emoji: getSeasonEmoji(event.season),
+    category: 'seasonal',
+    conditions: {
+      minAge: 3,
+      maxAge: 18,
+      probability: 0.3
+    },
+    choices: [{
+      id: 'participate',
+      text: 'Participate in the seasonal activity',
+      emoji: '✨',
+      effects: event.effects,
+      consequences: []
+    }],
+    weight: 1,
+    flags: []
+  }));
+};
+
+export const applySeasonalEventModifiers = (events: DynamicEvent[], character: Character): DynamicEvent[] => {
+  // Apply seasonal modifiers to existing events
+  return events.map(event => {
+    if (event.category === 'seasonal') {
+      // Increase probability during appropriate seasons
+      const modifiedEvent = { ...event };
+      modifiedEvent.conditions = {
+        ...event.conditions,
+        probability: (event.conditions.probability || 0.3) * 1.2
+      };
+      return modifiedEvent;
+    }
+    return event;
+  });
+};
+
+const getSeasonEmoji = (season: string): string => {
+  switch (season) {
+    case 'spring': return '🌸';
+    case 'summer': return '☀️';
+    case 'fall': return '🍂';
+    case 'winter': return '❄️';
+    default: return '🌟';
+  }
 };

@@ -132,8 +132,11 @@ const Index = () => {
 
       {showCharacterCustomization && (
         <CharacterCustomization
-          onCharacterCreated={handleCustomCharacterCreate}
-          onBack={() => setShowCharacterCustomization(false)}
+          character={gameState.character}
+          onUpdate={(character) => {
+            setGameState(prev => ({ ...prev, character }));
+          }}
+          onComplete={() => setShowCharacterCustomization(false)}
         />
       )}
     </div>

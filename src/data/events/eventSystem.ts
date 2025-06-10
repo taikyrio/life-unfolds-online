@@ -1,4 +1,3 @@
-
 import { Character } from '../../types/character';
 import { EventTracker } from '../../types/character';
 import { getLifeStage } from '../../utils/gameUtils';
