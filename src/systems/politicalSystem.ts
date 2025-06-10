@@ -143,7 +143,12 @@ export const campaignForOffice = (
     return { success: false, message: `You must be at least ${position.requirements.age.min} years old` };
   }
   
-  const reputationValue = typeof character.reputation === 'number' ? character.reputation : (character.reputation?.overall || 0);
+  // Handle reputation as either number or ReputationSystem object
+  const reputationValue = typeof character.reputation === 'number' 
+    ? character.reputation 
+    : (character.reputation && typeof character.reputation === 'object' 
+       ? (character.reputation as any).total || (character.reputation as any).value || 0
+       : 0);
   
   if (position.requirements.reputation && reputationValue < position.requirements.reputation) {
     return { success: false, message: `You need ${position.requirements.reputation} reputation points` };

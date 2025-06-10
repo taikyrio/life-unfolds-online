@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Character, GameState } from '../types/game';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
