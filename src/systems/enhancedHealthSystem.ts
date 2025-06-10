@@ -45,6 +45,7 @@ export const healthInsurancePlans: HealthInsurance[] = [
     monthlyPremium: 150,
     deductible: 5000,
     coveragePercentage: 60,
+    coverage: 60,
     maxCoverage: 100000,
     active: false
   },
@@ -53,6 +54,7 @@ export const healthInsurancePlans: HealthInsurance[] = [
     monthlyPremium: 300,
     deductible: 2500,
     coveragePercentage: 80,
+    coverage: 80,
     maxCoverage: 500000,
     active: false
   },
@@ -61,6 +63,7 @@ export const healthInsurancePlans: HealthInsurance[] = [
     monthlyPremium: 600,
     deductible: 1000,
     coveragePercentage: 95,
+    coverage: 95,
     maxCoverage: 1000000,
     active: false
   }

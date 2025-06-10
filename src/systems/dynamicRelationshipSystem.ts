@@ -121,17 +121,25 @@ export class DynamicRelationshipManager {
         relationshipStats: {
           relationshipLevel: 60 + Math.floor(Math.random() * 30),
           trust: 70 + Math.floor(Math.random() * 30),
+          communication: 60 + Math.floor(Math.random() * 30),
+          intimacy: 0,
+          conflictResolution: 50 + Math.floor(Math.random() * 30),
+          sharedInterests: 40 + Math.floor(Math.random() * 40),
+          timeSpentTogether: 10 + Math.floor(Math.random() * 20),
           respect: 80 + Math.floor(Math.random() * 20),
           lastInteraction: new Date().toISOString(),
           interactionHistory: []
         },
         relationshipQuality: 70 + Math.floor(Math.random() * 30),
         personality: {
-          openness: Math.floor(Math.random() * 100),
-          conscientiousness: Math.floor(Math.random() * 100),
-          extraversion: Math.floor(Math.random() * 100),
-          agreeableness: Math.floor(Math.random() * 100),
-          neuroticism: Math.floor(Math.random() * 100)
+          kindness: Math.floor(Math.random() * 100),
+          loyalty: Math.floor(Math.random() * 100),
+          intelligence: Math.floor(Math.random() * 100),
+          humor: Math.floor(Math.random() * 100),
+          ambition: Math.floor(Math.random() * 100),
+          stability: Math.floor(Math.random() * 100),
+          generosity: Math.floor(Math.random() * 100),
+          openness: Math.floor(Math.random() * 100)
         },
         currentMood: 'neutral'
       };
@@ -153,17 +161,25 @@ export class DynamicRelationshipManager {
         relationshipStats: {
           relationshipLevel: 40 + Math.floor(Math.random() * 40),
           trust: 50 + Math.floor(Math.random() * 40),
+          communication: 45 + Math.floor(Math.random() * 40),
+          intimacy: 0,
+          conflictResolution: 40 + Math.floor(Math.random() * 40),
+          sharedInterests: 30 + Math.floor(Math.random() * 50),
+          timeSpentTogether: 5 + Math.floor(Math.random() * 15),
           respect: 60 + Math.floor(Math.random() * 40),
           lastInteraction: new Date().toISOString(),
           interactionHistory: []
         },
         relationshipQuality: 50 + Math.floor(Math.random() * 40),
         personality: {
-          openness: Math.floor(Math.random() * 100),
-          conscientiousness: Math.floor(Math.random() * 100),
-          extraversion: Math.floor(Math.random() * 100),
-          agreeableness: Math.floor(Math.random() * 100),
-          neuroticism: Math.floor(Math.random() * 100)
+          kindness: Math.floor(Math.random() * 100),
+          loyalty: Math.floor(Math.random() * 100),
+          intelligence: Math.floor(Math.random() * 100),
+          humor: Math.floor(Math.random() * 100),
+          ambition: Math.floor(Math.random() * 100),
+          stability: Math.floor(Math.random() * 100),
+          generosity: Math.floor(Math.random() * 100),
+          openness: Math.floor(Math.random() * 100)
         },
         currentMood: 'neutral'
       };
@@ -183,17 +199,25 @@ export class DynamicRelationshipManager {
         relationshipStats: {
           relationshipLevel: 30 + Math.floor(Math.random() * 50),
           trust: 40 + Math.floor(Math.random() * 50),
+          communication: 35 + Math.floor(Math.random() * 50),
+          intimacy: 0,
+          conflictResolution: 30 + Math.floor(Math.random() * 50),
+          sharedInterests: 25 + Math.floor(Math.random() * 60),
+          timeSpentTogether: 5 + Math.floor(Math.random() * 10),
           respect: 50 + Math.floor(Math.random() * 50),
           lastInteraction: new Date().toISOString(),
           interactionHistory: []
         },
         relationshipQuality: 40 + Math.floor(Math.random() * 50),
         personality: {
-          openness: Math.floor(Math.random() * 100),
-          conscientiousness: Math.floor(Math.random() * 100),
-          extraversion: Math.floor(Math.random() * 100),
-          agreeableness: Math.floor(Math.random() * 100),
-          neuroticism: Math.floor(Math.random() * 100)
+          kindness: Math.floor(Math.random() * 100),
+          loyalty: Math.floor(Math.random() * 100),
+          intelligence: Math.floor(Math.random() * 100),
+          humor: Math.floor(Math.random() * 100),
+          ambition: Math.floor(Math.random() * 100),
+          stability: Math.floor(Math.random() * 100),
+          generosity: Math.floor(Math.random() * 100),
+          openness: Math.floor(Math.random() * 100)
         },
         currentMood: 'neutral'
       };

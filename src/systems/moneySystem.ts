@@ -1,10 +1,7 @@
-
 import { Character, FinancialRecord, Investment, Loan, Transaction } from '../types/game';
 
 export const initializeFinancialRecord = (): FinancialRecord => {
   return {
-    totalIncome: 0,
-    totalExpenses: 0,
     monthlyIncome: 0,
     monthlyExpenses: 0,
     investments: [],
@@ -31,8 +28,7 @@ export const processYearlyFinances = (character: Character): Character => {
     const newValue = investment.currentValue * (1 + return_rate);
     return {
       ...investment,
-      currentValue: newValue,
-      roi: ((newValue - investment.amount) / investment.amount) * 100
+      currentValue: newValue
     };
   });
 
@@ -59,7 +55,7 @@ export const processYearlyFinances = (character: Character): Character => {
       amount: yearlyIncome,
       description: 'Annual salary',
       category: 'Income',
-      type: 'Income',
+      type: 'income',
       year: character.age,
       date: new Date().toISOString()
     };
@@ -90,7 +86,7 @@ export const modifyBankBalance = (
     amount: Math.abs(amount),
     description,
     category,
-    type: amount > 0 ? 'Income' : 'Expense',
+    type: amount > 0 ? 'income' : 'expense',
     year: character.age,
     date: new Date().toISOString()
   };
@@ -161,8 +157,8 @@ export const createInvestment = (
     'Bonds': 'bonds',
     'Real Estate': 'real_estate',
     'Crypto': 'crypto',
-    'Savings Account': 'savings_account',
-    'CD': 'cd'
+    'Savings Account': 'mutual_fund',
+    'CD': 'mutual_fund'
   };
 
   const investment: Investment = {
@@ -171,9 +167,11 @@ export const createInvestment = (
     name,
     amount,
     currentValue: amount,
+    value: amount,
+    purchasePrice: amount,
     purchaseDate: new Date().toISOString(),
     yearPurchased: character.age,
-    roi: 0,
+    riskLevel: 'medium',
     annualReturn: Math.random() * 0.15 + 0.05 // 5-20% annual return
   };
 
@@ -207,12 +205,12 @@ export const createLoan = (
     type: loanTypeMap[type] as any || 'personal',
     principal: amount,
     remaining: amount,
+    remainingBalance: amount,
     amount,
-    originalAmount: amount,
     interestRate,
     monthlyPayment,
+    termMonths,
     startDate: new Date().toISOString(),
-    lender,
     remainingMonths: termMonths
   };
 
