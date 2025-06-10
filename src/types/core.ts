@@ -1,4 +1,5 @@
 
+
 export interface LifeEvent {
   id: string;
   title: string;
@@ -184,3 +185,4 @@ export interface JobPerformance {
   experience?: number;
   performance?: number;
 }
+

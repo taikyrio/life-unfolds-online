@@ -1,4 +1,12 @@
-import { Character, LegalCase, CourtDate, LegalStatus } from '../types/game';
+
+import { Character, LegalCase, LegalStatus } from '../types/game';
+
+export interface CourtDate {
+  id: string;
+  date: string;
+  type: 'hearing' | 'trial' | 'sentencing';
+  caseId: string;
+}
 
 export interface LegalEvent {
   id: string;

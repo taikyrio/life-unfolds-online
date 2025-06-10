@@ -1,4 +1,3 @@
-
 import { Character } from '../types/game';
 
 export interface PoliticalParty {
@@ -144,7 +143,9 @@ export const campaignForOffice = (
     return { success: false, message: `You must be at least ${position.requirements.age.min} years old` };
   }
   
-  if (position.requirements.reputation && (character.reputation || 0) < position.requirements.reputation) {
+  const reputationValue = typeof character.reputation === 'number' ? character.reputation : (character.reputation?.overall || 0);
+  
+  if (position.requirements.reputation && reputationValue < position.requirements.reputation) {
     return { success: false, message: `You need ${position.requirements.reputation} reputation points` };
   }
   
@@ -158,7 +159,7 @@ export const campaignForOffice = (
   
   // Calculate win probability
   const baseChance = 30;
-  const reputationBonus = Math.min((character.reputation || 0) / 2, 30);
+  const reputationBonus = Math.min(reputationValue / 2, 30);
   const wealthBonus = Math.min(character.wealth / 100, 20);
   const partyBonus = party.popularity / 5;
   
