@@ -21,9 +21,7 @@ export const ActivitiesTabContainer: React.FC<ActivitiesTabContainerProps> = ({
     character.age >= category.unlockAge
   );
 
-  // Handle activity selection with logging
   const handleActivitySelect = (activity: Activity) => {
-    // Call the original activity handler with the correct format
     onActivity(activity.id, null);
   };
 
@@ -40,7 +38,7 @@ export const ActivitiesTabContainer: React.FC<ActivitiesTabContainerProps> = ({
     );
 
     return (
-      <div className="h-full flex flex-col bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
+      <div className="h-full flex flex-col bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
         <ActivityHeader 
           character={character} 
           selectedCategory={category} 
@@ -57,8 +55,26 @@ export const ActivitiesTabContainer: React.FC<ActivitiesTabContainerProps> = ({
   }
 
   return (
-    <div className="h-full flex flex-col bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
-      <ActivityHeader character={character} />
+    <div className="h-full flex flex-col bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
+      {/* Enhanced Activities Header */}
+      <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-700 text-white p-6 text-center relative overflow-hidden">
+        <div className="absolute inset-0 bg-black/10"></div>
+        <div className="relative z-10">
+          <div className="text-4xl mb-2">🎯</div>
+          <h1 className="text-2xl font-bold mb-2">Activities</h1>
+          <p className="text-blue-100 mb-4">Choose what to do with your time</p>
+          <div className="flex justify-center gap-6 text-sm">
+            <div className="flex items-center gap-2">
+              <span>👶</span>
+              <span>Age {character.age}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span>💰</span>
+              <span>${character.wealth}k</span>
+            </div>
+          </div>
+        </div>
+      </div>
 
       {/* Categories Grid */}
       <div className="flex-1 p-6 overflow-y-auto">
