@@ -10,7 +10,12 @@ export const generatePersonality = (): PersonalityTraits => {
     ambition: Math.floor(Math.random() * 100),
     stability: Math.floor(Math.random() * 100),
     generosity: Math.floor(Math.random() * 100),
-    openness: Math.floor(Math.random() * 100)
+    openness: Math.floor(Math.random() * 100),
+    extraversion: Math.floor(Math.random() * 100),
+    creativity: Math.floor(Math.random() * 100),
+    analytical: Math.floor(Math.random() * 100),
+    adventurous: Math.floor(Math.random() * 100),
+    cautious: Math.floor(Math.random() * 100)
   };
 };
 

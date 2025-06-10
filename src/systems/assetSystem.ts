@@ -1,4 +1,3 @@
-
 import { Character } from '../types/character';
 import { Asset } from '../types/assets';
 
@@ -91,8 +90,8 @@ export const maintainAsset = (character: Character, assetId: string): {
   character?: Character;
 } => {
   const asset = character.assets?.find(a => a.id === assetId);
-  if (!asset) {
-    return { success: false, message: 'Asset not found' };
+  if (!asset || !('maintenanceCost' in asset)) {
+    return { success: false, message: 'Asset not found or no maintenance required' };
   }
   
   const maintenanceCost = asset.maintenanceCost || 1;

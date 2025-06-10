@@ -1,4 +1,3 @@
-
 import { Character, FamilyMember, RelationshipType } from '../types/game';
 import { generateRandomName } from '../utils/gameUtils';
 
@@ -139,7 +138,12 @@ export class DynamicRelationshipManager {
           ambition: Math.floor(Math.random() * 100),
           stability: Math.floor(Math.random() * 100),
           generosity: Math.floor(Math.random() * 100),
-          openness: Math.floor(Math.random() * 100)
+          openness: Math.floor(Math.random() * 100),
+          extraversion: Math.floor(Math.random() * 100),
+          creativity: Math.floor(Math.random() * 100),
+          analytical: Math.floor(Math.random() * 100),
+          adventurous: Math.floor(Math.random() * 100),
+          cautious: Math.floor(Math.random() * 100)
         },
         currentMood: 'neutral'
       };
@@ -179,7 +183,12 @@ export class DynamicRelationshipManager {
           ambition: Math.floor(Math.random() * 100),
           stability: Math.floor(Math.random() * 100),
           generosity: Math.floor(Math.random() * 100),
-          openness: Math.floor(Math.random() * 100)
+          openness: Math.floor(Math.random() * 100),
+          extraversion: Math.floor(Math.random() * 100),
+          creativity: Math.floor(Math.random() * 100),
+          analytical: Math.floor(Math.random() * 100),
+          adventurous: Math.floor(Math.random() * 100),
+          cautious: Math.floor(Math.random() * 100)
         },
         currentMood: 'neutral'
       };
@@ -217,7 +226,12 @@ export class DynamicRelationshipManager {
           ambition: Math.floor(Math.random() * 100),
           stability: Math.floor(Math.random() * 100),
           generosity: Math.floor(Math.random() * 100),
-          openness: Math.floor(Math.random() * 100)
+          openness: Math.floor(Math.random() * 100),
+          extraversion: Math.floor(Math.random() * 100),
+          creativity: Math.floor(Math.random() * 100),
+          analytical: Math.floor(Math.random() * 100),
+          adventurous: Math.floor(Math.random() * 100),
+          cautious: Math.floor(Math.random() * 100)
         },
         currentMood: 'neutral'
       };

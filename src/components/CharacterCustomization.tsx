@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Character, GameState } from '../types/game';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
@@ -48,7 +47,10 @@ export const CharacterCustomization: React.FC<CharacterCustomizationProps> = ({ 
     intelligence: 50,
     humor: 50,
     stability: 50,
-    generosity: 50
+    generosity: 50,
+    analytical: 50,
+    adventurous: 50,
+    cautious: 50
   });
 
   const handleRandomize = () => {
