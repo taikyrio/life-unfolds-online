@@ -1,4 +1,3 @@
-
 import { Character } from '../../types/game';
 import { isGameOver } from '../../utils/gameStateUtils';
 import { ageFamilyMembers, generateNewRelationships } from '../../utils/familyUtils';
@@ -50,7 +49,7 @@ export const handleAgeUp = (
       gameOver: true,
       gameOverReason: gameOverCheck.reason
     });
-    
+
     toast({
       title: "Game Over",
       description: gameOverCheck.reason,
@@ -69,8 +68,41 @@ export const handleAgeUp = (
     });
   }
 
+  // Ensure this age exists in age history even if no events occurred
   const newAgeHistory = { ...ageHistory };
-  newAgeHistory[updatedCharacter.age] = ageEvents;
+  if (!newAgeHistory[updatedCharacter.age]) {
+    newAgeHistory[updatedCharacter.age] = [];
+  }
+
+  // If no events occurred for this age, add a default life event
+  if (ageEvents.length === 0) {
+    const defaultEvents = [
+      `📅 You turned ${updatedCharacter.age} years old.`,
+      `🌟 Another year of life experience gained.`,
+      `⏰ Time continues to pass in your life journey.`,
+      `📖 You lived through age ${updatedCharacter.age}.`
+    ];
+    const randomDefault = defaultEvents[Math.floor(Math.random() * defaultEvents.length)];
+    ageEvents.push(randomDefault);
+  }
+
+  // Log all age events to gameLogger
+  ageEvents.forEach(event => {
+    gameLogger.logEvent({
+      age: updatedCharacter.age,
+      year: (updatedCharacter.birthYear || new Date().getFullYear() - updatedCharacter.age) + updatedCharacter.age,
+      event: event,
+      category: 'achievement'
+    });
+  });
+
+  // Add any new events that aren't already recorded
+  ageEvents.forEach(event => {
+    if (!newAgeHistory[updatedCharacter.age].includes(event)) {
+      newAgeHistory[updatedCharacter.age].push(event);
+    }
+  });
+
   setAgeHistory(newAgeHistory);
 
   onGameStateChange({

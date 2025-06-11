@@ -6,7 +6,8 @@ import { Switch } from '@/components/ui/switch';
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { X, Volume2, VolumeX, Palette, Zap, Dice6, User, RotateCcw } from 'lucide-react';
+import { X, Volume2, VolumeX, Palette, Zap, Dice6, User, RotateCcw, FileText } from 'lucide-react';
+import { LogManagement } from './LogManagement';
 
 interface GameSettingsProps {
   isOpen: boolean;
@@ -14,9 +15,11 @@ interface GameSettingsProps {
   onNewGame: () => void;
   onRandomizeStats?: () => void;
   onCustomCharacter?: () => void;
+  characterName?: string;
 }
 
-export const GameSettings: React.FC<GameSettingsProps> = ({ isOpen, onClose, onNewGame, onRandomizeStats, onCustomCharacter }) => {
+export const GameSettings: React.FC<GameSettingsProps> = ({ isOpen, onClose, onNewGame, onRandomizeStats, onCustomCharacter, characterName = "Player" }) => {
+  const [showLogManagement, setShowLogManagement] = useState(false);
   const [soundEnabled, setSoundEnabled] = useState(() => {
     const saved = localStorage.getItem('bitlife-sound-enabled');
     return saved !== null ? JSON.parse(saved) : true;
@@ -246,6 +249,15 @@ export const GameSettings: React.FC<GameSettingsProps> = ({ isOpen, onClose, onN
                 onCheckedChange={setAutoSave}
               />
             </div>
+            
+            <Button
+              onClick={() => setShowLogManagement(true)}
+              variant="outline"
+              className="w-full"
+            >
+              <FileText className="h-4 w-4 mr-2" />
+              Manage Life Logs
+            </Button>
           </div>
 
           {/* About */}
@@ -259,6 +271,12 @@ export const GameSettings: React.FC<GameSettingsProps> = ({ isOpen, onClose, onN
           </div>
         </CardContent>
       </Card>
+      
+      <LogManagement
+        isOpen={showLogManagement}
+        onClose={() => setShowLogManagement(false)}
+        characterName={characterName}
+      />
     </div>
   );
 };

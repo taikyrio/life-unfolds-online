@@ -44,7 +44,7 @@ export const LifeStory: React.FC<LifeStoryProps> = ({ character, ageHistory, onA
         </CardTitle>
       </CardHeader>
       <CardContent className="pt-0 h-[calc(100%-80px)]">
-        <ScrollArea className="h-full pr-4">
+        <ScrollArea className="h-full pr-4" style={{ maxHeight: 'calc(100vh - 200px)' }}>
           <div className="space-y-3">
             {!ageHistory || Object.keys(ageHistory).length === 0 ? (
               <div className="space-y-3">

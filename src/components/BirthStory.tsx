@@ -129,7 +129,7 @@ export const BirthStory: React.FC<BirthStoryProps> = ({ character, onContinue })
           
           <div className="space-y-3 text-sm text-gray-700 dark:text-gray-300">
             <p>
-              <strong>{character.name}</strong> was born on {new Date(character.birthYear || new Date().getFullYear(), (character.birthMonth || 1) - 1, character.birthDay || 1).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })} in <strong>{story.country}</strong> {story.location} {story.circumstance}.
+              <strong>{character.name}</strong> was born on {new Date(character.birthYear || 2024, (character.birthMonth || 1) - 1, character.birthDay || 1).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })} in <strong>{story.country}</strong> {story.location} {story.circumstance}.
             </p>
             
             <p>

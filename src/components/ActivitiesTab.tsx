@@ -50,17 +50,18 @@ export const ActivitiesTab: React.FC<ActivitiesTabProps> = ({ character, onActiv
               <div className="text-xs text-gray-400 mt-1">Wait until you're older</div>
             </div>
           ) : (
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid grid-cols-2 gap-4">
               {availableActivities.map((activity) => (
                 <button
                   key={activity.id}
                   onClick={() => onActivity(activity.id, activity.id)}
-                  className="bg-white rounded-lg p-3 shadow-sm border border-gray-200 hover:shadow-md transition-all duration-200 active:scale-95"
+                  className="bg-white rounded-xl p-4 shadow-sm border border-gray-200 hover:shadow-md transition-all duration-200 active:scale-95 active:bg-gray-50 min-h-[80px] flex flex-col justify-center items-center"
                 >
-                  <div className={`w-8 h-8 ${activity.color} rounded-lg flex items-center justify-center text-lg mx-auto mb-2 text-white shadow-sm`}>
+                  <div className={`w-10 h-10 ${activity.color} rounded-xl flex items-center justify-center text-xl mx-auto mb-2 text-white shadow-md`}>
                     {activity.icon}
                   </div>
-                  <div className="text-xs font-medium text-gray-900 text-center">{activity.name}</div>
+                  <div className="text-sm font-medium text-gray-900 text-center">{activity.name}</div>
+                  <div className="text-xs text-gray-500 text-center mt-1">{activity.description}</div>
                 </button>
               ))}
             </div>

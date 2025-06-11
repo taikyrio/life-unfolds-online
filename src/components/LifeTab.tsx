@@ -4,6 +4,7 @@ import { CharacterProfile } from './life/CharacterProfile';
 import { PersonalInfo } from './life/PersonalInfo';
 import { FamilySection } from './life/FamilySection';
 import { LifeStory } from './life/LifeStory';
+import { MobileLifeTimeline } from './MobileLifeTimeline';
 import { useIsMobile } from '../hooks/use-mobile';
 
 interface LifeTabProps {
@@ -34,71 +35,7 @@ export const LifeTab: React.FC<LifeTabProps> = ({
   };
 
   if (isMobile) {
-    return (
-      <div className="h-full bg-white flex flex-col overflow-hidden">
-        {/* InstLife-style Character Summary */}
-        <div className="bg-white border-b border-gray-200 p-4">
-          <div className="text-center">
-            <div className="text-xl font-bold text-orange-600 mb-1">{character.age} Years Old</div>
-            <div className="text-sm text-gray-600 mb-3">{getCurrentYear()}</div>
-            
-            {/* Compact Stats */}
-            <div className="grid grid-cols-4 gap-2 mb-3">
-              <div className="text-center">
-                <div className="text-lg">❤️</div>
-                <div className="text-xs font-bold text-red-600">{Math.round(character.health)}%</div>
-              </div>
-              <div className="text-center">
-                <div className="text-lg">😊</div>
-                <div className="text-xs font-bold text-yellow-600">{Math.round(character.happiness)}%</div>
-              </div>
-              <div className="text-center">
-                <div className="text-lg">🧠</div>
-                <div className="text-xs font-bold text-blue-600">{Math.round(character.smarts)}%</div>
-              </div>
-              <div className="text-center">
-                <div className="text-lg">✨</div>
-                <div className="text-xs font-bold text-purple-600">{Math.round(character.looks)}%</div>
-              </div>
-            </div>
-
-            {/* Status */}
-            <div className="text-xs text-gray-500">
-              {character.job ? `${character.job} • ` : ''}
-              ${character.wealth}k net worth
-            </div>
-          </div>
-        </div>
-
-        {/* Life Events - InstLife Style */}
-        <div className="flex-1 bg-white overflow-y-auto p-4">
-          <div className="space-y-3">
-            {Object.entries(ageHistory)
-              .sort(([a], [b]) => parseInt(b) - parseInt(a))
-              .map(([age, events]) => (
-                <div key={age} className="space-y-2">
-                  <div className="text-sm font-bold text-orange-600">
-                    {age} Years Old
-                  </div>
-                  {events.map((event, index) => (
-                    <div key={index} className="text-sm text-gray-800 leading-relaxed pl-2">
-                      {event}
-                    </div>
-                  ))}
-                </div>
-              ))}
-            
-            {Object.keys(ageHistory).length === 0 && (
-              <div className="text-center py-8">
-                <div className="text-3xl mb-2">👶</div>
-                <div className="text-sm text-gray-600">You were just born!</div>
-                <div className="text-xs text-gray-400 mt-1">Tap "Age!" to start your story</div>
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-    );
+    return <MobileLifeTimeline character={character} ageHistory={ageHistory} />;
   }
 
   // Desktop layout (unchanged)

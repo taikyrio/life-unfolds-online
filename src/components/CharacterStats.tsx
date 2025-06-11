@@ -106,48 +106,52 @@ export const CharacterStats: React.FC<CharacterStatsProps> = ({ character }) => 
   ];
 
   return (
-    <div className="bg-white dark:bg-gray-800 p-4 mx-4 rounded-lg shadow-sm">
-      <div className="space-y-3">
+    <div className="bg-white dark:bg-gray-800 mx-2 rounded-lg shadow-sm">
+      {/* Mobile-optimized compact stats */}
+      <div className="grid grid-cols-2 gap-3 p-3">
         {stats.map((stat) => (
-          <div key={stat.name} className="flex items-center space-x-3">
-            <div className="flex items-center space-x-2 w-24">
+          <div key={stat.name} className="flex items-center space-x-2 min-h-[44px] bg-gray-50 dark:bg-gray-700 rounded-lg p-2">
+            <div className="flex items-center space-x-1">
               {stat.value < 30 && (
-                <AlertTriangle size={12} className="text-red-500 animate-pulse" />
-              )}
-              {stat.value < 15 && (
-                <TrendingDown size={12} className="text-red-600" />
+                <AlertTriangle size={10} className="text-red-500 animate-pulse" />
               )}
               <span className="text-lg">{stat.emoji}</span>
-              <span className="text-xs font-medium text-gray-700 dark:text-gray-300 truncate">{stat.name}</span>
             </div>
-
-            <div className="flex-1 flex items-center space-x-2">
-              <div className="flex-1 bg-gray-200 dark:bg-gray-600 rounded-full h-2.5 overflow-hidden">
-                <div 
-                  className="h-full rounded-full transition-all duration-500 ease-out"
-                  style={{ 
-                    width: `${Math.max(stat.value, 0)}%`,
-                    backgroundColor: stat.color
-                  }}
-                />
+            
+            <div className="flex-1 min-w-0">
+              <div className="text-xs font-medium text-gray-700 dark:text-gray-300 truncate mb-1">
+                {stat.name}
               </div>
-              <span className={`text-xs font-bold w-8 text-right ${
-                stat.value < 30 ? 'text-red-600' : 
-                stat.value < 50 ? 'text-orange-600' : 
-                'text-gray-800 dark:text-gray-200'
-              }`}>
-                {stat.value}%
-              </span>
+              <div className="flex items-center space-x-2">
+                <div className="flex-1 bg-gray-200 dark:bg-gray-600 rounded-full h-2 overflow-hidden">
+                  <div 
+                    className="h-full rounded-full transition-all duration-500 ease-out"
+                    style={{ 
+                      width: `${Math.max(stat.value, 0)}%`,
+                      backgroundColor: stat.color
+                    }}
+                  />
+                </div>
+                <span className={`text-xs font-bold w-8 text-right ${
+                  stat.value < 30 ? 'text-red-600' : 
+                  stat.value < 50 ? 'text-orange-600' : 
+                  'text-gray-800 dark:text-gray-200'
+                }`}>
+                  {Math.round(stat.value)}
+                </span>
+              </div>
             </div>
           </div>
         ))}
-         <div className="text-center">
-          <div className="text-lg font-bold text-green-600 dark:text-green-400">
-            {formatMoney(character.money || character.wealth || 0)}
-          </div>
-          <div className="text-xs text-gray-600 dark:text-gray-300">
-            {getFinancialStatus(character.money || character.wealth || 0).status}
-          </div>
+      </div>
+      
+      {/* Money section */}
+      <div className="border-t border-gray-200 dark:border-gray-600 p-3 text-center">
+        <div className="text-base font-bold text-green-600 dark:text-green-400">
+          {formatMoney(character.money || character.wealth || 0)}
+        </div>
+        <div className="text-xs text-gray-600 dark:text-gray-300">
+          {getFinancialStatus(character.money || character.wealth || 0).status}
         </div>
       </div>
     </div>

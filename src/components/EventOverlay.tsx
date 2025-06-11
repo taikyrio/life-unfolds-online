@@ -104,32 +104,34 @@ export const EventOverlay: React.FC<EventOverlayProps> = ({
                     <Button
                       key={choice.id}
                       onClick={() => handleChoice(choice.id)}
-                      className="w-full justify-center text-center h-auto py-3 px-4 bg-blue-500 hover:bg-blue-600 text-white transition-all duration-200 rounded-md font-medium"
+                      className="w-full justify-start text-left h-auto py-4 px-4 bg-blue-500 hover:bg-blue-600 active:bg-blue-700 text-white transition-all duration-200 rounded-lg font-medium min-h-[50px] active:scale-98 shadow-md"
                     >
-                      <span className="mr-2 text-lg">{choice.emoji}</span>
-                      <span className="text-sm">{choice.text}</span>
+                      <span className="mr-3 text-xl flex-shrink-0">{choice.emoji}</span>
+                      <span className="text-sm leading-relaxed">{choice.text}</span>
                     </Button>
                   ))}
 
                   {/* Optional "Surprise me!" button */}
                   <Button
                     onClick={() => {
-                      const randomChoice = event.choices[Math.floor(Math.random() * event.choices.length)];
-                      handleChoice(randomChoice.id);
+                      if (event.choices && event.choices.length > 0) {
+                        const randomChoice = event.choices[Math.floor(Math.random() * event.choices.length)];
+                        handleChoice(randomChoice.id);
+                      }
                     }}
                     variant="ghost"
-                    className="w-full text-blue-500 hover:text-blue-600 text-sm py-2"
+                    className="w-full text-blue-500 hover:text-blue-600 active:text-blue-700 text-sm py-3 min-h-[44px] active:scale-98 hover:bg-blue-50"
                   >
-                    <span className="mr-1">🎲</span>
+                    <span className="mr-2">🎲</span>
                     Surprise me!
                   </Button>
                 </>
               ) : (
                 <Button
                   onClick={onClose}
-                  className="w-full justify-center text-center h-auto py-3 px-4 bg-blue-500 hover:bg-blue-600 text-white transition-all duration-200 rounded-md font-medium"
+                  className="w-full justify-center text-center h-auto py-4 px-4 bg-blue-500 hover:bg-blue-600 active:bg-blue-700 text-white transition-all duration-200 rounded-lg font-medium min-h-[50px] active:scale-98 shadow-md"
                 >
-                  <span className="mr-2 text-lg">✓</span>
+                  <span className="mr-3 text-xl">✓</span>
                   <span className="text-sm">Continue</span>
                 </Button>
               )}

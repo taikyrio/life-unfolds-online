@@ -130,8 +130,8 @@ export const BottomNavigation: React.FC<BottomNavigationProps> = ({
   const tabs = [...baseTabs, ...rightTabs];
 
   return (
-    <div className="bg-slate-700 px-4 py-2 relative z-20 border-t-2 border-slate-600">
-      <div className="flex items-center justify-around">
+    <div className="bg-slate-700 px-2 py-3 relative z-20 border-t-2 border-slate-600 safe-area-bottom">
+      <div className="flex items-center justify-around max-w-md mx-auto">
         {tabs.slice(0, 2).map((tab) => {
           const Icon = tab.icon;
           const isDisabled = !tab.available;
@@ -142,27 +142,27 @@ export const BottomNavigation: React.FC<BottomNavigationProps> = ({
               <button
                 onClick={tab.onClick}
                 disabled={isDisabled}
-                className={`flex flex-col items-center transition-colors ${
+                className={`flex flex-col items-center transition-all duration-200 min-h-[60px] min-w-[60px] p-2 rounded-lg active:scale-95 ${
                   isDisabled 
                     ? 'text-gray-500 cursor-not-allowed' 
-                    : 'text-white hover:text-gray-300'
+                    : 'text-white hover:bg-slate-600 active:bg-slate-800'
                 }`}
                 title={tooltip}
               >
-                <div className={`${tab.color} p-3 rounded-full mb-1 relative ${
-                  isDisabled ? 'opacity-50' : ''
+                <div className={`${tab.color} p-2.5 rounded-full mb-1 relative ${
+                  isDisabled ? 'opacity-50' : 'shadow-md'
                 }`}>
-                  <Icon size={20} className="text-white" />
+                  <Icon size={18} className="text-white" />
                   {isDisabled && (
-                    <div className="absolute -top-1 -right-1 bg-red-500 rounded-full p-1">
-                      <Lock size={10} className="text-white" />
+                    <div className="absolute -top-1 -right-1 bg-red-500 rounded-full p-0.5">
+                      <Lock size={8} className="text-white" />
                     </div>
                   )}
                 </div>
-                <span className="text-xs font-medium">{tab.label}</span>
+                <span className="text-xs font-medium text-center leading-tight">{tab.label}</span>
               </button>
               {tooltip && (
-                <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-black text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">
+                <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-black text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50">
                   {tooltip}
                 </div>
               )}
@@ -170,13 +170,13 @@ export const BottomNavigation: React.FC<BottomNavigationProps> = ({
           );
         })}
 
-        {/* Age Button - Green centered */}
+        {/* Age Button - Green centered with better mobile touch */}
         <button
           onClick={onAgeUp}
-          className="flex flex-col items-center text-white hover:scale-105 transition-transform"
+          className="flex flex-col items-center text-white transition-all duration-200 active:scale-95 p-2 rounded-lg hover:bg-slate-600"
         >
-          <div className="bg-green-500 p-4 rounded-full mb-1 border-4 border-white shadow-lg">
-            <span className="text-white font-bold text-xl">+</span>
+          <div className="bg-green-500 p-3.5 rounded-full mb-1 border-3 border-white shadow-lg active:shadow-md transition-shadow">
+            <span className="text-white font-bold text-lg select-none">+</span>
           </div>
           <span className="text-xs font-medium">Age</span>
         </button>
@@ -191,27 +191,27 @@ export const BottomNavigation: React.FC<BottomNavigationProps> = ({
               <button
                 onClick={tab.onClick}
                 disabled={isDisabled}
-                className={`flex flex-col items-center transition-colors ${
+                className={`flex flex-col items-center transition-all duration-200 min-h-[60px] min-w-[60px] p-2 rounded-lg active:scale-95 ${
                   isDisabled 
                     ? 'text-gray-500 cursor-not-allowed' 
-                    : 'text-white hover:text-gray-300'
+                    : 'text-white hover:bg-slate-600 active:bg-slate-800'
                 }`}
                 title={tooltip}
               >
-                <div className={`${tab.color} p-3 rounded-full mb-1 relative ${
-                  isDisabled ? 'opacity-50' : ''
+                <div className={`${tab.color} p-2.5 rounded-full mb-1 relative ${
+                  isDisabled ? 'opacity-50' : 'shadow-md'
                 }`}>
-                  <Icon size={20} className="text-white" />
+                  <Icon size={18} className="text-white" />
                   {isDisabled && (
-                    <div className="absolute -top-1 -right-1 bg-red-500 rounded-full p-1">
-                      <Lock size={10} className="text-white" />
+                    <div className="absolute -top-1 -right-1 bg-red-500 rounded-full p-0.5">
+                      <Lock size={8} className="text-white" />
                     </div>
                   )}
                 </div>
-                <span className="text-xs font-medium">{tab.label}</span>
+                <span className="text-xs font-medium text-center leading-tight">{tab.label}</span>
               </button>
               {tooltip && (
-                <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-black text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">
+                <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-black text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50">
                   {tooltip}
                 </div>
               )}
