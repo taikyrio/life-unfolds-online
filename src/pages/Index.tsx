@@ -9,6 +9,7 @@ import { generateRandomName, createCharacter, getRandomizedNewCharacter } from '
 import { randomizeStats } from '@/utils/statRandomization';
 import { Button } from '@/components/ui/button';
 import { BirthStory } from '@/components/BirthStory';
+import { gameLogger } from '@/utils/gameLogger';
 
 const Index = () => {
   const [showSplash, setShowSplash] = useState(true);
@@ -29,6 +30,21 @@ const Index = () => {
       mode: savedMode as any,
       preserveAge: true,
       preserveEducation: true 
+    });
+
+    // Initialize logging for the character
+    gameLogger.initializeCharacter(
+      randomizedCharacter.id,
+      randomizedCharacter.name,
+      randomizedCharacter.birthYear || new Date().getFullYear()
+    );
+    
+    // Log birth event
+    gameLogger.logEvent({
+      age: 0,
+      year: randomizedCharacter.birthYear || new Date().getFullYear(),
+      event: `Born as ${randomizedCharacter.name}`,
+      category: 'family'
     });
 
     return {

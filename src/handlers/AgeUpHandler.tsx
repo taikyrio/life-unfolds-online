@@ -1,6 +1,7 @@
 
 
 import { GameState } from '../types/game';
+import { gameLogger } from '../utils/gameLogger';
 
 export const handleAgeUp = (gameState: GameState, ageHistory?: Record<number, string[]>, setAgeHistory?: (history: Record<number, string[]>) => void): GameState => {
   const updatedCharacter = { ...gameState.character };
@@ -42,15 +43,33 @@ export const handleAgeUp = (gameState: GameState, ageHistory?: Record<number, st
             // Add to events for life story
             const eventMessage = `"${record.name}" by ${artist.name} was released! Sold ${record.sales.toLocaleString()} copies, earned $${Math.floor(record.earnings).toLocaleString()}, and gained ${newFans.toLocaleString()} fans!`;
             newEvents.push(eventMessage);
+            
+            // Log to game logger
+            gameLogger.logEvent({
+              age: updatedCharacter.age,
+              year: (updatedCharacter.birthYear || 2000) + updatedCharacter.age,
+              event: eventMessage,
+              category: 'career',
+              impact: {
+                money: record.earnings,
+                happiness: 10
+              }
+            });
           }
         }
       });
     });
   }
   
-  // Add new events to age history
-  if (ageHistory && setAgeHistory && newEvents.length > 0) {
+  // Always ensure this age has an entry in age history
+  if (ageHistory && setAgeHistory) {
     const currentEvents = ageHistory[updatedCharacter.age] || [];
+    
+    // If no new events, add a default aging event
+    if (newEvents.length === 0) {
+      newEvents.push(`🎂 You celebrated your ${updatedCharacter.age}th birthday!`);
+    }
+    
     const updatedAgeHistory = {
       ...ageHistory,
       [updatedCharacter.age]: [...currentEvents, ...newEvents]
