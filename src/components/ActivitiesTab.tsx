@@ -14,33 +14,40 @@ export const ActivitiesTab: React.FC<ActivitiesTabProps> = ({ character, onActiv
 
   if (isMobile) {
     return (
-      <div className="h-full bg-gray-100 p-4 overflow-y-auto">
+      <div className="h-full bg-gray-50 flex flex-col">
+        {/* Header */}
+        <div className="bg-white border-b border-gray-200 px-4 py-3">
+          <h2 className="text-xl font-bold text-gray-900 text-center">Activities</h2>
+          <p className="text-sm text-gray-500 text-center">Choose how to spend your time</p>
+        </div>
+
         {/* Activities Grid */}
-        <div className="grid grid-cols-2 gap-3">
-          {[
-            { id: 'gym', name: 'Gym', icon: '💪', description: 'Workout to improve health & looks', color: 'bg-red-500' },
-            { id: 'library', name: 'Library', icon: '📚', description: 'Study to improve intelligence', color: 'bg-blue-500' },
-            { id: 'movie', name: 'Movies', icon: '🎬', description: 'Watch movies for happiness', color: 'bg-purple-500' },
-            { id: 'mall', name: 'Shopping', icon: '🛍️', description: 'Shop for happiness & looks', color: 'bg-pink-500' },
-            { id: 'park', name: 'Park', icon: '🌳', description: 'Walk in the park for health', color: 'bg-green-500' },
-            { id: 'friends', name: 'Friends', icon: '👥', description: 'Hang out with friends', color: 'bg-yellow-500' },
-            { id: 'hobby', name: 'Hobby', icon: '🎨', description: 'Practice your hobbies', color: 'bg-indigo-500' },
-            { id: 'volunteer', name: 'Volunteer', icon: '🤝', description: 'Help others in community', color: 'bg-teal-500' }
-          ].map((activity) => (
-            <button
-              key={activity.id}
-              onClick={() => onActivity(activity.id, activity.id)}
-              className="bg-white rounded-lg p-4 shadow-sm border border-gray-200 hover:shadow-md transition-all duration-200 active:scale-95 text-left"
-            >
-              <div className={`w-12 h-12 ${activity.color} rounded-lg flex items-center justify-center text-2xl mx-auto mb-3 text-white`}>
-                {activity.icon}
-              </div>
-              <div className="text-center">
-                <div className="font-medium text-gray-900 text-sm mb-1">{activity.name}</div>
+        <div className="flex-1 p-4 overflow-y-auto">
+          <div className="grid grid-cols-3 gap-3">
+            {[
+              { id: 'gym', name: 'Gym', icon: '💪', description: 'Workout', color: 'bg-red-500' },
+              { id: 'library', name: 'Library', icon: '📚', description: 'Study', color: 'bg-blue-500' },
+              { id: 'movie', name: 'Movies', icon: '🎬', description: 'Entertainment', color: 'bg-purple-500' },
+              { id: 'mall', name: 'Shopping', icon: '🛍️', description: 'Shop', color: 'bg-pink-500' },
+              { id: 'park', name: 'Park', icon: '🌳', description: 'Walk', color: 'bg-green-500' },
+              { id: 'friends', name: 'Friends', icon: '👥', description: 'Socialize', color: 'bg-yellow-500' },
+              { id: 'hobby', name: 'Hobby', icon: '🎨', description: 'Practice', color: 'bg-indigo-500' },
+              { id: 'volunteer', name: 'Volunteer', icon: '🤝', description: 'Help others', color: 'bg-teal-500' },
+              { id: 'work', name: 'Work', icon: '💼', description: 'Extra hours', color: 'bg-gray-500' }
+            ].map((activity) => (
+              <button
+                key={activity.id}
+                onClick={() => onActivity(activity.id, activity.id)}
+                className="bg-white rounded-xl p-3 shadow-sm border border-gray-200 hover:shadow-md transition-all duration-200 active:scale-95"
+              >
+                <div className={`w-10 h-10 ${activity.color} rounded-lg flex items-center justify-center text-xl mx-auto mb-2 text-white shadow-sm`}>
+                  {activity.icon}
+                </div>
+                <div className="text-xs font-medium text-gray-900 mb-1">{activity.name}</div>
                 <div className="text-xs text-gray-500 leading-tight">{activity.description}</div>
-              </div>
-            </button>
-          ))}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
     );

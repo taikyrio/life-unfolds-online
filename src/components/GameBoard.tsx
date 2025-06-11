@@ -83,31 +83,36 @@ export const GameBoard: React.FC<GameBoardProps> = ({ gameState, onGameStateChan
 
   if (isMobile) {
     return (
-      <div className="h-screen w-full bg-gray-100 flex flex-col overflow-hidden">
-        {/* InstLife-style Top Navigation */}
-        <div className="bg-white shadow-sm border-b border-gray-200 flex items-center justify-center">
-          <div className="flex bg-gray-100 rounded-lg p-1 m-2">
-            {[
-              { id: 'life', icon: '📋', label: 'Life' },
-              { id: 'activities', icon: '🎯', label: 'Activities' },
-              { id: 'careers', icon: '💼', label: 'Career' },
-              { id: 'relationships', icon: '❤️', label: 'Love' },
-              { id: 'education', icon: '🎓', label: 'School' },
-              { id: 'money', icon: '💰', label: 'Money' },
-              { id: 'assets', icon: '🏠', label: 'Assets' }
-            ].map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id as any)}
-                className={`p-2 rounded-md transition-all duration-200 ${
-                  activeTab === tab.id 
-                    ? 'bg-white text-gray-900 shadow-sm' 
-                    : 'text-gray-600 hover:text-gray-900'
-                }`}
-              >
-                <span className="text-sm">{tab.icon}</span>
-              </button>
-            ))}
+      <div className="h-screen w-full bg-gray-50 flex flex-col overflow-hidden">
+        {/* InstLife-style Top Bar */}
+        <div className="bg-white shadow-sm border-b border-gray-200">
+          <div className="flex items-center justify-center p-2">
+            <div className="flex bg-gray-100 rounded-lg p-1">
+              {[
+                { id: 'life', icon: '🏠', label: 'Life' },
+                { id: 'activities', icon: '🎯', label: 'Activities' },
+                { id: 'careers', icon: '💼', label: 'Career' },
+                { id: 'relationships', icon: '❤️', label: 'Love' },
+                { id: 'education', icon: '🎓', label: 'School' },
+                { id: 'money', icon: '💰', label: 'Money' },
+                { id: 'assets', icon: '🏠', label: 'Assets' }
+              ].map((tab) => (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id as any)}
+                  className={`px-3 py-2 rounded-md transition-all duration-200 ${
+                    activeTab === tab.id 
+                      ? 'bg-white text-gray-900 shadow-sm font-medium' 
+                      : 'text-gray-600 hover:text-gray-900'
+                  }`}
+                >
+                  <div className="flex flex-col items-center">
+                    <span className="text-lg">{tab.icon}</span>
+                    <span className="text-xs mt-1">{tab.label}</span>
+                  </div>
+                </button>
+              ))}
+            </div>
           </div>
         </div>
 
@@ -137,10 +142,10 @@ export const GameBoard: React.FC<GameBoardProps> = ({ gameState, onGameStateChan
           <div className="flex items-center justify-center p-4">
             <button
               onClick={ageUp}
-              className="bg-blue-500 hover:bg-blue-600 text-white px-8 py-3 rounded-lg font-medium transition-colors duration-200 flex items-center gap-2"
+              className="bg-blue-500 hover:bg-blue-600 text-white px-8 py-3 rounded-xl font-semibold transition-colors duration-200 flex items-center gap-2 shadow-md"
             >
-              <span>🎂</span>
-              Age!
+              <span className="text-xl">🎂</span>
+              <span>Age Up!</span>
             </button>
           </div>
         </div>
