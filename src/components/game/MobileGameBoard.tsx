@@ -63,33 +63,55 @@ export const MobileGameBoard: React.FC<MobileGameBoardProps> = ({
 }) => {
   const [activeTab, setActiveTab] = useState<'life' | 'activities' | 'careers' | 'relationships' | 'assets' | 'education' | 'health' | 'lifestyle' | 'money'>('life');
 
+  // Age-based tab availability
+  const isTabAvailable = (tabId: string): boolean => {
+    const age = character.age;
+    switch (tabId) {
+      case 'activities':
+        return age >= 4; // Activities available from age 4
+      case 'careers':
+        return age >= 14; // Part-time work from 14
+      case 'relationships':
+        return age >= 12; // Relationships from 12
+      case 'education':
+        return age >= 5 && age <= 30; // School age
+      case 'money':
+        return age >= 16; // Money management from 16
+      case 'assets':
+        return age >= 18; // Asset ownership from 18
+      default:
+        return true;
+    }
+  };
+
+  const availableTabs = [
+    { id: 'life', icon: '📅', label: 'Life' },
+    { id: 'activities', icon: '🎯', label: 'Activities', available: isTabAvailable('activities') },
+    { id: 'careers', icon: '💼', label: 'Career', available: isTabAvailable('careers') },
+    { id: 'relationships', icon: '❤️', label: 'Love', available: isTabAvailable('relationships') },
+    { id: 'education', icon: '🎓', label: 'School', available: isTabAvailable('education') },
+    { id: 'money', icon: '💰', label: 'Money', available: isTabAvailable('money') },
+    { id: 'assets', icon: '🏠', label: 'Assets', available: isTabAvailable('assets') }
+  ].filter(tab => tab.available !== false);
+
   return (
-    <div className="h-screen w-full bg-gray-50 flex flex-col overflow-hidden">
+    <div className="h-screen w-full bg-gray-200 flex flex-col overflow-hidden">
       {/* InstLife-style Top Bar */}
       <div className="bg-white shadow-sm border-b border-gray-200">
         <div className="flex items-center justify-center p-2">
-          <div className="flex bg-gray-100 rounded-lg p-1">
-            {[
-              { id: 'life', icon: '🏠', label: 'Life' },
-              { id: 'activities', icon: '🎯', label: 'Activities' },
-              { id: 'careers', icon: '💼', label: 'Career' },
-              { id: 'relationships', icon: '❤️', label: 'Love' },
-              { id: 'education', icon: '🎓', label: 'School' },
-              { id: 'money', icon: '💰', label: 'Money' },
-              { id: 'assets', icon: '🏠', label: 'Assets' }
-            ].map((tab) => (
+          <div className="flex bg-gray-100 rounded-lg p-1 gap-1">
+            {availableTabs.map((tab) => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id as any)}
-                className={`px-3 py-2 rounded-md transition-all duration-200 ${
+                className={`px-2 py-2 rounded-md transition-all duration-200 ${
                   activeTab === tab.id 
-                    ? 'bg-white text-gray-900 shadow-sm font-medium' 
+                    ? 'bg-white text-gray-900 shadow-sm' 
                     : 'text-gray-600 hover:text-gray-900'
                 }`}
               >
                 <div className="flex flex-col items-center">
                   <span className="text-lg">{tab.icon}</span>
-                  <span className="text-xs mt-1">{tab.label}</span>
                 </div>
               </button>
             ))}
@@ -97,8 +119,8 @@ export const MobileGameBoard: React.FC<MobileGameBoardProps> = ({
         </div>
       </div>
 
-      {/* Main Content Area */}
-      <div className="flex-1 overflow-hidden">
+      {/* Main Content Area - Full height with proper scrolling */}
+      <div className="flex-1 bg-white overflow-hidden">
         <TabContent
           activeTab={activeTab}
           character={character}
@@ -120,13 +142,13 @@ export const MobileGameBoard: React.FC<MobileGameBoardProps> = ({
 
       {/* InstLife-style Bottom Action Bar */}
       <div className="bg-white border-t border-gray-200 shadow-lg">
-        <div className="flex items-center justify-center p-4">
+        <div className="flex items-center justify-center p-3">
           <button
             onClick={onAgeUp}
-            className="bg-blue-500 hover:bg-blue-600 text-white px-8 py-3 rounded-xl font-semibold transition-colors duration-200 flex items-center gap-2 shadow-md"
+            className="bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded-lg font-semibold transition-colors duration-200 flex items-center gap-2"
           >
-            <span className="text-xl">🎂</span>
-            <span>Age Up!</span>
+            <span className="text-lg">🎂</span>
+            <span>Age!</span>
           </button>
         </div>
       </div>

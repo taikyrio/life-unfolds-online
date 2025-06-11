@@ -12,42 +12,59 @@ interface ActivitiesTabProps {
 export const ActivitiesTab: React.FC<ActivitiesTabProps> = ({ character, onActivity }) => {
   const isMobile = useIsMobile();
 
+  // Age-based activity availability
+  const getAvailableActivities = () => {
+    const age = character.age;
+    const activities = [
+      { id: 'gym', name: 'Gym', icon: '💪', description: 'Workout', color: 'bg-red-500', minAge: 12 },
+      { id: 'library', name: 'Library', icon: '📚', description: 'Study', color: 'bg-blue-500', minAge: 4 },
+      { id: 'movie', name: 'Movies', icon: '🎬', description: 'Entertainment', color: 'bg-purple-500', minAge: 8 },
+      { id: 'mall', name: 'Shopping', icon: '🛍️', description: 'Shop', color: 'bg-pink-500', minAge: 12 },
+      { id: 'park', name: 'Park', icon: '🌳', description: 'Walk', color: 'bg-green-500', minAge: 2 },
+      { id: 'friends', name: 'Friends', icon: '👥', description: 'Socialize', color: 'bg-yellow-500', minAge: 6 },
+      { id: 'hobby', name: 'Hobby', icon: '🎨', description: 'Practice', color: 'bg-indigo-500', minAge: 8 },
+      { id: 'volunteer', name: 'Volunteer', icon: '🤝', description: 'Help others', color: 'bg-teal-500', minAge: 14 },
+      { id: 'work', name: 'Work', icon: '💼', description: 'Extra hours', color: 'bg-gray-500', minAge: 14 }
+    ];
+
+    return activities.filter(activity => age >= activity.minAge);
+  };
+
   if (isMobile) {
+    const availableActivities = getAvailableActivities();
+    
     return (
-      <div className="h-full bg-gray-50 flex flex-col">
+      <div className="h-full bg-white flex flex-col overflow-hidden">
         {/* Header */}
         <div className="bg-white border-b border-gray-200 px-4 py-3">
-          <h2 className="text-xl font-bold text-gray-900 text-center">Activities</h2>
-          <p className="text-sm text-gray-500 text-center">Choose how to spend your time</p>
+          <h2 className="text-lg font-bold text-gray-900 text-center">Activities</h2>
+          <p className="text-xs text-gray-500 text-center">Choose how to spend your time</p>
         </div>
 
-        {/* Activities Grid */}
+        {/* Activities Grid - Scrollable */}
         <div className="flex-1 p-4 overflow-y-auto">
-          <div className="grid grid-cols-3 gap-3">
-            {[
-              { id: 'gym', name: 'Gym', icon: '💪', description: 'Workout', color: 'bg-red-500' },
-              { id: 'library', name: 'Library', icon: '📚', description: 'Study', color: 'bg-blue-500' },
-              { id: 'movie', name: 'Movies', icon: '🎬', description: 'Entertainment', color: 'bg-purple-500' },
-              { id: 'mall', name: 'Shopping', icon: '🛍️', description: 'Shop', color: 'bg-pink-500' },
-              { id: 'park', name: 'Park', icon: '🌳', description: 'Walk', color: 'bg-green-500' },
-              { id: 'friends', name: 'Friends', icon: '👥', description: 'Socialize', color: 'bg-yellow-500' },
-              { id: 'hobby', name: 'Hobby', icon: '🎨', description: 'Practice', color: 'bg-indigo-500' },
-              { id: 'volunteer', name: 'Volunteer', icon: '🤝', description: 'Help others', color: 'bg-teal-500' },
-              { id: 'work', name: 'Work', icon: '💼', description: 'Extra hours', color: 'bg-gray-500' }
-            ].map((activity) => (
-              <button
-                key={activity.id}
-                onClick={() => onActivity(activity.id, activity.id)}
-                className="bg-white rounded-xl p-3 shadow-sm border border-gray-200 hover:shadow-md transition-all duration-200 active:scale-95"
-              >
-                <div className={`w-10 h-10 ${activity.color} rounded-lg flex items-center justify-center text-xl mx-auto mb-2 text-white shadow-sm`}>
-                  {activity.icon}
-                </div>
-                <div className="text-xs font-medium text-gray-900 mb-1">{activity.name}</div>
-                <div className="text-xs text-gray-500 leading-tight">{activity.description}</div>
-              </button>
-            ))}
-          </div>
+          {availableActivities.length === 0 ? (
+            <div className="text-center py-8">
+              <div className="text-3xl mb-2">👶</div>
+              <div className="text-sm text-gray-600">You're too young for most activities!</div>
+              <div className="text-xs text-gray-400 mt-1">Wait until you're older</div>
+            </div>
+          ) : (
+            <div className="grid grid-cols-3 gap-3">
+              {availableActivities.map((activity) => (
+                <button
+                  key={activity.id}
+                  onClick={() => onActivity(activity.id, activity.id)}
+                  className="bg-white rounded-lg p-3 shadow-sm border border-gray-200 hover:shadow-md transition-all duration-200 active:scale-95"
+                >
+                  <div className={`w-8 h-8 ${activity.color} rounded-lg flex items-center justify-center text-lg mx-auto mb-2 text-white shadow-sm`}>
+                    {activity.icon}
+                  </div>
+                  <div className="text-xs font-medium text-gray-900 text-center">{activity.name}</div>
+                </button>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     );

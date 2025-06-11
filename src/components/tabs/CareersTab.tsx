@@ -13,17 +13,12 @@ export const CareersTab: React.FC<CareersTabProps> = ({
   onCareerAction 
 }) => {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 pb-24">
-      <div className="px-4 py-6 max-w-2xl mx-auto">
+    <div className="h-full bg-white overflow-hidden">
+      <div className="h-full overflow-y-auto px-4 py-4">
         {/* Header */}
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-3xl mb-4 shadow-lg">
-            <span className="text-2xl">💼</span>
-          </div>
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent mb-2">
-            Career Center
-          </h1>
-          <p className="text-gray-600 text-lg">Build your professional future</p>
+        <div className="text-center mb-6">
+          <h1 className="text-xl font-bold text-gray-900 mb-2">Career Center</h1>
+          <p className="text-sm text-gray-600">Build your professional future</p>
         </div>
         
         <CareerSystem 
