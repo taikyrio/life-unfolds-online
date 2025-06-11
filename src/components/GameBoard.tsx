@@ -83,47 +83,50 @@ export const GameBoard: React.FC<GameBoardProps> = ({ gameState, onGameStateChan
 
   if (isMobile) {
     return (
-      <div className="h-screen w-full bg-white flex flex-col overflow-hidden">
-        {/* BitLife-style Header */}
-        <div className="bg-blue-600 text-white p-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 bg-yellow-400 rounded-full flex items-center justify-center text-2xl">
-              {gameState.character.age === 0 ? '👶' : gameState.character.age < 5 ? '🧒' : gameState.character.age < 13 ? '👦' : gameState.character.age < 18 ? '🧑' : '👤'}
-            </div>
-            <div>
-              <div className="font-bold text-lg">{gameState.character.name}</div>
-              <div className="text-sm opacity-90">
-                {gameState.character.age === 0 ? 'Infant' : gameState.character.age < 5 ? 'Toddler' : gameState.character.age < 13 ? 'Child' : gameState.character.age < 18 ? 'Teenager' : 'Adult'}
+      <div className="h-screen w-full bg-gradient-to-br from-purple-50 to-blue-50 flex flex-col overflow-hidden">
+        {/* InstLife-style Header */}
+        <div className="bg-white shadow-sm border-b border-gray-100 p-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-14 h-14 bg-gradient-to-br from-purple-400 to-pink-400 rounded-2xl flex items-center justify-center text-2xl shadow-lg">
+                {gameState.character.age === 0 ? '👶' : gameState.character.age < 5 ? '🧒' : gameState.character.age < 13 ? '👦' : gameState.character.age < 18 ? '🧑' : '👤'}
+              </div>
+              <div>
+                <div className="font-bold text-lg text-gray-900">{gameState.character.name}</div>
+                <div className="text-sm text-gray-500">
+                  {gameState.character.age === 0 ? 'Infant' : gameState.character.age < 5 ? 'Toddler' : gameState.character.age < 13 ? 'Child' : gameState.character.age < 18 ? 'Teenager' : 'Adult'} • Age {gameState.character.age}
+                </div>
               </div>
             </div>
-          </div>
-          <div className="text-right">
-            <div className="font-bold text-xl">${gameState.character.wealth}k</div>
-            <div className="text-xs opacity-75">Net Worth</div>
+            <div className="text-right">
+              <div className="font-bold text-xl text-green-600">${gameState.character.wealth}k</div>
+              <div className="text-xs text-gray-500">Net Worth</div>
+            </div>
           </div>
         </div>
 
-        {/* Stats Bar - Mobile Optimized */}
-        <div className="bg-gray-50 p-3">
-          <div className="grid grid-cols-5 gap-2">
+        {/* InstLife-style Stats */}
+        <div className="bg-white px-4 py-3 border-b border-gray-100">
+          <div className="grid grid-cols-4 gap-3">
             {[
-              { label: 'Health', value: Math.round(gameState.character.health), icon: '❤️', color: 'text-red-600' },
-              { label: 'Happy', value: Math.round(gameState.character.happiness), icon: '😊', color: 'text-yellow-600' },
-              { label: 'Social', value: Math.round(gameState.character.relationships || 0), icon: '🤝', color: 'text-purple-600' },
-              { label: 'Smarts', value: Math.round(gameState.character.smarts), icon: '🧠', color: 'text-blue-600' },
-              { label: 'Looks', value: Math.round(gameState.character.looks), icon: '✨', color: 'text-pink-600' }
+              { label: 'Happiness', value: Math.round(gameState.character.happiness), color: 'bg-gradient-to-br from-yellow-400 to-orange-400', icon: '😊' },
+              { label: 'Health', value: Math.round(gameState.character.health), color: 'bg-gradient-to-br from-red-400 to-pink-400', icon: '❤️' },
+              { label: 'Smarts', value: Math.round(gameState.character.smarts), color: 'bg-gradient-to-br from-blue-400 to-indigo-400', icon: '🧠' },
+              { label: 'Looks', value: Math.round(gameState.character.looks), color: 'bg-gradient-to-br from-purple-400 to-pink-400', icon: '✨' }
             ].map((stat) => (
               <div key={stat.label} className="text-center">
-                <div className="text-lg mb-1">{stat.icon}</div>
+                <div className={`w-12 h-12 ${stat.color} rounded-xl flex items-center justify-center text-lg mx-auto mb-2 shadow-lg`}>
+                  {stat.icon}
+                </div>
                 <div className="text-xs font-medium text-gray-600 mb-1">{stat.label}</div>
-                <div className={`text-sm font-bold ${stat.color}`}>{stat.value}</div>
+                <div className="text-sm font-bold text-gray-900">{stat.value}</div>
               </div>
             ))}
           </div>
         </div>
 
-        {/* Main Content Area - Fixed Height */}
-        <div className="flex-1 bg-white overflow-hidden">
+        {/* Main Content Area */}
+        <div className="flex-1 bg-gray-50 overflow-hidden">
           <TabContent
             activeTab={activeTab}
             character={gameState.character}
@@ -143,36 +146,35 @@ export const GameBoard: React.FC<GameBoardProps> = ({ gameState, onGameStateChan
           />
         </div>
 
-        {/* Bottom Navigation - BitLife Style */}
-        <div className="bg-gray-100 border-t border-gray-200">
-          <div className="grid grid-cols-4 h-16">
+        {/* InstLife-style Bottom Navigation */}
+        <div className="bg-white border-t border-gray-200 shadow-lg">
+          <div className="grid grid-cols-5 h-20">
             {[
               { id: 'life', icon: '🏠', label: 'Life' },
               { id: 'activities', icon: '🎯', label: 'Activities' },
               { id: 'careers', icon: '💼', label: 'Career' },
-              { id: 'relationships', icon: '💕', label: 'Love' }
+              { id: 'relationships', icon: '💕', label: 'Love' },
+              { id: 'age', icon: '+', label: 'Age Up', special: true }
             ].map((tab) => (
               <button
                 key={tab.id}
-                onClick={() => setActiveTab(tab.id as any)}
-                className={`flex flex-col items-center justify-center h-full ${
-                  activeTab === tab.id ? 'bg-blue-100 text-blue-600' : 'text-gray-600'
+                onClick={() => tab.special ? ageUp() : setActiveTab(tab.id as any)}
+                className={`flex flex-col items-center justify-center h-full transition-all duration-200 ${
+                  tab.special 
+                    ? 'bg-gradient-to-br from-green-400 to-emerald-500 text-white shadow-lg' 
+                    : activeTab === tab.id 
+                      ? 'bg-blue-50 text-blue-600' 
+                      : 'text-gray-600 hover:text-gray-900'
                 }`}
               >
-                <span className="text-lg">{tab.icon}</span>
+                <span className={`${tab.special ? 'text-2xl font-bold' : 'text-xl'} mb-1`}>
+                  {tab.icon}
+                </span>
                 <span className="text-xs font-medium">{tab.label}</span>
               </button>
             ))}
           </div>
         </div>
-
-        {/* Age Up Button - Floating */}
-        <button
-          onClick={ageUp}
-          className="fixed bottom-20 right-4 w-14 h-14 bg-green-500 rounded-full flex items-center justify-center text-white font-bold text-xl shadow-lg z-50"
-        >
-          +
-        </button>
 
         <GameModals
           gameState={gameState}

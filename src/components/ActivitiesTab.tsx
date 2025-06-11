@@ -14,30 +14,31 @@ export const ActivitiesTab: React.FC<ActivitiesTabProps> = ({ character, onActiv
 
   if (isMobile) {
     return (
-      <div className="h-full bg-white overflow-y-auto">
-        {/* BitLife-style Activities List */}
-        <div className="divide-y divide-gray-200">
+      <div className="h-full bg-gray-50 overflow-y-auto">
+        {/* InstLife-style Activities Grid */}
+        <div className="p-4 grid grid-cols-2 gap-3">
           {[
-            { id: 'gym', name: 'Go to the gym', icon: '💪', description: 'Work out to improve health and looks' },
-            { id: 'library', name: 'Go to the library', icon: '📚', description: 'Study to improve smarts' },
-            { id: 'movie', name: 'Go to the movies', icon: '🎬', description: 'Have fun and improve happiness' },
-            { id: 'mall', name: 'Go shopping', icon: '🛍️', description: 'Spend money to improve happiness' },
-            { id: 'park', name: 'Walk in the park', icon: '🌳', description: 'Relax and improve health' },
-            { id: 'friends', name: 'Hang with friends', icon: '👥', description: 'Socialize and improve relationships' },
-            { id: 'hobby', name: 'Practice hobby', icon: '🎨', description: 'Develop skills and have fun' },
-            { id: 'volunteer', name: 'Volunteer', icon: '🤝', description: 'Help others and feel good' }
+            { id: 'gym', name: 'Gym', icon: '💪', description: 'Build strength & health', color: 'from-red-400 to-pink-400' },
+            { id: 'library', name: 'Library', icon: '📚', description: 'Study & improve smarts', color: 'from-blue-400 to-indigo-400' },
+            { id: 'movie', name: 'Movies', icon: '🎬', description: 'Have fun & relax', color: 'from-purple-400 to-pink-400' },
+            { id: 'mall', name: 'Shopping', icon: '🛍️', description: 'Spend money for happiness', color: 'from-yellow-400 to-orange-400' },
+            { id: 'park', name: 'Park', icon: '🌳', description: 'Walk & improve health', color: 'from-green-400 to-emerald-400' },
+            { id: 'friends', name: 'Friends', icon: '👥', description: 'Socialize & have fun', color: 'from-indigo-400 to-purple-400' },
+            { id: 'hobby', name: 'Hobby', icon: '🎨', description: 'Practice skills', color: 'from-pink-400 to-rose-400' },
+            { id: 'volunteer', name: 'Volunteer', icon: '🤝', description: 'Help others', color: 'from-cyan-400 to-blue-400' }
           ].map((activity) => (
             <button
               key={activity.id}
               onClick={() => onActivity(activity.id, activity.id)}
-              className="w-full px-4 py-4 flex items-center gap-4 hover:bg-gray-50 active:bg-gray-100 transition-colors"
+              className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 hover:shadow-md transition-all duration-200 active:scale-95"
             >
-              <span className="text-2xl">{activity.icon}</span>
-              <div className="flex-1 text-left">
-                <div className="font-medium text-gray-900">{activity.name}</div>
-                <div className="text-sm text-gray-500">{activity.description}</div>
+              <div className={`w-12 h-12 bg-gradient-to-br ${activity.color} rounded-xl flex items-center justify-center text-2xl mx-auto mb-3 shadow-lg`}>
+                {activity.icon}
               </div>
-              <span className="text-gray-400">›</span>
+              <div className="text-center">
+                <div className="font-bold text-gray-900 text-sm mb-1">{activity.name}</div>
+                <div className="text-xs text-gray-500 leading-tight">{activity.description}</div>
+              </div>
             </button>
           ))}
         </div>
