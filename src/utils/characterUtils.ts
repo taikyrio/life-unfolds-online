@@ -98,6 +98,9 @@ export const generateRandomName = (): string => {
 
 export const createCharacter = (name: string, birthMonth: number, birthDay: number): Character => {
   const initialFamily = generateInitialFamily();
+  const currentYear = new Date().getFullYear();
+  // Generate random birth year between 2000 and 2027
+  const randomBirthYear = Math.floor(Math.random() * 28) + 2000; // 2000 to 2027
   
   return {
     id: 'player',
@@ -112,7 +115,7 @@ export const createCharacter = (name: string, birthMonth: number, birthDay: numb
     relationships: 50,
     birthMonth,
     birthDay,
-    birthYear: new Date().getFullYear(),
+    birthYear: randomBirthYear,
     achievements: [],
     assets: [],
     children: [],
@@ -126,7 +129,9 @@ export const getRandomizedNewCharacter = (
   options: { name: string; id: string }, 
   mode: 'realistic' | 'balanced' | 'extreme' | 'high'
 ): Character => {
-  const character = createCharacter(options.name, Math.floor(Math.random() * 12) + 1, Math.floor(Math.random() * 28) + 1);
+  const randomMonth = Math.floor(Math.random() * 12) + 1;
+  const randomDay = Math.floor(Math.random() * 28) + 1;
+  const character = createCharacter(options.name, randomMonth, randomDay);
   
   // Apply randomization based on mode
   switch (mode) {
