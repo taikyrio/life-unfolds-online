@@ -64,16 +64,16 @@ export const BitLifeStyleLayout: React.FC<BitLifeStyleLayoutProps> = ({
   const lifeEvents = formatLifeEvents();
 
   return (
-    <div className="h-screen bg-gradient-to-b from-slate-800 to-slate-900 flex flex-col">
+    <div className="h-screen bg-gradient-to-b from-slate-800 to-slate-900 flex flex-col relative">
       {/* Header with Character Name */}
-      <div className="bg-slate-800 px-4 py-3 border-b border-slate-600/30">
+      <div className="bg-slate-800 px-4 py-3 border-b border-slate-600/30 relative z-10">
         <h1 className="text-xl font-bold text-white text-center">
           {character.name}, {character.age}
         </h1>
       </div>
 
       {/* Main Content Area - Scrollable Life Timeline */}
-      <div className="flex-1 overflow-hidden bg-white">
+      <div className="flex-1 overflow-hidden bg-white relative">
         <div className="p-4 pb-2">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold text-gray-800">Life Timeline</h2>
@@ -83,7 +83,8 @@ export const BitLifeStyleLayout: React.FC<BitLifeStyleLayoutProps> = ({
           </div>
         </div>
         
-        <div className="flex-1 overflow-y-auto px-4 pb-4 mobile-scroll">
+        {/* Scrollable content with proper bottom padding to avoid overlap */}
+        <div className="flex-1 overflow-y-auto px-4 pb-32 mobile-scroll">
           <div className="space-y-3">
             {lifeEvents.map((yearData, index) => (
               <div 
@@ -118,20 +119,24 @@ export const BitLifeStyleLayout: React.FC<BitLifeStyleLayoutProps> = ({
         </div>
       </div>
 
-      {/* Fixed Stats Bar */}
-      <CharacterStatsBar character={character} />
+      {/* Fixed Stats Bar positioned above navigation */}
+      <div className="relative z-20">
+        <CharacterStatsBar character={character} />
+      </div>
 
-      {/* Bottom Navigation */}
-      <ResponsiveBottomNav
-        activeTab={activeTab}
-        onTabChange={onTabChange}
-        onAgeUp={onAgeUp}
-        character={character}
-        onShowActivityMenu={onShowActivityMenu}
-        onShowRelationshipsMenu={onShowRelationshipsMenu}
-        onShowAssetsMenu={onShowAssetsMenu}
-        onShowPersonalitySkills={onShowPersonalitySkills}
-      />
+      {/* Bottom Navigation with proper z-index */}
+      <div className="relative z-30">
+        <ResponsiveBottomNav
+          activeTab={activeTab}
+          onTabChange={onTabChange}
+          onAgeUp={onAgeUp}
+          character={character}
+          onShowActivityMenu={onShowActivityMenu}
+          onShowRelationshipsMenu={onShowRelationshipsMenu}
+          onShowAssetsMenu={onShowAssetsMenu}
+          onShowPersonalitySkills={onShowPersonalitySkills}
+        />
+      </div>
     </div>
   );
 };

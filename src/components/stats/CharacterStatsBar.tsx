@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Character } from '../../types/game';
 import { getStatEmoji } from '../../utils/gameUtils';
@@ -27,7 +28,7 @@ export const CharacterStatsBar: React.FC<CharacterStatsBarProps> = ({ character 
   };
 
   return (
-    <div className="bg-white border-t border-gray-200 p-1 sm:p-2 md:p-4 space-y-1 sm:space-y-2 relative z-10 mb-16">
+    <div className="bg-white border-t border-gray-200 p-2 sm:p-4 space-y-1 sm:space-y-2">
       {stats.map((stat) => (
         <div key={stat.name} className="flex items-center gap-1 sm:gap-2">
           <div className="flex items-center gap-0.5 sm:gap-1 w-12 sm:w-16 md:w-20 flex-shrink-0">
