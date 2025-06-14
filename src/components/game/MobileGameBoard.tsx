@@ -39,6 +39,17 @@ export const MobileGameBoard: React.FC<MobileGameBoardProps> = ({
   const handleShowPersonalitySkills = () => setActiveBottomSheet('personality-skills');
   const handleCloseBottomSheet = () => setActiveBottomSheet(null);
 
+  // Wrapper function to handle the activity signature mismatch
+  const handleActivityWrapper = (activity: any) => {
+    if (typeof activity === 'string') {
+      handleActivity(activity, '');
+    } else if (activity && typeof activity === 'object') {
+      handleActivity(activity.type || 'unknown', activity.id || '');
+    } else {
+      handleActivity('unknown', '');
+    }
+  };
+
   return (
     <div className="h-screen overflow-hidden">
       {/* Main Content */}
@@ -48,7 +59,7 @@ export const MobileGameBoard: React.FC<MobileGameBoardProps> = ({
         eventHistory={eventHistory}
         ageHistory={updatedAgeHistory}
         onAgeUp={ageUp}
-        handleActivity={handleActivity}
+        handleActivity={handleActivityWrapper}
         onTabChange={setActiveTab}
         onShowActivityMenu={handleShowActivityMenu}
         onShowRelationshipsMenu={handleShowRelationshipsMenu}
