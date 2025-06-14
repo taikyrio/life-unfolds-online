@@ -1,0 +1,195 @@
+
+import React from 'react';
+import { Heart, Briefcase, Users, Home, Car, User, GraduationCap, DollarSign, Baby, UserCheck, Gamepad2, Lock, Plus } from 'lucide-react';
+import { Character } from '../../types/game';
+import { getLifeStage } from '../../utils/gameUtils';
+
+interface ResponsiveBottomNavProps {
+  activeTab: 'life' | 'activities' | 'careers' | 'relationships' | 'assets' | 'education';
+  onTabChange: (tab: 'life' | 'activities' | 'careers' | 'relationships' | 'assets' | 'education') => void;
+  onAgeUp: () => void;
+  character: Character;
+  onShowActivityMenu: () => void;
+  onShowRelationshipsMenu: () => void;
+  onShowAssetsMenu: () => void;
+  onShowPersonalitySkills: () => void;
+}
+
+export const ResponsiveBottomNav: React.FC<ResponsiveBottomNavProps> = ({ 
+  onAgeUp,
+  character,
+  onShowActivityMenu,
+  onShowRelationshipsMenu,
+  onShowAssetsMenu,
+  onShowPersonalitySkills
+}) => {
+  const getLifeStageIcon = () => {
+    const lifeStage = getLifeStage(character.age);
+    switch (lifeStage) {
+      case 'Baby':
+      case 'Toddler':
+        return Baby;
+      case 'Child':
+        return Gamepad2;
+      case 'Teen':
+        return UserCheck;
+      case 'Young Adult':
+      case 'Adult':
+      case 'Middle-aged':
+        return User;
+      case 'Senior':
+        return User;
+      default:
+        return User;
+    }
+  };
+
+  const getLifeStageLabel = () => {
+    const stage = getLifeStage(character.age);
+    if (character.currentEducation) {
+      return character.currentEducation.stage || character.currentEducation.level || stage;
+    } else if (character.job) {
+      return 'Career';
+    }
+    return stage;
+  };
+
+  const isTabAvailable = (tabId: string): boolean => {
+    const age = character.age;
+    
+    switch (tabId) {
+      case 'relationships':
+        return age >= 12;
+      case 'assets':
+        return age >= 16;
+      case 'career':
+        return age >= 16 && !character.currentEducation;
+      case 'education':
+        return age >= 5 && age <= 30;
+      default:
+        return true;
+    }
+  };
+
+  const LifeStageIcon = getLifeStageIcon();
+
+  const navigationItems = [
+    { 
+      id: 'lifestage', 
+      label: getLifeStageLabel(), 
+      icon: LifeStageIcon, 
+      onClick: () => {},
+      gradient: 'from-orange-400 to-red-500',
+      available: true
+    },
+    { 
+      id: 'personality', 
+      label: 'You', 
+      icon: User, 
+      onClick: onShowPersonalitySkills,
+      gradient: 'from-indigo-400 to-purple-500',
+      available: true
+    },
+    { 
+      id: 'age', 
+      label: 'Age', 
+      icon: Plus, 
+      onClick: onAgeUp,
+      gradient: 'from-green-400 to-emerald-600',
+      available: true,
+      isCenter: true
+    },
+    { 
+      id: 'assets', 
+      label: 'Assets', 
+      icon: Home, 
+      onClick: isTabAvailable('assets') ? onShowAssetsMenu : () => {},
+      gradient: 'from-teal-400 to-cyan-500',
+      available: isTabAvailable('assets')
+    },
+    { 
+      id: 'activities', 
+      label: 'Do', 
+      icon: Car, 
+      onClick: onShowActivityMenu,
+      gradient: 'from-emerald-400 to-green-500',
+      available: true
+    }
+  ];
+
+  return (
+    <div className="fixed bottom-0 left-0 right-0 z-50 safe-area-pb">
+      {/* iOS-style blur backdrop with improved responsiveness */}
+      <div className="absolute inset-0 bg-black/25 backdrop-blur-2xl" />
+      
+      {/* Main navigation container */}
+      <div className="relative bg-gray-900/85 border-t border-white/15">
+        {/* Top accent line */}
+        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/25 to-transparent" />
+        
+        {/* Navigation grid - responsive layout */}
+        <div className="px-2 py-3 sm:px-4">
+          <div className="grid grid-cols-5 gap-1 max-w-md mx-auto">
+            {navigationItems.map((item) => {
+              const Icon = item.icon;
+              const isDisabled = !item.available;
+              const isCenter = item.isCenter;
+              
+              return (
+                <div key={item.id} className="relative group flex justify-center">
+                  <button
+                    onClick={item.onClick}
+                    disabled={isDisabled}
+                    className={`flex flex-col items-center transition-all duration-300 ease-out rounded-2xl touch-manipulation ${
+                      isCenter 
+                        ? 'p-2 hover:scale-110 active:scale-95' 
+                        : 'p-2.5 hover:scale-105 active:scale-95'
+                    } ${
+                      isDisabled 
+                        ? 'opacity-40 cursor-not-allowed' 
+                        : 'hover:bg-white/10 active:bg-white/20'
+                    }`}
+                  >
+                    <div className={`relative mb-1 transition-all duration-300 ${
+                      isCenter 
+                        ? 'p-4 rounded-2xl shadow-2xl shadow-green-500/50 border border-white/25' 
+                        : 'p-2.5 rounded-xl shadow-lg shadow-black/40'
+                    } bg-gradient-to-br ${item.gradient} ${
+                      isDisabled ? 'opacity-50' : ''
+                    }`}>
+                      {/* Windows 11 style highlight */}
+                      <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent rounded-inherit" />
+                      
+                      <Icon 
+                        size={isCenter ? 22 : 18} 
+                        className="text-white drop-shadow-lg relative z-10" 
+                        strokeWidth={isCenter ? 2.5 : 2}
+                      />
+                      
+                      {isDisabled && (
+                        <div className="absolute -top-1 -right-1 bg-red-500 rounded-full p-0.5 shadow-lg border border-white/20">
+                          <Lock size={8} className="text-white" />
+                        </div>
+                      )}
+                    </div>
+                    
+                    <span className={`font-medium text-white/90 text-center leading-tight tracking-wide ${
+                      isCenter ? 'text-xs' : 'text-xs'
+                    }`}>
+                      {item.label}
+                    </span>
+                  </button>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+        
+        {/* iOS home indicator */}
+        <div className="flex justify-center pb-2">
+          <div className="w-32 h-1 bg-white/40 rounded-full shadow-sm" />
+        </div>
+      </div>
+    </div>
+  );
+};
