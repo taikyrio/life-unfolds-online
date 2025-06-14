@@ -23,7 +23,8 @@ export const expandedLifeEvents: DynamicEvent[] = [
       }
     ],
     conditions: { minAge: 18, probability: 0.1 },
-    weight: 5
+    weight: 5,
+    flags: []
   },
   {
     id: 'random_encounter',
@@ -46,6 +47,7 @@ export const expandedLifeEvents: DynamicEvent[] = [
       }
     ],
     conditions: { minAge: 16, probability: 0.2 },
-    weight: 8
+    weight: 8,
+    flags: []
   }
 ];

@@ -1,6 +1,6 @@
 
 import { createDynamicEventSystem } from './events/eventSystem';
-import { allRandomEvents } from './events/expandedRandomEvents';
+import { allRandomEvents } from './events/randomEvents';
 import { allEnhancedLifeStageEvents } from './events/enhancedLifeStageEvents';
 
 // Enhanced dynamic event system that includes all event types
