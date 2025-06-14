@@ -39,7 +39,8 @@ export const schoolWorkEvents: DynamicEvent[] = [
       }
     ],
     conditions: { minAge: 12, maxAge: 22, probability: 0.3 },
-    weight: 10
+    weight: 10,
+    flags: []
   },
   {
     id: 'work_promotion_opportunity',
@@ -71,7 +72,8 @@ export const schoolWorkEvents: DynamicEvent[] = [
       }
     ],
     conditions: { minAge: 18, maxAge: 65, hasJob: true, probability: 0.2 },
-    weight: 12
+    weight: 12,
+    flags: []
   }
 ];
 
@@ -113,7 +115,8 @@ export const relationshipEvents: DynamicEvent[] = [
       }
     ],
     conditions: { minAge: 16, maxAge: 35, probability: 0.25 },
-    weight: 15
+    weight: 15,
+    flags: []
   },
   {
     id: 'relationship_breakup',
@@ -152,7 +155,8 @@ export const relationshipEvents: DynamicEvent[] = [
       }
     ],
     conditions: { minAge: 16, maxAge: 80, probability: 0.15 },
-    weight: 10
+    weight: 10,
+    flags: []
   },
   {
     id: 'marriage_proposal',
@@ -184,7 +188,8 @@ export const relationshipEvents: DynamicEvent[] = [
       }
     ],
     conditions: { minAge: 20, maxAge: 50, probability: 0.1 },
-    weight: 20
+    weight: 20,
+    flags: []
   }
 ];
 
@@ -219,7 +224,8 @@ export const healthEvents: DynamicEvent[] = [
       }
     ],
     conditions: { minAge: 5, maxAge: 100, probability: 0.2 },
-    weight: 8
+    weight: 8,
+    flags: []
   },
   {
     id: 'gym_injury',
@@ -251,7 +257,8 @@ export const healthEvents: DynamicEvent[] = [
       }
     ],
     conditions: { minAge: 16, maxAge: 70, probability: 0.15 },
-    weight: 10
+    weight: 10,
+    flags: []
   }
 ];
 
@@ -293,7 +300,8 @@ export const financialEvents: DynamicEvent[] = [
       }
     ],
     conditions: { minAge: 18, maxAge: 80, probability: 0.05 },
-    weight: 15
+    weight: 15,
+    flags: []
   },
   {
     id: 'car_breakdown',
@@ -332,7 +340,8 @@ export const financialEvents: DynamicEvent[] = [
       }
     ],
     conditions: { minAge: 18, maxAge: 80, probability: 0.15 },
-    weight: 10
+    weight: 10,
+    flags: []
   },
   {
     id: 'lottery_ticket',
@@ -371,7 +380,8 @@ export const financialEvents: DynamicEvent[] = [
       }
     ],
     conditions: { minAge: 18, maxAge: 100, probability: 0.1 },
-    weight: 5
+    weight: 5,
+    flags: []
   }
 ];
 
@@ -406,7 +416,8 @@ export const familyEvents: DynamicEvent[] = [
       }
     ],
     conditions: { minAge: 16, maxAge: 60, probability: 0.1 },
-    weight: 12
+    weight: 12,
+    flags: []
   },
   {
     id: 'family_death',
@@ -438,7 +449,8 @@ export const familyEvents: DynamicEvent[] = [
       }
     ],
     conditions: { minAge: 10, maxAge: 100, probability: 0.08 },
-    weight: 15
+    weight: 15,
+    flags: []
   }
 ];
 
@@ -473,7 +485,8 @@ export const legalEvents: DynamicEvent[] = [
       }
     ],
     conditions: { minAge: 16, maxAge: 80, probability: 0.15 },
-    weight: 8
+    weight: 8,
+    flags: []
   },
   {
     id: 'jury_duty',
@@ -498,7 +511,8 @@ export const legalEvents: DynamicEvent[] = [
       }
     ],
     conditions: { minAge: 18, maxAge: 70, probability: 0.1 },
-    weight: 6
+    weight: 6,
+    flags: []
   }
 ];
 
@@ -533,7 +547,8 @@ export const travelEvents: DynamicEvent[] = [
       }
     ],
     conditions: { minAge: 18, maxAge: 60, probability: 0.08 },
-    weight: 12
+    weight: 12,
+    flags: []
   }
 ];
 

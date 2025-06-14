@@ -30,7 +30,8 @@ export const adultEvents: DynamicEvent[] = [
       }
     ],
     conditions: { minAge: 18, maxAge: 18, minStat: { stat: 'smarts', value: 60 }, probability: 0.9 },
-    weight: 20
+    weight: 20,
+    flags: []
   },
   {
     id: 'first_apartment',
@@ -65,7 +66,8 @@ export const adultEvents: DynamicEvent[] = [
       }
     ],
     conditions: { minAge: 18, maxAge: 22, probability: 0.7 },
-    weight: 15
+    weight: 15,
+    flags: []
   },
 
   // Mid Adult Events (26-50)
@@ -96,7 +98,8 @@ export const adultEvents: DynamicEvent[] = [
       }
     ],
     conditions: { minAge: 26, maxAge: 45, hasJob: true, probability: 0.4 },
-    weight: 12
+    weight: 12,
+    flags: []
   },
   {
     id: 'midlife_crisis',
@@ -131,6 +134,7 @@ export const adultEvents: DynamicEvent[] = [
       }
     ],
     conditions: { minAge: 35, maxAge: 50, probability: 0.3 },
-    weight: 10
+    weight: 10,
+    flags: []
   }
 ];

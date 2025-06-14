@@ -29,6 +29,7 @@ export const seniorEvents: DynamicEvent[] = [
       }
     ],
     conditions: { minAge: 65, maxAge: 70, hasJob: true, probability: 0.8 },
-    weight: 15
+    weight: 15,
+    flags: []
   }
 ];

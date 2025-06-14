@@ -1,3 +1,4 @@
+
 import { Character } from '../../types/character';
 import { EventTracker } from '../../types/character';
 import { getLifeStage } from '../../utils/gameUtils';
@@ -25,8 +26,8 @@ export const createDynamicEventSystem = () => {
       emoji: event.emoji || '📝',
       category: event.category || 'general',
       conditions: {
-        minAge: event.minAge,
-        maxAge: event.maxAge,
+        minAge: event.conditions.minAge,
+        maxAge: event.conditions.maxAge,
         probability: 0.3
       },
       choices: event.choices?.map(choice => ({
@@ -49,7 +50,7 @@ export const createDynamicEventSystem = () => {
     let availableEvents = events.filter(event => {
       const conditions = event.conditions;
       
-      // Strict age range checking
+      // Strict age range checking - fix the property access
       if (conditions.minAge !== undefined && character.age < conditions.minAge) return false;
       if (conditions.maxAge !== undefined && character.age > conditions.maxAge) return false;
       

@@ -61,6 +61,7 @@ export const teenageEvents: DynamicEvent[] = [
       }
     ],
     conditions: { minAge: 14, maxAge: 17, probability: 0.5 },
-    weight: 12
+    weight: 12,
+    flags: []
   }
 ];

@@ -24,7 +24,8 @@ export const childhoodEvents: DynamicEvent[] = [
       }
     ],
     conditions: { minAge: 1, maxAge: 2, probability: 0.8 },
-    weight: 10
+    weight: 10,
+    flags: []
   },
   {
     id: 'potty_training',
@@ -47,7 +48,8 @@ export const childhoodEvents: DynamicEvent[] = [
       }
     ],
     conditions: { minAge: 2, maxAge: 3, probability: 0.9 },
-    weight: 8
+    weight: 8,
+    flags: []
   },
 
   // Child Events (4-11)
@@ -111,6 +113,7 @@ export const childhoodEvents: DynamicEvent[] = [
       }
     ],
     conditions: { minAge: 7, maxAge: 11, probability: 0.3 },
-    weight: 8
+    weight: 8,
+    flags: []
   }
 ];
