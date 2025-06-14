@@ -32,7 +32,8 @@ export const MobileGameBoard: React.FC<MobileGameBoardProps> = ({
     ageUp,
     handleChoice,
     handleActivity,
-    handleCharacterUpdate
+    handleCharacterUpdate,
+    handleEvent
   } = useGameLogic({ gameState, onGameStateChange });
 
   const [showActivitiesMenu, setShowActivitiesMenu] = useState(false);
@@ -141,7 +142,11 @@ export const MobileGameBoard: React.FC<MobileGameBoardProps> = ({
               </button>
             </div>
             <div className="p-4">
-              <RelationshipsTab character={gameState.character} />
+              <RelationshipsTab 
+                character={gameState.character} 
+                onCharacterUpdate={handleCharacterUpdate}
+                onEvent={handleEvent}
+              />
             </div>
           </div>
         </div>
