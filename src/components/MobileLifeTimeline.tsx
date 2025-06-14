@@ -1,7 +1,9 @@
+
 import React, { useState, useEffect, useRef } from 'react';
 import { Character } from '../types/game';
 import { gameLogger, LifeEvent } from '../utils/gameLogger';
 import { ChevronDown, Calendar, TrendingUp, TrendingDown, Heart, Brain, Eye, DollarSign } from 'lucide-react';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 interface MobileLifeTimelineProps {
   character: Character;
@@ -29,7 +31,6 @@ export const MobileLifeTimeline: React.FC<MobileLifeTimelineProps> = ({
     const saved = localStorage.getItem(`timeline_filter_${character.id}`);
     return saved || 'all';
   });
-  const scrollRef = useRef<HTMLDivElement>(null);
 
   const categories = [
     { id: 'all', name: 'All Events', icon: '📋', color: 'bg-gray-500' },
@@ -109,20 +110,6 @@ export const MobileLifeTimeline: React.FC<MobileLifeTimelineProps> = ({
     .map(Number)
     .sort((a, b) => b - a);
 
-  const scrollToAge = (age: number) => {
-    const element = document.getElementById(`age-${age}`);
-    if (element && scrollRef.current) {
-      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-  };
-
-  // Auto-scroll to current age on load, but don't reset expanded ages
-  useEffect(() => {
-    if (sortedAges.length > 0) {
-      setTimeout(() => scrollToAge(character.age), 100);
-    }
-  }, [character.age, sortedAges.length]);
-
   if (sortedAges.length === 0) {
     return (
       <div className="h-full flex flex-col items-center justify-center text-center p-8 bg-gradient-to-b from-blue-50 to-white">
@@ -135,19 +122,6 @@ export const MobileLifeTimeline: React.FC<MobileLifeTimelineProps> = ({
       </div>
     );
   }
-
-  // Get events for current age filter
-  const getEventsToShow = () => {
-    if (selectedCategory === 'all') {
-      // Show all events from gameLogger
-      const allEvents = gameLogger.getAllEvents();
-      return allEvents.map(event => ({ age: event.age, event: event.event }));
-    } else {
-      // Filter by category using gameLogger
-      const categoryEvents = gameLogger.getEventsByCategory(selectedCategory as any);
-      return categoryEvents.map(event => ({ age: event.age, event: event.event }));
-    }
-  };
 
   return (
     <div className="h-full flex flex-col bg-white">
@@ -186,16 +160,8 @@ export const MobileLifeTimeline: React.FC<MobileLifeTimelineProps> = ({
         </div>
       </div>
 
-      {/* Scrollable Timeline */}
-      <div 
-        ref={scrollRef}
-        className="flex-1 overflow-y-auto overscroll-contain relative mobile-scroll"
-        style={{ 
-          WebkitOverflowScrolling: 'touch',
-          height: 'calc(100vh - 140px)',
-          maxHeight: 'calc(100vh - 140px)'
-        }}
-      >
+      {/* Scrollable Timeline using ScrollArea */}
+      <ScrollArea className="flex-1">
         <div className="p-4 space-y-4 pb-8">
           {sortedAges.map((age) => {
             const events = getEventsForAge(age);
@@ -296,7 +262,7 @@ export const MobileLifeTimeline: React.FC<MobileLifeTimelineProps> = ({
             );
           })}
         </div>
-      </div>
+      </ScrollArea>
     </div>
   );
 };
