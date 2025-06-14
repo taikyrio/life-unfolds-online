@@ -5,7 +5,7 @@ import { CharacterStats } from '../CharacterStats';
 import { EventOverlay } from '../EventOverlay';
 import { LifeTab } from '../LifeTab';
 import { ActivitiesTab } from '../ActivitiesTab';
-import { BottomNavigation } from '../BottomNavigation';
+import { ResponsiveBottomNav } from '../navigation/ResponsiveBottomNav';
 import { PersonalitySkillsPanel } from '../PersonalitySkillsPanel';
 import useGameLogic from '../../hooks/useGameLogic';
 import { RelationshipsTab } from '../RelationshipsTab';
@@ -36,25 +36,18 @@ export const MobileGameBoard: React.FC<MobileGameBoardProps> = ({
     handleEvent
   } = useGameLogic({ gameState, onGameStateChange });
 
-  const [showActivitiesMenu, setShowActivitiesMenu] = useState(false);
-  const [showRelationshipsMenu, setShowRelationshipsMenu] = useState(false);
-  const [showAssetsMenu, setShowAssetsMenu] = useState(false);
-
   // Add new tab for personality and skills
   const [activeBottomSheet, setActiveBottomSheet] = useState<string | null>(null);
 
   const handleShowActivityMenu = () => {
-    setShowActivitiesMenu(true);
     setActiveBottomSheet('activities');
   };
 
   const handleShowRelationshipsMenu = () => {
-    setShowRelationshipsMenu(true);
     setActiveBottomSheet('relationships');
   };
 
   const handleShowAssetsMenu = () => {
-    setShowAssetsMenu(true);
     setActiveBottomSheet('assets');
   };
 
@@ -63,17 +56,23 @@ export const MobileGameBoard: React.FC<MobileGameBoardProps> = ({
   };
 
   return (
-    <div className="h-screen bg-[#E5E5E5] flex flex-col overflow-hidden">
-      {/* Top Navigation */}
-      <div className="bg-white border-b border-gray-200 px-4 py-3">
-        <h1 className="text-lg font-bold text-gray-900 text-center">
-          {gameState.character.name}, {gameState.character.age}
-        </h1>
-        <CharacterStats character={gameState.character} />
+    <div className="h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex flex-col overflow-hidden">
+      {/* Enhanced iOS 16 + Windows 11 Header */}
+      <div className="relative bg-slate-900/95 backdrop-blur-xl border-b border-slate-700/50 overflow-hidden">
+        {/* Animated background */}
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-600/10 via-purple-600/10 to-pink-600/10"></div>
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(59,130,246,0.1),transparent_50%)]"></div>
+        
+        <div className="relative z-10 p-4 text-center">
+          <h1 className="text-xl font-bold text-white mb-2 tracking-tight">
+            {gameState.character.name}, {gameState.character.age}
+          </h1>
+          <CharacterStats character={gameState.character} />
+        </div>
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 overflow-y-auto">
+      <div className="flex-1 overflow-y-auto mobile-scroll">
         {activeTab === 'life' && (
           <LifeTab
             character={gameState.character}
@@ -90,10 +89,10 @@ export const MobileGameBoard: React.FC<MobileGameBoardProps> = ({
         )}
       </div>
 
-      {/* Bottom Navigation */}
-      <BottomNavigation
-        activeTab={activeTab as any}
-        onTabChange={() => {}}
+      {/* Enhanced Bottom Navigation */}
+      <ResponsiveBottomNav
+        activeTab={activeTab}
+        onTabChange={setActiveTab}
         onAgeUp={ageUp}
         character={gameState.character}
         onShowActivityMenu={handleShowActivityMenu}
@@ -104,16 +103,16 @@ export const MobileGameBoard: React.FC<MobileGameBoardProps> = ({
 
       {/* Activities Bottom Sheet */}
       {activeBottomSheet === 'activities' && (
-        <div className="fixed inset-0 z-50 bg-black/20" onClick={() => setActiveBottomSheet(null)}>
+        <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm" onClick={() => setActiveBottomSheet(null)}>
           <div 
-            className="absolute bottom-0 left-0 right-0 bg-white rounded-t-xl max-h-[80vh] overflow-y-auto"
+            className="absolute bottom-0 left-0 right-0 bg-slate-900/95 backdrop-blur-xl rounded-t-3xl max-h-[85vh] overflow-y-auto border-t border-slate-700/50"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="sticky top-0 bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between">
-              <h2 className="text-lg font-bold text-gray-900">Activities</h2>
+            <div className="sticky top-0 bg-slate-900/95 backdrop-blur-xl border-b border-slate-700/50 px-6 py-4 flex items-center justify-between rounded-t-3xl">
+              <h2 className="text-xl font-bold text-white">Activities</h2>
               <button 
                 onClick={() => setActiveBottomSheet(null)}
-                className="text-gray-500 hover:text-gray-700"
+                className="w-10 h-10 rounded-2xl bg-slate-800/60 border border-slate-700/50 flex items-center justify-center text-slate-300 hover:text-white hover:bg-slate-700/60 transition-all duration-200"
               >
                 ✕
               </button>
@@ -127,16 +126,16 @@ export const MobileGameBoard: React.FC<MobileGameBoardProps> = ({
 
       {/* Relationships Bottom Sheet */}
       {activeBottomSheet === 'relationships' && (
-        <div className="fixed inset-0 z-50 bg-black/20" onClick={() => setActiveBottomSheet(null)}>
+        <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm" onClick={() => setActiveBottomSheet(null)}>
           <div 
-            className="absolute bottom-0 left-0 right-0 bg-white rounded-t-xl max-h-[80vh] overflow-y-auto"
+            className="absolute bottom-0 left-0 right-0 bg-slate-900/95 backdrop-blur-xl rounded-t-3xl max-h-[85vh] overflow-y-auto border-t border-slate-700/50"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="sticky top-0 bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between">
-              <h2 className="text-lg font-bold text-gray-900">Relationships</h2>
+            <div className="sticky top-0 bg-slate-900/95 backdrop-blur-xl border-b border-slate-700/50 px-6 py-4 flex items-center justify-between rounded-t-3xl">
+              <h2 className="text-xl font-bold text-white">Relationships</h2>
               <button 
                 onClick={() => setActiveBottomSheet(null)}
-                className="text-gray-500 hover:text-gray-700"
+                className="w-10 h-10 rounded-2xl bg-slate-800/60 border border-slate-700/50 flex items-center justify-center text-slate-300 hover:text-white hover:bg-slate-700/60 transition-all duration-200"
               >
                 ✕
               </button>
@@ -154,16 +153,16 @@ export const MobileGameBoard: React.FC<MobileGameBoardProps> = ({
 
       {/* Assets Bottom Sheet */}
       {activeBottomSheet === 'assets' && (
-        <div className="fixed inset-0 z-50 bg-black/20" onClick={() => setActiveBottomSheet(null)}>
+        <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm" onClick={() => setActiveBottomSheet(null)}>
           <div 
-            className="absolute bottom-0 left-0 right-0 bg-white rounded-t-xl max-h-[80vh] overflow-y-auto"
+            className="absolute bottom-0 left-0 right-0 bg-slate-900/95 backdrop-blur-xl rounded-t-3xl max-h-[85vh] overflow-y-auto border-t border-slate-700/50"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="sticky top-0 bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between">
-              <h2 className="text-lg font-bold text-gray-900">Assets</h2>
+            <div className="sticky top-0 bg-slate-900/95 backdrop-blur-xl border-b border-slate-700/50 px-6 py-4 flex items-center justify-between rounded-t-3xl">
+              <h2 className="text-xl font-bold text-white">Assets</h2>
               <button 
                 onClick={() => setActiveBottomSheet(null)}
-                className="text-gray-500 hover:text-gray-700"
+                className="w-10 h-10 rounded-2xl bg-slate-800/60 border border-slate-700/50 flex items-center justify-center text-slate-300 hover:text-white hover:bg-slate-700/60 transition-all duration-200"
               >
                 ✕
               </button>
@@ -177,16 +176,16 @@ export const MobileGameBoard: React.FC<MobileGameBoardProps> = ({
 
       {/* Personality & Skills Bottom Sheet */}
       {activeBottomSheet === 'personality-skills' && (
-        <div className="fixed inset-0 z-50 bg-black/20" onClick={() => setActiveBottomSheet(null)}>
+        <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm" onClick={() => setActiveBottomSheet(null)}>
           <div 
-            className="absolute bottom-0 left-0 right-0 bg-white rounded-t-xl max-h-[80vh] overflow-y-auto"
+            className="absolute bottom-0 left-0 right-0 bg-slate-900/95 backdrop-blur-xl rounded-t-3xl max-h-[85vh] overflow-y-auto border-t border-slate-700/50"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="sticky top-0 bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between">
-              <h2 className="text-lg font-bold text-gray-900">Personality & Skills</h2>
+            <div className="sticky top-0 bg-slate-900/95 backdrop-blur-xl border-b border-slate-700/50 px-6 py-4 flex items-center justify-between rounded-t-3xl">
+              <h2 className="text-xl font-bold text-white">Personality & Skills</h2>
               <button 
                 onClick={() => setActiveBottomSheet(null)}
-                className="text-gray-500 hover:text-gray-700"
+                className="w-10 h-10 rounded-2xl bg-slate-800/60 border border-slate-700/50 flex items-center justify-center text-slate-300 hover:text-white hover:bg-slate-700/60 transition-all duration-200"
               >
                 ✕
               </button>
