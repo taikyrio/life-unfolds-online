@@ -1,8 +1,7 @@
 
 import React from 'react';
 import { Character } from '../../../types/game';
-import { LifeTab } from '../../LifeTab';
-import { ActivitiesTab } from '../../ActivitiesTab';
+import { BitLifeStyleLayout } from './BitLifeStyleLayout';
 
 interface MobileGameContentProps {
   activeTab: 'life' | 'activities' | 'careers' | 'relationships' | 'assets' | 'education';
@@ -10,7 +9,12 @@ interface MobileGameContentProps {
   eventHistory: string[];
   ageHistory: Record<number, string[]>;
   onAgeUp: () => void;
-  handleActivity: (activityType: string, activityId: string) => void;
+  handleActivity: (activity: any) => void;
+  onTabChange: (tab: 'life' | 'activities' | 'careers' | 'relationships' | 'assets' | 'education') => void;
+  onShowActivityMenu: () => void;
+  onShowRelationshipsMenu: () => void;
+  onShowAssetsMenu: () => void;
+  onShowPersonalitySkills: () => void;
 }
 
 export const MobileGameContent: React.FC<MobileGameContentProps> = ({
@@ -19,24 +23,25 @@ export const MobileGameContent: React.FC<MobileGameContentProps> = ({
   eventHistory,
   ageHistory,
   onAgeUp,
-  handleActivity
+  handleActivity,
+  onTabChange,
+  onShowActivityMenu,
+  onShowRelationshipsMenu,
+  onShowAssetsMenu,
+  onShowPersonalitySkills
 }) => {
   return (
-    <div className="flex-1 overflow-y-auto mobile-scroll">
-      {activeTab === 'life' && (
-        <LifeTab
-          character={character}
-          eventHistory={eventHistory}
-          ageHistory={ageHistory}
-          onAgeUp={onAgeUp}
-        />
-      )}
-      {activeTab === 'activities' && (
-        <ActivitiesTab
-          character={character}
-          onActivity={handleActivity}
-        />
-      )}
-    </div>
+    <BitLifeStyleLayout
+      character={character}
+      activeTab={activeTab}
+      onTabChange={onTabChange}
+      onAgeUp={onAgeUp}
+      onShowActivityMenu={onShowActivityMenu}
+      onShowRelationshipsMenu={onShowRelationshipsMenu}
+      onShowAssetsMenu={onShowAssetsMenu}
+      onShowPersonalitySkills={onShowPersonalitySkills}
+      ageHistory={ageHistory}
+      eventHistory={eventHistory}
+    />
   );
 };

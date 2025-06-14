@@ -2,11 +2,9 @@
 import React, { useState } from 'react';
 import { Character, GameState, LifeEvent } from '../../types/game';
 import { EventOverlay } from '../EventOverlay';
-import { ResponsiveBottomNav } from '../navigation/ResponsiveBottomNav';
-import useGameLogic from '../../hooks/useGameLogic';
-import { MobileGameHeader } from './mobile/MobileGameHeader';
 import { MobileGameContent } from './mobile/MobileGameContent';
 import { MobileBottomSheets } from './mobile/MobileBottomSheets';
+import useGameLogic from '../../hooks/useGameLogic';
 
 interface MobileGameBoardProps {
   gameState: GameState;
@@ -42,10 +40,7 @@ export const MobileGameBoard: React.FC<MobileGameBoardProps> = ({
   const handleCloseBottomSheet = () => setActiveBottomSheet(null);
 
   return (
-    <div className="h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex flex-col overflow-hidden">
-      {/* Header */}
-      <MobileGameHeader character={gameState.character} />
-
+    <div className="h-screen overflow-hidden">
       {/* Main Content */}
       <MobileGameContent
         activeTab={activeTab}
@@ -54,14 +49,7 @@ export const MobileGameBoard: React.FC<MobileGameBoardProps> = ({
         ageHistory={updatedAgeHistory}
         onAgeUp={ageUp}
         handleActivity={handleActivity}
-      />
-
-      {/* Bottom Navigation */}
-      <ResponsiveBottomNav
-        activeTab={activeTab}
         onTabChange={setActiveTab}
-        onAgeUp={ageUp}
-        character={gameState.character}
         onShowActivityMenu={handleShowActivityMenu}
         onShowRelationshipsMenu={handleShowRelationshipsMenu}
         onShowAssetsMenu={handleShowAssetsMenu}
