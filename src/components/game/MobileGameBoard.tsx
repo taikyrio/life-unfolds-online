@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Character, GameState, LifeEvent } from '../../types/game';
 import { CharacterStats } from '../CharacterStats';
@@ -7,7 +8,7 @@ import { ActivitiesTab } from '../ActivitiesTab';
 import { BottomNavigation } from '../BottomNavigation';
 import { PersonalitySkillsPanel } from '../PersonalitySkillsPanel';
 import useGameLogic from '../../hooks/useGameLogic';
-import { RelationshipsTab } from '../tabs/RelationshipsTab';
+import { RelationshipsTab } from '../RelationshipsTab';
 import { AssetsTab } from '../tabs/AssetsTab';
 
 interface MobileGameBoardProps {
@@ -30,7 +31,8 @@ export const MobileGameBoard: React.FC<MobileGameBoardProps> = ({
     setShowEventOverlay,
     ageUp,
     handleChoice,
-    handleActivity
+    handleActivity,
+    handleCharacterUpdate
   } = useGameLogic({ gameState, onGameStateChange });
 
   const [showActivitiesMenu, setShowActivitiesMenu] = useState(false);
@@ -162,7 +164,7 @@ export const MobileGameBoard: React.FC<MobileGameBoardProps> = ({
               </button>
             </div>
             <div className="p-4">
-              <AssetsTab character={gameState.character} />
+              <AssetsTab character={gameState.character} onCharacterUpdate={handleCharacterUpdate} />
             </div>
           </div>
         </div>

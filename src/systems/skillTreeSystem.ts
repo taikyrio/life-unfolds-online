@@ -245,11 +245,15 @@ export class SkillTreeSystem {
   }
 
   getAvailableSkills(character: Character): Skill[] {
-    if (!character.customStats?.skillTree) return [];
+    if (!character.customStats?.skillTree) {
+      // Initialize skill tree if it doesn't exist
+      if (!character.customStats) character.customStats = {};
+      character.customStats.skillTree = this.initializeSkillTree();
+    }
     
-    return Object.values(character.customStats.skillTree).filter(skill => {
+    return Object.values(character.customStats.skillTree).filter((skill: Skill) => {
       return skill.prerequisites.every(prereq => {
-        const prereqSkill = character.customStats!.skillTree[prereq];
+        const prereqSkill = character.customStats!.skillTree![prereq];
         return prereqSkill && prereqSkill.level > 0;
       });
     });
@@ -259,9 +263,9 @@ export class SkillTreeSystem {
     if (!character.customStats?.skillTree) return 0;
     
     const relevantSkills = Object.values(character.customStats.skillTree)
-      .filter(skill => skill.category === category);
+      .filter((skill: Skill) => skill.category === category);
     
-    return relevantSkills.reduce((total, skill) => total + skill.level, 0);
+    return relevantSkills.reduce((total: number, skill: Skill) => total + skill.level, 0);
   }
 }
 

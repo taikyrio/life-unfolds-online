@@ -1,6 +1,7 @@
 import { Character } from '../../types/game';
 import { isGameOver } from '../../utils/gameStateUtils';
 import { ageFamilyMembers, generateNewRelationships } from '../../utils/familyUtils';
+import { gameLogger } from '../../utils/gameLogger';
 
 export const handleAgeUp = (
   character: Character,
