@@ -1,177 +1,206 @@
-
 import React, { useState } from 'react';
-import { Character, GameState } from '../../types/game';
-import { TabContent } from '../ui/TabContent';
-import { GameModals } from '../ui/GameModals';
+import { Character, GameState, LifeEvent } from '../../types/game';
+import { CharacterStats } from '../CharacterStats';
+import { EventOverlay } from '../EventOverlay';
+import { LifeTab } from '../LifeTab';
+import { ActivitiesTab } from '../ActivitiesTab';
+import { BottomNavigation } from '../BottomNavigation';
+import { PersonalitySkillsPanel } from '../PersonalitySkillsPanel';
+import useGameLogic from '../../hooks/useGameLogic';
+import { RelationshipsTab } from '../tabs/RelationshipsTab';
+import { AssetsTab } from '../tabs/AssetsTab';
 
 interface MobileGameBoardProps {
   gameState: GameState;
-  character: Character;
-  ageHistory: Record<number, string[]>;
-  showActivitiesMenu: boolean;
-  showRelationshipsMenu: boolean;
-  showAssetsMenu: boolean;
-  showActivityModal: boolean;
-  showEventOverlay: boolean;
-  selectedActivity: any;
-  onAgeUp: () => void;
-  onChoice: (choiceId: string) => void;
-  onActivity: (activityId: string, activityData?: any) => void;
   onGameStateChange: (newState: GameState) => void;
-  onCharacterUpdate: (character: Character) => void;
-  onEvent: (message: string) => void;
-  onCareerAction: (action: string, data?: any) => void;
-  onEducationAction: (action: string, data?: any) => void;
-  onHealthAction: (action: string, data?: any) => void;
-  onLifestyleAction: (action: string, data?: any) => void;
-  onRelationshipAction: (action: string, data?: any) => void;
-  onCloseActivitiesMenu: () => void;
-  onCloseRelationshipsMenu: () => void;
-  onCloseAssetsMenu: () => void;
-  onCloseActivityModal: () => void;
-  onCloseEventOverlay: () => void;
-  onActivityComplete: () => void;
+  eventHistory?: string[];
+  ageHistory?: Record<number, string[]>;
 }
 
 export const MobileGameBoard: React.FC<MobileGameBoardProps> = ({
   gameState,
-  character,
-  ageHistory,
-  showActivitiesMenu,
-  showRelationshipsMenu,
-  showAssetsMenu,
-  showActivityModal,
-  showEventOverlay,
-  selectedActivity,
-  onAgeUp,
-  onChoice,
-  onActivity,
   onGameStateChange,
-  onCharacterUpdate,
-  onEvent,
-  onCareerAction,
-  onEducationAction,
-  onHealthAction,
-  onLifestyleAction,
-  onRelationshipAction,
-  onCloseActivitiesMenu,
-  onCloseRelationshipsMenu,
-  onCloseAssetsMenu,
-  onCloseActivityModal,
-  onCloseEventOverlay,
-  onActivityComplete
+  eventHistory = [],
+  ageHistory = {}
 }) => {
-  const [activeTab, setActiveTab] = useState<'life' | 'activities' | 'careers' | 'relationships' | 'assets' | 'education' | 'health' | 'lifestyle' | 'money'>('life');
+  const [activeTab, setActiveTab] = useState<'life' | 'activities' | 'careers' | 'relationships' | 'assets' | 'education'>('life');
+  const {
+    ageHistory: updatedAgeHistory,
+    showEventOverlay,
+    setShowEventOverlay,
+    ageUp,
+    handleChoice,
+    handleActivity
+  } = useGameLogic({ gameState, onGameStateChange });
 
-  // Age-based tab availability
-  const isTabAvailable = (tabId: string): boolean => {
-    const age = character.age;
-    switch (tabId) {
-      case 'activities':
-        return age >= 4; // Activities available from age 4
-      case 'careers':
-        return age >= 14; // Part-time work from 14
-      case 'relationships':
-        return age >= 12; // Relationships from 12
-      case 'education':
-        return age >= 5 && age <= 30; // School age
-      case 'money':
-        return age >= 16; // Money management from 16
-      case 'assets':
-        return age >= 18; // Asset ownership from 18
-      default:
-        return true;
-    }
+  const [showActivitiesMenu, setShowActivitiesMenu] = useState(false);
+  const [showRelationshipsMenu, setShowRelationshipsMenu] = useState(false);
+  const [showAssetsMenu, setShowAssetsMenu] = useState(false);
+
+  // Add new tab for personality and skills
+  const [activeBottomSheet, setActiveBottomSheet] = useState<string | null>(null);
+
+  const handleShowActivityMenu = () => {
+    setShowActivitiesMenu(true);
+    setActiveBottomSheet('activities');
   };
 
-  const availableTabs = [
-    { id: 'life', icon: '📅', label: 'Life' },
-    { id: 'activities', icon: '🎯', label: 'Activities', available: isTabAvailable('activities') },
-    { id: 'careers', icon: '💼', label: 'Career', available: isTabAvailable('careers') },
-    { id: 'relationships', icon: '❤️', label: 'Love', available: isTabAvailable('relationships') },
-    { id: 'education', icon: '🎓', label: 'School', available: isTabAvailable('education') },
-    { id: 'money', icon: '💰', label: 'Money', available: isTabAvailable('money') },
-    { id: 'assets', icon: '🏠', label: 'Assets', available: isTabAvailable('assets') }
-  ].filter(tab => tab.available !== false);
+  const handleShowRelationshipsMenu = () => {
+    setShowRelationshipsMenu(true);
+    setActiveBottomSheet('relationships');
+  };
+
+  const handleShowAssetsMenu = () => {
+    setShowAssetsMenu(true);
+    setActiveBottomSheet('assets');
+  };
+
+  const handleShowPersonalitySkills = () => {
+    setActiveBottomSheet('personality-skills');
+  };
 
   return (
-    <div className="h-screen w-full bg-gray-200 flex flex-col overflow-hidden">
-      {/* InstLife-style Top Bar */}
-      <div className="bg-white shadow-sm border-b border-gray-200">
-        <div className="flex items-center justify-center p-2">
-          <div className="flex bg-gray-100 rounded-lg p-1 gap-1">
-            {availableTabs.map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id as any)}
-                className={`px-2 py-2 rounded-md transition-all duration-200 ${
-                  activeTab === tab.id 
-                    ? 'bg-white text-gray-900 shadow-sm' 
-                    : 'text-gray-600 hover:text-gray-900'
-                }`}
+    <div className="h-screen bg-[#E5E5E5] flex flex-col overflow-hidden">
+      {/* Top Navigation */}
+      <div className="bg-white border-b border-gray-200 px-4 py-3">
+        <h1 className="text-lg font-bold text-gray-900 text-center">
+          {gameState.character.name}, {gameState.character.age}
+        </h1>
+        <CharacterStats character={gameState.character} />
+      </div>
+
+      {/* Main Content */}
+      <div className="flex-1 overflow-y-auto">
+        {activeTab === 'life' && (
+          <LifeTab
+            character={gameState.character}
+            eventHistory={eventHistory}
+            ageHistory={updatedAgeHistory}
+            onAgeUp={ageUp}
+          />
+        )}
+        {activeTab === 'activities' && (
+          <ActivitiesTab
+            character={gameState.character}
+            onActivity={handleActivity}
+          />
+        )}
+      </div>
+
+      {/* Bottom Navigation */}
+      <BottomNavigation
+        activeTab={activeTab as any}
+        onTabChange={() => {}}
+        onAgeUp={ageUp}
+        character={gameState.character}
+        onShowActivityMenu={handleShowActivityMenu}
+        onShowRelationshipsMenu={handleShowRelationshipsMenu}
+        onShowAssetsMenu={handleShowAssetsMenu}
+        onShowPersonalitySkills={handleShowPersonalitySkills}
+      />
+
+      {/* Activities Bottom Sheet */}
+      {activeBottomSheet === 'activities' && (
+        <div className="fixed inset-0 z-50 bg-black/20" onClick={() => setActiveBottomSheet(null)}>
+          <div 
+            className="absolute bottom-0 left-0 right-0 bg-white rounded-t-xl max-h-[80vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="sticky top-0 bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between">
+              <h2 className="text-lg font-bold text-gray-900">Activities</h2>
+              <button 
+                onClick={() => setActiveBottomSheet(null)}
+                className="text-gray-500 hover:text-gray-700"
               >
-                <div className="flex flex-col items-center">
-                  <span className="text-lg">{tab.icon}</span>
-                </div>
+                ✕
               </button>
-            ))}
+            </div>
+            <div className="p-4">
+              <ActivitiesTab character={gameState.character} onActivity={handleActivity} />
+            </div>
           </div>
         </div>
-      </div>
+      )}
 
-      {/* Main Content Area - Full height with proper scrolling */}
-      <div className="flex-1 bg-white overflow-hidden">
-        <TabContent
-          activeTab={activeTab}
-          character={character}
-          gameState={gameState}
-          eventHistory={gameState.eventHistory}
-          ageHistory={ageHistory}
-          onAgeUp={onAgeUp}
-          onChoice={onChoice}
-          onActivity={onActivity}
-          onGameStateChange={onGameStateChange}
-          onCharacterUpdate={onCharacterUpdate}
-          onEvent={onEvent}
-          onCareerAction={onCareerAction}
-          onEducationAction={onEducationAction}
-          onHealthAction={onHealthAction}
-          onLifestyleAction={onLifestyleAction}
-        />
-      </div>
-
-      {/* InstLife-style Bottom Action Bar */}
-      <div className="bg-white border-t border-gray-200 shadow-lg">
-        <div className="flex items-center justify-center p-3">
-          <button
-            onClick={onAgeUp}
-            className="bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded-lg font-semibold transition-colors duration-200 flex items-center gap-2"
+      {/* Relationships Bottom Sheet */}
+      {activeBottomSheet === 'relationships' && (
+        <div className="fixed inset-0 z-50 bg-black/20" onClick={() => setActiveBottomSheet(null)}>
+          <div 
+            className="absolute bottom-0 left-0 right-0 bg-white rounded-t-xl max-h-[80vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
           >
-            <span className="text-lg">🎂</span>
-            <span>Age!</span>
-          </button>
+            <div className="sticky top-0 bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between">
+              <h2 className="text-lg font-bold text-gray-900">Relationships</h2>
+              <button 
+                onClick={() => setActiveBottomSheet(null)}
+                className="text-gray-500 hover:text-gray-700"
+              >
+                ✕
+              </button>
+            </div>
+            <div className="p-4">
+              <RelationshipsTab character={gameState.character} />
+            </div>
+          </div>
         </div>
-      </div>
+      )}
 
-      <GameModals
-        gameState={gameState}
-        showActivitiesMenu={showActivitiesMenu}
-        showRelationshipsMenu={showRelationshipsMenu}
-        showAssetsMenu={showAssetsMenu}
-        showActivityModal={showActivityModal}
-        showEventOverlay={showEventOverlay}
-        selectedActivity={selectedActivity}
-        onCloseActivitiesMenu={onCloseActivitiesMenu}
-        onActivityComplete={onActivityComplete}
-        onCloseRelationshipsMenu={onCloseRelationshipsMenu}
-        onCloseAssetsMenu={onCloseAssetsMenu}
-        onCloseActivityModal={onCloseActivityModal}
-        onCloseEventOverlay={onCloseEventOverlay}
-        onActivity={onActivity}
-        onRelationshipAction={onRelationshipAction}
-        onChoice={onChoice}
-        onGameStateChange={onGameStateChange}
-      />
+      {/* Assets Bottom Sheet */}
+      {activeBottomSheet === 'assets' && (
+        <div className="fixed inset-0 z-50 bg-black/20" onClick={() => setActiveBottomSheet(null)}>
+          <div 
+            className="absolute bottom-0 left-0 right-0 bg-white rounded-t-xl max-h-[80vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="sticky top-0 bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between">
+              <h2 className="text-lg font-bold text-gray-900">Assets</h2>
+              <button 
+                onClick={() => setActiveBottomSheet(null)}
+                className="text-gray-500 hover:text-gray-700"
+              >
+                ✕
+              </button>
+            </div>
+            <div className="p-4">
+              <AssetsTab character={gameState.character} />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Personality & Skills Bottom Sheet */}
+      {activeBottomSheet === 'personality-skills' && (
+        <div className="fixed inset-0 z-50 bg-black/20" onClick={() => setActiveBottomSheet(null)}>
+          <div 
+            className="absolute bottom-0 left-0 right-0 bg-white rounded-t-xl max-h-[80vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="sticky top-0 bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between">
+              <h2 className="text-lg font-bold text-gray-900">Personality & Skills</h2>
+              <button 
+                onClick={() => setActiveBottomSheet(null)}
+                className="text-gray-500 hover:text-gray-700"
+              >
+                ✕
+              </button>
+            </div>
+            <div className="p-4">
+              <PersonalitySkillsPanel character={gameState.character} />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Event Overlay */}
+      {showEventOverlay && gameState.currentEvent && (
+        <EventOverlay
+          event={gameState.currentEvent}
+          onChoice={handleChoice}
+          onClose={() => setShowEventOverlay(false)}
+          characterName={gameState.character.name}
+          characterAge={gameState.character.age}
+        />
+      )}
     </div>
   );
 };

@@ -11,6 +11,7 @@ interface BottomNavigationProps {
   onShowActivityMenu: () => void;
   onShowRelationshipsMenu: () => void;
   onShowAssetsMenu: () => void;
+  onShowPersonalitySkills: () => void;
 }
 
 export const BottomNavigation: React.FC<BottomNavigationProps> = ({ 
@@ -18,7 +19,8 @@ export const BottomNavigation: React.FC<BottomNavigationProps> = ({
   character,
   onShowActivityMenu,
   onShowRelationshipsMenu,
-  onShowAssetsMenu
+  onShowAssetsMenu,
+  onShowPersonalitySkills
 }) => {
   const getLifeStageIcon = () => {
     const lifeStage = getLifeStage(character.age);
@@ -96,6 +98,14 @@ export const BottomNavigation: React.FC<BottomNavigationProps> = ({
       icon: LifeStageIcon, 
       onClick: () => {},
       color: 'bg-orange-500',
+      available: true
+    },
+    { 
+      id: 'personality', 
+      label: 'Personality', 
+      icon: User, 
+      onClick: onShowPersonalitySkills,
+      color: 'bg-indigo-500',
       available: true
     },
     { 
