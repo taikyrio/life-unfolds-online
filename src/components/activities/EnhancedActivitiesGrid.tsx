@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Character } from '../../types/game';
 
@@ -210,33 +209,49 @@ export const EnhancedActivitiesGrid: React.FC<EnhancedActivitiesGridProps> = ({
     });
   };
 
-  const getRarityColor = (rarity: Activity['rarity']) => {
+  const getRarityStyles = (rarity: Activity['rarity']) => {
     switch (rarity) {
-      case 'common': return 'border-gray-200 bg-gray-50';
-      case 'uncommon': return 'border-green-200 bg-green-50';
-      case 'rare': return 'border-blue-200 bg-blue-50';
-      case 'legendary': return 'border-purple-200 bg-purple-50';
-      default: return 'border-gray-200 bg-gray-50';
-    }
-  };
-
-  const getRarityGlow = (rarity: Activity['rarity']) => {
-    switch (rarity) {
-      case 'uncommon': return 'shadow-green-200';
-      case 'rare': return 'shadow-blue-200';
-      case 'legendary': return 'shadow-purple-300';
-      default: return '';
+      case 'common': 
+        return {
+          card: 'bg-slate-900/90 border-slate-700/50 hover:border-slate-600/70',
+          glow: 'hover:shadow-slate-500/20',
+          badge: 'bg-slate-700/60 text-slate-300 border-slate-600/50'
+        };
+      case 'uncommon': 
+        return {
+          card: 'bg-slate-900/90 border-emerald-500/30 hover:border-emerald-400/50',
+          glow: 'hover:shadow-emerald-500/25 hover:shadow-lg',
+          badge: 'bg-emerald-500/20 text-emerald-300 border-emerald-400/30'
+        };
+      case 'rare': 
+        return {
+          card: 'bg-slate-900/90 border-blue-500/40 hover:border-blue-400/60',
+          glow: 'hover:shadow-blue-500/30 hover:shadow-xl',
+          badge: 'bg-blue-500/20 text-blue-300 border-blue-400/40'
+        };
+      case 'legendary': 
+        return {
+          card: 'bg-slate-900/90 border-purple-500/50 hover:border-purple-400/70',
+          glow: 'hover:shadow-purple-500/40 hover:shadow-2xl',
+          badge: 'bg-purple-500/20 text-purple-300 border-purple-400/50'
+        };
+      default: 
+        return {
+          card: 'bg-slate-900/90 border-slate-700/50',
+          glow: '',
+          badge: 'bg-slate-700/60 text-slate-300'
+        };
     }
   };
 
   const formatEffects = (effects: Activity['effects']) => {
     const effectsList = [];
-    if (effects.health) effectsList.push(`❤️ ${effects.health > 0 ? '+' : ''}${effects.health}`);
-    if (effects.happiness) effectsList.push(`😊 ${effects.happiness > 0 ? '+' : ''}${effects.happiness}`);
-    if (effects.smarts) effectsList.push(`🧠 ${effects.smarts > 0 ? '+' : ''}${effects.smarts}`);
-    if (effects.looks) effectsList.push(`✨ ${effects.looks > 0 ? '+' : ''}${effects.looks}`);
-    if (effects.wealth) effectsList.push(`💰 ${effects.wealth > 0 ? '+' : ''}${effects.wealth}`);
-    if (effects.relationships) effectsList.push(`👥 ${effects.relationships > 0 ? '+' : ''}${effects.relationships}`);
+    if (effects.health) effectsList.push({ icon: '❤️', value: effects.health, color: 'text-red-400' });
+    if (effects.happiness) effectsList.push({ icon: '😊', value: effects.happiness, color: 'text-yellow-400' });
+    if (effects.smarts) effectsList.push({ icon: '🧠', value: effects.smarts, color: 'text-blue-400' });
+    if (effects.looks) effectsList.push({ icon: '✨', value: effects.looks, color: 'text-pink-400' });
+    if (effects.wealth) effectsList.push({ icon: '💰', value: effects.wealth, color: effects.wealth > 0 ? 'text-green-400' : 'text-red-400' });
+    if (effects.relationships) effectsList.push({ icon: '👥', value: effects.relationships, color: 'text-purple-400' });
     return effectsList;
   };
 
@@ -249,62 +264,105 @@ export const EnhancedActivitiesGrid: React.FC<EnhancedActivitiesGridProps> = ({
 
   if (availableActivities.length === 0) {
     return (
-      <div className="text-center py-12">
-        <div className="text-6xl mb-4">👶</div>
-        <h3 className="text-xl font-bold text-gray-700 mb-2">Too Young for Activities!</h3>
-        <p className="text-gray-500">Wait until you're older to unlock more activities</p>
+      <div className="flex flex-col items-center justify-center py-16 px-6 text-center">
+        <div className="text-6xl md:text-8xl mb-6 animate-bounce">👶</div>
+        <div className="glass-card rounded-3xl p-8 max-w-md">
+          <h3 className="text-xl md:text-2xl font-bold text-white mb-3">Too Young for Activities!</h3>
+          <p className="text-slate-300 text-sm md:text-base leading-relaxed">
+            Wait until you're older to unlock amazing activities and shape your destiny
+          </p>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 md:space-y-12">
       {Object.entries(categorizedActivities).map(([category, categoryActivities]) => (
-        <div key={category} className="space-y-4">
-          <h3 className="text-lg font-bold text-gray-800 border-b-2 border-gray-200 pb-2">
-            {category} Activities
-          </h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div key={category} className="space-y-6">
+          {/* Category Header with iOS 16 style */}
+          <div className="flex items-center space-x-4">
+            <div className="h-px flex-1 bg-gradient-to-r from-transparent via-slate-600 to-transparent"></div>
+            <div className="glass-card px-6 py-3 rounded-2xl border border-slate-700/50">
+              <h3 className="text-lg md:text-xl font-bold text-white tracking-tight">
+                {category} Activities
+              </h3>
+            </div>
+            <div className="h-px flex-1 bg-gradient-to-r from-transparent via-slate-600 to-transparent"></div>
+          </div>
+
+          {/* Responsive Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4 md:gap-6">
             {categoryActivities.map((activity) => {
               const effects = formatEffects(activity.effects);
+              const rarityStyles = getRarityStyles(activity.rarity);
+              
               return (
                 <button
                   key={activity.id}
                   onClick={() => onActivity('enhanced_activity', activity.id)}
-                  className={`p-5 rounded-xl border-2 transition-all duration-300 hover:scale-105 active:scale-95 text-left ${getRarityColor(activity.rarity)} hover:shadow-lg ${getRarityGlow(activity.rarity)}`}
+                  className={`group relative p-6 rounded-3xl border backdrop-blur-xl transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98] text-left overflow-hidden ${rarityStyles.card} ${rarityStyles.glow}`}
                 >
-                  <div className="flex items-start space-x-4">
-                    <div className="text-3xl">{activity.icon}</div>
-                    <div className="flex-1">
-                      <h4 className="font-bold text-gray-900 mb-1">{activity.name}</h4>
-                      <p className="text-sm text-gray-600 mb-2">{activity.description}</p>
-                      
-                      {activity.cost && (
-                        <div className="text-xs text-red-600 font-medium mb-2">
-                          Cost: ${activity.cost}
+                  {/* Subtle gradient overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent rounded-3xl"></div>
+                  
+                  {/* Content */}
+                  <div className="relative z-10">
+                    {/* Icon and Title */}
+                    <div className="flex items-start justify-between mb-4">
+                      <div className="flex items-center space-x-4">
+                        <div className="text-3xl md:text-4xl p-3 rounded-2xl bg-slate-800/60 backdrop-blur-sm border border-slate-700/50 group-hover:scale-110 transition-transform duration-300">
+                          {activity.icon}
                         </div>
-                      )}
-                      
-                      <div className="flex flex-wrap gap-1">
-                        {effects.map((effect, index) => (
-                          <span key={index} className="text-xs bg-white/70 px-2 py-1 rounded-full">
-                            {effect}
-                          </span>
-                        ))}
+                        <div className="flex-1">
+                          <h4 className="font-bold text-white text-lg md:text-xl mb-1 tracking-tight group-hover:text-blue-300 transition-colors">
+                            {activity.name}
+                          </h4>
+                          <p className="text-slate-400 text-sm md:text-base leading-relaxed line-clamp-2">
+                            {activity.description}
+                          </p>
+                        </div>
                       </div>
+                    </div>
+
+                    {/* Cost */}
+                    {activity.cost && (
+                      <div className="mb-4">
+                        <div className="inline-flex items-center px-3 py-1.5 rounded-xl bg-red-500/20 border border-red-500/30 text-red-300 text-sm font-medium">
+                          💳 Cost: ${activity.cost.toLocaleString()}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Effects */}
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mb-4">
+                      {effects.map((effect, index) => (
+                        <div key={index} className="flex items-center space-x-2 px-3 py-2 rounded-xl bg-slate-800/40 backdrop-blur-sm border border-slate-700/30">
+                          <span className="text-lg">{effect.icon}</span>
+                          <span className={`text-sm font-bold ${effect.color}`}>
+                            {effect.value > 0 ? '+' : ''}{effect.value}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Rarity Badge */}
+                    <div className="flex justify-between items-center">
+                      <span className={`px-3 py-1.5 rounded-xl text-xs font-bold border backdrop-blur-sm ${rarityStyles.badge}`}>
+                        {activity.rarity.toUpperCase()}
+                      </span>
                       
-                      <div className="mt-2">
-                        <span className={`text-xs px-2 py-1 rounded-full font-medium ${
-                          activity.rarity === 'common' ? 'bg-gray-200 text-gray-700' :
-                          activity.rarity === 'uncommon' ? 'bg-green-200 text-green-700' :
-                          activity.rarity === 'rare' ? 'bg-blue-200 text-blue-700' :
-                          'bg-purple-200 text-purple-700'
-                        }`}>
-                          {activity.rarity.toUpperCase()}
-                        </span>
+                      {/* Hover Arrow */}
+                      <div className="opacity-0 group-hover:opacity-100 transform translate-x-2 group-hover:translate-x-0 transition-all duration-300">
+                        <div className="w-8 h-8 rounded-full bg-blue-500/20 border border-blue-400/30 flex items-center justify-center">
+                          <span className="text-blue-300 text-sm">→</span>
+                        </div>
                       </div>
                     </div>
                   </div>
+
+                  {/* Subtle animated border on hover */}
+                  <div className="absolute inset-0 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-gradient-to-r from-blue-500/10 via-purple-500/10 to-pink-500/10 animate-pulse"></div>
                 </button>
               );
             })}

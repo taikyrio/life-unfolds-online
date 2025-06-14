@@ -15,29 +15,39 @@ export const ActivitiesTab: React.FC<ActivitiesTabProps> = ({ character, onActiv
 
   if (isMobile) {
     return (
-      <div className="h-full bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 flex flex-col overflow-hidden">
-        {/* Enhanced Header */}
-        <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 text-white p-6 text-center relative overflow-hidden">
-          <div className="absolute inset-0 bg-black/10"></div>
-          <div className="relative z-10">
-            <div className="text-4xl mb-2">🎯</div>
-            <h1 className="text-2xl font-bold mb-2">Life Activities</h1>
-            <p className="text-blue-100 mb-4">Choose your path to growth and happiness</p>
-            <div className="flex justify-center gap-6 text-sm">
-              <div className="flex items-center gap-2 bg-white/20 px-3 py-1 rounded-full">
-                <span>👤</span>
-                <span>Age {character.age}</span>
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex flex-col overflow-hidden">
+        {/* Enhanced iOS 16 + Windows 11 Header */}
+        <div className="relative bg-slate-900/95 backdrop-blur-xl border-b border-slate-700/50 overflow-hidden">
+          {/* Animated background */}
+          <div className="absolute inset-0 bg-gradient-to-r from-blue-600/10 via-purple-600/10 to-pink-600/10"></div>
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(59,130,246,0.1),transparent_50%)]"></div>
+          
+          <div className="relative z-10 p-6 text-center">
+            <div className="flex items-center justify-center mb-4">
+              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shadow-2xl shadow-blue-500/25">
+                <span className="text-3xl">🎯</span>
               </div>
-              <div className="flex items-center gap-2 bg-white/20 px-3 py-1 rounded-full">
-                <span>💰</span>
-                <span>${character.wealth}</span>
+            </div>
+            
+            <h1 className="text-2xl md:text-3xl font-bold text-white mb-2 tracking-tight">Life Activities</h1>
+            <p className="text-slate-300 mb-6 text-sm md:text-base leading-relaxed">Choose your path to growth and happiness</p>
+            
+            {/* Character Stats */}
+            <div className="flex justify-center gap-4 flex-wrap">
+              <div className="flex items-center gap-2 glass-card px-4 py-2 rounded-2xl border border-slate-700/50">
+                <span className="text-lg">👤</span>
+                <span className="text-white font-medium text-sm">Age {character.age}</span>
+              </div>
+              <div className="flex items-center gap-2 glass-card px-4 py-2 rounded-2xl border border-slate-700/50">
+                <span className="text-lg">💰</span>
+                <span className="text-white font-medium text-sm">${character.wealth.toLocaleString()}</span>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Enhanced Activities Grid - Scrollable */}
-        <div className="flex-1 p-4 overflow-y-auto">
+        {/* Enhanced Activities Grid */}
+        <div className="flex-1 p-4 md:p-6 overflow-y-auto mobile-scroll">
           <EnhancedActivitiesGrid character={character} onActivity={onActivity} />
         </div>
       </div>
