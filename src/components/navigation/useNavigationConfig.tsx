@@ -1,5 +1,4 @@
-
-import { Heart, Home, Car, User, Baby, UserCheck, Gamepad2 } from 'lucide-react';
+import { Heart, Home, Car, User, Baby, UserCheck, Gamepad2, Briefcase } from 'lucide-react';
 import { Character } from '../../types/game';
 import { getLifeStage } from '../../utils/gameUtils';
 
@@ -9,6 +8,7 @@ interface UseNavigationConfigProps {
   onShowRelationshipsMenu: () => void;
   onShowAssetsMenu: () => void;
   onShowPersonalitySkills: () => void;
+  onShowCareerMenu?: () => void;
 }
 
 export const useNavigationConfig = ({
@@ -16,10 +16,17 @@ export const useNavigationConfig = ({
   onShowActivityMenu,
   onShowRelationshipsMenu,
   onShowAssetsMenu,
-  onShowPersonalitySkills
+  onShowPersonalitySkills,
+  onShowCareerMenu
 }: UseNavigationConfigProps) => {
   const getLifeStageIcon = () => {
     const lifeStage = getLifeStage(character.age);
+    
+    // Show briefcase icon if character has a job or is old enough to work
+    if (character.job || character.age >= 16) {
+      return Briefcase;
+    }
+    
     switch (lifeStage) {
       case 'Baby':
       case 'Toddler':
@@ -45,8 +52,19 @@ export const useNavigationConfig = ({
       return character.currentEducation.stage || character.currentEducation.level || stage;
     } else if (character.job) {
       return 'Career';
+    } else if (character.age >= 16) {
+      return 'Career';
     }
     return stage;
+  };
+
+  const getLifeStageAction = () => {
+    // If character has a job or is old enough to work, open career menu
+    if ((character.job || character.age >= 16) && onShowCareerMenu) {
+      return onShowCareerMenu;
+    }
+    // Otherwise, no action
+    return () => {};
   };
 
   const isTabAvailable = (tabId: string): boolean => {
@@ -90,8 +108,8 @@ export const useNavigationConfig = ({
       id: 'lifestage', 
       label: getLifeStageLabel(), 
       icon: LifeStageIcon, 
-      onClick: () => {},
-      gradient: 'from-orange-400 to-red-500',
+      onClick: getLifeStageAction(),
+      gradient: character.job || character.age >= 16 ? 'from-blue-400 to-indigo-500' : 'from-orange-400 to-red-500',
       available: true
     },
     { 

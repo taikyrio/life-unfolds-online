@@ -22,14 +22,20 @@ export const BottomNavigation: React.FC<BottomNavigationProps> = ({
   onShowActivityMenu,
   onShowRelationshipsMenu,
   onShowAssetsMenu,
-  onShowPersonalitySkills
+  onShowPersonalitySkills,
+  onTabChange
 }) => {
+  const handleShowCareerMenu = () => {
+    onTabChange('careers');
+  };
+
   const tabs = useNavigationConfig({
     character,
     onShowActivityMenu,
     onShowRelationshipsMenu,
     onShowAssetsMenu,
-    onShowPersonalitySkills
+    onShowPersonalitySkills,
+    onShowCareerMenu: handleShowCareerMenu
   });
 
   return (
