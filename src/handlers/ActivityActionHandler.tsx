@@ -1,5 +1,3 @@
-
-
 import { Character, GameState } from '../types/game';
 import { FamilyMember } from '../types/relationships';
 
@@ -18,83 +16,92 @@ export const handleActivityAction = (
   let eventMessage = '';
   let statChanges = {};
 
-  switch (activityId) {
-    case 'ask_out':
-      const askOutResult = handleAskOut(updatedCharacter);
-      updatedCharacter = askOutResult.character;
-      eventMessage = askOutResult.message;
-      statChanges = askOutResult.statChanges;
-      break;
+  // Handle enhanced activities
+  if (activityId === 'enhanced_activity') {
+    const enhancedResult = handleEnhancedActivity(updatedCharacter, activityData);
+    updatedCharacter = enhancedResult.character;
+    eventMessage = enhancedResult.message;
+    statChanges = enhancedResult.statChanges;
+  } else {
+    // Handle existing activities
+    switch (activityId) {
+      case 'ask_out':
+        const askOutResult = handleAskOut(updatedCharacter);
+        updatedCharacter = askOutResult.character;
+        eventMessage = askOutResult.message;
+        statChanges = askOutResult.statChanges;
+        break;
 
-    case 'read_books':
-      const readResult = handleReadBooks(updatedCharacter);
-      updatedCharacter = readResult.character;
-      eventMessage = readResult.message;
-      statChanges = readResult.statChanges;
-      break;
+      case 'read_books':
+        const readResult = handleReadBooks(updatedCharacter);
+        updatedCharacter = readResult.character;
+        eventMessage = readResult.message;
+        statChanges = readResult.statChanges;
+        break;
 
-    case 'gym':
-      const gymResult = handleGym(updatedCharacter);
-      updatedCharacter = gymResult.character;
-      eventMessage = gymResult.message;
-      statChanges = gymResult.statChanges;
-      break;
+      case 'gym':
+        const gymResult = handleGym(updatedCharacter);
+        updatedCharacter = gymResult.character;
+        eventMessage = gymResult.message;
+        statChanges = gymResult.statChanges;
+        break;
 
-    case 'make_friends':
-      const friendsResult = handleMakeFriends(updatedCharacter);
-      updatedCharacter = friendsResult.character;
-      eventMessage = friendsResult.message;
-      statChanges = friendsResult.statChanges;
-      break;
+      case 'make_friends':
+        const friendsResult = handleMakeFriends(updatedCharacter);
+        updatedCharacter = friendsResult.character;
+        eventMessage = friendsResult.message;
+        statChanges = friendsResult.statChanges;
+        break;
 
-    case 'find_love':
-      const loveResult = handleFindLove(updatedCharacter);
-      updatedCharacter = loveResult.character;
-      eventMessage = loveResult.message;
-      statChanges = loveResult.statChanges;
-      break;
+      case 'find_love':
+        const loveResult = handleFindLove(updatedCharacter);
+        updatedCharacter = loveResult.character;
+        eventMessage = loveResult.message;
+        statChanges = loveResult.statChanges;
+        break;
 
-    case 'meditation':
-      const meditationResult = handleMeditation(updatedCharacter);
-      updatedCharacter = meditationResult.character;
-      eventMessage = meditationResult.message;
-      statChanges = meditationResult.statChanges;
-      break;
+      case 'meditation':
+        const meditationResult = handleMeditation(updatedCharacter);
+        updatedCharacter = meditationResult.character;
+        eventMessage = meditationResult.message;
+        statChanges = meditationResult.statChanges;
+        break;
 
-    case 'party':
-      const partyResult = handleParty(updatedCharacter);
-      updatedCharacter = partyResult.character;
-      eventMessage = partyResult.message;
-      statChanges = partyResult.statChanges;
-      break;
+      case 'party':
+        const partyResult = handleParty(updatedCharacter);
+        updatedCharacter = partyResult.character;
+        eventMessage = partyResult.message;
+        statChanges = partyResult.statChanges;
+        break;
 
-    case 'coding_practice':
-      const codingResult = handleCoding(updatedCharacter);
-      updatedCharacter = codingResult.character;
-      eventMessage = codingResult.message;
-      statChanges = codingResult.statChanges;
-      break;
+      case 'coding_practice':
+        const codingResult = handleCoding(updatedCharacter);
+        updatedCharacter = codingResult.character;
+        eventMessage = codingResult.message;
+        statChanges = codingResult.statChanges;
+        break;
 
-    case 'music_lessons':
-      const musicResult = handleMusicLessons(updatedCharacter);
-      updatedCharacter = musicResult.character;
-      eventMessage = musicResult.message;
-      statChanges = musicResult.statChanges;
-      break;
+      case 'music_lessons':
+        const musicResult = handleMusicLessons(updatedCharacter);
+        updatedCharacter = musicResult.character;
+        eventMessage = musicResult.message;
+        statChanges = musicResult.statChanges;
+        break;
 
-    case 'pickpocket':
-      const crimeResult = handleCrime(updatedCharacter, 'pickpocket');
-      updatedCharacter = crimeResult.character;
-      eventMessage = crimeResult.message;
-      statChanges = crimeResult.statChanges;
-      break;
+      case 'pickpocket':
+        const crimeResult = handleCrime(updatedCharacter, 'pickpocket');
+        updatedCharacter = crimeResult.character;
+        eventMessage = crimeResult.message;
+        statChanges = crimeResult.statChanges;
+        break;
 
-    default:
-      const defaultResult = handleGenericActivity(updatedCharacter, activityId);
-      updatedCharacter = defaultResult.character;
-      eventMessage = defaultResult.message;
-      statChanges = defaultResult.statChanges;
-      break;
+      default:
+        const defaultResult = handleGenericActivity(updatedCharacter, activityId);
+        updatedCharacter = defaultResult.character;
+        eventMessage = defaultResult.message;
+        statChanges = defaultResult.statChanges;
+        break;
+    }
   }
 
   // Add event to life history
@@ -455,6 +462,123 @@ const handleCrime = (character: Character, crimeType: string) => {
   }
 };
 
+const handleEnhancedActivity = (character: Character, activityId: string) => {
+  const activities = {
+    gym: {
+      effects: { health: 15, looks: 8, wealth: -50 },
+      messages: [
+        "You had an intense workout at the gym! Your muscles are stronger and you feel more confident.",
+        "Great gym session! You pushed your limits and feel fantastic.",
+        "The gym was packed but you stayed focused. Your dedication is paying off!"
+      ]
+    },
+    yoga: {
+      effects: { health: 10, happiness: 12, wealth: -30 },
+      messages: [
+        "Yoga class brought you inner peace and flexibility. Namaste!",
+        "You found your zen in yoga today. Your mind and body feel aligned.",
+        "The yoga instructor praised your improvement. You feel centered and calm."
+      ]
+    },
+    martial_arts: {
+      effects: { health: 12, smarts: 5, wealth: -80 },
+      messages: [
+        "Martial arts training improved your discipline and self-defense skills.",
+        "You learned new techniques and earned respect from your sensei.",
+        "The dojo was intense today. Your focus and technique are getting sharper."
+      ]
+    },
+    coding: {
+      effects: { smarts: 18, wealth: -100 },
+      messages: [
+        "You mastered a new programming language! Your coding skills are advancing rapidly.",
+        "Late night coding session paid off. You built something amazing!",
+        "Your code compiled perfectly on the first try. You're becoming a true developer!"
+      ]
+    },
+    travel: {
+      effects: { happiness: 25, smarts: 8, wealth: -500 },
+      messages: [
+        "Solo travel opened your mind to new cultures and experiences!",
+        "You discovered hidden gems and made unforgettable memories abroad.",
+        "Travel broadened your perspective. You feel like a citizen of the world!"
+      ]
+    },
+    skydiving: {
+      effects: { happiness: 30, health: -10, wealth: -300 },
+      messages: [
+        "SKYDIVING WAS INCREDIBLE! The adrenaline rush was unlike anything else!",
+        "You jumped out of a plane and lived to tell the tale. What a rush!",
+        "Freefall was terrifying and exhilarating. You feel invincible!"
+      ]
+    },
+    party: {
+      effects: { happiness: 20, relationships: 15, health: -5, wealth: -100 },
+      messages: [
+        "Epic house party! You made new friends and had an amazing time.",
+        "The party was wild! You danced all night and met interesting people.",
+        "Best party ever! Your social circle just got bigger."
+      ]
+    },
+    music_lessons: {
+      effects: { happiness: 18, smarts: 8, wealth: -120 },
+      messages: [
+        "Music lessons were inspiring! You learned beautiful new pieces.",
+        "Your musical skills are improving rapidly. The instructor is impressed!",
+        "Music fills your soul. You played a challenging piece perfectly today!"
+      ]
+    },
+    networking: {
+      effects: { relationships: 20, wealth: -150 },
+      messages: [
+        "Professional networking event was successful! You made valuable connections.",
+        "You exchanged business cards with influential people in your field.",
+        "Your networking skills are paying off. New opportunities await!"
+      ]
+    }
+  };
+
+  const activity = activities[activityId as keyof typeof activities];
+  
+  if (!activity) {
+    return handleGenericActivity(character, activityId);
+  }
+
+  let updatedCharacter = { ...character };
+  
+  // Apply effects
+  Object.entries(activity.effects).forEach(([stat, value]) => {
+    switch (stat) {
+      case 'health':
+        updatedCharacter.health = Math.max(0, Math.min(100, updatedCharacter.health + value));
+        break;
+      case 'happiness':
+        updatedCharacter.happiness = Math.max(0, Math.min(100, updatedCharacter.happiness + value));
+        break;
+      case 'smarts':
+        updatedCharacter.smarts = Math.max(0, Math.min(100, updatedCharacter.smarts + value));
+        break;
+      case 'looks':
+        updatedCharacter.looks = Math.max(0, Math.min(100, updatedCharacter.looks + value));
+        break;
+      case 'wealth':
+        updatedCharacter.wealth = Math.max(0, updatedCharacter.wealth + value);
+        break;
+      case 'relationships':
+        updatedCharacter.relationships = Math.max(0, Math.min(100, updatedCharacter.relationships + value));
+        break;
+    }
+  });
+
+  const randomMessage = activity.messages[Math.floor(Math.random() * activity.messages.length)];
+
+  return {
+    character: updatedCharacter,
+    message: randomMessage,
+    statChanges: activity.effects
+  };
+};
+
 const handleGenericActivity = (character: Character, activityId: string) => {
   const happinessGain = Math.floor(Math.random() * 8) + 2;
   
@@ -519,4 +643,3 @@ const handleGenericActivity = (character: Character, activityId: string) => {
     statChanges: { happiness: happinessGain }
   };
 };
-

@@ -1,9 +1,10 @@
+
 import React from 'react';
 import { Character, GameState } from '../../types/game';
 import { LifeTab } from '../LifeTab';
 import { ActivitiesTab } from '../ActivitiesTab';
 import { RelationshipsTab } from '../RelationshipsTab';
-import { CareersTab } from '../tabs/CareersTab';
+import { CareersTab } from '../CareersTab';
 import { EducationTab } from '../tabs/EducationTab';
 import { HealthTab } from '../tabs/HealthTab';
 import { LifestyleTab } from '../tabs/LifestyleTab';
@@ -81,7 +82,7 @@ export const TabContent: React.FC<TabContentProps> = ({
         return (
           <CareersTab 
             character={character}
-            onCareerAction={onCareerAction}
+            onJobApplication={(jobId: string) => onCareerAction('job_application', { jobId })}
           />
         );
       case 'education':
