@@ -251,7 +251,7 @@ export class SkillTreeSystem {
       character.customStats.skillTree = this.initializeSkillTree();
     }
     
-    return Object.values(character.customStats.skillTree).filter((skill: Skill) => {
+    return (Object.values(character.customStats.skillTree) as Skill[]).filter((skill: Skill) => {
       return skill.prerequisites.every(prereq => {
         const prereqSkill = character.customStats!.skillTree![prereq];
         return prereqSkill && prereqSkill.level > 0;
@@ -262,7 +262,7 @@ export class SkillTreeSystem {
   getSkillModifier(character: Character, category: string): number {
     if (!character.customStats?.skillTree) return 0;
     
-    const relevantSkills = Object.values(character.customStats.skillTree)
+    const relevantSkills = (Object.values(character.customStats.skillTree) as Skill[])
       .filter((skill: Skill) => skill.category === category);
     
     return relevantSkills.reduce((total: number, skill: Skill) => total + skill.level, 0);
