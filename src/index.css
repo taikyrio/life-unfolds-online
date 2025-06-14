@@ -20,6 +20,14 @@
   .safe-area-pb {
     padding-bottom: env(safe-area-inset-bottom);
   }
+  
+  .pb-safe-area {
+    padding-bottom: max(env(safe-area-inset-bottom), 1rem);
+  }
+  
+  .h-safe-area-bottom {
+    height: env(safe-area-inset-bottom);
+  }
 }
 
 @layer base {
@@ -94,4 +102,19 @@
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
+}
+
+/* Mobile viewport optimizations */
+@supports (height: 100dvh) {
+  .h-screen {
+    height: 100dvh;
+  }
+}
+
+/* Ensure proper touch targets on mobile */
+@media (pointer: coarse) {
+  button {
+    min-height: 44px;
+    min-width: 44px;
+  }
 }

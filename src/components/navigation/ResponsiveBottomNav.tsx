@@ -51,18 +51,15 @@ export const ResponsiveBottomNav: React.FC<ResponsiveBottomNavProps> = ({
       {/* Game Age Button */}
       <GameAgeButton character={character} onAgeUp={onAgeUp} />
 
-      {/* Main Navigation - Integrated Design */}
+      {/* Main Navigation - Mobile Optimized */}
       <div className="fixed bottom-0 left-0 right-0 z-50">
-        {/* Seamless background that blends with game */}
-        <div className="bg-gradient-to-t from-slate-900 via-slate-900/95 to-slate-900/80 backdrop-blur-xl" />
+        {/* Background with proper mobile handling */}
+        <div className="bg-gradient-to-t from-slate-900 via-slate-900/98 to-slate-900/90 backdrop-blur-xl border-t border-slate-600/20" />
         
-        {/* Navigation container with game-like styling */}
-        <div className="relative px-3 pt-3 pb-6 safe-area-pb">
-          {/* Subtle game border */}
-          <div className="absolute top-0 left-4 right-4 h-px bg-gradient-to-r from-transparent via-slate-600/30 to-transparent rounded-full" />
-          
-          {/* Navigation grid - feels more like game UI */}
-          <div className="flex justify-center gap-1 max-w-sm mx-auto">
+        {/* Navigation container with mobile-safe spacing */}
+        <div className="relative px-2 sm:px-4 pt-2 pb-safe-area">
+          {/* Navigation grid - mobile optimized */}
+          <div className="flex justify-center items-center gap-1 max-w-xs mx-auto mb-2">
             {tabs.map((tab) => (
               <IntegratedNavigationTab
                 key={tab.id}
@@ -72,10 +69,13 @@ export const ResponsiveBottomNav: React.FC<ResponsiveBottomNavProps> = ({
             ))}
           </div>
           
-          {/* iOS indicator with game styling */}
-          <div className="flex justify-center pt-3">
-            <div className="w-24 h-1 bg-slate-600/40 rounded-full" />
+          {/* iOS home indicator with proper spacing */}
+          <div className="flex justify-center pb-1">
+            <div className="w-20 h-1 bg-slate-600/50 rounded-full" />
           </div>
+          
+          {/* Safe area bottom padding for devices with home indicators */}
+          <div className="h-safe-area-bottom" />
         </div>
       </div>
     </>
