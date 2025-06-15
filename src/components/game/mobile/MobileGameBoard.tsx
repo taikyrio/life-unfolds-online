@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { Character, GameState } from '../../../types/game';
 import { EnhancedMobileLayout } from './EnhancedMobileLayout';
-import { ActivityMenu } from '../../menus/ActivitiesMenu';
+import { ActivitiesMenu } from '../../menus/ActivitiesMenu';
 import { RelationshipsMenu } from '../../menus/RelationshipsMenu';
 import { AssetsMenu } from '../../menus/AssetsMenu';
 import { EventOverlay } from '../../EventOverlay';
@@ -46,6 +46,18 @@ export const MobileGameBoard: React.FC<MobileGameBoardProps> = ({
 }) => {
   const [activeTab, setActiveTab] = useState<'life' | 'activities' | 'careers' | 'relationships' | 'assets' | 'education'>('life');
 
+  const handleCharacterUpdate = (updatedCharacter: Character) => {
+    onGameStateChange({
+      ...gameState,
+      character: updatedCharacter
+    });
+  };
+
+  const handleEvent = (message: string) => {
+    // Handle event messages
+    console.log('Event:', message);
+  };
+
   return (
     <div className="h-screen overflow-hidden portrait:block landscape:hidden">
       <div className="landscape:flex landscape:items-center landscape:justify-center landscape:h-screen landscape:bg-black">
@@ -85,13 +97,14 @@ export const MobileGameBoard: React.FC<MobileGameBoardProps> = ({
                   ×
                 </button>
               </div>
-              <ActivityMenu
+              <ActivitiesMenu
                 character={character}
                 onActivity={onActivity}
                 onClose={() => {
                   onCloseActivitiesMenu();
                   setActiveTab('life');
                 }}
+                isOpen={true}
               />
             </div>
           </div>
@@ -115,12 +128,8 @@ export const MobileGameBoard: React.FC<MobileGameBoardProps> = ({
               </div>
               <RelationshipsMenu
                 character={character}
-                onClose={() => {
-                  onCloseRelationshipsMenu();
-                  setActiveTab('life');
-                }}
-                onGameStateChange={onGameStateChange}
-                gameState={gameState}
+                onCharacterUpdate={handleCharacterUpdate}
+                onEvent={handleEvent}
               />
             </div>
           </div>
@@ -148,6 +157,7 @@ export const MobileGameBoard: React.FC<MobileGameBoardProps> = ({
                   onCloseAssetsMenu();
                   setActiveTab('life');
                 }}
+                isOpen={true}
               />
             </div>
           </div>
