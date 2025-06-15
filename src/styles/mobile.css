@@ -1,5 +1,36 @@
 
-/* Mobile-optimized styles for better touch interactions */
+/* Force portrait mode for mobile devices */
+@media screen and (orientation: landscape) and (max-width: 1024px) {
+  .landscape-warning {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    background: #000;
+    color: white;
+    text-align: center;
+    padding: 2rem;
+    flex-direction: column;
+  }
+}
+
+/* Hide desktop content on mobile */
+@media (max-width: 768px) {
+  .desktop-only {
+    display: none !important;
+  }
+}
+
+/* Mobile-first responsive design */
+.mobile-only {
+  display: block;
+}
+
+@media (min-width: 769px) {
+  .mobile-only {
+    display: none !important;
+  }
+}
 
 /* Safe area handling for iOS devices */
 .safe-area-top {
@@ -29,6 +60,17 @@
 /* Remove tap highlights on mobile */
 * {
   -webkit-tap-highlight-color: transparent;
+}
+
+/* Prevent zoom on input focus */
+input, textarea, select {
+  font-size: 16px;
+}
+
+/* Mobile viewport fixes */
+html, body {
+  height: 100%;
+  overflow-x: hidden;
 }
 
 /* Mobile-specific animations */
@@ -78,12 +120,30 @@
   -webkit-backdrop-filter: blur(20px);
 }
 
-/* Gradient text for better mobile visibility */
-.gradient-text {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+/* Portrait mode enforcement */
+@media screen and (orientation: landscape) and (max-height: 500px) {
+  .portrait-only {
+    display: none !important;
+  }
+  
+  .landscape-message {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    background: linear-gradient(135deg, #1e3a8a, #7c3aed);
+    color: white;
+    text-align: center;
+    padding: 2rem;
+    flex-direction: column;
+  }
+}
+
+/* Enhanced mobile styles */
+.mobile-container {
+  max-width: 100vw;
+  overflow-x: hidden;
+  position: relative;
 }
 
 /* Mobile navigation improvements */
@@ -165,36 +225,4 @@
 
 .haptic-medium:active {
   transform: scale(0.97);
-}
-
-/* Mobile-optimized grid */
-.mobile-grid {
-  display: grid;
-  gap: 1rem;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-}
-
-@media (max-width: 640px) {
-  .mobile-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-/* Dark mode optimizations for mobile */
-@media (prefers-color-scheme: dark) {
-  .mobile-backdrop {
-    background-color: rgba(0, 0, 0, 0.8);
-  }
-}
-
-/* Orientation handling */
-@media (orientation: landscape) and (max-height: 500px) {
-  .mobile-landscape-compact {
-    padding: 0.5rem;
-  }
-  
-  .mobile-landscape-compact .stat-container {
-    flex-direction: row;
-    gap: 0.5rem;
-  }
 }
