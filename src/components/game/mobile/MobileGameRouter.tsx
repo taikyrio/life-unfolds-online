@@ -47,6 +47,7 @@ export const MobileGameRouter: React.FC<MobileGameRouterProps> = ({
             gameState={gameState}
             onCharacterUpdate={onCharacterUpdate}
             onEvent={onEvent}
+            onClose={() => setCurrentPage('life')}
           />
         );
       case 'world':
