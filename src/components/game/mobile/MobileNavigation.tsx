@@ -22,8 +22,8 @@ export const MobileNavigation: React.FC<MobileNavigationProps> = ({
   ];
 
   return (
-    <div className="bg-black/60 backdrop-blur-2xl border-t border-white/20 safe-area-pb">
-      <div className="flex items-center justify-around px-4 py-3 pb-8">
+    <div className="fixed bottom-0 left-0 right-0 z-50 bg-black/60 backdrop-blur-2xl border-t border-white/20">
+      <div className="flex items-center justify-around px-4 py-3 pb-safe">
         {navigationItems.map((item) => {
           const Icon = item.icon;
           const isActive = currentPage === item.id;
@@ -32,10 +32,10 @@ export const MobileNavigation: React.FC<MobileNavigationProps> = ({
             <button
               key={item.id}
               onClick={() => onPageChange(item.id)}
-              className={`flex flex-col items-center space-y-1 p-3 rounded-2xl transition-all duration-300 min-w-[60px] ${
+              className={`flex flex-col items-center space-y-1 p-3 rounded-2xl transition-all duration-300 min-w-[60px] touch-target ${
                 isActive 
                   ? 'bg-gradient-to-br from-blue-500/30 to-purple-500/30 border border-white/20 shadow-lg' 
-                  : 'hover:bg-white/10'
+                  : 'hover:bg-white/10 active:bg-white/15'
               }`}
             >
               <div className={`p-2 rounded-xl transition-all duration-300 ${
