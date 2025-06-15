@@ -1,160 +1,77 @@
-import React, { useState, useEffect } from 'react';
-import { GameBoard } from '@/components/GameBoard';
-import SplashScreen from '@/components/SplashScreen';
-import { GameSettings } from '@/components/GameSettings';
-import { CharacterCustomization } from '@/components/CharacterCustomization';
-import { GameState } from '@/types/gameState';
-import { Character } from '@/types/character';
-import { generateRandomName, createCharacter, getRandomizedNewCharacter } from '@/utils/characterUtils';
-import { randomizeStats } from '@/utils/statRandomization';
-import { Button } from '@/components/ui/button';
-import { BirthStory } from '@/components/BirthStory';
-import { gameLogger } from '@/utils/gameLogger';
+
+import { useState, useEffect } from "react";
+import { useLocation } from "wouter";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Play, RotateCcw } from "lucide-react";
 
 const Index = () => {
-  const [showSplash, setShowSplash] = useState(true);
-  const [showSettings, setShowSettings] = useState(false);
-  const [showCharacterCustomization, setShowCharacterCustomization] = useState(false);
-  const [gameState, setGameState] = useState<GameState>(() => {
-    // Generate random birth details
-    const birthMonth = Math.floor(Math.random() * 12) + 1;
-    const birthDay = Math.floor(Math.random() * 28) + 1; // Safe day range for all months
-    const randomName = generateRandomName();
+  const [, setLocation] = useLocation();
+  const [hasExistingGame, setHasExistingGame] = useState(false);
 
-    // Get randomization mode from localStorage
-    const savedMode = localStorage.getItem('bitlife-stat-randomization') || 'realistic';
-    const character = createCharacter(randomName, birthMonth, birthDay);
+  useEffect(() => {
+    const saved = localStorage.getItem('gameState');
+    setHasExistingGame(!!saved);
+  }, []);
 
-    // Apply randomization to starting stats
-    const randomizedCharacter = randomizeStats(character, { 
-      mode: savedMode as any,
-      preserveAge: true,
-      preserveEducation: true 
-    });
-
-    // Initialize logging for the character
-    gameLogger.initializeCharacter(
-      randomizedCharacter.id,
-      randomizedCharacter.name,
-      randomizedCharacter.birthYear || new Date().getFullYear()
-    );
-    
-    // Log birth event
-    gameLogger.logEvent({
-      age: 0,
-      year: randomizedCharacter.birthYear || new Date().getFullYear(),
-      event: `Born as ${randomizedCharacter.name}`,
-      category: 'family'
-    });
-
-    return {
-      character: randomizedCharacter,
-      currentEvent: null,
-      gameStarted: false,
-      gameOver: false,
-      eventHistory: [],
-      achievements: [],
-      eventTracker: {
-        triggeredEvents: new Set(),
-        lastEventAge: 0,
-        eventCooldowns: new Map(),
-        choiceHistory: []
-      }
-    };
-  });
-
-  const handleRandomizeStats = () => {
-    const savedMode = localStorage.getItem('bitlife-stat-randomization') || 'realistic';
-    const randomizedCharacter = randomizeStats(gameState.character, {
-      mode: savedMode as any,
-      preserveAge: true,
-      preserveEducation: true,
-      preserveWealth: false
-    });
-
-    setGameState(prev => ({
-      ...prev,
-      character: randomizedCharacter
-    }));
+  const startNewGame = () => {
+    // Clear any existing game state
+    localStorage.removeItem('gameState');
+    setLocation('/game/life');
   };
 
-  const handleNewGame = () => {
-    const birthMonth = Math.floor(Math.random() * 12) + 1;
-    const birthDay = Math.floor(Math.random() * 28) + 1;
-    const randomName = generateRandomName();
-    const savedMode = localStorage.getItem('bitlife-stat-randomization') || 'realistic';
-
-    const newCharacter = getRandomizedNewCharacter({
-      name: randomName,
-      id: 'player'
-    }, savedMode as any);
-
-    setGameState({
-      character: newCharacter,
-      currentEvent: null,
-      gameStarted: false,
-      gameOver: false,
-      eventHistory: [],
-      achievements: [],
-      eventTracker: {
-        triggeredEvents: new Set(),
-        lastEventAge: 0,
-        eventCooldowns: new Map(),
-        choiceHistory: []
-      }
-    });
-  };
-
-  if (showSplash) {
-    return <SplashScreen onComplete={() => setShowSplash(false)} />;
-  }
-
-  const handleCustomCharacterCreate = (character: Character) => {
-    setGameState({
-      character,
-      currentEvent: null,
-      gameStarted: false,
-      gameOver: false,
-      eventHistory: [],
-      achievements: [],
-      eventTracker: {
-        triggeredEvents: new Set(),
-        lastEventAge: 0,
-        eventCooldowns: new Map(),
-        choiceHistory: []
-      }
-    });
-    setShowCharacterCustomization(false);
+  const continueGame = () => {
+    setLocation('/game/life');
   };
 
   return (
-    <div className="relative">
-      <GameBoard 
-        gameState={gameState} 
-        onGameStateChange={setGameState}
-        onOpenSettings={() => setShowSettings(true)}
-      />
-
-      <GameSettings
-        isOpen={showSettings}
-        onClose={() => setShowSettings(false)}
-        onNewGame={handleNewGame}
-        onRandomizeStats={handleRandomizeStats}
-        onCustomCharacter={() => {
-          setShowSettings(false);
-          setShowCharacterCustomization(true);
-        }}
-      />
-
-      {showCharacterCustomization && (
-        <CharacterCustomization
-          character={gameState.character}
-          onUpdate={(character) => {
-            setGameState(prev => ({ ...prev, character }));
-          }}
-          onComplete={() => setShowCharacterCustomization(false)}
-        />
-      )}
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-purple-900 text-white flex items-center justify-center p-4">
+      <Card className="w-full max-w-md bg-black/20 backdrop-blur-xl border-white/10 text-white">
+        <CardHeader className="text-center pb-6">
+          <div className="text-6xl mb-4">🎭</div>
+          <CardTitle className="text-3xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+            Life Unfolds
+          </CardTitle>
+          <p className="text-white/70 mt-2">
+            Live your virtual life, make choices, and see how your story unfolds
+          </p>
+        </CardHeader>
+        
+        <CardContent className="space-y-4">
+          {hasExistingGame ? (
+            <>
+              <Button 
+                onClick={continueGame}
+                className="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white py-3 text-lg"
+              >
+                <Play className="mr-2 h-5 w-5" />
+                Continue Game
+              </Button>
+              
+              <Button 
+                onClick={startNewGame}
+                variant="outline"
+                className="w-full border-white/20 bg-white/5 hover:bg-white/10 text-white py-3"
+              >
+                <RotateCcw className="mr-2 h-4 w-4" />
+                Start New Game
+              </Button>
+            </>
+          ) : (
+            <Button 
+              onClick={startNewGame}
+              className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white py-3 text-lg"
+            >
+              <Play className="mr-2 h-5 w-5" />
+              Start New Life
+            </Button>
+          )}
+          
+          <div className="text-center text-sm text-white/50 pt-4">
+            <p>Your choices shape your virtual destiny</p>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 };

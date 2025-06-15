@@ -6,6 +6,10 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Router, Route, Switch } from "wouter";
 import { ThemeProvider } from "next-themes";
 import Index from "./pages/Index";
+import GameLifePage from "./pages/game/LifePage";
+import GamePeoplePage from "./pages/game/PeoplePage";
+import GameWorldPage from "./pages/game/WorldPage";
+import GameActionsPage from "./pages/game/ActionsPage";
 import NotFound from "./pages/NotFound";
 import "./styles/mobile.css";
 
@@ -45,6 +49,10 @@ const App = () => {
             <Router>
               <Switch>
                 <Route path="/" component={Index} />
+                <Route path="/game/life" component={GameLifePage} />
+                <Route path="/game/people" component={GamePeoplePage} />
+                <Route path="/game/world" component={GameWorldPage} />
+                <Route path="/game/actions" component={GameActionsPage} />
                 <Route component={NotFound} />
               </Switch>
             </Router>
