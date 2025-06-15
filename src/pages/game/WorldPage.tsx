@@ -10,6 +10,7 @@ import useGameLogic from '../../hooks/useGameLogic';
 const GameWorldPage: React.FC = () => {
   const [, setLocation] = useLocation();
   
+  // Get game state from localStorage
   const [gameState, setGameState] = useState<GameState>(() => {
     const saved = localStorage.getItem('gameState');
     if (saved) {
@@ -20,6 +21,7 @@ const GameWorldPage: React.FC = () => {
       }
       return parsed;
     }
+    // Redirect to home if no game state
     setLocation('/');
     return null;
   });

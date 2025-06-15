@@ -2,6 +2,9 @@
 import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import SplashScreen from "../components/SplashScreen";
+import { generateRandomName } from "../utils/gameUtils";
+import { createCharacter } from "../utils/characterUtils";
+import { GameState } from "../types/game";
 
 const Index = () => {
   const [, setLocation] = useLocation();
@@ -18,7 +21,40 @@ const Index = () => {
   };
 
   const startNewGame = () => {
-    localStorage.removeItem('gameState');
+    // Generate random character
+    const randomName = generateRandomName();
+    const randomMonth = Math.floor(Math.random() * 12) + 1;
+    const randomDay = Math.floor(Math.random() * 28) + 1;
+    
+    const newCharacter = createCharacter(randomName, randomMonth, randomDay);
+    
+    // Create initial game state
+    const initialGameState: GameState = {
+      character: newCharacter,
+      currentEvent: null,
+      gameStarted: true,
+      gameOver: false,
+      eventHistory: [],
+      achievements: [],
+      eventTracker: {
+        triggeredEvents: new Set(),
+        lastEventAge: 0,
+        eventCooldowns: new Map(),
+        choiceHistory: []
+      }
+    };
+    
+    // Save to localStorage
+    const stateToSave = {
+      ...initialGameState,
+      eventTracker: {
+        ...initialGameState.eventTracker,
+        triggeredEvents: Array.from(initialGameState.eventTracker.triggeredEvents),
+        eventCooldowns: Array.from(initialGameState.eventTracker.eventCooldowns.entries())
+      }
+    };
+    
+    localStorage.setItem('gameState', JSON.stringify(stateToSave));
     setLocation('/game/life');
   };
 

@@ -10,6 +10,7 @@ import useGameLogic from '../../hooks/useGameLogic';
 const GameActionsPage: React.FC = () => {
   const [, setLocation] = useLocation();
   
+  // Get game state from localStorage
   const [gameState, setGameState] = useState<GameState>(() => {
     const saved = localStorage.getItem('gameState');
     if (saved) {
@@ -20,6 +21,7 @@ const GameActionsPage: React.FC = () => {
       }
       return parsed;
     }
+    // Redirect to home if no game state
     setLocation('/');
     return null;
   });
@@ -73,9 +75,7 @@ const GameActionsPage: React.FC = () => {
           character={gameState.character}
           onActivity={handleActivity}
           onClose={() => setLocation('/game/life')}
-          onActivityComplete={() => {
-            // Optional: redirect after activity completion
-          }}
+          onActivityComplete={() => {}}
         />
       </div>
 
