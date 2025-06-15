@@ -1,0 +1,200 @@
+
+/* Mobile-optimized styles for better touch interactions */
+
+/* Safe area handling for iOS devices */
+.safe-area-top {
+  padding-top: env(safe-area-inset-top);
+}
+
+.safe-area-bottom {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.safe-area-pb {
+  padding-bottom: calc(env(safe-area-inset-bottom) + 1rem);
+}
+
+/* Touch-friendly button sizing */
+.touch-target {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+/* Smooth scrolling for mobile */
+.mobile-scroll {
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+}
+
+/* Remove tap highlights on mobile */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Mobile-specific animations */
+@keyframes slideInFromBottom {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeInScale {
+  from {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.slide-in-bottom {
+  animation: slideInFromBottom 0.3s ease-out;
+}
+
+.fade-in-scale {
+  animation: fadeInScale 0.2s ease-out;
+}
+
+/* Better touch feedback */
+.touch-feedback {
+  transition: all 0.1s ease;
+}
+
+.touch-feedback:active {
+  transform: scale(0.98);
+  opacity: 0.8;
+}
+
+/* Improved backdrop blur for mobile */
+.mobile-backdrop {
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+/* Gradient text for better mobile visibility */
+.gradient-text {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Mobile navigation improvements */
+.mobile-nav-item {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.mobile-nav-item:active {
+  transform: scale(0.95);
+}
+
+/* Better shadows for mobile */
+.mobile-shadow {
+  box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.mobile-shadow-lg {
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+/* Mobile-optimized modal */
+.mobile-modal {
+  max-height: 85vh;
+  border-radius: 1.5rem 1.5rem 0 0;
+}
+
+/* Improved stat bars for mobile */
+.stat-bar {
+  height: 6px;
+  border-radius: 3px;
+  transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Mobile age indicator */
+.age-indicator {
+  position: relative;
+  overflow: hidden;
+}
+
+.age-indicator::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+  0% { left: -100%; }
+  100% { left: 100%; }
+}
+
+/* Mobile typography improvements */
+.mobile-text-shadow {
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+/* Better focus states for mobile */
+.mobile-focus:focus {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+/* Haptic feedback simulation */
+.haptic-light {
+  transition: transform 0.05s ease;
+}
+
+.haptic-light:active {
+  transform: scale(0.99);
+}
+
+.haptic-medium {
+  transition: transform 0.1s ease;
+}
+
+.haptic-medium:active {
+  transform: scale(0.97);
+}
+
+/* Mobile-optimized grid */
+.mobile-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+
+@media (max-width: 640px) {
+  .mobile-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Dark mode optimizations for mobile */
+@media (prefers-color-scheme: dark) {
+  .mobile-backdrop {
+    background-color: rgba(0, 0, 0, 0.8);
+  }
+}
+
+/* Orientation handling */
+@media (orientation: landscape) and (max-height: 500px) {
+  .mobile-landscape-compact {
+    padding: 0.5rem;
+  }
+  
+  .mobile-landscape-compact .stat-container {
+    flex-direction: row;
+    gap: 0.5rem;
+  }
+}
