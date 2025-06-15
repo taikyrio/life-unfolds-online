@@ -77,6 +77,7 @@ const GamePeoplePage: React.FC = () => {
           gameState={gameState}
           onCharacterUpdate={handleCharacterUpdate}
           onEvent={handleEvent}
+          onClose={() => setLocation('/game/life')}
         />
       </div>
 
