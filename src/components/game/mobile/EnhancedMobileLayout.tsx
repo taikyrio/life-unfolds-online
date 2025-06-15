@@ -1,8 +1,13 @@
-
 import React, { useState } from 'react';
 import { Character } from '../../../types/game';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { 
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/components/ui/accordion';
 import { 
   Plus, 
   Heart, 
@@ -144,44 +149,53 @@ export const EnhancedMobileLayout: React.FC<EnhancedMobileLayoutProps> = ({
         </div>
       </div>
 
-      {/* Life Story */}
+      {/* Life Story with Accordion */}
       <div className="flex-1 px-4 pb-32 overflow-y-auto">
-        <div className="space-y-4">
+        <Accordion type="multiple" className="space-y-4" defaultValue={[`age-${character.age}`]}>
           {lifeEvents.map((yearData, index) => (
-            <div key={`${yearData.age}-${index}`} className="group">
-              <div className="bg-black/20 backdrop-blur-xl rounded-2xl border border-white/10 p-4 shadow-xl transition-all duration-300 hover:bg-black/30 hover:scale-[1.02]">
-                {/* Year Header */}
-                <div className="flex items-center justify-between mb-3">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
-                      <span className="text-white text-sm font-bold">{yearData.age}</span>
-                    </div>
-                    <div>
-                      <div className="text-white font-semibold">
-                        Age {yearData.age}
-                        {yearData.age === character.age && (
-                          <span className="ml-2 px-2 py-0.5 bg-gradient-to-r from-green-500 to-teal-500 text-white text-xs rounded-full">
-                            Now
-                          </span>
-                        )}
+            <AccordionItem 
+              key={`age-${yearData.age}-${index}`} 
+              value={`age-${yearData.age}`}
+              className="border-0"
+            >
+              <div className="bg-black/20 backdrop-blur-xl rounded-2xl border border-white/10 shadow-xl transition-all duration-300 hover:bg-black/30 hover:scale-[1.02]">
+                <AccordionTrigger className="px-4 py-4 hover:no-underline [&[data-state=open]>div>div:last-child]:rotate-180">
+                  <div className="flex items-center justify-between w-full">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
+                        <span className="text-white text-sm font-bold">{yearData.age}</span>
                       </div>
-                      <div className="text-white/60 text-sm">{yearData.year}</div>
+                      <div className="text-left">
+                        <div className="text-white font-semibold">
+                          Age {yearData.age}
+                          {yearData.age === character.age && (
+                            <span className="ml-2 px-2 py-0.5 bg-gradient-to-r from-green-500 to-teal-500 text-white text-xs rounded-full">
+                              Now
+                            </span>
+                          )}
+                        </div>
+                        <div className="text-white/60 text-sm">{yearData.year}</div>
+                      </div>
+                    </div>
+                    <div className="text-white/50 text-2xl transition-transform duration-200">
+                      ⌄
                     </div>
                   </div>
-                </div>
+                </AccordionTrigger>
 
-                {/* Events */}
-                <div className="space-y-2">
-                  {yearData.events.map((event, eventIndex) => (
-                    <div key={eventIndex} className="bg-white/5 rounded-xl p-3 border border-white/5">
-                      <p className="text-white/90 text-sm leading-relaxed">{event}</p>
-                    </div>
-                  ))}
-                </div>
+                <AccordionContent className="px-4 pb-4">
+                  <div className="space-y-2">
+                    {yearData.events.map((event, eventIndex) => (
+                      <div key={eventIndex} className="bg-white/5 rounded-xl p-3 border border-white/5">
+                        <p className="text-white/90 text-sm leading-relaxed">{event}</p>
+                      </div>
+                    ))}
+                  </div>
+                </AccordionContent>
               </div>
-            </div>
+            </AccordionItem>
           ))}
-        </div>
+        </Accordion>
       </div>
 
       {/* Bottom Navigation */}
