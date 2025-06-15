@@ -104,6 +104,11 @@ html, body {
   animation: fadeInScale 0.2s ease-out;
 }
 
+/* BitLife-style slide in animation */
+.animate-slide-in-bottom {
+  animation: slideInFromBottom 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
 /* Better touch feedback */
 .touch-feedback {
   transition: all 0.1s ease;

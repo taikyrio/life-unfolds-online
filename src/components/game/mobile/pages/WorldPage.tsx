@@ -2,7 +2,7 @@
 import React from 'react';
 import { Character } from '../../../../types/game';
 import { AssetsMenu } from '../../../menus/AssetsMenu';
-import { Globe, Home, Car, Briefcase, TrendingUp } from 'lucide-react';
+import { ArrowLeft, Globe, Home, Car, Briefcase, TrendingUp } from 'lucide-react';
 
 interface WorldPageProps {
   character: Character;
@@ -18,12 +18,21 @@ export const WorldPage: React.FC<WorldPageProps> = ({
   const assetCount = character.assets?.length || 0;
 
   return (
-    <div className="h-full bg-gradient-to-br from-slate-900 via-blue-900 to-purple-900 text-white overflow-hidden">
-      {/* Header */}
+    <div className="h-full bg-gradient-to-br from-slate-900 via-blue-900 to-purple-900 text-white overflow-hidden animate-slide-in-bottom">
+      {/* Header with back button */}
       <div className="px-4 pt-12 pb-4 bg-gradient-to-b from-black/40 to-transparent backdrop-blur-sm">
-        <div className="mb-4">
-          <h1 className="text-2xl font-bold text-white">World</h1>
-          <p className="text-white/70 text-sm">Explore assets, investments, and opportunities</p>
+        <div className="flex items-center justify-between mb-4">
+          <button
+            onClick={onClose}
+            className="w-10 h-10 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center hover:bg-white/20 transition-all duration-200"
+          >
+            <ArrowLeft className="w-5 h-5 text-white" />
+          </button>
+          <div className="flex-1 text-center">
+            <h1 className="text-2xl font-bold text-white">World</h1>
+            <p className="text-white/70 text-sm">Explore assets, investments, and opportunities</p>
+          </div>
+          <div className="w-10 h-10" /> {/* Spacer for centering */}
         </div>
 
         {/* Wealth Overview */}

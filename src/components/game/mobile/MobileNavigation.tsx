@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Character } from '../../../types/game';
-import { Home, Users, Globe, Zap } from 'lucide-react';
+import { Home, Users, Globe, Menu } from 'lucide-react';
 
 interface MobileNavigationProps {
   currentPage: 'life' | 'people' | 'world' | 'actions';
@@ -18,7 +18,7 @@ export const MobileNavigation: React.FC<MobileNavigationProps> = ({
     { id: 'life' as const, label: 'Life', icon: Home },
     { id: 'people' as const, label: 'People', icon: Users },
     { id: 'world' as const, label: 'World', icon: Globe },
-    { id: 'actions' as const, label: 'Actions', icon: Zap }
+    { id: 'actions' as const, label: 'Menu', icon: Menu }
   ];
 
   return (
