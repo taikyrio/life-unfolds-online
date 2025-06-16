@@ -25,6 +25,16 @@ export const handleRelationshipAction = (
         break;
       }
       
+      // Check if already in a relationship
+      const hasPartner = updatedCharacter.familyMembers.some(m => 
+        m.relationship === 'lover' || m.relationship === 'spouse'
+      );
+      
+      if (hasPartner) {
+        message = "You're already in a relationship!";
+        break;
+      }
+      
       // Generate a new potential partner
       const newPartner = {
         id: Date.now().toString(),
@@ -33,7 +43,18 @@ export const handleRelationshipAction = (
         age: updatedCharacter.age + Math.floor(Math.random() * 10) - 5,
         alive: true,
         health: 80 + Math.floor(Math.random() * 20),
-        relationshipStats: initializeRelationshipStats('lover', 60),
+        relationshipStats: {
+          relationshipLevel: 60,
+          trust: 60,
+          communication: 50,
+          intimacy: 40,
+          conflictResolution: 50,
+          sharedInterests: 60 + Math.floor(Math.random() * 30),
+          timeSpentTogether: 0,
+          respect: 70,
+          lastInteraction: new Date().toISOString(),
+          interactionHistory: []
+        },
         relationshipQuality: 60,
         personality: {
           kindness: Math.floor(Math.random() * 100),
@@ -52,7 +73,8 @@ export const handleRelationshipAction = (
       if (success) {
         updatedCharacter.familyMembers.push(newPartner);
         updatedCharacter.relationshipStatus = 'dating';
-        message = `You met ${newPartner.name} and hit it off! You're now dating.`;
+        updatedCharacter.happiness = Math.min(100, updatedCharacter.happiness + 15);
+        message = `You met ${newPartner.name} and hit it off! You're now dating! 💕`;
       } else {
         message = "You didn't find anyone special this time. Maybe try again later!";
       }
@@ -133,20 +155,29 @@ export const handleRelationshipAction = (
       break;
 
     default:
-      // Handle other actions through the relationship system
+      // Handle other actions through the new relationship system
       if (data && data.targetId) {
-        const actionResult = executeRelationshipAction(updatedCharacter, data.targetId, action);
-        message = actionResult.message;
-        
-        // Apply character effects
-        if (actionResult.effects.happiness) {
-          updatedCharacter.happiness = Math.min(100, updatedCharacter.happiness + actionResult.effects.happiness);
-        }
-        if (actionResult.effects.wealth) {
-          updatedCharacter.wealth = Math.max(0, updatedCharacter.wealth + actionResult.effects.wealth);
-        }
-        if (actionResult.effects.relationshipStatus) {
-          updatedCharacter.relationshipStatus = actionResult.effects.relationshipStatus;
+        const member = updatedCharacter.familyMembers.find(m => m.id === data.targetId);
+        if (member) {
+          const result = executeRelationshipAction(updatedCharacter, member, action);
+          message = result.message;
+          
+          // Apply character effects
+          if (result.characterEffects.happiness) {
+            updatedCharacter.happiness = Math.min(100, updatedCharacter.happiness + result.characterEffects.happiness);
+          }
+          if (result.characterEffects.wealth) {
+            updatedCharacter.wealth = Math.max(0, updatedCharacter.wealth + result.characterEffects.wealth);
+          }
+          if (result.characterEffects.relationshipStatus) {
+            updatedCharacter.relationshipStatus = result.characterEffects.relationshipStatus;
+          }
+          
+          // Update relationship quality
+          const memberIndex = updatedCharacter.familyMembers.findIndex(m => m.id === data.targetId);
+          if (memberIndex !== -1) {
+            updatedCharacter.familyMembers[memberIndex].relationshipQuality = result.newRelationshipQuality;
+          }
         }
       }
       break;
