@@ -1,8 +1,9 @@
 
 import { Character, FamilyMember } from '../../../types/game';
 import { executeRelationshipAction } from '../../../utils/relationshipActions';
+import { RelationshipActionResult } from './types';
 
-export const handleDateNight = (character: Character): { success: boolean; message: string; effects: any } => {
+export const handleDateNight = (character: Character): RelationshipActionResult => {
   const partner = character.familyMembers.find(m => 
     m.relationship === 'lover' || m.relationship === 'spouse'
   );
@@ -23,7 +24,7 @@ export const handleDateNight = (character: Character): { success: boolean; messa
   };
 };
 
-export const handleProposal = (character: Character): { success: boolean; message: string; effects: any } => {
+export const handleProposal = (character: Character): RelationshipActionResult => {
   const fiancee = character.familyMembers.find(m => m.relationship === 'lover');
   
   if (!fiancee) {
@@ -46,7 +47,7 @@ export const handleSpecificRelationshipAction = (
   character: Character,
   action: string,
   targetId: string
-): { success: boolean; message: string; effects: any; newRelationshipQuality?: number } => {
+): RelationshipActionResult => {
   const member = character.familyMembers.find(m => m.id === targetId);
   
   if (!member) {

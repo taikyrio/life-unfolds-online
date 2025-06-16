@@ -2,8 +2,9 @@
 import { Character, FamilyMember } from '../../../types/game';
 import { generateRandomName } from '../../../utils/nameGenerator';
 import { initializeRelationshipStats } from '../../../systems/relationship/relationshipUtils';
+import { RelationshipCreationResult } from './types';
 
-export const handleFindLove = (character: Character): { success: boolean; message: string; newPartner?: FamilyMember } => {
+export const handleFindLove = (character: Character): RelationshipCreationResult => {
   if (character.age < 16) {
     return { success: false, message: "You're too young for serious relationships!" };
   }
@@ -66,7 +67,7 @@ export const handleFindLove = (character: Character): { success: boolean; messag
   }
 };
 
-export const handleMakeNewFriends = (character: Character): { message: string; newFriends: FamilyMember[] } => {
+export const handleMakeNewFriends = (character: Character): RelationshipCreationResult => {
   const friendsToAdd = Math.floor(Math.random() * 3) + 1;
   const newFriends: FamilyMember[] = [];
   
@@ -95,6 +96,7 @@ export const handleMakeNewFriends = (character: Character): { message: string; n
   }
   
   return {
+    success: true,
     message: `You made ${friendsToAdd} new friend${friendsToAdd > 1 ? 's' : ''}!`,
     newFriends
   };
