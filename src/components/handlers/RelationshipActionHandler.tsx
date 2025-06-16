@@ -1,6 +1,6 @@
 
 import { Character } from '../../types/game';
-import { executeRelationshipAction, relationshipManager } from '../../systems/relationshipSystem';
+import { executeRelationshipAction, generateNewRelationship } from '../../utils/relationshipActions';
 import { generatePersonality, initializeRelationshipStats } from '../../systems/relationship/relationshipUtils';
 
 export const handleRelationshipAction = (
@@ -89,15 +89,15 @@ export const handleRelationshipAction = (
         break;
       }
       
-      const result = executeRelationshipAction(updatedCharacter, partner.id, 'spend_time');
+      const result = executeRelationshipAction(updatedCharacter, partner, 'spend_time');
       message = result.message;
       
       // Apply character effects
-      if (result.effects.happiness) {
-        updatedCharacter.happiness = Math.min(100, updatedCharacter.happiness + result.effects.happiness);
+      if (result.characterEffects.happiness) {
+        updatedCharacter.happiness = Math.min(100, updatedCharacter.happiness + result.characterEffects.happiness);
       }
-      if (result.effects.wealth) {
-        updatedCharacter.wealth = Math.max(0, updatedCharacter.wealth + result.effects.wealth);
+      if (result.characterEffects.wealth) {
+        updatedCharacter.wealth = Math.max(0, updatedCharacter.wealth + result.characterEffects.wealth);
       }
       break;
 
@@ -108,19 +108,15 @@ export const handleRelationshipAction = (
         break;
       }
       
-      const proposalResult = executeRelationshipAction(updatedCharacter, fiancee.id, 'propose');
+      const proposalResult = executeRelationshipAction(updatedCharacter, fiancee, 'propose');
       message = proposalResult.message;
       
       // Apply character effects
-      if (proposalResult.effects.happiness) {
-        updatedCharacter.happiness = Math.min(100, updatedCharacter.happiness + proposalResult.effects.happiness);
+      if (proposalResult.characterEffects.happiness) {
+        updatedCharacter.happiness = Math.min(100, updatedCharacter.happiness + proposalResult.characterEffects.happiness);
       }
-      if (proposalResult.effects.wealth) {
-        updatedCharacter.wealth = Math.max(0, updatedCharacter.wealth + proposalResult.effects.wealth);
-      }
-      if (proposalResult.effects.relationshipStatus) {
-        updatedCharacter.relationshipStatus = proposalResult.effects.relationshipStatus;
-        updatedCharacter.partnerName = fiancee.name;
+      if (proposalResult.characterEffects.wealth) {
+        updatedCharacter.wealth = Math.max(0, updatedCharacter.wealth + proposalResult.characterEffects.wealth);
       }
       break;
 
@@ -155,7 +151,7 @@ export const handleRelationshipAction = (
       break;
 
     default:
-      // Handle other actions through the new relationship system
+      // Handle other actions through the relationship system
       if (data && data.targetId) {
         const member = updatedCharacter.familyMembers.find(m => m.id === data.targetId);
         if (member) {
@@ -169,9 +165,6 @@ export const handleRelationshipAction = (
           if (result.characterEffects.wealth) {
             updatedCharacter.wealth = Math.max(0, updatedCharacter.wealth + result.characterEffects.wealth);
           }
-          if (result.characterEffects.relationshipStatus) {
-            updatedCharacter.relationshipStatus = result.characterEffects.relationshipStatus;
-          }
           
           // Update relationship quality
           const memberIndex = updatedCharacter.familyMembers.findIndex(m => m.id === data.targetId);
@@ -181,45 +174,6 @@ export const handleRelationshipAction = (
         }
       }
       break;
-  }
-
-  // Update relationships over time
-  relationshipManager.updateRelationshipsOverTime(updatedCharacter);
-
-  // Generate random relationship events
-  const randomEvent = relationshipManager.generateRandomEvent(updatedCharacter);
-  if (randomEvent && Math.random() < 0.1) {
-    // Apply random event effects
-    const targetMember = updatedCharacter.familyMembers.find(m => 
-      randomEvent.targetRelationships.includes(m.relationship)
-    );
-    
-    if (targetMember) {
-      randomEvent.effects.forEach(effect => {
-        if (effect.target === 'other' || effect.target === 'both') {
-          if (effect.stats.relationshipLevel) {
-            targetMember.relationshipStats.relationshipLevel = Math.max(0, 
-              Math.min(100, targetMember.relationshipStats.relationshipLevel + effect.stats.relationshipLevel)
-            );
-          }
-          if (effect.stats.trust) {
-            targetMember.relationshipStats.trust = Math.max(0, 
-              Math.min(100, targetMember.relationshipStats.trust + effect.stats.trust)
-            );
-          }
-        }
-        
-        if (effect.target === 'self' || effect.target === 'both') {
-          if (effect.characterEffects?.happiness) {
-            updatedCharacter.happiness = Math.max(0, 
-              Math.min(100, updatedCharacter.happiness + effect.characterEffects.happiness)
-            );
-          }
-        }
-      });
-      
-      ageEvents.push(`${randomEvent.emoji} ${randomEvent.title}: ${randomEvent.description}`);
-    }
   }
 
   if (message) {
