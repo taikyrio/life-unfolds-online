@@ -5,139 +5,103 @@ export const gameEvents: GameEvent[] = [
   {
     id: 'childhood_playground',
     title: 'Playground Adventure',
-    description: 'You found something interesting at the playground.',
-    ageRange: [4, 8],
-    category: 'childhood',
-    rarity: 0.7,
+    description: 'You discover a new playground in your neighborhood. What do you do?',
     choices: [
       {
-        id: 'play_nice',
-        text: 'Share with other kids',
+        id: 'make_friends',
+        text: 'Try to make new friends',
+        emoji: '👫',
         consequences: [
           { type: 'stat', target: 'happiness', change: 10 },
-          { type: 'stat', target: 'kindness', change: 5 }
+          { type: 'stat', target: 'smarts', change: 5 }
         ]
       },
       {
-        id: 'keep_it',
-        text: 'Keep it for yourself',
+        id: 'play_alone',
+        text: 'Play by yourself',
+        emoji: '🎈',
         consequences: [
-          { type: 'stat', target: 'happiness', change: 5 },
-          { type: 'stat', target: 'kindness', change: -3 }
+          { type: 'stat', target: 'health', change: 5 },
+          { type: 'stat', target: 'happiness', change: 5 }
         ]
       }
-    ]
+    ],
+    ageRange: [3, 10],
+    category: 'childhood',
+    rarity: 0.7
   },
   {
     id: 'school_test',
     title: 'Important Test',
-    description: 'You have a big test coming up at school.',
-    ageRange: [6, 18],
-    category: 'education',
-    rarity: 0.8,
+    description: 'You have a big test coming up at school. How do you prepare?',
     choices: [
       {
         id: 'study_hard',
         text: 'Study really hard',
+        emoji: '📚',
         consequences: [
           { type: 'stat', target: 'smarts', change: 15 },
           { type: 'stat', target: 'happiness', change: -5 }
         ]
       },
       {
-        id: 'wing_it',
-        text: 'Wing it without studying',
+        id: 'study_normal',
+        text: 'Study a normal amount',
+        emoji: '✏️',
         consequences: [
-          { type: 'stat', target: 'smarts', change: -5 },
-          { type: 'stat', target: 'happiness', change: 10 }
+          { type: 'stat', target: 'smarts', change: 8 },
+          { type: 'stat', target: 'happiness', change: 2 }
         ]
       },
       {
-        id: 'cheat',
-        text: 'Try to cheat',
+        id: 'dont_study',
+        text: 'Don\'t study at all',
+        emoji: '🎮',
         consequences: [
-          { type: 'stat', target: 'smarts', change: 5 },
-          { type: 'stat', target: 'happiness', change: -10 }
+          { type: 'stat', target: 'happiness', change: 8 },
+          { type: 'stat', target: 'smarts', change: -5 }
         ]
       }
-    ]
+    ],
+    ageRange: [6, 18],
+    category: 'education',
+    rarity: 0.6
   },
   {
-    id: 'teen_party',
-    title: 'Party Invitation',
-    description: 'You were invited to a popular kid\'s party.',
-    ageRange: [13, 18],
-    category: 'relationship',
-    rarity: 0.6,
+    id: 'friend_conflict',
+    title: 'Friend Argument',
+    description: 'You got into an argument with your best friend. What do you do?',
     choices: [
       {
-        id: 'go_party',
-        text: 'Go to the party',
+        id: 'apologize',
+        text: 'Apologize first',
+        emoji: '🤝',
         consequences: [
-          { type: 'stat', target: 'happiness', change: 20 },
-          { type: 'stat', target: 'health', change: -5 }
+          { type: 'stat', target: 'happiness', change: 5 },
+          { type: 'relationship', target: 'friend', change: 15 }
         ]
       },
       {
-        id: 'stay_home',
-        text: 'Stay home and study',
-        consequences: [
-          { type: 'stat', target: 'smarts', change: 10 },
-          { type: 'stat', target: 'happiness', change: -10 }
-        ]
-      }
-    ]
-  },
-  {
-    id: 'job_interview',
-    title: 'Job Interview',
-    description: 'You have an interview for your dream job.',
-    ageRange: [18, 65],
-    category: 'career',
-    rarity: 0.5,
-    choices: [
-      {
-        id: 'be_honest',
-        text: 'Be completely honest',
-        consequences: [
-          { type: 'stat', target: 'happiness', change: 15 },
-          { type: 'money', target: '', change: 500 }
-        ]
-      },
-      {
-        id: 'embellish',
-        text: 'Embellish your experience',
+        id: 'wait',
+        text: 'Wait for them to apologize',
+        emoji: '⏰',
         consequences: [
           { type: 'stat', target: 'happiness', change: -5 },
-          { type: 'money', target: '', change: 1000 }
-        ]
-      }
-    ]
-  },
-  {
-    id: 'health_scare',
-    title: 'Health Check',
-    description: 'You notice something concerning about your health.',
-    ageRange: [30, 80],
-    category: 'health',
-    rarity: 0.4,
-    choices: [
-      {
-        id: 'see_doctor',
-        text: 'See a doctor immediately',
-        consequences: [
-          { type: 'stat', target: 'health', change: 20 },
-          { type: 'money', target: '', change: -200 }
+          { type: 'relationship', target: 'friend', change: -5 }
         ]
       },
       {
-        id: 'ignore_it',
-        text: 'Ignore it and hope it goes away',
+        id: 'ignore',
+        text: 'Ignore them completely',
+        emoji: '🙄',
         consequences: [
-          { type: 'stat', target: 'health', change: -15 },
-          { type: 'stat', target: 'happiness', change: -10 }
+          { type: 'stat', target: 'happiness', change: -10 },
+          { type: 'relationship', target: 'friend', change: -20 }
         ]
       }
-    ]
+    ],
+    ageRange: [5, 25],
+    category: 'relationship',
+    rarity: 0.5
   }
 ];

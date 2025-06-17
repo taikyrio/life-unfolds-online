@@ -26,7 +26,7 @@ export interface Character {
   personality: PersonalityTraits;
   birthCountry: string;
   
-  // Family & Relationships
+  // Family & Relationships - using unified FamilyMember type
   family: FamilyMember[];
   relationships: Relationship[];
 }
@@ -38,15 +38,17 @@ export interface LifeEvent {
   age: number;
   category: EventCategory;
   icon: string;
+  emoji: string; // Added for compatibility
   impact: StatChange;
   timestamp: number;
+  choices?: EventChoice[]; // Added for compatibility
 }
 
 export interface EventChoice {
   id: string;
   text: string;
   description?: string;
-  icon?: string;
+  emoji?: string;
   consequences: Consequence[];
   requirements?: Requirement[];
 }
@@ -85,6 +87,7 @@ export interface PersonalityTraits {
   confidence: number;
 }
 
+// Unified FamilyMember interface with all needed properties
 export interface FamilyMember {
   id: string;
   name: string;
@@ -92,6 +95,45 @@ export interface FamilyMember {
   age: number;
   alive: boolean;
   relationshipQuality: number;
+  health?: number;
+  job?: string;
+  isBlocked?: boolean;
+  isEstranged?: boolean;
+  currentMood?: string;
+  relationshipStats?: RelationshipStats;
+  personality?: {
+    kindness: number;
+    loyalty: number;
+    intelligence: number;
+    humor: number;
+    ambition: number;
+    stability: number;
+    generosity: number;
+  };
+}
+
+export interface RelationshipStats {
+  relationshipLevel: number;
+  trust: number;
+  communication: number;
+  intimacy: number;
+  conflictResolution: number;
+  sharedInterests: number;
+  timeSpentTogether: number;
+  lastInteraction: string;
+  interactionHistory: InteractionRecord[];
+  respect: number;
+  love?: number;
+  fear?: number;
+}
+
+export interface InteractionRecord {
+  id: string;
+  type: string;
+  outcome: 'positive' | 'negative' | 'neutral';
+  impact: number;
+  timestamp: string;
+  description: string;
 }
 
 export interface Relationship {
