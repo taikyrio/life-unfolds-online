@@ -1,188 +1,126 @@
 
+export interface Character {
+  id: string;
+  name: string;
+  age: number;
+  gender: 'male' | 'female' | 'other';
+  
+  // Core Stats (0-100)
+  health: number;
+  happiness: number;
+  smarts: number;
+  looks: number;
+  
+  // Life Status
+  money: number;
+  job?: string;
+  salary?: number;
+  relationshipStatus: 'single' | 'dating' | 'engaged' | 'married' | 'divorced' | 'widowed';
+  education: EducationLevel;
+  
+  // Progress
+  lifeEvents: LifeEvent[];
+  achievements: Achievement[];
+  
+  // Personality & Background
+  personality: PersonalityTraits;
+  birthCountry: string;
+  
+  // Family & Relationships
+  family: FamilyMember[];
+  relationships: Relationship[];
+}
 
 export interface LifeEvent {
   id: string;
   title: string;
   description: string;
   age: number;
-  emoji?: string;
-  choices?: EventChoice[];
-  effects?: EventEffect[];
-  probability?: number;
-  conditions?: EventCondition[];
-  type?: 'positive' | 'negative' | 'neutral';
-  minAge?: number;
-  maxAge?: number;
-  category?: string;
-  requirements?: {
-    education?: string;
-    minEducation?: string;
-    minSmarts?: number;
-    minWealth?: number;
-    minHealth?: number;
-    hasPartner?: boolean;
-    hasChildren?: boolean;
-  };
+  category: EventCategory;
+  icon: string;
+  impact: StatChange;
+  timestamp: number;
 }
 
 export interface EventChoice {
   id: string;
   text: string;
-  emoji?: string;
-  effects?: {
-    happiness?: number;
-    health?: number;
-    smarts?: number;
-    looks?: number;
-    wealth?: number;
-    relationships?: number;
-    fame?: number;
-  };
-  consequences?: string[];
+  description?: string;
+  icon?: string;
+  consequences: Consequence[];
+  requirements?: Requirement[];
+}
+
+export interface Consequence {
+  type: 'stat' | 'money' | 'relationship' | 'event' | 'achievement';
+  target?: string;
+  change: number | string;
   probability?: number;
-  requirements?: {
-    minSmarts?: number;
-    minWealth?: number;
-    minHealth?: number;
-  };
 }
 
-export interface EventEffect {
-  type: 'stat' | 'money' | 'relationship' | 'career' | 'education' | 'health' | 'legal' | 'achievement';
+export interface Requirement {
+  type: 'stat' | 'money' | 'age' | 'education' | 'relationship';
   target?: string;
-  value?: number;
-  text?: string;
-}
-
-export interface EventCondition {
-  type: 'age' | 'stat' | 'money' | 'relationship' | 'career' | 'education';
-  operator: 'equals' | 'greater' | 'less' | 'greaterEqual' | 'lessEqual';
   value: number | string;
-  target?: string;
+  operator: '>' | '<' | '=' | '>=' | '<=';
 }
 
-export interface Investment {
+export interface Achievement {
   id: string;
-  name: string;
-  type: 'stocks' | 'bonds' | 'real_estate' | 'crypto' | 'mutual_fund';
-  amount: number;
-  value: number;
-  currentValue: number;
-  purchasePrice: number;
-  purchaseDate: string;
-  dividendYield?: number;
-  riskLevel: 'low' | 'medium' | 'high';
-  annualReturn: number;
-  yearPurchased?: number;
-}
-
-export interface Loan {
-  id: string;
-  type: 'mortgage' | 'student' | 'personal' | 'auto' | 'credit_card';
-  principal: number;
-  amount: number;
-  remaining: number;
-  remainingBalance: number;
-  interestRate: number;
-  monthlyPayment: number;
-  termMonths: number;
-  remainingMonths: number;
-  startDate: string;
-  originalAmount?: number;
-}
-
-export interface CriminalRecord {
-  arrests: number;
-  convictions: number;
-  prisonTime: number;
-  crimes: string[];
-  notoriety: number;
-  totalSentence: number;
-  currentlyIncarcerated: boolean;
-  charges: string[];
-  timeServed: number;
-  isIncarcerated: boolean;
-}
-
-export interface LegalCase {
-  id: string;
-  type: 'criminal' | 'civil' | 'family' | 'bankruptcy';
-  status: 'pending' | 'resolved' | 'appealed';
-  severity: 'minor' | 'moderate' | 'severe';
+  title: string;
   description: string;
-  fines?: number;
-  outcome?: string;
-  dateStarted: string;
-  dateResolved?: string;
-}
-
-export interface CrimeOperation {
-  id: string;
-  name: string;
-  description: string;
-  riskLevel: 'low' | 'medium' | 'high' | 'extreme';
-  minNotoriety: number;
-  maxPayout: number;
-  minPayout: number;
-  skillRequired: number;
-  timeRequired: number;
-  category: string;
-  failureChance: number;
-  arrestChance: number;
-}
-
-export type ZodiacSign = 'Aries' | 'Taurus' | 'Gemini' | 'Cancer' | 'Leo' | 'Virgo' | 'Libra' | 'Scorpio' | 'Sagittarius' | 'Capricorn' | 'Aquarius' | 'Pisces';
-
-export interface ZodiacSignData {
-  name: string;
-  emoji: string;
-  element: string;
-  dates: string;
-  traits: string[];
-  compatibility: string[];
-  luckyNumbers: number[];
-  luckyColors: string[];
-}
-
-export interface Asset {
-  id: string;
-  name: string;
-  type: string;
-  value: number;
-  currentValue: number;
-  purchasePrice: number;
-  purchaseDate?: string;
-  appreciationRate?: number;
+  icon: string;
+  rarity: 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary';
+  unlockedAt?: number;
 }
 
 export interface PersonalityTraits {
   kindness: number;
-  loyalty: number;
-  intelligence: number;
+  creativity: number;
+  discipline: number;
+  patience: number;
   humor: number;
   ambition: number;
-  stability: number;
-  generosity: number;
-  openness: number;
-  extraversion: number;
-  creativity: number;
-  analytical: number;
-  adventurous: number;
-  cautious: number;
-  conscientiousness: number;
-  agreeableness: number;
-  neuroticism: number;
   empathy: number;
-  resilience: number;
-  curiosity: number;
+  confidence: number;
 }
 
-export interface JobPerformance {
-  rating: number;
-  lastReview: string;
-  promotions: number;
-  warnings: number;
-  experience?: number;
-  performance?: number;
+export interface FamilyMember {
+  id: string;
+  name: string;
+  relationship: string;
+  age: number;
+  alive: boolean;
+  relationshipQuality: number;
 }
 
+export interface Relationship {
+  id: string;
+  name: string;
+  type: 'friend' | 'romantic' | 'enemy' | 'acquaintance';
+  quality: number;
+  metAt: string;
+  age: number;
+}
+
+export type EducationLevel = 'none' | 'elementary' | 'middle' | 'high' | 'college' | 'graduate';
+export type EventCategory = 'childhood' | 'education' | 'career' | 'relationship' | 'health' | 'random' | 'family';
+
+export interface StatChange {
+  health?: number;
+  happiness?: number;
+  smarts?: number;
+  looks?: number;
+  money?: number;
+}
+
+export interface GameEvent {
+  id: string;
+  title: string;
+  description: string;
+  choices: EventChoice[];
+  conditions?: Requirement[];
+  ageRange?: [number, number];
+  category: EventCategory;
+  rarity: number; // 0-1, lower = more rare
+}

@@ -1,0 +1,96 @@
+
+/* iOS Native Design System */
+:root {
+  /* iOS Semantic Colors */
+  --ios-blue: #007AFF;
+  --ios-green: #34C759;
+  --ios-indigo: #5856D6;
+  --ios-orange: #FF9500;
+  --ios-pink: #FF2D92;
+  --ios-purple: #AF52DE;
+  --ios-red: #FF3B30;
+  --ios-teal: #5AC8FA;
+  --ios-yellow: #FFCC00;
+  
+  /* iOS Gray Colors */
+  --ios-gray: #8E8E93;
+  --ios-gray2: #AEAEB2;
+  --ios-gray3: #C7C7CC;
+  --ios-gray4: #D1D1D6;
+  --ios-gray5: #E5E5EA;
+  --ios-gray6: #F2F2F7;
+  
+  /* iOS System Colors */
+  --ios-background: #000000;
+  --ios-secondary-background: #1C1C1E;
+  --ios-tertiary-background: #2C2C2E;
+  --ios-grouped-background: #000000;
+  --ios-secondary-grouped-background: #1C1C1E;
+  --ios-tertiary-grouped-background: #2C2C2E;
+  
+  --ios-label: #FFFFFF;
+  --ios-secondary-label: rgba(235, 235, 245, 0.6);
+  --ios-tertiary-label: rgba(235, 235, 245, 0.3);
+  --ios-quaternary-label: rgba(235, 235, 245, 0.18);
+  
+  --ios-separator: rgba(84, 84, 88, 0.6);
+  --ios-opaque-separator: #38383A;
+}
+
+/* Base iOS Typography */
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Inter', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: var(--ios-background);
+  color: var(--ios-label);
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+
+/* iOS Typography Scale */
+.ios-large-title { font-size: 34px; font-weight: 700; line-height: 41px; }
+.ios-title-1 { font-size: 28px; font-weight: 700; line-height: 34px; }
+.ios-title-2 { font-size: 22px; font-weight: 700; line-height: 28px; }
+.ios-title-3 { font-size: 20px; font-weight: 600; line-height: 25px; }
+.ios-headline { font-size: 17px; font-weight: 600; line-height: 22px; }
+.ios-body { font-size: 17px; font-weight: 400; line-height: 22px; }
+.ios-callout { font-size: 16px; font-weight: 400; line-height: 21px; }
+.ios-subhead { font-size: 15px; font-weight: 400; line-height: 20px; }
+.ios-footnote { font-size: 13px; font-weight: 400; line-height: 18px; }
+.ios-caption-1 { font-size: 12px; font-weight: 400; line-height: 16px; }
+.ios-caption-2 { font-size: 11px; font-weight: 400; line-height: 13px; }
+
+/* iOS Animations */
+.ios-spring-animation {
+  transition: all 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.ios-ease-animation {
+  transition: all 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* Touch feedback */
+.ios-touch-feedback:active {
+  transform: scale(0.95);
+  opacity: 0.8;
+}
+
+/* Safe area support */
+.ios-safe-area-top {
+  padding-top: env(safe-area-inset-top);
+}
+
+.ios-safe-area-bottom {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* Custom utility classes */
+.bg-ios-background { background-color: var(--ios-background); }
+.bg-ios-secondary { background-color: var(--ios-secondary-background); }
+.bg-ios-tertiary { background-color: var(--ios-tertiary-background); }
+.text-ios-label { color: var(--ios-label); }
+.text-ios-secondary { color: var(--ios-secondary-label); }
+.text-ios-blue { color: var(--ios-blue); }
+.border-ios-separator { border-color: var(--ios-separator); }
